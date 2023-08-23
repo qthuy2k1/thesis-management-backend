@@ -54,3 +54,15 @@ func (s *ClassroomSvc) GetClassroom(ctx context.Context, id int) (ClassroomInput
 		UpdatedAt:   clr.UpdatedAt,
 	}, nil
 }
+
+// CheckClassroomExists checks if a classroom with given id exists in db
+func (s *ClassroomSvc) CheckClassroomExists(ctx context.Context, id int) (bool, error) {
+	if _, err := s.Repository.GetClassroom(ctx, id); err != nil {
+		if errors.Is(err, repository.ErrClassroomNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return true, nil
+}

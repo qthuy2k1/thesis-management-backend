@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package api.post.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/post/api/v1";
+
+service PostService {
+    rpc CreatePost(CreatePostRequest) returns (CreatePostResponse){
+        option (google.api.http) = {
+            post: "/api/post"
+            body: "*"
+        };
+    }
+    
+    rpc GetPost(GetPostRequest) returns (GetPostResponse){
+        option (google.api.http) = {
+            get: "/api/post/{id}"
+        };
+    }
+}
+
+// ====== POST ======
+message PostInput {
+    string title = 1;
+    string content = 2;
+    int32 classroomID = 3;
+}
+
+message PostResponse {
+    int32 id = 1;
+    string title = 2;
+    string content = 3;
+    int32 classroomID = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+}
+
+message CreatePostRequest {
+   PostInput post = 1;
+}
+
+message CreatePostResponse {
+    int32 statusCode = 1; // statusCode = 1 -> success
+    string message = 2;
+}
+
+
+// ====== GET ======
+message GetPostRequest {
+    int32 id = 1;
+}
+
+message GetPostResponse {
+    int32 statusCode = 1;
+    string message = 2;
+    PostResponse post = 3;
+}

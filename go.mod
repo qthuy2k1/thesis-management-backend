@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/friendsofgo/errors v0.9.2
+	github.com/golang/glog v1.1.2
 	github.com/golang/protobuf v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.0
 	github.com/lib/pq v1.10.9
@@ -17,14 +18,14 @@ require (
 )
 
 require (
-	github.com/go-chi/chi/v5 v5.0.10 // indirect
-	github.com/golang/glog v1.1.2 // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/lyft/protoc-gen-star/v2 v2.0.3 // indirect
 	github.com/spf13/afero v1.9.2 // indirect
+	github.com/stretchr/testify v1.8.2 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
-	golang.org/x/mod v0.11.0 // indirect
-	golang.org/x/tools v0.10.0 // indirect
+	golang.org/x/mod v0.12.0 // indirect
+	golang.org/x/tools v0.12.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
 
 require (
@@ -33,8 +34,8 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
 	github.com/volatiletech/randomize v0.0.1 // indirect
-	golang.org/x/net v0.12.0 // indirect
-	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/text v0.12.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

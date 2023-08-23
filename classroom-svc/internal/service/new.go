@@ -11,6 +11,8 @@ type IClassroomSvc interface {
 	CreateClassroom(ctx context.Context, clr ClassroomInputSvc) error
 	// GetClassroom returns a classroom in db given by id
 	GetClassroom(ctx context.Context, id int) (ClassroomInputSvc, error)
+	// CheckClassroomExists checks if a classroom with given id exists in db
+	CheckClassroomExists(ctx context.Context, id int) (bool, error)
 }
 
 type ClassroomSvc struct {

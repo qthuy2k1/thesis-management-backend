@@ -784,3 +784,213 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetClassroomResponseValidationError{}
+
+// Validate checks the field values on CheckClassroomExistsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CheckClassroomExistsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CheckClassroomExistsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CheckClassroomExistsRequestMultiError, or nil if none found.
+func (m *CheckClassroomExistsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CheckClassroomExistsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ClassroomID
+
+	if len(errors) > 0 {
+		return CheckClassroomExistsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CheckClassroomExistsRequestMultiError is an error wrapping multiple
+// validation errors returned by CheckClassroomExistsRequest.ValidateAll() if
+// the designated constraints aren't met.
+type CheckClassroomExistsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CheckClassroomExistsRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CheckClassroomExistsRequestMultiError) AllErrors() []error { return m }
+
+// CheckClassroomExistsRequestValidationError is the validation error returned
+// by CheckClassroomExistsRequest.Validate if the designated constraints
+// aren't met.
+type CheckClassroomExistsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CheckClassroomExistsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CheckClassroomExistsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CheckClassroomExistsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CheckClassroomExistsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CheckClassroomExistsRequestValidationError) ErrorName() string {
+	return "CheckClassroomExistsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CheckClassroomExistsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCheckClassroomExistsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CheckClassroomExistsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CheckClassroomExistsRequestValidationError{}
+
+// Validate checks the field values on CheckClassroomExistsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CheckClassroomExistsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CheckClassroomExistsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CheckClassroomExistsResponseMultiError, or nil if none found.
+func (m *CheckClassroomExistsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CheckClassroomExistsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Exists
+
+	if len(errors) > 0 {
+		return CheckClassroomExistsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// CheckClassroomExistsResponseMultiError is an error wrapping multiple
+// validation errors returned by CheckClassroomExistsResponse.ValidateAll() if
+// the designated constraints aren't met.
+type CheckClassroomExistsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CheckClassroomExistsResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CheckClassroomExistsResponseMultiError) AllErrors() []error { return m }
+
+// CheckClassroomExistsResponseValidationError is the validation error returned
+// by CheckClassroomExistsResponse.Validate if the designated constraints
+// aren't met.
+type CheckClassroomExistsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CheckClassroomExistsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CheckClassroomExistsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CheckClassroomExistsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CheckClassroomExistsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CheckClassroomExistsResponseValidationError) ErrorName() string {
+	return "CheckClassroomExistsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CheckClassroomExistsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCheckClassroomExistsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CheckClassroomExistsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CheckClassroomExistsResponseValidationError{}

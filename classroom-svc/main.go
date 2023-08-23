@@ -23,7 +23,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	dbUrl := "postgresql://postgres:root@127.0.0.1:5432/thesis_management_classrooms?sslmode=disable"
+
+	// if err = godotenv.Load(); err != nil {
+	// 	log.Fatalf("Some error occured. Err: %s", err)
+	// }
+
+	dbUrl := "postgres://postgres:root@classroom-db:5432/thesis_management_classrooms?sslmode=disable"
 	database, err := db.Initialize(dbUrl)
 	if err != nil {
 		log.Fatalf("Could not set up database: %v", err)

@@ -1,1 +1,0 @@
-CREATE DATABASE "thesis_management_classrooms";
