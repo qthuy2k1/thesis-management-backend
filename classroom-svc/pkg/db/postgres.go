@@ -9,7 +9,7 @@ import (
 
 // Initialize initializes the connection to db in docker with given db url and returns the db connection
 func Initialize(dbUrl string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", "host=postgres user=postgres password=root dbname=thesis_management_classrooms port=5432 sslmode=disable")
+	db, err := sql.Open("postgres", dbUrl)
 	if err != nil {
 		return db, err
 	}

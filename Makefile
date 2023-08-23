@@ -1,27 +1,11 @@
-gen-proto:
-	protoc -I./internal/proto \
-  	--go_out ./internal/proto --go_opt paths=source_relative \
-  	--go-grpc_out ./internal/proto --go-grpc_opt paths=source_relative \
-  	--grpc-gateway_out ./internal/proto --grpc-gateway_opt paths=source_relative \
-  	--openapiv2_out ./internal/proto \
-    --openapiv2_opt logtostderr=true \
-	--validate_out="lang=go,paths=source_relative:./internal/proto" \
-  	./internal/proto/$(name)/*.proto
-
-run-server:
-	go run cmd/classroom-svc/server/server.go
-
-run-client:
-	go run cmd/classroom-svc/client/client.go
-
 postgres:
-	psql -U postgres -d thesis_management_$(db) -h localhost -p 5432
+	docker exec -it $(db)-db psql -U postgres -d thesis_management_$(db)s -h $(db)-db -p $(port)
 
 create_migration:
 	migrate create -ext sql -dir data/migrations/ -seq $(filename)
 
 migrate_up:
-	migrate -source file://$(PWD)/$(db)-svc/data/migrations/ -database "postgres://postgres:root@localhost:5432/thesis_management_$(db)s?sslmode=disable" up 
+	docker run --rm -v $(PWD)/$(db)-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(db)-db:5432/thesis_management_$(db)s?sslmode=disable" up 
 
 migrate_down:
 	migrate -source file://$(PWD)/data/migrations/ -database postgres://postgres:root@localhost:5432/thesis_management_$(db)?sslmode=disable down
@@ -46,7 +30,7 @@ proto-api:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./api-gw/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 api_classroom.proto
+		 api_classroom.proto api_post.proto
 	@echo "Done"
 
 proto-classroom:
@@ -65,13 +49,30 @@ proto-classroom:
 		 classroom.proto
 	@echo "Done"
 
-proto: proto-api proto-classroom
+proto-post:
+	@echo "--> Generating gRPC clients for post API"
+	@protoc -I ./post-svc/api/v1 \
+		--go_out ./post-svc/api/goclient/v1 --go_opt paths=source_relative \
+	  	--go-grpc_out ./post-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+		--grpc-gateway_out ./post-svc/api/goclient/v1 \
+		--grpc-gateway_opt logtostderr=true \
+		--grpc-gateway_opt paths=source_relative \
+		--grpc-gateway_opt generate_unbound_methods=true \
+  		--openapiv2_out ./post-svc/api/goclient/v1 \
+    	--openapiv2_opt logtostderr=true \
+		--validate_out="lang=go,paths=source_relative:./post-svc/api/goclient/v1" \
+		--experimental_allow_proto3_optional \
+		 post.proto
+	@echo "Done"
+
+proto: proto-api proto-classroom proto-post
 
 build:
 	mkdir -p ./out
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/apigw ./api-gw
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/classroom ./classroom-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/apigw-client ./apigw-client
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/classroom ./classroom-svc
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/post ./post-svc
 
 run: build
 	@echo "--> Starting servers"
