@@ -1,0 +1,14 @@
+output   = "../../model/classroom"
+wipe     = true
+no-tests = true
+add-enum-types = true
+
+[psql]
+  host = "localhost"
+  dbname = "thesis_management_classrooms"
+  port   = 5432
+  user   = "postgres"
+  pass   = "root"
+  blacklist = ["migrations", "other"]
+  sslmode = "disable"
+  schema = "public"

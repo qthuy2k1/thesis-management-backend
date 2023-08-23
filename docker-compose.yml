@@ -1,0 +1,76 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:alpine
+    networks:
+      mynet:
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: thesis_management_classrooms
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+      - ./init-database.sql:/docker-entrypoint-initdb.d/init-database.sql
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      args:
+        - image_name=apigw
+    image: qthuy2k1/thesis-management-backend
+    networks:
+      mynet:
+    ports:
+      - "9091:9091"
+    links:
+      - classroom
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - postgres
+
+  classroom:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      args:
+        - image_name=classroom
+    image: qthuy2k1/thesis-management-backend-classroom
+    networks:
+      mynet:
+    depends_on:
+      - postgres
+    volumes:
+      - .:/usr/src/app
+    
+  apigw-client:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      args:
+        - image_name=apigw-client
+    image: qthuy2k1/thesis-management-backend-apigw-client
+    networks:
+      mynet:
+    depends_on:
+      - postgres
+    ports:
+      - "8081:8081"
+    volumes:
+      - .:/usr/src/app
+    links:
+      - api
+      - classroom
+
+volumes:
+  postgres-db:
+
+networks:
+  mynet:
