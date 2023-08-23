@@ -62,6 +62,24 @@ func (h *ClassroomHdl) GetClassroom(ctx context.Context, req *classroompb.GetCla
 	return resp, nil
 }
 
+func (h *ClassroomHdl) CheckClassroomExists(ctx context.Context, req *classroompb.CheckClassroomExistsRequest) (*classroompb.CheckClassroomExistsResponse, error) {
+	log.Println("calling check classroom exists...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	exists, err := h.Service.CheckClassroomExists(ctx, int(req.GetClassroomID()))
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	return &classroompb.CheckClassroomExistsResponse{
+		Exists: exists,
+	}, nil
+}
+
 func validateAndConvertClassroom(pbClassroom *classroompb.ClassroomInput) (service.ClassroomInputSvc, error) {
 	if err := pbClassroom.Validate(); err != nil {
 		return service.ClassroomInputSvc{}, err

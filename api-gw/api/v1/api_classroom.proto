@@ -21,6 +21,8 @@ service ClassroomService {
             get: "/api/classroom/{id}"
         };
     }
+
+    rpc CheckClassroomExists(CheckClassroomExistsRequest) returns (CheckClassroomExistsResponse){};
 }
 
 
@@ -60,4 +62,12 @@ message GetClassroomResponse {
     int32 statusCode = 1;
     string message = 2;
     ClassroomResponse classroom = 3;
+} 
+
+message CheckClassroomExistsRequest {
+    int32 classroomID = 1;
+}
+
+message CheckClassroomExistsResponse {
+    bool exists = 1;
 }

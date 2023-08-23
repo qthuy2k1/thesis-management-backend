@@ -109,6 +109,14 @@
         }
       }
     },
+    "v1CheckClassroomExistsResponse": {
+      "type": "object",
+      "properties": {
+        "exists": {
+          "type": "boolean"
+        }
+      }
+    },
     "v1ClassroomInput": {
       "type": "object",
       "properties": {

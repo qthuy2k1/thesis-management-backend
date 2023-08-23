@@ -37,7 +37,7 @@ proto-classroom:
 	@echo "--> Generating gRPC clients for classroom API"
 	@protoc -I ./classroom-svc/api/v1 \
 		--go_out ./classroom-svc/api/goclient/v1 --go_opt paths=source_relative \
-	  	--go-grpc_out ./classroom-svc/api/goclient --go-grpc_opt paths=source_relative \
+	  	--go-grpc_out ./classroom-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
 		--grpc-gateway_out ./classroom-svc/api/goclient/v1 \
 		--grpc-gateway_opt logtostderr=true \
 		--grpc-gateway_opt paths=source_relative \

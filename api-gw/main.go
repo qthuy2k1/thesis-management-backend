@@ -68,7 +68,7 @@ func main() {
 	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
 
 	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient))
-	pb.RegisterPostServiceServer(s, NewPostsService(postClient))
+	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
