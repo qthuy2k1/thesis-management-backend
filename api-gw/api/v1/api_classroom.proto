@@ -22,9 +22,27 @@ service ClassroomService {
         };
     }
 
+    rpc UpdateClassroom(UpdateClassroomRequest) returns (UpdateClassroomResponse){
+        option (google.api.http) = {
+            put: "/api/classroom/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteClassroom(DeleteClassroomRequest) returns (DeleteClassroomResponse){
+        option (google.api.http) = {
+            delete: "/api/classroom/{id}"
+        };
+    }
+
     rpc CheckClassroomExists(CheckClassroomExistsRequest) returns (CheckClassroomExistsResponse){};
 }
 
+
+message CommonClassroomResponse {
+    int32 statusCode = 1;
+    string message = 2;
+}
 
 // ====== POST ======
 message ClassroomInput {
@@ -48,8 +66,7 @@ message CreateClassroomRequest {
 }
 
 message CreateClassroomResponse {
-    int32 statusCode = 1; // statusCode = 1 -> success
-    string message = 2;
+    CommonClassroomResponse response = 1;
 }
 
 
@@ -59,9 +76,8 @@ message GetClassroomRequest {
 }
 
 message GetClassroomResponse {
-    int32 statusCode = 1;
-    string message = 2;
-    ClassroomResponse classroom = 3;
+    CommonClassroomResponse response = 1;
+    ClassroomResponse classroom = 2;
 } 
 
 message CheckClassroomExistsRequest {
@@ -71,3 +87,24 @@ message CheckClassroomExistsRequest {
 message CheckClassroomExistsResponse {
     bool exists = 1;
 }
+
+
+// ====== PUT ======
+message UpdateClassroomRequest {
+    int32 id = 1;
+    ClassroomInput classroom = 2;
+}
+
+message UpdateClassroomResponse {
+    CommonClassroomResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteClassroomRequest {
+    int32 id = 1;
+}
+
+message DeleteClassroomResponse {
+    CommonClassroomResponse response = 1;
+}
+

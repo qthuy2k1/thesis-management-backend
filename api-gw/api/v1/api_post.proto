@@ -21,7 +21,26 @@ service PostService {
             get: "/api/post/{id}"
         };
     }
+
+    rpc UpdatePost(UpdatePostRequest) returns (UpdatePostResponse){
+        option (google.api.http) = {
+            put: "/api/post/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeletePost(DeletePostRequest) returns (DeletePostResponse){
+        option (google.api.http) = {
+            delete: "/api/post/{id}"
+        };
+    }
 }
+
+message CommonPostResponse {
+    int32 statusCode = 1;
+    string message = 2;
+}
+
 
 // ====== POST ======
 message PostInput {
@@ -44,8 +63,7 @@ message CreatePostRequest {
 }
 
 message CreatePostResponse {
-    int32 statusCode = 1; // statusCode = 1 -> success
-    string message = 2;
+    CommonPostResponse response = 1;
 }
 
 
@@ -55,7 +73,27 @@ message GetPostRequest {
 }
 
 message GetPostResponse {
-    int32 statusCode = 1;
-    string message = 2;
-    PostResponse post = 3;
+    CommonPostResponse response = 1;
+    PostResponse post = 2;
 }
+
+// ====== PUT ======
+message UpdatePostRequest {
+    int32 id = 1;
+    PostInput post = 2;
+}
+
+message UpdatePostResponse {
+    CommonPostResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeletePostRequest {
+    int32 id = 1;
+}
+
+message DeletePostResponse {
+    CommonPostResponse response = 1;
+}
+
+

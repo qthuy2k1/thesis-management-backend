@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
@@ -29,8 +30,10 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 
 	if !exists.GetExists() {
 		return &pb.CreatePostResponse{
-			StatusCode: 400,
-			Message:    "Classroom does not exist",
+			Response: &pb.CommonPostResponse{
+				StatusCode: 400,
+				Message:    "Classroom does not exist",
+			},
 		}, nil
 	}
 
@@ -46,8 +49,10 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 	}
 
 	return &pb.CreatePostResponse{
-		StatusCode: res.StatusCode,
-		Message:    res.Message,
+		Response: &pb.CommonPostResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
 	}, nil
 }
 
@@ -58,8 +63,10 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 	}
 
 	return &pb.GetPostResponse{
-		StatusCode: res.StatusCode,
-		Message:    res.Message,
+		Response: &pb.CommonPostResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
 		Post: &pb.PostResponse{
 			Id:          res.GetPost().Id,
 			Title:       res.GetPost().Title,
@@ -71,13 +78,54 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 	}, nil
 }
 
-// func (u *postServiceGW) CheckClassroomExists(ctx context.Context, req *pb.CheckClassroomExistsRequest) (*pb.CheckClassroomExistsResponse, error) {
-// 	res, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: req.GetClassroomID()})
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*pb.UpdatePostResponse, error) {
+	log.Println(req)
+	exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: req.GetPost().ClassroomID})
+	if err != nil {
+		return nil, err
+	}
 
-// 	return &pb.CheckClassroomExistsResponse{
-// 		Exists: res.GetExists(),
-// 	}, nil
-// }
+	if !exists.GetExists() {
+		return &pb.UpdatePostResponse{
+			Response: &pb.CommonPostResponse{
+				StatusCode: 400,
+				Message:    "Classroom does not exist",
+			},
+		}, nil
+	}
+
+	res, err := u.postClient.UpdatePost(ctx, &postSvcV1.UpdatePostRequest{
+		Id: req.GetId(),
+		Post: &postSvcV1.PostInput{
+			Title:       req.GetPost().Title,
+			Content:     req.GetPost().Content,
+			ClassroomID: req.GetPost().ClassroomID,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UpdatePostResponse{
+		Response: &pb.CommonPostResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+	}, nil
+}
+
+func (u *postServiceGW) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*pb.DeletePostResponse, error) {
+	res, err := u.postClient.DeletePost(ctx, &postSvcV1.DeletePostRequest{
+		Id: req.GetId(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.DeletePostResponse{
+		Response: &pb.CommonPostResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+	}, nil
+}

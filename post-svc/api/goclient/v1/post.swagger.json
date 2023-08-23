@@ -15,71 +15,7 @@
   "produces": [
     "application/json"
   ],
-  "paths": {
-    "/api/post": {
-      "post": {
-        "operationId": "PostService_CreatePost",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1CreatePostResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1CreatePostRequest"
-            }
-          }
-        ],
-        "tags": [
-          "PostService"
-        ]
-      }
-    },
-    "/api/post/{id}": {
-      "get": {
-        "operationId": "PostService_GetPost",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetPostResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "tags": [
-          "PostService"
-        ]
-      }
-    }
-  },
+  "paths": {},
   "definitions": {
     "protobufAny": {
       "type": "object",
@@ -109,28 +45,7 @@
         }
       }
     },
-    "v1CreatePostRequest": {
-      "type": "object",
-      "properties": {
-        "post": {
-          "$ref": "#/definitions/v1PostInput"
-        }
-      }
-    },
-    "v1CreatePostResponse": {
-      "type": "object",
-      "properties": {
-        "statusCode": {
-          "type": "integer",
-          "format": "int32",
-          "title": "statusCode = 1 -\u003e success"
-        },
-        "message": {
-          "type": "string"
-        }
-      }
-    },
-    "v1GetPostResponse": {
+    "v1CommonPostResponse": {
       "type": "object",
       "properties": {
         "statusCode": {
@@ -139,6 +54,30 @@
         },
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "v1CreatePostResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonPostResponse"
+        }
+      }
+    },
+    "v1DeletePostResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonPostResponse"
+        }
+      }
+    },
+    "v1GetPostResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonPostResponse"
         },
         "post": {
           "$ref": "#/definitions/v1PostResponse"
@@ -185,6 +124,14 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1UpdatePostResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonPostResponse"
         }
       }
     }

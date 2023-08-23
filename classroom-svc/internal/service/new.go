@@ -13,6 +13,10 @@ type IClassroomSvc interface {
 	GetClassroom(ctx context.Context, id int) (ClassroomInputSvc, error)
 	// CheckClassroomExists checks if a classroom with given id exists in db
 	CheckClassroomExists(ctx context.Context, id int) (bool, error)
+	// UpdateClassroom updates the specified classroom by id
+	UpdateClassroom(ctx context.Context, id int, classroom ClassroomInputSvc) error
+	// DeleteClassroom deletes a classroom in db given by id
+	DeleteClassroom(ctx context.Context, id int) error
 }
 
 type ClassroomSvc struct {

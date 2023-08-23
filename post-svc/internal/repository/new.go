@@ -13,6 +13,10 @@ type IPostRepo interface {
 	GetPost(ctx context.Context, id int) (PostOutputRepo, error)
 	// CheckPostExists checks whether the specified post exists by name
 	IsPostExists(ctx context.Context, title string) (bool, error)
+	// UpdatePost updates the specified classroom by id
+	UpdatePost(ctx context.Context, id int, classroom PostInputRepo) error
+	// DeletePost deletes a classroom in db given by id
+	DeletePost(ctx context.Context, id int) error
 }
 
 type PostRepo struct {

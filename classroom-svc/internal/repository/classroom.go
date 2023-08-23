@@ -68,3 +68,56 @@ func (r *ClassroomRepo) IsClassroomExists(ctx context.Context, title string) (bo
 
 	return count > 0, nil
 }
+
+type ClassroomOutputRepo struct {
+	ID          int
+	Title       string
+	Description string
+	Status      string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+// UpdateClassroom updates the specified classroom by id
+func (r *ClassroomRepo) UpdateClassroom(ctx context.Context, id int, classroom ClassroomInputRepo) error {
+	// Prepare the SQL statement
+	stmt, err := r.Database.PrepareContext(ctx, "UPDATE classrooms SET title=$2, description=$3, status=$4, updated_at=$5 WHERE id=$1")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	// Execute the SQL statement and retrieve the ID of the updated classroom
+	result, err := stmt.ExecContext(ctx, id, classroom.Title, classroom.Description, classroom.Status, time.Now())
+	if err != nil {
+		return err
+	}
+
+	if rowsAff, _ := result.RowsAffected(); rowsAff == 0 {
+		return ErrClassroomNotFound
+	}
+
+	return nil
+}
+
+// DeleteClassroom deletes a classroom in db given by id
+func (r *ClassroomRepo) DeleteClassroom(ctx context.Context, id int) error {
+	// Prepare the SQL statement
+	stmt, err := r.Database.PrepareContext(ctx, "DELETE FROM classrooms WHERE id=$1")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	// Execute the SQL statement and retrieve the deleted classroom's details
+	result, err := stmt.ExecContext(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if rowsAff, _ := result.RowsAffected(); rowsAff == 0 {
+		return ErrClassroomNotFound
+	}
+
+	return nil
+}

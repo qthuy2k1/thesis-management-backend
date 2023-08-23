@@ -54,3 +54,31 @@ func (s *PostSvc) GetPost(ctx context.Context, id int) (PostInputSvc, error) {
 		UpdatedAt:   p.UpdatedAt,
 	}, nil
 }
+
+// UpdatePost updates the specified post by id
+func (s *PostSvc) UpdatePost(ctx context.Context, id int, post PostInputSvc) error {
+	if err := s.Repository.UpdatePost(ctx, id, repository.PostInputRepo{
+		Title:       post.Title,
+		Content:     post.Content,
+		ClassroomID: post.ClassroomID,
+	}); err != nil {
+		if errors.Is(err, repository.ErrPostNotFound) {
+			return ErrPostNotFound
+		}
+		return err
+	}
+
+	return nil
+}
+
+// DeletePost deletes a post in db given by id
+func (s *PostSvc) DeletePost(ctx context.Context, id int) error {
+	if err := s.Repository.DeletePost(ctx, id); err != nil {
+		if errors.Is(err, repository.ErrPostNotFound) {
+			return ErrPostNotFound
+		}
+		return err
+	}
+
+	return nil
+}

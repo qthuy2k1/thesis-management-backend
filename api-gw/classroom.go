@@ -31,8 +31,10 @@ func (u *classroomServiceGW) CreateClassroom(ctx context.Context, req *pb.Create
 	}
 
 	return &pb.CreateClassroomResponse{
-		StatusCode: res.StatusCode,
-		Message:    res.Message,
+		Response: &pb.CommonClassroomResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
 	}, nil
 }
 
@@ -43,8 +45,10 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 	}
 
 	return &pb.GetClassroomResponse{
-		StatusCode: res.StatusCode,
-		Message:    res.Message,
+		Response: &pb.CommonClassroomResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
 		Classroom: &pb.ClassroomResponse{
 			Id:          res.GetClassroom().Id,
 			Title:       res.GetClassroom().Title,
@@ -52,6 +56,43 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 			Status:      res.GetClassroom().Status,
 			CreatedAt:   res.GetClassroom().CreatedAt,
 			UpdatedAt:   res.GetClassroom().UpdatedAt,
+		},
+	}, nil
+}
+
+func (u *classroomServiceGW) UpdateClassroom(ctx context.Context, req *pb.UpdateClassroomRequest) (*pb.UpdateClassroomResponse, error) {
+	res, err := u.classroomClient.UpdateClassroom(ctx, &classroomSvcV1.UpdateClassroomRequest{
+		Id: req.GetId(),
+		Classroom: &classroomSvcV1.ClassroomInput{
+			Title:       req.GetClassroom().Title,
+			Description: req.GetClassroom().Description,
+			Status:      req.Classroom.GetStatus(),
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UpdateClassroomResponse{
+		Response: &pb.CommonClassroomResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+	}, nil
+}
+
+func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.DeleteClassroomRequest) (*pb.DeleteClassroomResponse, error) {
+	res, err := u.classroomClient.DeleteClassroom(ctx, &classroomSvcV1.DeleteClassroomRequest{
+		Id: req.GetId(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.DeleteClassroomResponse{
+		Response: &pb.CommonClassroomResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
 		},
 	}, nil
 }

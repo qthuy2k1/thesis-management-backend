@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"log"
 	"time"
-	// model "github.com/qthuy2k1/thesis-management-backend/post-svc/internal/model"
 )
 
 type PostInputRepo struct {
@@ -18,7 +18,7 @@ type PostInputRepo struct {
 
 // CreatePost creates a new post in db given by post model
 func (r *PostRepo) CreatePost(ctx context.Context, p PostInputRepo) error {
-	// check classroom exists
+	// check post exists
 	isExists, err := r.IsPostExists(ctx, p.Title)
 	if err != nil {
 		return err
@@ -36,8 +36,8 @@ func (r *PostRepo) CreatePost(ctx context.Context, p PostInputRepo) error {
 	defer stmt.Close()
 
 	// Execute the SQL statement and retrieve the generated ID
-	err = stmt.QueryRowContext(ctx, p.Title, p.Content, p.ClassroomID).Scan(&p.ID)
-	if err != nil {
+
+	if _, err := stmt.ExecContext(ctx, p.Title, p.Content, p.ClassroomID); err != nil {
 		return err
 	}
 
@@ -93,4 +93,48 @@ func (r *PostRepo) IsPostExists(ctx context.Context, title string) (bool, error)
 	}
 
 	return exists, nil
+}
+
+// UpdatePost updates the specified post by id
+func (r *PostRepo) UpdatePost(ctx context.Context, id int, post PostInputRepo) error {
+	log.Println(id, post)
+	// Prepare the SQL statement
+	stmt, err := r.Database.PrepareContext(ctx, "UPDATE posts SET title=$2, content=$3, classroom_id=$4, updated_at=$5 WHERE id=$1")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	// Execute the SQL statement and retrieve the ID of the updated post
+	result, err := stmt.ExecContext(ctx, id, post.Title, post.Content, post.ClassroomID, time.Now())
+	if err != nil {
+		return err
+	}
+
+	if rowsAff, _ := result.RowsAffected(); rowsAff == 0 {
+		return ErrPostNotFound
+	}
+
+	return nil
+}
+
+// DeletePost deletes a post in db given by id
+func (r *PostRepo) DeletePost(ctx context.Context, id int) error {
+	// Prepare the SQL statement
+	stmt, err := r.Database.PrepareContext(ctx, "DELETE FROM posts WHERE id=$1")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	// Execute the SQL statement and retrieve the deleted post's details
+	result, err := stmt.ExecContext(ctx, id)
+	if err != nil {
+		return err
+	}
+	if rowsAff, _ := result.RowsAffected(); rowsAff == 0 {
+		return ErrPostNotFound
+	}
+
+	return nil
 }

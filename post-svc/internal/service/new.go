@@ -11,6 +11,10 @@ type IPostSvc interface {
 	CreatePost(ctx context.Context, p PostInputSvc) error
 	// GetPost returns a post in db given by id
 	GetPost(ctx context.Context, id int) (PostInputSvc, error)
+	// UpdatePost updates the specified classroom by id
+	UpdatePost(ctx context.Context, id int, classroom PostInputSvc) error
+	// DeletePost deletes a classroom in db given by id
+	DeletePost(ctx context.Context, id int) error
 }
 
 type PostSvc struct {

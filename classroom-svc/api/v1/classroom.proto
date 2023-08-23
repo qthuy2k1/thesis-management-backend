@@ -3,26 +3,25 @@ syntax = "proto3";
 package classroom.v1;
 
 import "google/protobuf/timestamp.proto";
-import "google/api/annotations.proto";
-import "validate/validate.proto";
 
 option go_package="github.com/qthuy2k1/thesis_management_backend/classroom/api/v1";
 
 service ClassroomService {
-    rpc CreateClassroom(CreateClassroomRequest) returns (CreateClassroomResponse){
-        option (google.api.http) = {
-            post: "/api/classroom"
-            body: "*"
-        };
-    }
+    rpc CreateClassroom(CreateClassroomRequest) returns (CreateClassroomResponse){}
     
-    rpc GetClassroom(GetClassroomRequest) returns (GetClassroomResponse){
-        option (google.api.http) = {
-            get: "/api/classroom/{id}"
-        };
-    }
+    rpc GetClassroom(GetClassroomRequest) returns (GetClassroomResponse){}
+
+    rpc UpdateClassroom(UpdateClassroomRequest) returns (UpdateClassroomResponse){}
+
+    rpc DeleteClassroom(DeleteClassroomRequest) returns (DeleteClassroomResponse){}
 
     rpc CheckClassroomExists(CheckClassroomExistsRequest) returns (CheckClassroomExistsResponse){};
+}
+
+
+message CommonClassroomResponse {
+    int32 statusCode = 1;
+    string message = 2;
 }
 
 // ====== POST ======
@@ -31,6 +30,7 @@ message ClassroomInput {
     string description = 2;
     string status = 3;
 }
+
 
 message ClassroomResponse {
     int32 id = 1;
@@ -46,8 +46,7 @@ message CreateClassroomRequest {
 }
 
 message CreateClassroomResponse {
-    int32 statusCode = 1; // statusCode = 1 -> success
-    string message = 2;
+    CommonClassroomResponse response = 1;
 }
 
 
@@ -57,15 +56,37 @@ message GetClassroomRequest {
 }
 
 message GetClassroomResponse {
-    int32 statusCode = 1;
-    string message = 2;
-    ClassroomResponse classroom = 3;
-}
+    CommonClassroomResponse response = 1;
+    ClassroomResponse classroom = 2;
+} 
 
-message CheckClassroomExistsRequest{
+message CheckClassroomExistsRequest {
     int32 classroomID = 1;
 }
 
-message CheckClassroomExistsResponse{
+message CheckClassroomExistsResponse {
     bool exists = 1;
 }
+
+
+// ====== PUT ======
+message UpdateClassroomRequest {
+    int32 id = 1;
+    ClassroomInput classroom = 2;
+}
+
+message UpdateClassroomResponse {
+    CommonClassroomResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteClassroomRequest {
+    int32 id = 1;
+}
+
+message DeleteClassroomResponse {
+    CommonClassroomResponse response = 1;
+}
+
+
+
