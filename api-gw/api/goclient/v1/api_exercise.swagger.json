@@ -1,0 +1,434 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "api_exercise.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "ExerciseService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/exercise": {
+      "get": {
+        "operationId": "ExerciseService_GetExercises",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetExercisesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "titleSearch",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortColumn",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "isDesc",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "ExerciseService"
+        ]
+      },
+      "post": {
+        "operationId": "ExerciseService_CreateExercise",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateExerciseResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateExerciseRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ExerciseService"
+        ]
+      }
+    },
+    "/api/exercise/{id}": {
+      "get": {
+        "operationId": "ExerciseService_GetExercise",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetExerciseResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ExerciseService"
+        ]
+      },
+      "delete": {
+        "operationId": "ExerciseService_DeleteExercise",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteExerciseResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ExerciseService"
+        ]
+      },
+      "put": {
+        "operationId": "ExerciseService_UpdateExercise",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateExerciseResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "exercise": {
+                  "$ref": "#/definitions/v1ExerciseInput"
+                }
+              },
+              "title": "====== PUT ======"
+            }
+          }
+        ],
+        "tags": [
+          "ExerciseService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "typeDateTime": {
+      "type": "object",
+      "properties": {
+        "year": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Optional. Year of date. Must be from 1 to 9999, or 0 if specifying a\ndatetime without a year."
+        },
+        "month": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Required. Month of year. Must be from 1 to 12."
+        },
+        "day": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Required. Day of month. Must be from 1 to 31 and valid for the year and\nmonth."
+        },
+        "hours": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Required. Hours of day in 24 hour format. Should be from 0 to 23. An API\nmay choose to allow the value \"24:00:00\" for scenarios like business\nclosing time."
+        },
+        "minutes": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Required. Minutes of hour of day. Must be from 0 to 59."
+        },
+        "seconds": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Required. Seconds of minutes of the time. Must normally be from 0 to 59. An\nAPI may allow the value 60 if it allows leap-seconds."
+        },
+        "nanos": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Required. Fractions of seconds in nanoseconds. Must be from 0 to\n999,999,999."
+        },
+        "utcOffset": {
+          "type": "string",
+          "description": "UTC offset. Must be whole seconds, between -18 hours and +18 hours.\nFor example, a UTC offset of -4:00 would be represented as\n{ seconds: -14400 }."
+        },
+        "timeZone": {
+          "$ref": "#/definitions/typeTimeZone",
+          "description": "Time zone."
+        }
+      },
+      "description": "Represents civil time (or occasionally physical time).\n\nThis type can represent a civil time in one of a few possible ways:\n\n * When utc_offset is set and time_zone is unset: a civil time on a calendar\n   day with a particular offset from UTC.\n * When time_zone is set and utc_offset is unset: a civil time on a calendar\n   day in a particular time zone.\n * When neither time_zone nor utc_offset is set: a civil time on a calendar\n   day in local time.\n\nThe date is relative to the Proleptic Gregorian Calendar.\n\nIf year is 0, the DateTime is considered not to have a specific year. month\nand day must have valid, non-zero values.\n\nThis type may also be used to represent a physical time if all the date and\ntime fields are set and either case of the `time_offset` oneof is set.\nConsider using `Timestamp` message for physical time instead. If your use\ncase also would like to store the user's timezone, that can be done in\nanother field.\n\nThis type is more flexible than some applications may want. Make sure to\ndocument and validate your application's limitations."
+    },
+    "typeTimeZone": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "IANA Time Zone Database time zone, e.g. \"America/New_York\"."
+        },
+        "version": {
+          "type": "string",
+          "description": "Optional. IANA Time Zone Database version number, e.g. \"2019a\"."
+        }
+      },
+      "description": "Represents a time zone from the\n[IANA Time Zone Database](https://www.iana.org/time-zones)."
+    },
+    "v1CommonExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateExerciseRequest": {
+      "type": "object",
+      "properties": {
+        "exercise": {
+          "$ref": "#/definitions/v1ExerciseInput"
+        }
+      }
+    },
+    "v1CreateExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonExerciseResponse"
+        }
+      }
+    },
+    "v1DeleteExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonExerciseResponse"
+        }
+      }
+    },
+    "v1ExerciseInput": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "classroomID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "deadline": {
+          "$ref": "#/definitions/typeDateTime"
+        },
+        "score": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "====== exercise ======"
+    },
+    "v1ExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "title": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "classroomID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "deadline": {
+          "$ref": "#/definitions/typeDateTime",
+          "title": "google.protobuf.Timestamp deadline = 5 [(validate.rules).timestamp.required = true];"
+        },
+        "score": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1GetExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonExerciseResponse"
+        },
+        "exercise": {
+          "$ref": "#/definitions/v1ExerciseResponse"
+        }
+      }
+    },
+    "v1GetExercisesResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonExerciseResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "exercises": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ExerciseResponse"
+          }
+        }
+      }
+    },
+    "v1UpdateExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonExerciseResponse"
+        }
+      }
+    }
+  }
+}

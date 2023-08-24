@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package exercise.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/datetime.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/exercise/api/v1";
+
+service ExerciseService {
+    rpc CreateExercise(CreateExerciseRequest) returns (CreateExerciseResponse){}
+    
+    rpc GetExercise(GetExerciseRequest) returns (GetExerciseResponse){ }
+
+    rpc UpdateExercise(UpdateExerciseRequest) returns (UpdateExerciseResponse){}
+
+    rpc DeleteExercise(DeleteExerciseRequest) returns (DeleteExerciseResponse){ }
+
+    rpc GetExercises(GetExercisesRequest) returns (GetExercisesResponse) {}
+}
+
+message CommonExerciseResponse {
+    int32 statusCode = 1;
+    string message = 2;
+}
+
+
+// ====== exercise ======
+message ExerciseInput {
+    string title = 1;
+    string content = 2;
+    int32 classroomID = 3;
+    google.type.DateTime deadline = 4;
+    int32 score = 5;
+}
+
+message ExerciseResponse {
+    int32 id = 1;
+    string title = 2;
+    string content = 3;
+    int32 classroomID = 4;
+    google.type.DateTime deadline = 5;
+    int32 score = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+}
+
+message CreateExerciseRequest {
+   ExerciseInput exercise = 1;
+}
+
+message CreateExerciseResponse {
+    CommonExerciseResponse response = 1;
+}
+
+
+// ====== GET ======
+message GetExerciseRequest {
+    int32 id = 1;
+}
+
+message GetExerciseResponse {
+    CommonExerciseResponse response = 1;
+    ExerciseResponse exercise = 2;
+}
+
+// ====== PUT ======
+message UpdateExerciseRequest {
+    int32 id = 1;
+    ExerciseInput exercise = 2;
+}
+
+message UpdateExerciseResponse {
+    CommonExerciseResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteExerciseRequest {
+    int32 id = 1;
+}
+
+message DeleteExerciseResponse {
+    CommonExerciseResponse response = 1;
+}
+
+
+// ====== GET ALL ======
+message GetExercisesRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string titleSearch = 3;
+    string sortColumn = 4;
+    string sortOrder = 5;
+}
+
+message GetExercisesResponse {
+    CommonExerciseResponse response = 1;
+    int32 totalCount = 2;
+    repeated ExerciseResponse exercises = 3;
+}
+
+

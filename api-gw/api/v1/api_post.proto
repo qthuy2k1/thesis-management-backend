@@ -21,41 +21,98 @@ service PostService {
             get: "/api/post/{id}"
         };
     }
+
+    rpc UpdatePost(UpdatePostRequest) returns (UpdatePostResponse){
+        option (google.api.http) = {
+            put: "/api/post/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeletePost(DeletePostRequest) returns (DeletePostResponse){
+        option (google.api.http) = {
+            delete: "/api/post/{id}"
+        };
+    }
+
+    rpc GetPosts(GetPostsRequest) returns (GetPostsResponse) {
+        option (google.api.http) = {
+            get: "/api/post"
+        };
+    }
 }
+
+message CommonPostResponse {
+    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    string message = 2 [(validate.rules).string = {min_len: 2}];
+}
+
 
 // ====== POST ======
 message PostInput {
-    string title = 1;
-    string content = 2;
-    int32 classroomID = 3;
+    string title = 1 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string content = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    int32 classroomID = 3 [(validate.rules).int32.gte = 1];
 }
 
 message PostResponse {
-    int32 id = 1;
-    string title = 2;
-    string content = 3;
-    int32 classroomID = 4;
-    google.protobuf.Timestamp created_at = 5;
-    google.protobuf.Timestamp updated_at = 6;
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string content = 3 [(validate.rules).string = {min_len: 2}];
+    int32 classroomID = 4 [(validate.rules).int32.gte = 1];
+    google.protobuf.Timestamp created_at = 5 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp updated_at = 6 [(validate.rules).timestamp.required = true];
 }
 
 message CreatePostRequest {
-   PostInput post = 1;
+   PostInput post = 1 [(validate.rules).message = {required: true}];
 }
 
 message CreatePostResponse {
-    int32 statusCode = 1; // statusCode = 1 -> success
-    string message = 2;
+    CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
 }
 
 
 // ====== GET ======
 message GetPostRequest {
-    int32 id = 1;
+    int32 id = 1 [(validate.rules).int32.gte = 1];
 }
 
 message GetPostResponse {
-    int32 statusCode = 1;
-    string message = 2;
-    PostResponse post = 3;
+    CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
+    PostResponse post = 2 [(validate.rules).message = {required: true}];
+}
+
+// ====== PUT ======
+message UpdatePostRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    PostInput post = 2 [(validate.rules).message = {required: true}];
+}
+
+message UpdatePostResponse {
+    CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== DELETE ======
+message DeletePostRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+}
+
+message DeletePostResponse {
+    CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== GET ALL ======
+message GetPostsRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string titleSearch = 3;
+    string sortColumn = 4;
+    bool isDesc = 5;
+}
+
+message GetPostsResponse {
+    CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
+    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    repeated PostResponse posts = 3;
 }

@@ -3,25 +3,26 @@ syntax = "proto3";
 package post.v1;
 
 import "google/protobuf/timestamp.proto";
-import "google/api/annotations.proto";
-import "validate/validate.proto";
 
 option go_package="github.com/qthuy2k1/thesis_management_backend/post/api/v1";
 
 service PostService {
-    rpc CreatePost(CreatePostRequest) returns (CreatePostResponse){
-        option (google.api.http) = {
-            post: "/api/post"
-            body: "*"
-        };
-    }
+    rpc CreatePost(CreatePostRequest) returns (CreatePostResponse){}
     
-    rpc GetPost(GetPostRequest) returns (GetPostResponse){
-        option (google.api.http) = {
-            get: "/api/post/{id}"
-        };
-    }
+    rpc GetPost(GetPostRequest) returns (GetPostResponse){ }
+
+    rpc UpdatePost(UpdatePostRequest) returns (UpdatePostResponse){}
+
+    rpc DeletePost(DeletePostRequest) returns (DeletePostResponse){ }
+
+    rpc GetPosts(GetPostsRequest) returns (GetPostsResponse) {}
 }
+
+message CommonPostResponse {
+    int32 statusCode = 1;
+    string message = 2;
+}
+
 
 // ====== POST ======
 message PostInput {
@@ -44,8 +45,7 @@ message CreatePostRequest {
 }
 
 message CreatePostResponse {
-    int32 statusCode = 1; // statusCode = 1 -> success
-    string message = 2;
+    CommonPostResponse response = 1;
 }
 
 
@@ -55,7 +55,42 @@ message GetPostRequest {
 }
 
 message GetPostResponse {
-    int32 statusCode = 1;
-    string message = 2;
-    PostResponse post = 3;
+    CommonPostResponse response = 1;
+    PostResponse post = 2;
 }
+
+// ====== PUT ======
+message UpdatePostRequest {
+    int32 id = 1;
+    PostInput post = 2;
+}
+
+message UpdatePostResponse {
+    CommonPostResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeletePostRequest {
+    int32 id = 1;
+}
+
+message DeletePostResponse {
+    CommonPostResponse response = 1;
+}
+
+
+// ====== GET ALL ======
+message GetPostsRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string titleSearch = 3;
+    string sortColumn = 4;
+    string sortOrder = 5;
+}
+
+message GetPostsResponse {
+    CommonPostResponse response = 1;
+    int32 totalCount = 2;
+    repeated PostResponse posts = 3;
+}
+

@@ -15,71 +15,7 @@
   "produces": [
     "application/json"
   ],
-  "paths": {
-    "/api/classroom": {
-      "post": {
-        "operationId": "ClassroomService_CreateClassroom",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1CreateClassroomResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1CreateClassroomRequest"
-            }
-          }
-        ],
-        "tags": [
-          "ClassroomService"
-        ]
-      }
-    },
-    "/api/classroom/{id}": {
-      "get": {
-        "operationId": "ClassroomService_GetClassroom",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetClassroomResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "tags": [
-          "ClassroomService"
-        ]
-      }
-    }
-  },
+  "paths": {},
   "definitions": {
     "protobufAny": {
       "type": "object",
@@ -158,28 +94,7 @@
         }
       }
     },
-    "v1CreateClassroomRequest": {
-      "type": "object",
-      "properties": {
-        "classroom": {
-          "$ref": "#/definitions/v1ClassroomInput"
-        }
-      }
-    },
-    "v1CreateClassroomResponse": {
-      "type": "object",
-      "properties": {
-        "statusCode": {
-          "type": "integer",
-          "format": "int32",
-          "title": "statusCode = 1 -\u003e success"
-        },
-        "message": {
-          "type": "string"
-        }
-      }
-    },
-    "v1GetClassroomResponse": {
+    "v1CommonClassroomResponse": {
       "type": "object",
       "properties": {
         "statusCode": {
@@ -188,9 +103,60 @@
         },
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "v1CreateClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonClassroomResponse"
+        }
+      }
+    },
+    "v1DeleteClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonClassroomResponse"
+        }
+      }
+    },
+    "v1GetClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonClassroomResponse"
         },
         "classroom": {
           "$ref": "#/definitions/v1ClassroomResponse"
+        }
+      }
+    },
+    "v1GetClassroomsResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonClassroomResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "classrooms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ClassroomResponse"
+          }
+        }
+      }
+    },
+    "v1UpdateClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonClassroomResponse"
         }
       }
     }

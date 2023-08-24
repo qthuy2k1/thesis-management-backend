@@ -25,8 +25,10 @@ func (h *ClassroomHdl) CreateClassroom(ctx context.Context, req *classroompb.Cre
 	}
 
 	resp := &classroompb.CreateClassroomResponse{
-		StatusCode: 201,
-		Message:    "Created",
+		Response: &classroompb.CommonClassroomResponse{
+			StatusCode: 200,
+			Message:    "OK",
+		},
 	}
 
 	return resp, nil
@@ -55,9 +57,11 @@ func (h *ClassroomHdl) GetClassroom(ctx context.Context, req *classroompb.GetCla
 	}
 
 	resp := &classroompb.GetClassroomResponse{
-		StatusCode: 200,
-		Message:    "OK",
-		Classroom:  &clrResp,
+		Response: &classroompb.CommonClassroomResponse{
+			StatusCode: 200,
+			Message:    "OK",
+		},
+		Classroom: &clrResp,
 	}
 	return resp, nil
 }
@@ -77,6 +81,99 @@ func (h *ClassroomHdl) CheckClassroomExists(ctx context.Context, req *classroomp
 
 	return &classroompb.CheckClassroomExistsResponse{
 		Exists: exists,
+	}, nil
+}
+
+func (c *ClassroomHdl) UpdateClassroom(ctx context.Context, req *classroompb.UpdateClassroomRequest) (*classroompb.UpdateClassroomResponse, error) {
+	log.Println("calling update classroom...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	clr, err := validateAndConvertClassroom(req.Classroom)
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	if err := c.Service.UpdateClassroom(ctx, int(req.GetId()), service.ClassroomInputSvc{
+		Title:       clr.Title,
+		Description: clr.Description,
+		Status:      clr.Status,
+	}); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	return &classroompb.UpdateClassroomResponse{
+		Response: &classroompb.CommonClassroomResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+	}, nil
+}
+
+func (h *ClassroomHdl) DeleteClassroom(ctx context.Context, req *classroompb.DeleteClassroomRequest) (*classroompb.DeleteClassroomResponse, error) {
+	log.Println("calling delete classroom...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	if err := h.Service.DeleteClassroom(ctx, int(req.GetId())); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	return &classroompb.DeleteClassroomResponse{
+		Response: &classroompb.CommonClassroomResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+	}, nil
+}
+
+func (h *ClassroomHdl) GetClassrooms(ctx context.Context, req *classroompb.GetClassroomsRequest) (*classroompb.GetClassroomsResponse, error) {
+	log.Println("calling get all classrooms...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	filter := service.ClassroomFilterSvc{
+		Limit:       int(req.GetLimit()),
+		Page:        int(req.GetPage()),
+		TitleSearch: req.GetTitleSearch(),
+		SortColumn:  req.GetSortColumn(),
+		SortOrder:   req.GetSortOrder(),
+	}
+
+	clrs, count, err := h.Service.GetClassrooms(ctx, filter)
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var clrsResp []*classroompb.ClassroomResponse
+	for _, c := range clrs {
+		clrsResp = append(clrsResp, &classroompb.ClassroomResponse{
+			Id:          int32(c.ID),
+			Title:       c.Title,
+			Description: c.Description,
+			Status:      c.Status,
+			CreatedAt:   timestamppb.New(c.CreatedAt),
+			UpdatedAt:   timestamppb.New(c.UpdatedAt),
+		})
+	}
+
+	return &classroompb.GetClassroomsResponse{
+		Response: &classroompb.CommonClassroomResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Classrooms: clrsResp,
+		TotalCount: int32(count),
 	}, nil
 }
 

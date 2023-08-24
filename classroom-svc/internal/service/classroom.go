@@ -48,7 +48,7 @@ func (s *ClassroomSvc) GetClassroom(ctx context.Context, id int) (ClassroomInput
 	return ClassroomInputSvc{
 		ID:          clr.ID,
 		Title:       clr.Title,
-		Description: clr.Description.String,
+		Description: clr.Description,
 		Status:      clr.Status,
 		CreatedAt:   clr.CreatedAt,
 		UpdatedAt:   clr.UpdatedAt,
@@ -65,4 +65,77 @@ func (s *ClassroomSvc) CheckClassroomExists(ctx context.Context, id int) (bool, 
 	}
 
 	return true, nil
+}
+
+// UpdateClassroom updates the specified classroom by id
+func (s *ClassroomSvc) UpdateClassroom(ctx context.Context, id int, classroom ClassroomInputSvc) error {
+	if err := s.Repository.UpdateClassroom(ctx, id, repository.ClassroomInputRepo{
+		Title:       classroom.Title,
+		Description: classroom.Description,
+		Status:      classroom.Status,
+	}); err != nil {
+		if errors.Is(err, repository.ErrClassroomNotFound) {
+			return ErrClassroomNotFound
+		}
+		return err
+	}
+
+	return nil
+}
+
+// DeleteClassroom deletes a classroom in db given by id
+func (s *ClassroomSvc) DeleteClassroom(ctx context.Context, id int) error {
+	if err := s.Repository.DeleteClassroom(ctx, id); err != nil {
+		if errors.Is(err, repository.ErrClassroomNotFound) {
+			return ErrClassroomNotFound
+		}
+		return err
+	}
+
+	return nil
+}
+
+type ClassroomOutputSvc struct {
+	ID          int
+	Title       string
+	Description string
+	Status      string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+type ClassroomFilterSvc struct {
+	Limit       int
+	Page        int
+	TitleSearch string
+	SortColumn  string
+	SortOrder   string
+}
+
+// GetClassroom returns a list of classrooms in db with filter
+func (s *ClassroomSvc) GetClassrooms(ctx context.Context, filter ClassroomFilterSvc) ([]ClassroomOutputSvc, int, error) {
+	clrsRepo, count, err := s.Repository.GetClassrooms(ctx, repository.ClassroomFilterRepo{
+		Limit:       filter.Limit,
+		Page:        filter.Page,
+		TitleSearch: filter.TitleSearch,
+		SortColumn:  filter.SortColumn,
+		SortOrder:   filter.SortOrder,
+	})
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var clrsSvc []ClassroomOutputSvc
+	for _, c := range clrsRepo {
+		clrsSvc = append(clrsSvc, ClassroomOutputSvc{
+			ID:          c.ID,
+			Title:       c.Title,
+			Description: c.Description,
+			Status:      c.Status,
+			CreatedAt:   c.CreatedAt,
+			UpdatedAt:   c.UpdatedAt,
+		})
+	}
+
+	return clrsSvc, count, nil
 }

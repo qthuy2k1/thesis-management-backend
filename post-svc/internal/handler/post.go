@@ -25,8 +25,10 @@ func (h *PostHdl) CreatePost(ctx context.Context, req *postpb.CreatePostRequest)
 	}
 
 	resp := &postpb.CreatePostResponse{
-		StatusCode: 201,
-		Message:    "Created",
+		Response: &postpb.CommonPostResponse{
+			StatusCode: 201,
+			Message:    "Created",
+		},
 	}
 
 	return resp, nil
@@ -46,18 +48,115 @@ func (h *PostHdl) GetPost(ctx context.Context, req *postpb.GetPostRequest) (*pos
 	}
 
 	pResp := postpb.PostResponse{
-		Id:        int32(p.ID),
-		Title:     p.Title,
-		CreatedAt: timestamppb.New(p.CreatedAt),
-		UpdatedAt: timestamppb.New(p.UpdatedAt),
+		Id:          int32(p.ID),
+		Title:       p.Title,
+		Content:     p.Content,
+		ClassroomID: int32(p.ClassroomID),
+		CreatedAt:   timestamppb.New(p.CreatedAt),
+		UpdatedAt:   timestamppb.New(p.UpdatedAt),
 	}
 
 	resp := &postpb.GetPostResponse{
-		StatusCode: 200,
-		Message:    "OK",
-		Post:       &pResp,
+		Response: &postpb.CommonPostResponse{
+			StatusCode: 200,
+			Message:    "OK",
+		},
+		Post: &pResp,
 	}
 	return resp, nil
+}
+
+func (c *PostHdl) UpdatePost(ctx context.Context, req *postpb.UpdatePostRequest) (*postpb.UpdatePostResponse, error) {
+	log.Println("calling update post...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	p, err := validateAndConvertPost(req.Post)
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	if err := c.Service.UpdatePost(ctx, int(req.GetId()), service.PostInputSvc{
+		Title:       p.Title,
+		Content:     p.Content,
+		ClassroomID: p.ClassroomID,
+	}); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	return &postpb.UpdatePostResponse{
+		Response: &postpb.CommonPostResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+	}, nil
+}
+
+func (h *PostHdl) DeletePost(ctx context.Context, req *postpb.DeletePostRequest) (*postpb.DeletePostResponse, error) {
+	log.Println("calling delete post...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	if err := h.Service.DeletePost(ctx, int(req.GetId())); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	return &postpb.DeletePostResponse{
+		Response: &postpb.CommonPostResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+	}, nil
+}
+
+func (h *PostHdl) GetPosts(ctx context.Context, req *postpb.GetPostsRequest) (*postpb.GetPostsResponse, error) {
+	log.Println("calling get all posts...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	filter := service.PostFilterSvc{
+		Limit:       int(req.GetLimit()),
+		Page:        int(req.GetPage()),
+		TitleSearch: req.GetTitleSearch(),
+		SortColumn:  req.GetSortColumn(),
+		SortOrder:   req.GetSortOrder(),
+	}
+
+	ps, count, err := h.Service.GetPosts(ctx, filter)
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var psResp []*postpb.PostResponse
+	for _, p := range ps {
+		psResp = append(psResp, &postpb.PostResponse{
+			Id:          int32(p.ID),
+			Title:       p.Title,
+			Content:     p.Content,
+			ClassroomID: int32(p.ClassroomID),
+			CreatedAt:   timestamppb.New(p.CreatedAt),
+			UpdatedAt:   timestamppb.New(p.UpdatedAt),
+		})
+	}
+
+	return &postpb.GetPostsResponse{
+		Response: &postpb.CommonPostResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Posts:      psResp,
+		TotalCount: int32(count),
+	}, nil
 }
 
 func validateAndConvertPost(pbPost *postpb.PostInput) (service.PostInputSvc, error) {
@@ -66,8 +165,8 @@ func validateAndConvertPost(pbPost *postpb.PostInput) (service.PostInputSvc, err
 	}
 
 	return service.PostInputSvc{
-		Title: pbPost.Title,
-		// Description: pbPost.Description,
-		// Status:      pbPost.Status,
+		Title:       pbPost.Title,
+		Content:     pbPost.Content,
+		ClassroomID: int(pbPost.ClassroomID),
 	}, nil
 }
