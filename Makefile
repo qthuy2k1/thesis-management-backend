@@ -30,7 +30,7 @@ proto-api:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./api-gw/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 api_classroom.proto api_post.proto
+		 api_classroom.proto api_post.proto api_exercise.proto
 	@echo "Done"
 
 proto-classroom:
@@ -65,7 +65,26 @@ proto-post:
 		 post.proto
 	@echo "Done"
 
-proto: proto-api proto-classroom proto-post
+proto-exercise:
+	@echo "--> Generating gRPC clients for exercise API"
+	@protoc -I ./exercise-svc/api/v1 \
+		--go_out ./exercise-svc/api/goclient/v1 --go_opt paths=source_relative \
+	  	--go-grpc_out ./exercise-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+		--grpc-gateway_out ./exercise-svc/api/goclient/v1 \
+		--grpc-gateway_opt logtostderr=true \
+		--grpc-gateway_opt paths=source_relative \
+		--grpc-gateway_opt generate_unbound_methods=true \
+  		--openapiv2_out ./exercise-svc/api/goclient/v1 \
+    	--openapiv2_opt logtostderr=true \
+		--validate_out="lang=go,paths=source_relative:./exercise-svc/api/goclient/v1" \
+		--experimental_allow_proto3_optional \
+		 exercise.proto
+	@echo "Done"
+
+proto: proto-api proto-classroom proto-post proto-exercise
+
+clean:
+	rm -rf ./out
 
 build:
 	mkdir -p ./out
@@ -73,8 +92,27 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/apigw-client ./apigw-client
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/classroom ./classroom-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/post ./post-svc
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/exercise ./exercise-svc
 
-run: build
+run: clean build
 	@echo "--> Starting servers"
 	docker-compose build
 	docker-compose up
+
+down:
+	docker-compose down
+	@echo "--> Server stopped"
+
+docker-tag:
+	docker tag qthuy2k1/thesis-management-backend:latest qthuy2k1/thesis-management-backend:latest
+	docker tag qthuy2k1/thesis-management-backend-apigw-client:latest qthuy2k1/thesis-management-backend-apigw-client:latest
+	docker tag qthuy2k1/thesis-management-backend-classroom:latest qthuy2k1/thesis-management-backend-classroom:latest
+	docker tag qthuy2k1/thesis-management-backend-post:latest qthuy2k1/thesis-management-backend-post:latest
+	docker tag qthuy2k1/thesis-management-backend-exercise:latest qthuy2k1/thesis-management-backend-exercise:latest
+
+docker-push:
+	docker push qthuy2k1/thesis-management-backend:latest
+	docker push qthuy2k1/thesis-management-backend-apigw-client:latest
+	docker push qthuy2k1/thesis-management-backend-classroom:latest
+	docker push qthuy2k1/thesis-management-backend-post:latest
+	docker push qthuy2k1/thesis-management-backend-exercise:latest

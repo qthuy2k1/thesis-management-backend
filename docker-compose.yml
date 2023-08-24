@@ -35,6 +35,24 @@ services:
       - ./script/post/init-database-post.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
+      - "host.docker.internal:host-gateway" 
+
+  exercise-db:
+    image: postgres:alpine
+    container_name: exercise-db
+    networks:
+      mynet:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: thesis_management_exercises
+    ports:
+      - "5435:5432"
+    volumes:
+      - exercise-db:/var/lib/postgresql/data
+      - ./script/exercise/init-database-exercise.sql:/docker-entrypoint-initdb.d/init-database.sql
+    restart: always
+    extra_hosts:
       - "host.docker.internal:host-gateway"
 
   api:
@@ -56,6 +74,7 @@ services:
     depends_on:
       - classroom-db
       - post-db
+      - exercise-db
 
   classroom:
     env_file:
@@ -88,6 +107,22 @@ services:
       - post-db
     volumes:
       - .:/usr/src/app
+
+  exercise:
+    env_file:
+      - .env
+    build:
+      dockerfile: Dockerfile
+      context: .
+      args:
+        - image_name=exercise
+    image: qthuy2k1/thesis-management-backend-exercise
+    networks:
+      mynet:
+    depends_on:
+      - exercise-db
+    volumes:
+      - .:/usr/src/app
     
   apigw-client:
     build:
@@ -112,6 +147,7 @@ services:
 volumes:
   classroom-db:
   post-db:
+  exercise-db:
 
 networks:
   mynet:

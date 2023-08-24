@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
@@ -95,4 +96,94 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 			Message:    res.GetResponse().Message,
 		},
 	}, nil
+}
+
+func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClassroomsRequest) (*pb.GetClassroomsResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	filter := &classroomSvcV1.GetClassroomsRequest{}
+
+	if req.GetLimit() > 0 {
+		filter.Limit = req.GetLimit()
+	} else {
+		filter.Limit = 5
+	}
+
+	if req.GetPage() > 0 {
+		filter.Page = req.GetPage()
+	} else {
+		filter.Page = 1
+	}
+
+	titleSearchTrim := strings.TrimSpace(req.GetTitleSearch())
+	if len(titleSearchTrim) > 0 {
+		filter.TitleSearch = titleSearchTrim
+	}
+
+	sortColumnTrim := strings.TrimSpace(req.GetSortColumn())
+	if len(sortColumnTrim) > 0 {
+		columns := map[string]string{
+			"id":          "id",
+			"title":       "title",
+			"description": "description",
+			"status":      "status",
+			"created_at":  "created_at",
+			"updated_at":  "updated_at",
+		}
+		if stringInMap(sortColumnTrim, columns) {
+			filter.SortColumn = sortColumnTrim
+		} else {
+			filter.SortColumn = "id"
+		}
+	} else {
+		filter.SortColumn = "id"
+	}
+
+	sortOrder := "asc"
+	if req.IsDesc {
+		sortOrder = "desc"
+	}
+
+	res, err := u.classroomClient.GetClassrooms(ctx, &classroomSvcV1.GetClassroomsRequest{
+		Limit:       filter.Limit,
+		Page:        filter.Page,
+		TitleSearch: filter.TitleSearch,
+		SortColumn:  filter.SortColumn,
+		SortOrder:   sortOrder,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var classrooms []*pb.ClassroomResponse
+	for _, c := range res.GetClassrooms() {
+		classrooms = append(classrooms, &pb.ClassroomResponse{
+			Id:          c.Id,
+			Title:       c.Title,
+			Description: c.Description,
+			Status:      c.Status,
+			CreatedAt:   c.CreatedAt,
+			UpdatedAt:   c.UpdatedAt,
+		})
+	}
+
+	return &pb.GetClassroomsResponse{
+		Response: &pb.CommonClassroomResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+		TotalCount: res.GetTotalCount(),
+		Classrooms: classrooms,
+	}, nil
+}
+
+func stringInMap(s string, m map[string]string) bool {
+	for _, v := range m {
+		if v == s {
+			return true
+		}
+	}
+	return false
 }

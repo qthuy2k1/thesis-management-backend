@@ -1649,3 +1649,282 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DeleteClassroomResponseValidationError{}
+
+// Validate checks the field values on GetClassroomsRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetClassroomsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetClassroomsRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetClassroomsRequestMultiError, or nil if none found.
+func (m *GetClassroomsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetClassroomsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Page
+
+	// no validation rules for Limit
+
+	// no validation rules for TitleSearch
+
+	// no validation rules for SortColumn
+
+	// no validation rules for SortOrder
+
+	if len(errors) > 0 {
+		return GetClassroomsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetClassroomsRequestMultiError is an error wrapping multiple validation
+// errors returned by GetClassroomsRequest.ValidateAll() if the designated
+// constraints aren't met.
+type GetClassroomsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetClassroomsRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetClassroomsRequestMultiError) AllErrors() []error { return m }
+
+// GetClassroomsRequestValidationError is the validation error returned by
+// GetClassroomsRequest.Validate if the designated constraints aren't met.
+type GetClassroomsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetClassroomsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetClassroomsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetClassroomsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetClassroomsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetClassroomsRequestValidationError) ErrorName() string {
+	return "GetClassroomsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetClassroomsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetClassroomsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetClassroomsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetClassroomsRequestValidationError{}
+
+// Validate checks the field values on GetClassroomsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetClassroomsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetClassroomsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetClassroomsResponseMultiError, or nil if none found.
+func (m *GetClassroomsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetClassroomsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetResponse()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetClassroomsResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetClassroomsResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetClassroomsResponseValidationError{
+				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for TotalCount
+
+	for idx, item := range m.GetClassrooms() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetClassroomsResponseValidationError{
+						field:  fmt.Sprintf("Classrooms[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetClassroomsResponseValidationError{
+						field:  fmt.Sprintf("Classrooms[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetClassroomsResponseValidationError{
+					field:  fmt.Sprintf("Classrooms[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetClassroomsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetClassroomsResponseMultiError is an error wrapping multiple validation
+// errors returned by GetClassroomsResponse.ValidateAll() if the designated
+// constraints aren't met.
+type GetClassroomsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetClassroomsResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetClassroomsResponseMultiError) AllErrors() []error { return m }
+
+// GetClassroomsResponseValidationError is the validation error returned by
+// GetClassroomsResponse.Validate if the designated constraints aren't met.
+type GetClassroomsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetClassroomsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetClassroomsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetClassroomsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetClassroomsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetClassroomsResponseValidationError) ErrorName() string {
+	return "GetClassroomsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetClassroomsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetClassroomsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetClassroomsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetClassroomsResponseValidationError{}

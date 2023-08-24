@@ -18,6 +18,6 @@ func Initialize(dbUrl string) (*sql.DB, error) {
 		return db, err
 	}
 
-	log.Println("Database connection etablished")
+	log.Println("Posts database connection etablished")
 	return db, nil
 }

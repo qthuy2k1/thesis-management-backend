@@ -15,6 +15,8 @@ type IPostSvc interface {
 	UpdatePost(ctx context.Context, id int, classroom PostInputSvc) error
 	// DeletePost deletes a classroom in db given by id
 	DeletePost(ctx context.Context, id int) error
+	// GetPosts returns a list of posts in db with filter
+	GetPosts(ctx context.Context, filter PostFilterSvc) ([]PostOutputSvc, int, error)
 }
 
 type PostSvc struct {

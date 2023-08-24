@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
@@ -127,5 +128,86 @@ func (u *postServiceGW) DeletePost(ctx context.Context, req *pb.DeletePostReques
 			StatusCode: res.GetResponse().StatusCode,
 			Message:    res.GetResponse().Message,
 		},
+	}, nil
+}
+
+func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (*pb.GetPostsResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	filter := &postSvcV1.GetPostsRequest{}
+
+	if req.GetLimit() > 0 {
+		filter.Limit = req.GetLimit()
+	} else {
+		filter.Limit = 5
+	}
+
+	if req.GetPage() > 0 {
+		filter.Page = req.GetPage()
+	} else {
+		filter.Page = 1
+	}
+
+	titleSearchTrim := strings.TrimSpace(req.GetTitleSearch())
+	if len(titleSearchTrim) > 0 {
+		filter.TitleSearch = titleSearchTrim
+	}
+
+	sortColumnTrim := strings.TrimSpace(req.GetSortColumn())
+	if len(sortColumnTrim) > 0 {
+		columns := map[string]string{
+			"id":           "id",
+			"title":        "title",
+			"content":      "content",
+			"classroom_id": "classroom_id",
+			"created_at":   "created_at",
+			"updated_at":   "updated_at",
+		}
+		if stringInMap(sortColumnTrim, columns) {
+			filter.SortColumn = sortColumnTrim
+		} else {
+			filter.SortColumn = "id"
+		}
+	} else {
+		filter.SortColumn = "id"
+	}
+
+	sortOrder := "asc"
+	if req.IsDesc {
+		sortOrder = "desc"
+	}
+
+	res, err := u.postClient.GetPosts(ctx, &postSvcV1.GetPostsRequest{
+		Limit:       filter.Limit,
+		Page:        filter.Page,
+		TitleSearch: filter.TitleSearch,
+		SortColumn:  filter.SortColumn,
+		SortOrder:   sortOrder,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var posts []*pb.PostResponse
+	for _, p := range res.GetPosts() {
+		posts = append(posts, &pb.PostResponse{
+			Id:          p.Id,
+			Title:       p.Title,
+			Content:     p.Content,
+			ClassroomID: p.ClassroomID,
+			CreatedAt:   p.CreatedAt,
+			UpdatedAt:   p.UpdatedAt,
+		})
+	}
+
+	return &pb.GetPostsResponse{
+		Response: &pb.CommonPostResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+		TotalCount: res.GetTotalCount(),
+		Posts:      posts,
 	}, nil
 }

@@ -23,6 +23,7 @@ const (
 	ClassroomService_GetClassroom_FullMethodName         = "/classroom.v1.ClassroomService/GetClassroom"
 	ClassroomService_UpdateClassroom_FullMethodName      = "/classroom.v1.ClassroomService/UpdateClassroom"
 	ClassroomService_DeleteClassroom_FullMethodName      = "/classroom.v1.ClassroomService/DeleteClassroom"
+	ClassroomService_GetClassrooms_FullMethodName        = "/classroom.v1.ClassroomService/GetClassrooms"
 	ClassroomService_CheckClassroomExists_FullMethodName = "/classroom.v1.ClassroomService/CheckClassroomExists"
 )
 
@@ -34,6 +35,7 @@ type ClassroomServiceClient interface {
 	GetClassroom(ctx context.Context, in *GetClassroomRequest, opts ...grpc.CallOption) (*GetClassroomResponse, error)
 	UpdateClassroom(ctx context.Context, in *UpdateClassroomRequest, opts ...grpc.CallOption) (*UpdateClassroomResponse, error)
 	DeleteClassroom(ctx context.Context, in *DeleteClassroomRequest, opts ...grpc.CallOption) (*DeleteClassroomResponse, error)
+	GetClassrooms(ctx context.Context, in *GetClassroomsRequest, opts ...grpc.CallOption) (*GetClassroomsResponse, error)
 	CheckClassroomExists(ctx context.Context, in *CheckClassroomExistsRequest, opts ...grpc.CallOption) (*CheckClassroomExistsResponse, error)
 }
 
@@ -81,6 +83,15 @@ func (c *classroomServiceClient) DeleteClassroom(ctx context.Context, in *Delete
 	return out, nil
 }
 
+func (c *classroomServiceClient) GetClassrooms(ctx context.Context, in *GetClassroomsRequest, opts ...grpc.CallOption) (*GetClassroomsResponse, error) {
+	out := new(GetClassroomsResponse)
+	err := c.cc.Invoke(ctx, ClassroomService_GetClassrooms_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *classroomServiceClient) CheckClassroomExists(ctx context.Context, in *CheckClassroomExistsRequest, opts ...grpc.CallOption) (*CheckClassroomExistsResponse, error) {
 	out := new(CheckClassroomExistsResponse)
 	err := c.cc.Invoke(ctx, ClassroomService_CheckClassroomExists_FullMethodName, in, out, opts...)
@@ -98,6 +109,7 @@ type ClassroomServiceServer interface {
 	GetClassroom(context.Context, *GetClassroomRequest) (*GetClassroomResponse, error)
 	UpdateClassroom(context.Context, *UpdateClassroomRequest) (*UpdateClassroomResponse, error)
 	DeleteClassroom(context.Context, *DeleteClassroomRequest) (*DeleteClassroomResponse, error)
+	GetClassrooms(context.Context, *GetClassroomsRequest) (*GetClassroomsResponse, error)
 	CheckClassroomExists(context.Context, *CheckClassroomExistsRequest) (*CheckClassroomExistsResponse, error)
 	mustEmbedUnimplementedClassroomServiceServer()
 }
@@ -117,6 +129,9 @@ func (UnimplementedClassroomServiceServer) UpdateClassroom(context.Context, *Upd
 }
 func (UnimplementedClassroomServiceServer) DeleteClassroom(context.Context, *DeleteClassroomRequest) (*DeleteClassroomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteClassroom not implemented")
+}
+func (UnimplementedClassroomServiceServer) GetClassrooms(context.Context, *GetClassroomsRequest) (*GetClassroomsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetClassrooms not implemented")
 }
 func (UnimplementedClassroomServiceServer) CheckClassroomExists(context.Context, *CheckClassroomExistsRequest) (*CheckClassroomExistsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckClassroomExists not implemented")
@@ -206,6 +221,24 @@ func _ClassroomService_DeleteClassroom_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ClassroomService_GetClassrooms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetClassroomsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClassroomServiceServer).GetClassrooms(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ClassroomService_GetClassrooms_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClassroomServiceServer).GetClassrooms(ctx, req.(*GetClassroomsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ClassroomService_CheckClassroomExists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CheckClassroomExistsRequest)
 	if err := dec(in); err != nil {
@@ -246,6 +279,10 @@ var ClassroomService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteClassroom",
 			Handler:    _ClassroomService_DeleteClassroom_Handler,
+		},
+		{
+			MethodName: "GetClassrooms",
+			Handler:    _ClassroomService_GetClassrooms_Handler,
 		},
 		{
 			MethodName: "CheckClassroomExists",

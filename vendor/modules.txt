@@ -173,6 +173,8 @@ google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
 google.golang.org/genproto/googleapis/api/visibility
 google.golang.org/genproto/googleapis/rpc/status
+google.golang.org/genproto/googleapis/type/date
+google.golang.org/genproto/googleapis/type/datetime
 google.golang.org/genproto/protobuf/field_mask
 # google.golang.org/grpc v1.53.0-dev
 ## explicit; go 1.17

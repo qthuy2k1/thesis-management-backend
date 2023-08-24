@@ -134,6 +134,49 @@ func (h *ClassroomHdl) DeleteClassroom(ctx context.Context, req *classroompb.Del
 	}, nil
 }
 
+func (h *ClassroomHdl) GetClassrooms(ctx context.Context, req *classroompb.GetClassroomsRequest) (*classroompb.GetClassroomsResponse, error) {
+	log.Println("calling get all classrooms...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	filter := service.ClassroomFilterSvc{
+		Limit:       int(req.GetLimit()),
+		Page:        int(req.GetPage()),
+		TitleSearch: req.GetTitleSearch(),
+		SortColumn:  req.GetSortColumn(),
+		SortOrder:   req.GetSortOrder(),
+	}
+
+	clrs, count, err := h.Service.GetClassrooms(ctx, filter)
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var clrsResp []*classroompb.ClassroomResponse
+	for _, c := range clrs {
+		clrsResp = append(clrsResp, &classroompb.ClassroomResponse{
+			Id:          int32(c.ID),
+			Title:       c.Title,
+			Description: c.Description,
+			Status:      c.Status,
+			CreatedAt:   timestamppb.New(c.CreatedAt),
+			UpdatedAt:   timestamppb.New(c.UpdatedAt),
+		})
+	}
+
+	return &classroompb.GetClassroomsResponse{
+		Response: &classroompb.CommonClassroomResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Classrooms: clrsResp,
+		TotalCount: int32(count),
+	}, nil
+}
+
 func validateAndConvertClassroom(pbClassroom *classroompb.ClassroomInput) (service.ClassroomInputSvc, error) {
 	if err := pbClassroom.Validate(); err != nil {
 		return service.ClassroomInputSvc{}, err

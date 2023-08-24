@@ -116,6 +116,49 @@ func (h *PostHdl) DeletePost(ctx context.Context, req *postpb.DeletePostRequest)
 	}, nil
 }
 
+func (h *PostHdl) GetPosts(ctx context.Context, req *postpb.GetPostsRequest) (*postpb.GetPostsResponse, error) {
+	log.Println("calling get all posts...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	filter := service.PostFilterSvc{
+		Limit:       int(req.GetLimit()),
+		Page:        int(req.GetPage()),
+		TitleSearch: req.GetTitleSearch(),
+		SortColumn:  req.GetSortColumn(),
+		SortOrder:   req.GetSortOrder(),
+	}
+
+	ps, count, err := h.Service.GetPosts(ctx, filter)
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var psResp []*postpb.PostResponse
+	for _, p := range ps {
+		psResp = append(psResp, &postpb.PostResponse{
+			Id:          int32(p.ID),
+			Title:       p.Title,
+			Content:     p.Content,
+			ClassroomID: int32(p.ClassroomID),
+			CreatedAt:   timestamppb.New(p.CreatedAt),
+			UpdatedAt:   timestamppb.New(p.UpdatedAt),
+		})
+	}
+
+	return &postpb.GetPostsResponse{
+		Response: &postpb.CommonPostResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Posts:      psResp,
+		TotalCount: int32(count),
+	}, nil
+}
+
 func validateAndConvertPost(pbPost *postpb.PostInput) (service.PostInputSvc, error) {
 	if err := pbPost.Validate(); err != nil {
 		return service.PostInputSvc{}, err

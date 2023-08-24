@@ -84,6 +84,25 @@
         }
       }
     },
+    "v1GetPostsResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonPostResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "posts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostResponse"
+          }
+        }
+      }
+    },
     "v1PostInput": {
       "type": "object",
       "properties": {

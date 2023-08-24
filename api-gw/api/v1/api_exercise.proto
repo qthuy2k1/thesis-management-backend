@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package api.exercise.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "google/api/datetime.proto";
+import "validate/validate.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/exercise/api/v1";
+
+service ExerciseService {
+    rpc CreateExercise(CreateExerciseRequest) returns (CreateExerciseResponse){
+        option (google.api.http) = {
+            post: "/api/exercise"
+            body: "*"
+        };
+    }
+    
+    rpc GetExercise(GetExerciseRequest) returns (GetExerciseResponse){
+        option (google.api.http) = {
+            get: "/api/exercise/{id}"
+        };
+    }
+
+    rpc UpdateExercise(UpdateExerciseRequest) returns (UpdateExerciseResponse){
+        option (google.api.http) = {
+            put: "/api/exercise/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteExercise(DeleteExerciseRequest) returns (DeleteExerciseResponse){
+        option (google.api.http) = {
+            delete: "/api/exercise/{id}"
+        };
+    }
+
+    rpc GetExercises(GetExercisesRequest) returns (GetExercisesResponse) {
+        option (google.api.http) = {
+            get: "/api/exercise"
+        };
+    }
+}
+
+message CommonExerciseResponse {
+    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    string message = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+
+// ====== exercise ======
+message ExerciseInput {
+    string title = 1 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string content = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    int32 classroomID = 3 [(validate.rules).int32.gte = 1];
+    google.type.DateTime deadline = 4;
+    int32 score = 5 [(validate.rules).int32.gte = 0];
+}
+
+message ExerciseResponse {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string content = 3 [(validate.rules).string = {min_len: 2}];
+    int32 classroomID = 4 [(validate.rules).int32.gte = 1];
+    // google.protobuf.Timestamp deadline = 5 [(validate.rules).timestamp.required = true];
+    google.type.DateTime deadline = 5;
+    int32 score = 6 [(validate.rules).int32.gte = 0];
+    google.protobuf.Timestamp created_at = 7 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp updated_at = 8 [(validate.rules).timestamp.required = true];
+}
+
+message CreateExerciseRequest {
+   ExerciseInput exercise = 1 [(validate.rules).message = {required: true}];
+}
+
+message CreateExerciseResponse {
+    CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ======
+message GetExerciseRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+}
+
+message GetExerciseResponse {
+    CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
+    ExerciseResponse exercise = 2 [(validate.rules).message = {required: true}];
+}
+
+// ====== PUT ======
+message UpdateExerciseRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    ExerciseInput exercise = 2 [(validate.rules).message = {required: true}];
+}
+
+message UpdateExerciseResponse {
+    CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== DELETE ======
+message DeleteExerciseRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+}
+
+message DeleteExerciseResponse {
+    CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== GET ALL ======
+message GetExercisesRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string titleSearch = 3;
+    string sortColumn = 4;
+    bool isDesc = 5;
+}
+
+message GetExercisesResponse {
+    CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
+    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    repeated ExerciseResponse exercises = 3;
+}
+

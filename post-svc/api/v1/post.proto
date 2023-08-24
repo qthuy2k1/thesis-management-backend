@@ -14,6 +14,8 @@ service PostService {
     rpc UpdatePost(UpdatePostRequest) returns (UpdatePostResponse){}
 
     rpc DeletePost(DeletePostRequest) returns (DeletePostResponse){ }
+
+    rpc GetPosts(GetPostsRequest) returns (GetPostsResponse) {}
 }
 
 message CommonPostResponse {
@@ -77,4 +79,18 @@ message DeletePostResponse {
 }
 
 
+// ====== GET ALL ======
+message GetPostsRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string titleSearch = 3;
+    string sortColumn = 4;
+    string sortOrder = 5;
+}
+
+message GetPostsResponse {
+    CommonPostResponse response = 1;
+    int32 totalCount = 2;
+    repeated PostResponse posts = 3;
+}
 

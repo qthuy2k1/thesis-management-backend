@@ -133,6 +133,25 @@
         }
       }
     },
+    "v1GetClassroomsResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonClassroomResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "classrooms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ClassroomResponse"
+          }
+        }
+      }
+    },
     "v1UpdateClassroomResponse": {
       "type": "object",
       "properties": {

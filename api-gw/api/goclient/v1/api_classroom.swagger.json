@@ -17,6 +17,60 @@
   ],
   "paths": {
     "/api/classroom": {
+      "get": {
+        "operationId": "ClassroomService_GetClassrooms",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetClassroomsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "titleSearch",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortColumn",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "isDesc",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "ClassroomService"
+        ]
+      },
       "post": {
         "operationId": "ClassroomService_CreateClassroom",
         "responses": {
@@ -274,6 +328,25 @@
         },
         "classroom": {
           "$ref": "#/definitions/v1ClassroomResponse"
+        }
+      }
+    },
+    "v1GetClassroomsResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonClassroomResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "classrooms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ClassroomResponse"
+          }
         }
       }
     },

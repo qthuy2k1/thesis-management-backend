@@ -1431,3 +1431,278 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DeletePostResponseValidationError{}
+
+// Validate checks the field values on GetPostsRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetPostsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetPostsRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetPostsRequestMultiError, or nil if none found.
+func (m *GetPostsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetPostsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Page
+
+	// no validation rules for Limit
+
+	// no validation rules for TitleSearch
+
+	// no validation rules for SortColumn
+
+	// no validation rules for SortOrder
+
+	if len(errors) > 0 {
+		return GetPostsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetPostsRequestMultiError is an error wrapping multiple validation errors
+// returned by GetPostsRequest.ValidateAll() if the designated constraints
+// aren't met.
+type GetPostsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetPostsRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetPostsRequestMultiError) AllErrors() []error { return m }
+
+// GetPostsRequestValidationError is the validation error returned by
+// GetPostsRequest.Validate if the designated constraints aren't met.
+type GetPostsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetPostsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetPostsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetPostsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetPostsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetPostsRequestValidationError) ErrorName() string { return "GetPostsRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GetPostsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetPostsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetPostsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetPostsRequestValidationError{}
+
+// Validate checks the field values on GetPostsResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetPostsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetPostsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetPostsResponseMultiError, or nil if none found.
+func (m *GetPostsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetPostsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetResponse()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetPostsResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetPostsResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetPostsResponseValidationError{
+				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for TotalCount
+
+	for idx, item := range m.GetPosts() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetPostsResponseValidationError{
+						field:  fmt.Sprintf("Posts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetPostsResponseValidationError{
+						field:  fmt.Sprintf("Posts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetPostsResponseValidationError{
+					field:  fmt.Sprintf("Posts[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetPostsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetPostsResponseMultiError is an error wrapping multiple validation errors
+// returned by GetPostsResponse.ValidateAll() if the designated constraints
+// aren't met.
+type GetPostsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetPostsResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetPostsResponseMultiError) AllErrors() []error { return m }
+
+// GetPostsResponseValidationError is the validation error returned by
+// GetPostsResponse.Validate if the designated constraints aren't met.
+type GetPostsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetPostsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetPostsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetPostsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetPostsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetPostsResponseValidationError) ErrorName() string { return "GetPostsResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GetPostsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetPostsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetPostsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetPostsResponseValidationError{}

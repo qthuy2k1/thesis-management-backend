@@ -17,6 +17,8 @@ type IPostRepo interface {
 	UpdatePost(ctx context.Context, id int, classroom PostInputRepo) error
 	// DeletePost deletes a classroom in db given by id
 	DeletePost(ctx context.Context, id int) error
+	// GetPosts returns a list of posts in db with filter
+	GetPosts(ctx context.Context, filter PostFilterRepo) ([]PostOutputRepo, int, error)
 }
 
 type PostRepo struct {
