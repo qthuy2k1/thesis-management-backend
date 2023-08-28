@@ -41,6 +41,12 @@ service ExerciseService {
             get: "/api/exercise"
         };
     }
+
+    rpc GetAllExercisesOfClassroom(GetAllExercisesOfClassroomRequest) returns (GetAllExercisesOfClassroomResponse) {
+        option (google.api.http) = {
+            get: "/api/classroom/{classroomID}/exercise"
+        };
+    }
 }
 
 message CommonExerciseResponse {
@@ -108,13 +114,18 @@ message DeleteExerciseResponse {
     CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
 }
 
-// ====== GET ALL ======
-message GetExercisesRequest {
+
+message ExerciseFilter {
     int32 page = 1;
     int32 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
     bool isDesc = 5;
+}
+
+// ====== GET ALL ======
+message GetExercisesRequest {
+    ExerciseFilter filter = 1;    
 }
 
 message GetExercisesResponse {
@@ -123,3 +134,14 @@ message GetExercisesResponse {
     repeated ExerciseResponse exercises = 3;
 }
 
+// ====== GET ALL OF CLASSROOM ======
+message GetAllExercisesOfClassroomRequest {
+    ExerciseFilter filter = 1;
+    int32 classroomID = 2 [(validate.rules).int32.gte = 1];
+}
+
+message GetAllExercisesOfClassroomResponse {
+    CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
+    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    repeated ExerciseResponse exercises = 3;
+}

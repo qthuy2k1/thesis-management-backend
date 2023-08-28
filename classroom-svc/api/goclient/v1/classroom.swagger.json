@@ -64,6 +64,20 @@
         },
         "status": {
           "type": "string"
+        },
+        "lecturerId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "codeClassroom": {
+          "type": "string"
+        },
+        "topicTags": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
         }
       },
       "title": "====== POST ======"
@@ -83,6 +97,20 @@
         },
         "status": {
           "type": "string"
+        },
+        "lecturerId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "codeClassroom": {
+          "type": "string"
+        },
+        "topicTags": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
         },
         "createdAt": {
           "type": "string",

@@ -22,9 +22,13 @@ func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient)
 func (u *classroomServiceGW) CreateClassroom(ctx context.Context, req *pb.CreateClassroomRequest) (*pb.CreateClassroomResponse, error) {
 	res, err := u.classroomClient.CreateClassroom(ctx, &classroomSvcV1.CreateClassroomRequest{
 		Classroom: &classroomSvcV1.ClassroomInput{
-			Title:       req.GetClassroom().Title,
-			Description: req.GetClassroom().Description,
-			Status:      req.Classroom.GetStatus(),
+			Title:         req.GetClassroom().GetTitle(),
+			Description:   req.GetClassroom().GetDescription(),
+			Status:        req.GetClassroom().GetStatus(),
+			LecturerId:    req.GetClassroom().GetLecturerId(),
+			CodeClassroom: req.GetClassroom().GetCodeClassroom(),
+			TopicTags:     req.GetClassroom().GetTopicTags(),
+			Quantity:      req.GetClassroom().GetQuantity(),
 		},
 	})
 	if err != nil {
@@ -33,8 +37,8 @@ func (u *classroomServiceGW) CreateClassroom(ctx context.Context, req *pb.Create
 
 	return &pb.CreateClassroomResponse{
 		Response: &pb.CommonClassroomResponse{
-			StatusCode: res.GetResponse().StatusCode,
-			Message:    res.GetResponse().Message,
+			StatusCode: res.GetResponse().GetStatusCode(),
+			Message:    res.GetResponse().GetMessage(),
 		},
 	}, nil
 }
@@ -47,16 +51,20 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 
 	return &pb.GetClassroomResponse{
 		Response: &pb.CommonClassroomResponse{
-			StatusCode: res.GetResponse().StatusCode,
-			Message:    res.GetResponse().Message,
+			StatusCode: res.GetResponse().GetStatusCode(),
+			Message:    res.GetResponse().GetMessage(),
 		},
 		Classroom: &pb.ClassroomResponse{
-			Id:          res.GetClassroom().Id,
-			Title:       res.GetClassroom().Title,
-			Description: res.GetClassroom().Description,
-			Status:      res.GetClassroom().Status,
-			CreatedAt:   res.GetClassroom().CreatedAt,
-			UpdatedAt:   res.GetClassroom().UpdatedAt,
+			Id:            res.GetClassroom().GetId(),
+			Title:         res.GetClassroom().GetTitle(),
+			Description:   res.GetClassroom().GetDescription(),
+			Status:        res.GetClassroom().GetStatus(),
+			CodeClassroom: res.GetClassroom().GetCodeClassroom(),
+			TopicTags:     res.GetClassroom().GetTopicTags(),
+			LecturerId:    res.GetClassroom().GetLecturerId(),
+			Quantity:      res.GetClassroom().GetQuantity(),
+			CreatedAt:     res.GetClassroom().GetCreatedAt(),
+			UpdatedAt:     res.GetClassroom().GetUpdatedAt(),
 		},
 	}, nil
 }
@@ -65,9 +73,13 @@ func (u *classroomServiceGW) UpdateClassroom(ctx context.Context, req *pb.Update
 	res, err := u.classroomClient.UpdateClassroom(ctx, &classroomSvcV1.UpdateClassroomRequest{
 		Id: req.GetId(),
 		Classroom: &classroomSvcV1.ClassroomInput{
-			Title:       req.GetClassroom().Title,
-			Description: req.GetClassroom().Description,
-			Status:      req.Classroom.GetStatus(),
+			Title:         req.GetClassroom().GetTitle(),
+			Description:   req.GetClassroom().GetDescription(),
+			Status:        req.GetClassroom().GetStatus(),
+			LecturerId:    req.GetClassroom().GetLecturerId(),
+			CodeClassroom: req.GetClassroom().GetCodeClassroom(),
+			TopicTags:     req.GetClassroom().GetTopicTags(),
+			Quantity:      req.GetClassroom().GetQuantity(),
 		},
 	})
 	if err != nil {
@@ -76,8 +88,8 @@ func (u *classroomServiceGW) UpdateClassroom(ctx context.Context, req *pb.Update
 
 	return &pb.UpdateClassroomResponse{
 		Response: &pb.CommonClassroomResponse{
-			StatusCode: res.GetResponse().StatusCode,
-			Message:    res.GetResponse().Message,
+			StatusCode: res.GetResponse().GetStatusCode(),
+			Message:    res.GetResponse().GetMessage(),
 		},
 	}, nil
 }
@@ -92,8 +104,8 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 
 	return &pb.DeleteClassroomResponse{
 		Response: &pb.CommonClassroomResponse{
-			StatusCode: res.GetResponse().StatusCode,
-			Message:    res.GetResponse().Message,
+			StatusCode: res.GetResponse().GetStatusCode(),
+			Message:    res.GetResponse().GetMessage(),
 		},
 	}, nil
 }
@@ -125,12 +137,16 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 	sortColumnTrim := strings.TrimSpace(req.GetSortColumn())
 	if len(sortColumnTrim) > 0 {
 		columns := map[string]string{
-			"id":          "id",
-			"title":       "title",
-			"description": "description",
-			"status":      "status",
-			"created_at":  "created_at",
-			"updated_at":  "updated_at",
+			"id":             "id",
+			"title":          "title",
+			"description":    "description",
+			"status":         "status",
+			"lecturer_id":    "lecturer_id",
+			"code_classroom": "code_classroom",
+			"topic_tags":     "topic_tags",
+			"quantity":       "quantity",
+			"created_at":     "created_at",
+			"updated_at":     "updated_at",
 		}
 		if stringInMap(sortColumnTrim, columns) {
 			filter.SortColumn = sortColumnTrim
@@ -160,19 +176,23 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 	var classrooms []*pb.ClassroomResponse
 	for _, c := range res.GetClassrooms() {
 		classrooms = append(classrooms, &pb.ClassroomResponse{
-			Id:          c.Id,
-			Title:       c.Title,
-			Description: c.Description,
-			Status:      c.Status,
-			CreatedAt:   c.CreatedAt,
-			UpdatedAt:   c.UpdatedAt,
+			Id:            c.Id,
+			Title:         c.Title,
+			Description:   c.Description,
+			Status:        c.Status,
+			LecturerId:    c.LecturerId,
+			CodeClassroom: c.CodeClassroom,
+			TopicTags:     c.TopicTags,
+			Quantity:      c.Quantity,
+			CreatedAt:     c.CreatedAt,
+			UpdatedAt:     c.UpdatedAt,
 		})
 	}
 
 	return &pb.GetClassroomsResponse{
 		Response: &pb.CommonClassroomResponse{
-			StatusCode: res.GetResponse().StatusCode,
-			Message:    res.GetResponse().Message,
+			StatusCode: res.GetResponse().GetStatusCode(),
+			Message:    res.GetResponse().GetMessage(),
 		},
 		TotalCount: res.GetTotalCount(),
 		Classrooms: classrooms,

@@ -214,6 +214,50 @@ func (m *ClassroomInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if m.GetLecturerId() < 1 {
+		err := ClassroomInputValidationError{
+			field:  "LecturerId",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetCodeClassroom()) < 2 {
+		err := ClassroomInputValidationError{
+			field:  "CodeClassroom",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetTopicTags()) < 2 {
+		err := ClassroomInputValidationError{
+			field:  "TopicTags",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetQuantity() < 0 {
+		err := ClassroomInputValidationError{
+			field:  "Quantity",
+			reason: "value must be greater than or equal to 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(errors) > 0 {
 		return ClassroomInputMultiError(errors)
 	}
@@ -351,6 +395,50 @@ func (m *ClassroomResponse) validate(all bool) error {
 		err := ClassroomResponseValidationError{
 			field:  "Status",
 			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetLecturerId() < 1 {
+		err := ClassroomResponseValidationError{
+			field:  "LecturerId",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetCodeClassroom()) < 2 {
+		err := ClassroomResponseValidationError{
+			field:  "CodeClassroom",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetTopicTags()) < 2 {
+		err := ClassroomResponseValidationError{
+			field:  "TopicTags",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetQuantity() < 0 {
+		err := ClassroomResponseValidationError{
+			field:  "Quantity",
+			reason: "value must be greater than or equal to 0",
 		}
 		if !all {
 			return err

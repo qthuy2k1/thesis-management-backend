@@ -55,6 +55,10 @@ message ClassroomInput {
     string title = 1 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string description = 2 [(validate.rules).string = {min_len: 2}];
     string status = 3 [(validate.rules).string = {min_len: 2}];
+    int32 lecturerId = 4 [(validate.rules).int32.gte = 1];
+    string codeClassroom = 5 [(validate.rules).string = {min_len: 2}];
+    string topicTags = 6 [(validate.rules).string = {min_len: 2}];
+    int32 quantity = 7 [(validate.rules).int32.gte = 0];
 }
 
 
@@ -63,8 +67,12 @@ message ClassroomResponse {
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string description = 3 [(validate.rules).string = {min_len: 2}];
     string status = 4 [(validate.rules).string = {min_len: 2}];
-    google.protobuf.Timestamp created_at = 5 [(validate.rules).timestamp.required = true];
-    google.protobuf.Timestamp updated_at = 6 [(validate.rules).timestamp.required = true];
+    int32 lecturerId = 5 [(validate.rules).int32.gte = 1];
+    string codeClassroom = 6 [(validate.rules).string = {min_len: 2}];
+    string topicTags = 7 [(validate.rules).string = {min_len: 2}];
+    int32 quantity = 8 [(validate.rules).int32.gte = 0];
+    google.protobuf.Timestamp created_at = 9 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp updated_at = 10 [(validate.rules).timestamp.required = true];
 }
 
 message CreateClassroomRequest {

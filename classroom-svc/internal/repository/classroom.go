@@ -4,20 +4,83 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"strings"
 	"time"
-
-	model "github.com/qthuy2k1/thesis-management-backend/classroom-svc/internal/model"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
+// QueryRowSQL is a wrapper function that logs the SQL command before executing it.
+func QueryRowSQL(ctx context.Context, db *sql.DB, funcName string, query string, args ...interface{}) (*sql.Row, error) {
+	log.Printf("Function %s is executing SQL command: %s", funcName, query)
+
+	// Prepare the SQL statement
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		log.Printf("Error preparing SQL statement: %s", err.Error())
+		return nil, err
+	}
+	defer stmt.Close()
+
+	// Execute the SQL statement with the provided arguments
+	row := stmt.QueryRowContext(ctx, args...)
+
+	return row, nil
+}
+
+// QuerySQL is a wrapper function that logs the SQL command before executing it.
+func QuerySQL(ctx context.Context, db *sql.DB, funcName string, query string, args ...interface{}) (*sql.Rows, error) {
+	log.Printf("Function %s is executing SQL command: %s", funcName, query)
+
+	// Prepare the SQL statement
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		log.Printf("Error preparing SQL statement: %s", err.Error())
+		return nil, err
+	}
+	defer stmt.Close()
+
+	// Execute the SQL statement with the provided arguments
+	rows, err := stmt.QueryContext(ctx, args...)
+	if err != nil {
+		log.Printf("Error executing SQL command: %s", err.Error())
+		return nil, err
+	}
+
+	return rows, nil
+}
+
+// ExecSQL is a wrapper function that logs the SQL command before executing it.
+func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, args ...interface{}) (sql.Result, error) {
+	log.Printf("Function %s is executing SQL command: %s", funcName, query)
+	// Prepare the SQL statement
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		log.Printf("Error preparing SQL statement: %s", err.Error())
+		return nil, err
+	}
+	defer stmt.Close()
+
+	// Execute the SQL command with the provided arguments
+	result, err := stmt.ExecContext(ctx, args...)
+	if err != nil {
+		log.Printf("Error executing SQL command: %s", err.Error())
+		return nil, err
+	}
+
+	return result, nil
+}
+
 type ClassroomInputRepo struct {
-	ID          int
-	Title       string
-	Description string
-	Status      string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID            int
+	Title         string
+	Description   string
+	Status        string
+	LecturerID    int
+	CodeClassroom string
+	TopicTags     string
+	Quantity      int
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
 // CreateClasroom creates a new classroom in db given by classroom model
@@ -32,15 +95,7 @@ func (r *ClassroomRepo) CreateClassroom(ctx context.Context, clr ClassroomInputR
 		return ErrClassroomExisted
 	}
 
-	// Prepare the SQL statement
-	stmt, err := r.Database.PrepareContext(ctx, "INSERT INTO posts (title, description, status) VALUES ($1, $2, $3) RETURNING id")
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	// Execute the SQL statement and retrieve the generated ID
-	if _, err := stmt.ExecContext(ctx, clr.Title, clr.Description, clr.Status); err != nil {
+	if _, err := ExecSQL(ctx, r.Database, "CreateClassroom", "INSERT INTO classrooms (title, description, status, lecturer_id, code_classroom, topic_tags, quantity) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", clr.Title, clr.Description, clr.Status, clr.LecturerID, clr.CodeClassroom, clr.TopicTags, clr.Quantity); err != nil {
 		return err
 	}
 
@@ -48,28 +103,27 @@ func (r *ClassroomRepo) CreateClassroom(ctx context.Context, clr ClassroomInputR
 }
 
 type ClassroomOutputRepo struct {
-	ID          int
-	Title       string
-	Description string
-	Status      string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID            int
+	Title         string
+	Description   string
+	Status        string
+	LecturerID    int
+	CodeClassroom string
+	TopicTags     string
+	Quantity      int
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
 // GetClassroom returns a classroom in db given by id
 func (r *ClassroomRepo) GetClassroom(ctx context.Context, id int) (ClassroomOutputRepo, error) {
-	// Prepare the SQL statement
-	stmt, err := r.Database.PrepareContext(ctx, "SELECT id, title, description, status, created_at, updated_at FROM classrooms WHERE id=$1")
+	row, err := QueryRowSQL(ctx, r.Database, "GetClassroom", "SELECT id, title, description, status, lecturer_id, code_classroom, topic_tags, quantity, created_at, updated_at FROM classrooms WHERE id=$1", id)
 	if err != nil {
 		return ClassroomOutputRepo{}, err
 	}
-	defer stmt.Close()
-
-	// Execute the SQL statement and retrieve the classroom
-	row := stmt.QueryRowContext(ctx, id)
 	classroom := ClassroomOutputRepo{}
 
-	if err = row.Scan(&classroom.ID, &classroom.Title, &classroom.Description, &classroom.Status, &classroom.CreatedAt, &classroom.UpdatedAt); err != nil {
+	if err = row.Scan(&classroom.ID, &classroom.Title, &classroom.Description, &classroom.Status, &classroom.LecturerID, &classroom.CodeClassroom, &classroom.TopicTags, &classroom.Quantity, &classroom.CreatedAt, &classroom.UpdatedAt); err != nil {
 		if err == sql.ErrNoRows {
 			return ClassroomOutputRepo{}, ErrClassroomNotFound
 		}
@@ -81,25 +135,21 @@ func (r *ClassroomRepo) GetClassroom(ctx context.Context, id int) (ClassroomOutp
 
 // CheckClassroomExists checks whether the specified classroom exists by title (true == exist)
 func (r *ClassroomRepo) IsClassroomExists(ctx context.Context, title string) (bool, error) {
-	count, err := model.Classrooms(qm.Where("title LIKE ?", "%"+title+"%")).Count(ctx, r.Database)
+	var exists bool
+	row, err := QueryRowSQL(ctx, r.Database, "IsClassroomExists", "SELECT EXISTS(SELECT 1 FROM classrooms WHERE title LIKE '%' || $1 || '%')", title)
 	if err != nil {
 		return false, err
 	}
+	if err = row.Scan(&exists); err != nil {
+		return false, err
+	}
+	return exists, nil
 
-	return count > 0, nil
 }
 
 // UpdateClassroom updates the specified classroom by id
 func (r *ClassroomRepo) UpdateClassroom(ctx context.Context, id int, classroom ClassroomInputRepo) error {
-	// Prepare the SQL statement
-	stmt, err := r.Database.PrepareContext(ctx, "UPDATE classrooms SET title=$2, description=$3, status=$4, updated_at=$5 WHERE id=$1")
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	// Execute the SQL statement and retrieve the ID of the updated classroom
-	result, err := stmt.ExecContext(ctx, id, classroom.Title, classroom.Description, classroom.Status, time.Now())
+	result, err := ExecSQL(ctx, r.Database, "UpdateClassroom", "UPDATE classrooms SET title=$2, description=$3, status=$4, lecturer_id=$5, code_classroom=$6, topic_tags=$7, quantity=$8, updated_at=$9 WHERE id=$1", id, classroom.Title, classroom.Description, classroom.Status, classroom.LecturerID, classroom.CodeClassroom, classroom.TopicTags, classroom.Quantity, time.Now())
 	if err != nil {
 		return err
 	}
@@ -113,15 +163,7 @@ func (r *ClassroomRepo) UpdateClassroom(ctx context.Context, id int, classroom C
 
 // DeleteClassroom deletes a classroom in db given by id
 func (r *ClassroomRepo) DeleteClassroom(ctx context.Context, id int) error {
-	// Prepare the SQL statement
-	stmt, err := r.Database.PrepareContext(ctx, "DELETE FROM classrooms WHERE id=$1")
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	// Execute the SQL statement and retrieve the deleted classroom's details
-	result, err := stmt.ExecContext(ctx, id)
+	result, err := ExecSQL(ctx, r.Database, "DeleteClassroom", "DELETE FROM classrooms WHERE id=$1", id)
 	if err != nil {
 		return err
 	}
@@ -144,7 +186,7 @@ type ClassroomFilterRepo struct {
 // GetClassroom returns a list of classrooms in db with filter
 func (r *ClassroomRepo) GetClassrooms(ctx context.Context, filter ClassroomFilterRepo) ([]ClassroomOutputRepo, int, error) {
 	var query []string
-	query = append(query, "SELECT * FROM classrooms")
+	query = append(query, "SELECT id, title, description, status, lecturer_id, code_classroom, topic_tags, quantity, created_at, updated_at FROM classrooms")
 
 	if filter.TitleSearch != "" {
 		query = append(query, fmt.Sprintf("WHERE UPPER(title) LIKE UPPER('%s')", "%"+filter.TitleSearch+"%"))
@@ -153,15 +195,7 @@ func (r *ClassroomRepo) GetClassrooms(ctx context.Context, filter ClassroomFilte
 	query = append(query, fmt.Sprintf("ORDER BY %s %s", filter.SortColumn, filter.SortOrder),
 		fmt.Sprintf("LIMIT %d OFFSET %d", filter.Limit, (filter.Page-1)*filter.Limit))
 
-	// Prepare the SQL statement
-	stmt, err := r.Database.PrepareContext(ctx, strings.Join(query, " "))
-	if err != nil {
-		return nil, 0, err
-	}
-	defer stmt.Close()
-
-	// Execute the SQL statement
-	rows, err := stmt.QueryContext(ctx)
+	rows, err := QuerySQL(ctx, r.Database, "GetClassrooms", strings.Join(query, " "))
 	if err != nil {
 		return nil, 0, err
 	}
@@ -176,6 +210,10 @@ func (r *ClassroomRepo) GetClassrooms(ctx context.Context, filter ClassroomFilte
 			&classroom.Title,
 			&classroom.Description,
 			&classroom.Status,
+			&classroom.LecturerID,
+			&classroom.CodeClassroom,
+			&classroom.TopicTags,
+			&classroom.Quantity,
 			&classroom.CreatedAt,
 			&classroom.UpdatedAt,
 		)
@@ -205,7 +243,12 @@ func (r *ClassroomRepo) getCount(ctx context.Context, titleSearch string) (int, 
 		query = append(query, fmt.Sprintf("WHERE UPPER(title) LIKE UPPER('%s')", "%"+titleSearch+"%"))
 	}
 
-	if err := r.Database.QueryRowContext(ctx, strings.Join(query, " ")).Scan(&count); err != nil {
+	rows, err := QueryRowSQL(ctx, r.Database, "getCount", strings.Join(query, " "))
+	if err != nil {
+		return 0, err
+	}
+
+	if err := rows.Scan(&count); err != nil {
 		return 0, err
 	}
 

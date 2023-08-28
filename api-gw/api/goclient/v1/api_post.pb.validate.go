@@ -1581,6 +1581,115 @@ var _ interface {
 	ErrorName() string
 } = DeletePostResponseValidationError{}
 
+// Validate checks the field values on PostFilter with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *PostFilter) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PostFilter with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in PostFilterMultiError, or
+// nil if none found.
+func (m *PostFilter) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PostFilter) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Page
+
+	// no validation rules for Limit
+
+	// no validation rules for TitleSearch
+
+	// no validation rules for SortColumn
+
+	// no validation rules for IsDesc
+
+	if len(errors) > 0 {
+		return PostFilterMultiError(errors)
+	}
+
+	return nil
+}
+
+// PostFilterMultiError is an error wrapping multiple validation errors
+// returned by PostFilter.ValidateAll() if the designated constraints aren't met.
+type PostFilterMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PostFilterMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PostFilterMultiError) AllErrors() []error { return m }
+
+// PostFilterValidationError is the validation error returned by
+// PostFilter.Validate if the designated constraints aren't met.
+type PostFilterValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PostFilterValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PostFilterValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PostFilterValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PostFilterValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PostFilterValidationError) ErrorName() string { return "PostFilterValidationError" }
+
+// Error satisfies the builtin error interface
+func (e PostFilterValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPostFilter.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PostFilterValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PostFilterValidationError{}
+
 // Validate checks the field values on GetPostsRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, the
 // first error encountered is returned, or nil if there are no violations.
@@ -1603,15 +1712,34 @@ func (m *GetPostsRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Page
-
-	// no validation rules for Limit
-
-	// no validation rules for TitleSearch
-
-	// no validation rules for SortColumn
-
-	// no validation rules for IsDesc
+	if all {
+		switch v := interface{}(m.GetFilter()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetPostsRequestValidationError{
+					field:  "Filter",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetPostsRequestValidationError{
+					field:  "Filter",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetFilter()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetPostsRequestValidationError{
+				field:  "Filter",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return GetPostsRequestMultiError(errors)
@@ -1875,3 +2003,334 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetPostsResponseValidationError{}
+
+// Validate checks the field values on GetAllPostsOfClassroomRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetAllPostsOfClassroomRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetAllPostsOfClassroomRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// GetAllPostsOfClassroomRequestMultiError, or nil if none found.
+func (m *GetAllPostsOfClassroomRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetAllPostsOfClassroomRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetFilter()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetAllPostsOfClassroomRequestValidationError{
+					field:  "Filter",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetAllPostsOfClassroomRequestValidationError{
+					field:  "Filter",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetFilter()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetAllPostsOfClassroomRequestValidationError{
+				field:  "Filter",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.GetClassroomID() < 1 {
+		err := GetAllPostsOfClassroomRequestValidationError{
+			field:  "ClassroomID",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return GetAllPostsOfClassroomRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetAllPostsOfClassroomRequestMultiError is an error wrapping multiple
+// validation errors returned by GetAllPostsOfClassroomRequest.ValidateAll()
+// if the designated constraints aren't met.
+type GetAllPostsOfClassroomRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetAllPostsOfClassroomRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetAllPostsOfClassroomRequestMultiError) AllErrors() []error { return m }
+
+// GetAllPostsOfClassroomRequestValidationError is the validation error
+// returned by GetAllPostsOfClassroomRequest.Validate if the designated
+// constraints aren't met.
+type GetAllPostsOfClassroomRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetAllPostsOfClassroomRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetAllPostsOfClassroomRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetAllPostsOfClassroomRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetAllPostsOfClassroomRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetAllPostsOfClassroomRequestValidationError) ErrorName() string {
+	return "GetAllPostsOfClassroomRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetAllPostsOfClassroomRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetAllPostsOfClassroomRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetAllPostsOfClassroomRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetAllPostsOfClassroomRequestValidationError{}
+
+// Validate checks the field values on GetAllPostsOfClassroomResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetAllPostsOfClassroomResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetAllPostsOfClassroomResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// GetAllPostsOfClassroomResponseMultiError, or nil if none found.
+func (m *GetAllPostsOfClassroomResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetAllPostsOfClassroomResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetResponse() == nil {
+		err := GetAllPostsOfClassroomResponseValidationError{
+			field:  "Response",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if all {
+		switch v := interface{}(m.GetResponse()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetAllPostsOfClassroomResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetAllPostsOfClassroomResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetAllPostsOfClassroomResponseValidationError{
+				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.GetTotalCount() < 0 {
+		err := GetAllPostsOfClassroomResponseValidationError{
+			field:  "TotalCount",
+			reason: "value must be greater than or equal to 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	for idx, item := range m.GetPosts() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetAllPostsOfClassroomResponseValidationError{
+						field:  fmt.Sprintf("Posts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetAllPostsOfClassroomResponseValidationError{
+						field:  fmt.Sprintf("Posts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetAllPostsOfClassroomResponseValidationError{
+					field:  fmt.Sprintf("Posts[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetAllPostsOfClassroomResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetAllPostsOfClassroomResponseMultiError is an error wrapping multiple
+// validation errors returned by GetAllPostsOfClassroomResponse.ValidateAll()
+// if the designated constraints aren't met.
+type GetAllPostsOfClassroomResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetAllPostsOfClassroomResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetAllPostsOfClassroomResponseMultiError) AllErrors() []error { return m }
+
+// GetAllPostsOfClassroomResponseValidationError is the validation error
+// returned by GetAllPostsOfClassroomResponse.Validate if the designated
+// constraints aren't met.
+type GetAllPostsOfClassroomResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetAllPostsOfClassroomResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetAllPostsOfClassroomResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetAllPostsOfClassroomResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetAllPostsOfClassroomResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetAllPostsOfClassroomResponseValidationError) ErrorName() string {
+	return "GetAllPostsOfClassroomResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetAllPostsOfClassroomResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetAllPostsOfClassroomResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetAllPostsOfClassroomResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetAllPostsOfClassroomResponseValidationError{}

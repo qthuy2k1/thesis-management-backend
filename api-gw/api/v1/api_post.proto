@@ -40,6 +40,12 @@ service PostService {
             get: "/api/post"
         };
     }
+
+    rpc GetAllPostsOfClassroom(GetAllPostsOfClassroomRequest) returns (GetAllPostsOfClassroomResponse) {
+        option (google.api.http) = {
+            get: "/api/classroom/{classroomID}/post"
+        };
+    }
 }
 
 message CommonPostResponse {
@@ -102,8 +108,7 @@ message DeletePostResponse {
     CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
 }
 
-// ====== GET ALL ======
-message GetPostsRequest {
+message PostFilter {
     int32 page = 1;
     int32 limit = 2;
     string titleSearch = 3;
@@ -111,7 +116,24 @@ message GetPostsRequest {
     bool isDesc = 5;
 }
 
+// ====== GET ALL ======
+message GetPostsRequest {
+    PostFilter filter = 1;    
+}
+
 message GetPostsResponse {
+    CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
+    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    repeated PostResponse posts = 3;
+}
+
+// ====== GET ALL OF CLASSROOM ======
+message GetAllPostsOfClassroomRequest {
+    PostFilter filter = 1;
+    int32 classroomID = 2 [(validate.rules).int32.gte = 1];
+}
+
+message GetAllPostsOfClassroomResponse {
     CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
     int32 totalCount = 2 [(validate.rules).int32.gte = 0];
     repeated PostResponse posts = 3;

@@ -16,6 +16,69 @@
     "application/json"
   ],
   "paths": {
+    "/api/classroom/{classroomID}/exercise": {
+      "get": {
+        "operationId": "ExerciseService_GetAllExercisesOfClassroom",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllExercisesOfClassroomResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "classroomID",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "filter.page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "filter.limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "filter.titleSearch",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filter.sortColumn",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filter.isDesc",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "ExerciseService"
+        ]
+      }
+    },
     "/api/exercise": {
       "get": {
         "operationId": "ExerciseService_GetExercises",
@@ -35,33 +98,33 @@
         },
         "parameters": [
           {
-            "name": "page",
+            "name": "filter.page",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "limit",
+            "name": "filter.limit",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "titleSearch",
+            "name": "filter.titleSearch",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "sortColumn",
+            "name": "filter.sortColumn",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "isDesc",
+            "name": "filter.isDesc",
             "in": "query",
             "required": false,
             "type": "boolean"
@@ -334,6 +397,28 @@
         }
       }
     },
+    "v1ExerciseFilter": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "titleSearch": {
+          "type": "string"
+        },
+        "sortColumn": {
+          "type": "string"
+        },
+        "isDesc": {
+          "type": "boolean"
+        }
+      }
+    },
     "v1ExerciseInput": {
       "type": "object",
       "properties": {
@@ -389,6 +474,25 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1GetAllExercisesOfClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonExerciseResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "exercises": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ExerciseResponse"
+          }
         }
       }
     },

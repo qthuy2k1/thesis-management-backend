@@ -142,57 +142,56 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 		return nil, err
 	}
 
-	filter := &exerciseSvcV1.GetExercisesRequest{}
-
-	if req.GetLimit() > 0 {
-		filter.Limit = req.GetLimit()
-	} else {
-		filter.Limit = 5
-	}
-
-	if req.GetPage() > 0 {
-		filter.Page = req.GetPage()
-	} else {
-		filter.Page = 1
-	}
-
-	titleSearchTrim := strings.TrimSpace(req.GetTitleSearch())
-	if len(titleSearchTrim) > 0 {
-		filter.TitleSearch = titleSearchTrim
-	}
-
-	sortColumnTrim := strings.TrimSpace(req.GetSortColumn())
-	if len(sortColumnTrim) > 0 {
-		columns := map[string]string{
-			"id":           "id",
-			"title":        "title",
-			"content":      "content",
-			"classroom_id": "classroom_id",
-			"deadline":     "deadline",
-			"score":        "score",
-			"created_at":   "created_at",
-			"updated_at":   "updated_at",
-		}
-		if stringInMap(sortColumnTrim, columns) {
-			filter.SortColumn = sortColumnTrim
-		} else {
-			filter.SortColumn = "id"
-		}
-	} else {
-		filter.SortColumn = "id"
-	}
-
+	var limit int32 = 5
+	var page int32 = 1
+	titleSearch := ""
+	sortColumn := "id"
 	sortOrder := "asc"
-	if req.IsDesc {
-		sortOrder = "desc"
+
+	if req.GetFilter() != nil {
+		if req.GetFilter().GetLimit() > 0 {
+			limit = req.GetFilter().GetLimit()
+		}
+
+		if req.GetFilter().GetPage() > 0 {
+			page = req.GetFilter().GetPage()
+		}
+
+		titleSearchTrim := strings.TrimSpace(req.GetFilter().GetTitleSearch())
+		if len(titleSearchTrim) > 0 {
+			titleSearch = titleSearchTrim
+		}
+
+		sortColumnTrim := strings.TrimSpace(req.GetFilter().GetSortColumn())
+		if len(sortColumnTrim) > 0 {
+			columns := map[string]string{
+				"id":           "id",
+				"title":        "title",
+				"content":      "content",
+				"classroom_id": "classroom_id",
+				"deadline":     "deadline",
+				"score":        "score",
+				"created_at":   "created_at",
+				"updated_at":   "updated_at",
+			}
+			if stringInMap(sortColumnTrim, columns) {
+				sortColumn = sortColumnTrim
+			}
+		}
+
+		if req.Filter.IsDesc {
+			sortOrder = "desc"
+		}
 	}
 
 	res, err := u.exerciseClient.GetExercises(ctx, &exerciseSvcV1.GetExercisesRequest{
-		Limit:       filter.Limit,
-		Page:        filter.Page,
-		TitleSearch: filter.TitleSearch,
-		SortColumn:  filter.SortColumn,
-		SortOrder:   sortOrder,
+		Filter: &exerciseSvcV1.ExerciseFilter{
+			Limit:       limit,
+			Page:        page,
+			TitleSearch: titleSearch,
+			SortColumn:  sortColumn,
+			SortOrder:   sortOrder,
+		},
 	})
 	if err != nil {
 		return nil, err
@@ -213,6 +212,94 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 	}
 
 	return &pb.GetExercisesResponse{
+		Response: &pb.CommonExerciseResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+		TotalCount: res.GetTotalCount(),
+		Exercises:  exercises,
+	}, nil
+}
+
+func (u *exerciseServiceGW) GetAllExercisesOfClassroom(ctx context.Context, req *pb.GetAllExercisesOfClassroomRequest) (*pb.GetAllExercisesOfClassroomResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	var limit int32 = 5
+	var page int32 = 1
+	titleSearch := ""
+	sortColumn := "id"
+	sortOrder := "asc"
+	var classroomID int32
+
+	if req.GetFilter() != nil {
+		if req.GetFilter().GetLimit() > 0 {
+			limit = req.GetFilter().GetLimit()
+		}
+
+		if req.GetFilter().GetPage() > 0 {
+			page = req.GetFilter().GetPage()
+		}
+
+		titleSearchTrim := strings.TrimSpace(req.GetFilter().GetTitleSearch())
+		if len(titleSearchTrim) > 0 {
+			titleSearch = titleSearchTrim
+		}
+
+		sortColumnTrim := strings.TrimSpace(req.GetFilter().GetSortColumn())
+		if len(sortColumnTrim) > 0 {
+			columns := map[string]string{
+				"id":           "id",
+				"title":        "title",
+				"content":      "content",
+				"classroom_id": "classroom_id",
+				"deadline":     "deadline",
+				"score":        "score",
+				"created_at":   "created_at",
+				"updated_at":   "updated_at",
+			}
+			if stringInMap(sortColumnTrim, columns) {
+				sortColumn = sortColumnTrim
+			}
+		}
+
+		if req.Filter.IsDesc {
+			sortOrder = "desc"
+		}
+	}
+
+	if req.GetClassroomID() > 0 {
+		classroomID = req.GetClassroomID()
+	}
+
+	res, err := u.exerciseClient.GetAllExercisesOfClassroom(ctx, &exerciseSvcV1.GetAllExercisesOfClassroomRequest{
+		Filter: &exerciseSvcV1.ExerciseFilter{
+			Limit:       limit,
+			Page:        page,
+			TitleSearch: titleSearch,
+			SortColumn:  sortColumn,
+			SortOrder:   sortOrder,
+		},
+		ClassroomID: classroomID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var exercises []*pb.ExerciseResponse
+	for _, p := range res.GetExercises() {
+		exercises = append(exercises, &pb.ExerciseResponse{
+			Id:          p.Id,
+			Title:       p.Title,
+			Content:     p.Content,
+			ClassroomID: p.ClassroomID,
+			CreatedAt:   p.CreatedAt,
+			UpdatedAt:   p.UpdatedAt,
+		})
+	}
+
+	return &pb.GetAllExercisesOfClassroomResponse{
 		Response: &pb.CommonExerciseResponse{
 			StatusCode: res.GetResponse().StatusCode,
 			Message:    res.GetResponse().Message,
