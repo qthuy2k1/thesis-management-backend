@@ -73,6 +73,25 @@
         }
       }
     },
+    "v1GetAllPostsOfClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonPostResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "posts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostResponse"
+          }
+        }
+      }
+    },
     "v1GetPostResponse": {
       "type": "object",
       "properties": {
@@ -115,6 +134,14 @@
         "classroomID": {
           "type": "integer",
           "format": "int32"
+        },
+        "reportingStageID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "authorID": {
+          "type": "integer",
+          "format": "int32"
         }
       },
       "title": "====== POST ======"
@@ -133,6 +160,14 @@
           "type": "string"
         },
         "classroomID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "reportingStageID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "authorID": {
           "type": "integer",
           "format": "int32"
         },

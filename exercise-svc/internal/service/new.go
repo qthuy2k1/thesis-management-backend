@@ -17,6 +17,8 @@ type IExerciseSvc interface {
 	DeleteExercise(ctx context.Context, id int) error
 	// GetExercises returns a list of exercises in db with filter
 	GetExercises(ctx context.Context, filter ExerciseFilterSvc) ([]ExerciseOutputSvc, int, error)
+	// GetAllExercisesOfClassroom returns a list of posts in db with filter
+	GetAllExercisesOfClassroom(ctx context.Context, filter ExerciseFilterSvc, classroomID int) ([]ExerciseOutputSvc, int, error)
 }
 
 type ExerciseSvc struct {

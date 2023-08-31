@@ -48,12 +48,14 @@ func (h *PostHdl) GetPost(ctx context.Context, req *postpb.GetPostRequest) (*pos
 	}
 
 	pResp := postpb.PostResponse{
-		Id:          int32(p.ID),
-		Title:       p.Title,
-		Content:     p.Content,
-		ClassroomID: int32(p.ClassroomID),
-		CreatedAt:   timestamppb.New(p.CreatedAt),
-		UpdatedAt:   timestamppb.New(p.UpdatedAt),
+		Id:               int32(p.ID),
+		Title:            p.Title,
+		Content:          p.Content,
+		ClassroomID:      int32(p.ClassroomID),
+		ReportingStageID: int32(p.ReportingStageID),
+		AuthorID:         int32(p.AuthorID),
+		CreatedAt:        timestamppb.New(p.CreatedAt),
+		UpdatedAt:        timestamppb.New(p.UpdatedAt),
 	}
 
 	resp := &postpb.GetPostResponse{
@@ -80,9 +82,11 @@ func (c *PostHdl) UpdatePost(ctx context.Context, req *postpb.UpdatePostRequest)
 	}
 
 	if err := c.Service.UpdatePost(ctx, int(req.GetId()), service.PostInputSvc{
-		Title:       p.Title,
-		Content:     p.Content,
-		ClassroomID: p.ClassroomID,
+		Title:            p.Title,
+		Content:          p.Content,
+		ClassroomID:      p.ClassroomID,
+		ReportingStageID: p.ReportingStageID,
+		AuthorID:         p.AuthorID,
 	}); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -140,16 +144,63 @@ func (h *PostHdl) GetPosts(ctx context.Context, req *postpb.GetPostsRequest) (*p
 	var psResp []*postpb.PostResponse
 	for _, p := range ps {
 		psResp = append(psResp, &postpb.PostResponse{
-			Id:          int32(p.ID),
-			Title:       p.Title,
-			Content:     p.Content,
-			ClassroomID: int32(p.ClassroomID),
-			CreatedAt:   timestamppb.New(p.CreatedAt),
-			UpdatedAt:   timestamppb.New(p.UpdatedAt),
+			Id:               int32(p.ID),
+			Title:            p.Title,
+			Content:          p.Content,
+			ClassroomID:      int32(p.ClassroomID),
+			ReportingStageID: int32(p.ReportingStageID),
+			AuthorID:         int32(p.AuthorID),
+			CreatedAt:        timestamppb.New(p.CreatedAt),
+			UpdatedAt:        timestamppb.New(p.UpdatedAt),
 		})
 	}
 
 	return &postpb.GetPostsResponse{
+		Response: &postpb.CommonPostResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Posts:      psResp,
+		TotalCount: int32(count),
+	}, nil
+}
+
+func (h *PostHdl) GetAllPostsOfClassroom(ctx context.Context, req *postpb.GetAllPostsOfClassroomRequest) (*postpb.GetAllPostsOfClassroomResponse, error) {
+	log.Println("calling get all posts of a classroom...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	filter := service.PostFilterSvc{
+		Limit:       int(req.GetLimit()),
+		Page:        int(req.GetPage()),
+		TitleSearch: req.GetTitleSearch(),
+		SortColumn:  req.GetSortColumn(),
+		SortOrder:   req.GetSortOrder(),
+	}
+
+	ps, count, err := h.Service.GetAllPostsOfClassroom(ctx, filter, int(req.GetClassroomID()))
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var psResp []*postpb.PostResponse
+	for _, p := range ps {
+		psResp = append(psResp, &postpb.PostResponse{
+			Id:               int32(p.ID),
+			Title:            p.Title,
+			Content:          p.Content,
+			ClassroomID:      int32(p.ClassroomID),
+			ReportingStageID: int32(p.ReportingStageID),
+			AuthorID:         int32(p.AuthorID),
+			CreatedAt:        timestamppb.New(p.CreatedAt),
+			UpdatedAt:        timestamppb.New(p.UpdatedAt),
+		})
+	}
+
+	return &postpb.GetAllPostsOfClassroomResponse{
 		Response: &postpb.CommonPostResponse{
 			StatusCode: 200,
 			Message:    "Success",
@@ -165,8 +216,10 @@ func validateAndConvertPost(pbPost *postpb.PostInput) (service.PostInputSvc, err
 	}
 
 	return service.PostInputSvc{
-		Title:       pbPost.Title,
-		Content:     pbPost.Content,
-		ClassroomID: int(pbPost.ClassroomID),
+		Title:            pbPost.Title,
+		Content:          pbPost.Content,
+		ClassroomID:      int(pbPost.ClassroomID),
+		ReportingStageID: int(pbPost.ReportingStageID),
+		AuthorID:         int(pbPost.AuthorID),
 	}, nil
 }

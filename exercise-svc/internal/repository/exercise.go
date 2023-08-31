@@ -10,20 +10,80 @@ import (
 )
 
 type ExerciseInputRepo struct {
-	ID          int
-	Title       string
-	Content     string
-	ClassroomID int
-	Deadline    time.Time
-	Score       int
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Title            string
+	Content          string
+	ClassroomID      int
+	Deadline         time.Time
+	Score            int
+	ReportingStageID int
+	AuthorID         int
+}
+
+// QueryRowSQL is a wrapper function that logs the SQL command before executing it.
+func QueryRowSQL(ctx context.Context, db *sql.DB, funcName string, query string, args ...interface{}) (*sql.Row, error) {
+	log.Printf("Function \"%s\" is executing SQL command: %s", funcName, query)
+
+	// Prepare the SQL statement
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		log.Printf("Error preparing SQL statement: %s", err.Error())
+		return nil, err
+	}
+	defer stmt.Close()
+
+	// Execute the SQL statement with the provided arguments
+	row := stmt.QueryRowContext(ctx, args...)
+
+	return row, nil
+}
+
+// QuerySQL is a wrapper function that logs the SQL command before executing it.
+func QuerySQL(ctx context.Context, db *sql.DB, funcName string, query string, args ...interface{}) (*sql.Rows, error) {
+	log.Printf("Function \"%s\" is executing SQL command: %s", funcName, query)
+
+	// Prepare the SQL statement
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		log.Printf("Error preparing SQL statement: %s", err.Error())
+		return nil, err
+	}
+	defer stmt.Close()
+
+	// Execute the SQL statement with the provided arguments
+	rows, err := stmt.QueryContext(ctx, args...)
+	if err != nil {
+		log.Printf("Error executing SQL command: %s", err.Error())
+		return nil, err
+	}
+
+	return rows, nil
+}
+
+// ExecSQL is a wrapper function that logs the SQL command before executing it.
+func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, args ...interface{}) (sql.Result, error) {
+	log.Printf("Function \"%s\" is executing SQL command: %s", funcName, query)
+	// Prepare the SQL statement
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		log.Printf("Error preparing SQL statement: %s", err.Error())
+		return nil, err
+	}
+	defer stmt.Close()
+
+	// Execute the SQL command with the provided arguments
+	result, err := stmt.ExecContext(ctx, args...)
+	if err != nil {
+		log.Printf("Error executing SQL command: %s", err.Error())
+		return nil, err
+	}
+
+	return result, nil
 }
 
 // CreateExercise creates a new exercise in db given by exercise model
 func (r *ExerciseRepo) CreateExercise(ctx context.Context, p ExerciseInputRepo) error {
 	// check exercise exists
-	isExists, err := r.IsExerciseExists(ctx, p.Title)
+	isExists, err := r.IsExerciseExists(ctx, p.ClassroomID, p.Title)
 	if err != nil {
 		return err
 	}
@@ -32,15 +92,7 @@ func (r *ExerciseRepo) CreateExercise(ctx context.Context, p ExerciseInputRepo) 
 		return ErrExerciseExisted
 	}
 
-	// Prepare the SQL statement
-	stmt, err := r.Database.PrepareContext(ctx, "INSERT INTO exercises (title, content, classroom_id, deadline, score) VALUES ($1, $2, $3, $4, $5) RETURNING id")
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	// Execute the SQL statement and retrieve the generated ID
-	if _, err := stmt.ExecContext(ctx, p.Title, p.Content, p.ClassroomID, p.Deadline, p.Score); err != nil {
+	if _, err := ExecSQL(ctx, r.Database, "CreateExercise", "INSERT INTO exercises (title, content, classroom_id, deadline, score, reporting_stage_id, author_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", p.Title, p.Content, p.ClassroomID, p.Deadline, p.Score, p.ReportingStageID, p.AuthorID); err != nil {
 		return err
 	}
 
@@ -48,30 +100,28 @@ func (r *ExerciseRepo) CreateExercise(ctx context.Context, p ExerciseInputRepo) 
 }
 
 type ExerciseOutputRepo struct {
-	ID          int
-	Title       string
-	Content     string
-	ClassroomID int
-	Deadline    time.Time
-	Score       int
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID               int
+	Title            string
+	Content          string
+	ClassroomID      int
+	Deadline         time.Time
+	Score            int
+	ReportingStageID int
+	AuthorID         int
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 }
 
 // GetExercise returns a exercise in db given by id
 func (r *ExerciseRepo) GetExercise(ctx context.Context, id int) (ExerciseOutputRepo, error) {
-	// Prepare the SQL statement
-	stmt, err := r.Database.PrepareContext(ctx, "SELECT id, title, content, classroom_id, deadline, score, created_at, updated_at FROM exercises WHERE id=$1")
+	row, err := QueryRowSQL(ctx, r.Database, "GetExercise", "SELECT id, title, content, classroom_id, deadline, score, reporting_stage_id, author_id, created_at, updated_at FROM exercises WHERE id=$1", id)
 	if err != nil {
 		return ExerciseOutputRepo{}, err
 	}
-	defer stmt.Close()
 
-	// Execute the SQL statement and retrieve the exercise
-	row := stmt.QueryRowContext(ctx, id)
 	exercise := ExerciseOutputRepo{}
 
-	if err = row.Scan(&exercise.ID, &exercise.Title, &exercise.Content, &exercise.ClassroomID, &exercise.Deadline, &exercise.Score, &exercise.CreatedAt, &exercise.UpdatedAt); err != nil {
+	if err = row.Scan(&exercise.ID, &exercise.Title, &exercise.Content, &exercise.ClassroomID, &exercise.Deadline, &exercise.Score, &exercise.ReportingStageID, &exercise.AuthorID, &exercise.CreatedAt, &exercise.UpdatedAt); err != nil {
 		if err == sql.ErrNoRows {
 			return ExerciseOutputRepo{}, ErrExerciseNotFound
 		}
@@ -82,18 +132,14 @@ func (r *ExerciseRepo) GetExercise(ctx context.Context, id int) (ExerciseOutputR
 }
 
 // CheckExerciseExists checks whether the specified exercise exists by title (true == exist)
-func (r *ExerciseRepo) IsExerciseExists(ctx context.Context, title string) (bool, error) {
-	// Prepare the SQL statement
-	stmt, err := r.Database.PrepareContext(ctx, "SELECT EXISTS(SELECT 1 FROM exercises WHERE title LIKE '%' || $1 || '%')")
+func (r *ExerciseRepo) IsExerciseExists(ctx context.Context, classroomID int, title string) (bool, error) {
+	row, err := QueryRowSQL(ctx, r.Database, "IsExerciseExists", "SELECT EXISTS(SELECT 1 FROM exercises WHERE title LIKE '%' || $1 || '%' AND classroom_id=$2)", title, classroomID)
 	if err != nil {
 		return false, err
 	}
-	defer stmt.Close()
 
-	// Execute the SQL statement and retrieve the result
 	var exists bool
-	err = stmt.QueryRowContext(ctx, title).Scan(&exists)
-	if err != nil {
+	if err = row.Scan(&exists); err != nil {
 		return false, err
 	}
 
@@ -102,20 +148,10 @@ func (r *ExerciseRepo) IsExerciseExists(ctx context.Context, title string) (bool
 
 // UpdateExercise updates the specified exercise by id
 func (r *ExerciseRepo) UpdateExercise(ctx context.Context, id int, exercise ExerciseInputRepo) error {
-	log.Println(id, exercise)
-	// Prepare the SQL statement
-	stmt, err := r.Database.PrepareContext(ctx, "UPDATE exercises SET title=$2, content=$3, classroom_id=$4, deadline=$5, score=$6, updated_at=$7 WHERE id=$1")
+	result, err := ExecSQL(ctx, r.Database, "UpdatePost", "UPDATE exercises SET title=$2, content=$3, classroom_id=$4, deadline=$5, score=$6, reporting_stage_id=$7, author_id=$8, updated_at=$8 WHERE id=$1", id, exercise.Title, exercise.Content, exercise.ClassroomID, exercise.Deadline, exercise.Score, exercise.ReportingStageID, exercise.AuthorID, time.Now())
 	if err != nil {
 		return err
 	}
-	defer stmt.Close()
-
-	// Execute the SQL statement and retrieve the ID of the updated exercise
-	result, err := stmt.ExecContext(ctx, id, exercise.Title, exercise.Content, exercise.ClassroomID, exercise.Deadline, exercise.Score, time.Now())
-	if err != nil {
-		return err
-	}
-
 	if rowsAff, _ := result.RowsAffected(); rowsAff == 0 {
 		return ErrExerciseNotFound
 	}
@@ -125,18 +161,11 @@ func (r *ExerciseRepo) UpdateExercise(ctx context.Context, id int, exercise Exer
 
 // DeleteExercise deletes a exercise in db given by id
 func (r *ExerciseRepo) DeleteExercise(ctx context.Context, id int) error {
-	// Prepare the SQL statement
-	stmt, err := r.Database.PrepareContext(ctx, "DELETE FROM exercises WHERE id=$1")
+	result, err := ExecSQL(ctx, r.Database, "DeletePost", "DELETE FROM exercises WHERE id=$1", id)
 	if err != nil {
 		return err
 	}
-	defer stmt.Close()
 
-	// Execute the SQL statement and retrieve the deleted exercise's details
-	result, err := stmt.ExecContext(ctx, id)
-	if err != nil {
-		return err
-	}
 	if rowsAff, _ := result.RowsAffected(); rowsAff == 0 {
 		return ErrExerciseNotFound
 	}
@@ -154,7 +183,8 @@ type ExerciseFilterRepo struct {
 
 // GetExercise returns a list of exercises in db with filter
 func (r *ExerciseRepo) GetExercises(ctx context.Context, filter ExerciseFilterRepo) ([]ExerciseOutputRepo, int, error) {
-	query := []string{"SELECT * FROM exercises"}
+	log.Println(filter)
+	query := []string{"SELECT id, title, content, classroom_id, deadline, score, reporting_stage_id, author_id, created_at, updated_at FROM exercises"}
 
 	if filter.TitleSearch != "" {
 		query = append(query, fmt.Sprintf("WHERE UPPER(title) LIKE UPPER('%s')", "%"+filter.TitleSearch+"%"))
@@ -163,15 +193,7 @@ func (r *ExerciseRepo) GetExercises(ctx context.Context, filter ExerciseFilterRe
 	query = append(query, fmt.Sprintf("ORDER BY %s %s", filter.SortColumn, filter.SortOrder),
 		fmt.Sprintf("LIMIT %d OFFSET %d", filter.Limit, (filter.Page-1)*filter.Limit))
 
-	// Prepare the SQL statement
-	stmt, err := r.Database.PrepareContext(ctx, strings.Join(query, " "))
-	if err != nil {
-		return nil, 0, err
-	}
-	defer stmt.Close()
-
-	// Execute the SQL statement
-	rows, err := stmt.QueryContext(ctx)
+	rows, err := QuerySQL(ctx, r.Database, "GetExercises", strings.Join(query, " "))
 	if err != nil {
 		return nil, 0, err
 	}
@@ -188,6 +210,8 @@ func (r *ExerciseRepo) GetExercises(ctx context.Context, filter ExerciseFilterRe
 			&exercise.ClassroomID,
 			&exercise.Deadline,
 			&exercise.Score,
+			&exercise.ReportingStageID,
+			&exercise.AuthorID,
 			&exercise.CreatedAt,
 			&exercise.UpdatedAt,
 		)
@@ -209,6 +233,59 @@ func (r *ExerciseRepo) GetExercises(ctx context.Context, filter ExerciseFilterRe
 	return exercises, count, nil
 }
 
+// GetAllExercisesOfClassroom returns all exercises of the specified classroom given by classroom id
+func (r *ExerciseRepo) GetAllExercisesOfClassroom(ctx context.Context, filter ExerciseFilterRepo, classromID int) ([]ExerciseOutputRepo, int, error) {
+	query := []string{"SELECT id, title, content, classroom_id, deadline, score, reporting_stage_id, author_id, created_at, updated_at FROM exercises"}
+
+	if filter.TitleSearch != "" {
+		query = append(query, fmt.Sprintf("WHERE classroom_id=%d AND UPPER(title) LIKE UPPER('%s')", classromID, "%"+filter.TitleSearch+"%"))
+	} else {
+		query = append(query, fmt.Sprintf("WHERE classroom_id=%d", classromID))
+	}
+
+	query = append(query, fmt.Sprintf("ORDER BY %s %s", filter.SortColumn, filter.SortOrder),
+		fmt.Sprintf("LIMIT %d OFFSET %d", filter.Limit, (filter.Page-1)*filter.Limit))
+
+	rows, err := QuerySQL(ctx, r.Database, "GetAllExercisesOfClassroom", strings.Join(query, " "))
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	// Iterate over the result rows and populate the exercises slice
+	var exercises []ExerciseOutputRepo
+	for rows.Next() {
+		exercise := ExerciseOutputRepo{}
+		err := rows.Scan(
+			&exercise.ID,
+			&exercise.Title,
+			&exercise.Content,
+			&exercise.ClassroomID,
+			&exercise.Deadline,
+			&exercise.Score,
+			&exercise.ReportingStageID,
+			&exercise.AuthorID,
+			&exercise.CreatedAt,
+			&exercise.UpdatedAt,
+		)
+		if err != nil {
+			return nil, 0, err
+		}
+		exercises = append(exercises, exercise)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+
+	count, err := r.getCountInClassroom(ctx, filter.TitleSearch, classromID)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return exercises, count, nil
+}
+
 func (r *ExerciseRepo) getCount(ctx context.Context, titleSearch string) (int, error) {
 	var count int
 
@@ -217,7 +294,34 @@ func (r *ExerciseRepo) getCount(ctx context.Context, titleSearch string) (int, e
 		query = append(query, fmt.Sprintf("WHERE UPPER(title) LIKE UPPER('%s')", "%"+titleSearch+"%"))
 	}
 
-	if err := r.Database.QueryRowContext(ctx, strings.Join(query, " ")).Scan(&count); err != nil {
+	rows, err := QueryRowSQL(ctx, r.Database, "getCount", strings.Join(query, " "))
+	if err != nil {
+		return 0, err
+	}
+
+	if err := rows.Scan(&count); err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func (r *ExerciseRepo) getCountInClassroom(ctx context.Context, titleSearch string, classroomID int) (int, error) {
+	var count int
+
+	query := []string{"SELECT COUNT(*) FROM exercises"}
+	if titleSearch != "" {
+		query = append(query, fmt.Sprintf("WHERE classroom_id=%d AND UPPER(title) LIKE UPPER('%s')", classroomID, "%"+titleSearch+"%"))
+	} else {
+		query = append(query, fmt.Sprintf("WHERE classroom_id=%d", classroomID))
+	}
+
+	rows, err := QueryRowSQL(ctx, r.Database, "getCountIntClassroom", strings.Join(query, " "))
+	if err != nil {
+		return 0, err
+	}
+
+	if err := rows.Scan(&count); err != nil {
 		return 0, err
 	}
 

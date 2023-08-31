@@ -55,6 +55,42 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+  user-db:
+    image: postgres:alpine
+    container_name: user-db
+    networks:
+      mynet:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: thesis_management_users
+    ports:
+      - "5436:5432"
+    volumes:
+      - user-db:/var/lib/postgresql/data
+      - ./script/user/init-database-user.sql:/docker-entrypoint-initdb.d/init-database.sql
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  reporting-stage-db:
+    image: postgres:alpine
+    container_name: reporting-stage-db
+    networks:
+      mynet:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: thesis_management_reporting_stages
+    ports:
+      - "5437:5432"
+    volumes:
+      - reporting-stage-db:/var/lib/postgresql/data
+      - ./script/reporting-stage/init-database-reporting-stage.sql:/docker-entrypoint-initdb.d/init-database.sql
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   api:
     build:
       dockerfile: Dockerfile
@@ -69,12 +105,17 @@ services:
     links:
       - classroom
       - post
+      - exercise
+      # - user
+      - reporting-stage
     volumes:
       - .:/usr/src/app
     depends_on:
       - classroom-db
       - post-db
       - exercise-db
+      - user-db
+      - reporting-stage-db
 
   classroom:
     env_file:
@@ -124,6 +165,38 @@ services:
     volumes:
       - .:/usr/src/app
     
+  # user:
+  #   env_file:
+  #     - .env
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: .
+  #     args:
+  #       - image_name=user
+  #   image: qthuy2k1/thesis-management-backend-user
+  #   networks:
+  #     mynet:
+  #   depends_on:
+  #     - user-db
+  #   volumes:
+  #     - .:/usr/src/app
+
+  reporting-stage:
+    env_file:
+      - .env
+    build:
+      dockerfile: Dockerfile
+      context: .
+      args:
+        - image_name=reporting-stage
+    image: qthuy2k1/thesis-management-backend-reporting-stage
+    networks:
+      mynet:
+    depends_on:
+      - reporting-stage-db
+    volumes:
+      - .:/usr/src/app
+    
   apigw-client:
     build:
       dockerfile: Dockerfile
@@ -143,11 +216,15 @@ services:
       - api
       - classroom
       - post
+      # - user
+      - reporting-stage
 
 volumes:
   classroom-db:
   post-db:
   exercise-db:
+  user-db:
+  reporting-stage-db:
 
 networks:
   mynet:

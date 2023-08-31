@@ -16,6 +16,69 @@
     "application/json"
   ],
   "paths": {
+    "/api/classroom/{classroomID}/exercise": {
+      "get": {
+        "operationId": "ExerciseService_GetAllExercisesOfClassroom",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllExercisesOfClassroomResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "classroomID",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "titleSearch",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sortColumn",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "isDesc",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "ExerciseService"
+        ]
+      }
+    },
     "/api/exercise": {
       "get": {
         "operationId": "ExerciseService_GetExercises",
@@ -353,6 +416,14 @@
         "score": {
           "type": "integer",
           "format": "int32"
+        },
+        "reportingStageID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "authorID": {
+          "type": "integer",
+          "format": "int32"
         }
       },
       "title": "====== exercise ======"
@@ -375,10 +446,17 @@
           "format": "int32"
         },
         "deadline": {
-          "$ref": "#/definitions/typeDateTime",
-          "title": "google.protobuf.Timestamp deadline = 5 [(validate.rules).timestamp.required = true];"
+          "$ref": "#/definitions/typeDateTime"
         },
         "score": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "reportingStageID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "authorID": {
           "type": "integer",
           "format": "int32"
         },
@@ -389,6 +467,25 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1GetAllExercisesOfClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonExerciseResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "exercises": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ExerciseResponse"
+          }
         }
       }
     },

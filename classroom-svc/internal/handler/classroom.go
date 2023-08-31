@@ -48,12 +48,16 @@ func (h *ClassroomHdl) GetClassroom(ctx context.Context, req *classroompb.GetCla
 	}
 
 	clrResp := classroompb.ClassroomResponse{
-		Id:          int32(clr.ID),
-		Title:       clr.Title,
-		Description: clr.Description,
-		Status:      clr.Status,
-		CreatedAt:   timestamppb.New(clr.CreatedAt),
-		UpdatedAt:   timestamppb.New(clr.UpdatedAt),
+		Id:            int32(clr.ID),
+		Title:         clr.Title,
+		Description:   clr.Description,
+		Status:        clr.Status,
+		LecturerId:    int32(clr.LecturerID),
+		CodeClassroom: clr.CodeClassroom,
+		TopicTags:     clr.TopicTags,
+		Quantity:      int32(clr.Quantity),
+		CreatedAt:     timestamppb.New(clr.CreatedAt),
+		UpdatedAt:     timestamppb.New(clr.UpdatedAt),
 	}
 
 	resp := &classroompb.GetClassroomResponse{
@@ -98,9 +102,13 @@ func (c *ClassroomHdl) UpdateClassroom(ctx context.Context, req *classroompb.Upd
 	}
 
 	if err := c.Service.UpdateClassroom(ctx, int(req.GetId()), service.ClassroomInputSvc{
-		Title:       clr.Title,
-		Description: clr.Description,
-		Status:      clr.Status,
+		Title:         clr.Title,
+		Description:   clr.Description,
+		Status:        clr.Status,
+		LecturerID:    clr.LecturerID,
+		CodeClassroom: clr.CodeClassroom,
+		TopicTags:     clr.TopicTags,
+		Quantity:      clr.Quantity,
 	}); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -158,12 +166,16 @@ func (h *ClassroomHdl) GetClassrooms(ctx context.Context, req *classroompb.GetCl
 	var clrsResp []*classroompb.ClassroomResponse
 	for _, c := range clrs {
 		clrsResp = append(clrsResp, &classroompb.ClassroomResponse{
-			Id:          int32(c.ID),
-			Title:       c.Title,
-			Description: c.Description,
-			Status:      c.Status,
-			CreatedAt:   timestamppb.New(c.CreatedAt),
-			UpdatedAt:   timestamppb.New(c.UpdatedAt),
+			Id:            int32(c.ID),
+			Title:         c.Title,
+			Description:   c.Description,
+			Status:        c.Status,
+			LecturerId:    int32(c.LecturerID),
+			CodeClassroom: c.CodeClassroom,
+			TopicTags:     c.TopicTags,
+			Quantity:      int32(c.Quantity),
+			CreatedAt:     timestamppb.New(c.CreatedAt),
+			UpdatedAt:     timestamppb.New(c.UpdatedAt),
 		})
 	}
 
@@ -183,8 +195,12 @@ func validateAndConvertClassroom(pbClassroom *classroompb.ClassroomInput) (servi
 	}
 
 	return service.ClassroomInputSvc{
-		Title:       pbClassroom.Title,
-		Description: pbClassroom.Description,
-		Status:      pbClassroom.Status,
+		Title:         pbClassroom.Title,
+		Description:   pbClassroom.Description,
+		Status:        pbClassroom.Status,
+		LecturerID:    int(pbClassroom.LecturerId),
+		CodeClassroom: pbClassroom.CodeClassroom,
+		TopicTags:     pbClassroom.TopicTags,
+		Quantity:      int(pbClassroom.Quantity),
 	}, nil
 }

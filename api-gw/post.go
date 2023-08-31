@@ -2,24 +2,26 @@ package main
 
 import (
 	"context"
-	"log"
 	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
+	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 )
 
 type postServiceGW struct {
 	pb.UnimplementedPostServiceServer
-	postClient      postSvcV1.PostServiceClient
-	classroomClient classroomSvcV1.ClassroomServiceClient
+	postClient           postSvcV1.PostServiceClient
+	classroomClient      classroomSvcV1.ClassroomServiceClient
+	reportingStageClient rpsSvcV1.ReportingStageServiceClient
 }
 
-func NewPostsService(postClient postSvcV1.PostServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient) *postServiceGW {
+func NewPostsService(postClient postSvcV1.PostServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportingStageClient rpsSvcV1.ReportingStageServiceClient) *postServiceGW {
 	return &postServiceGW{
-		postClient:      postClient,
-		classroomClient: classroomClient,
+		postClient:           postClient,
+		classroomClient:      classroomClient,
+		reportingStageClient: reportingStageClient,
 	}
 }
 
@@ -38,11 +40,27 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 		}, nil
 	}
 
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetPost().GetReportingStageID()})
+	if err != nil {
+		return nil, err
+	}
+
+	if rpsRes.GetResponse().GetStatusCode() == 400 {
+		return &pb.CreatePostResponse{
+			Response: &pb.CommonPostResponse{
+				StatusCode: 400,
+				Message:    "Reporting stage does not exist",
+			},
+		}, nil
+	}
+
 	res, err := u.postClient.CreatePost(ctx, &postSvcV1.CreatePostRequest{
 		Post: &postSvcV1.PostInput{
-			Title:       req.GetPost().Title,
-			Content:     req.GetPost().Content,
-			ClassroomID: req.GetPost().ClassroomID,
+			Title:            req.GetPost().Title,
+			Content:          req.GetPost().Content,
+			ClassroomID:      req.GetPost().ClassroomID,
+			ReportingStageID: req.GetPost().ReportingStageID,
+			AuthorID:         req.GetPost().AuthorID,
 		},
 	})
 	if err != nil {
@@ -69,18 +87,33 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 			Message:    res.GetResponse().Message,
 		},
 		Post: &pb.PostResponse{
-			Id:          res.GetPost().Id,
-			Title:       res.GetPost().Title,
-			Content:     res.GetPost().Content,
-			ClassroomID: res.GetPost().ClassroomID,
-			CreatedAt:   res.GetPost().CreatedAt,
-			UpdatedAt:   res.GetPost().UpdatedAt,
+			Id:               res.GetPost().Id,
+			Title:            res.GetPost().Title,
+			Content:          res.GetPost().Content,
+			ClassroomID:      res.GetPost().ClassroomID,
+			ReportingStageID: res.GetPost().ReportingStageID,
+			AuthorID:         res.GetPost().AuthorID,
+			CreatedAt:        res.GetPost().CreatedAt,
+			UpdatedAt:        res.GetPost().UpdatedAt,
 		},
 	}, nil
 }
 
 func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*pb.UpdatePostResponse, error) {
-	log.Println(req)
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetPost().GetReportingStageID()})
+	if err != nil {
+		return nil, err
+	}
+
+	if rpsRes.GetResponse().GetStatusCode() == 400 {
+		return &pb.UpdatePostResponse{
+			Response: &pb.CommonPostResponse{
+				StatusCode: 400,
+				Message:    "Reporting stage does not exist",
+			},
+		}, nil
+	}
+
 	exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: req.GetPost().ClassroomID})
 	if err != nil {
 		return nil, err
@@ -98,9 +131,11 @@ func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostReques
 	res, err := u.postClient.UpdatePost(ctx, &postSvcV1.UpdatePostRequest{
 		Id: req.GetId(),
 		Post: &postSvcV1.PostInput{
-			Title:       req.GetPost().Title,
-			Content:     req.GetPost().Content,
-			ClassroomID: req.GetPost().ClassroomID,
+			Title:            req.GetPost().Title,
+			Content:          req.GetPost().Content,
+			ClassroomID:      req.GetPost().ClassroomID,
+			ReportingStageID: req.GetPost().ReportingStageID,
+			AuthorID:         req.GetPost().AuthorID,
 		},
 	})
 	if err != nil {
@@ -136,54 +171,51 @@ func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (
 		return nil, err
 	}
 
-	filter := &postSvcV1.GetPostsRequest{}
+	var limit int32 = 5
+	var page int32 = 1
+	titleSearch := ""
+	sortColumn := "id"
+	sortOrder := "asc"
 
 	if req.GetLimit() > 0 {
-		filter.Limit = req.GetLimit()
-	} else {
-		filter.Limit = 5
+		limit = req.GetLimit()
 	}
 
 	if req.GetPage() > 0 {
-		filter.Page = req.GetPage()
-	} else {
-		filter.Page = 1
+		page = req.GetPage()
 	}
 
 	titleSearchTrim := strings.TrimSpace(req.GetTitleSearch())
 	if len(titleSearchTrim) > 0 {
-		filter.TitleSearch = titleSearchTrim
+		titleSearch = titleSearchTrim
 	}
 
 	sortColumnTrim := strings.TrimSpace(req.GetSortColumn())
 	if len(sortColumnTrim) > 0 {
 		columns := map[string]string{
-			"id":           "id",
-			"title":        "title",
-			"content":      "content",
-			"classroom_id": "classroom_id",
-			"created_at":   "created_at",
-			"updated_at":   "updated_at",
+			"id":                 "id",
+			"title":              "title",
+			"content":            "content",
+			"classroom_id":       "classroom_id",
+			"reporting_stage_id": "reporting_stage_id",
+			"author_id":          "author_id",
+			"created_at":         "created_at",
+			"updated_at":         "updated_at",
 		}
 		if stringInMap(sortColumnTrim, columns) {
-			filter.SortColumn = sortColumnTrim
-		} else {
-			filter.SortColumn = "id"
+			sortColumn = sortColumnTrim
 		}
-	} else {
-		filter.SortColumn = "id"
 	}
 
-	sortOrder := "asc"
 	if req.IsDesc {
 		sortOrder = "desc"
 	}
 
 	res, err := u.postClient.GetPosts(ctx, &postSvcV1.GetPostsRequest{
-		Limit:       filter.Limit,
-		Page:        filter.Page,
-		TitleSearch: filter.TitleSearch,
-		SortColumn:  filter.SortColumn,
+		Limit:       limit,
+		Page:        page,
+		TitleSearch: titleSearch,
+		SortColumn:  sortColumn,
 		SortOrder:   sortOrder,
 	})
 	if err != nil {
@@ -193,16 +225,104 @@ func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (
 	var posts []*pb.PostResponse
 	for _, p := range res.GetPosts() {
 		posts = append(posts, &pb.PostResponse{
-			Id:          p.Id,
-			Title:       p.Title,
-			Content:     p.Content,
-			ClassroomID: p.ClassroomID,
-			CreatedAt:   p.CreatedAt,
-			UpdatedAt:   p.UpdatedAt,
+			Id:               p.Id,
+			Title:            p.Title,
+			Content:          p.Content,
+			ClassroomID:      p.ClassroomID,
+			ReportingStageID: p.ReportingStageID,
+			AuthorID:         p.AuthorID,
+			CreatedAt:        p.CreatedAt,
+			UpdatedAt:        p.UpdatedAt,
 		})
 	}
 
 	return &pb.GetPostsResponse{
+		Response: &pb.CommonPostResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+		TotalCount: res.GetTotalCount(),
+		Posts:      posts,
+	}, nil
+}
+
+func (u *postServiceGW) GetAllPostsOfClassroom(ctx context.Context, req *pb.GetAllPostsOfClassroomRequest) (*pb.GetAllPostsOfClassroomResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	var limit int32 = 5
+	var page int32 = 1
+	titleSearch := ""
+	sortColumn := "id"
+	sortOrder := "asc"
+	var classroomID int32
+
+	if req.GetLimit() > 0 {
+		limit = req.GetLimit()
+	}
+
+	if req.GetPage() > 0 {
+		page = req.GetPage()
+	}
+
+	titleSearchTrim := strings.TrimSpace(req.GetTitleSearch())
+	if len(titleSearchTrim) > 0 {
+		titleSearch = titleSearchTrim
+	}
+
+	sortColumnTrim := strings.TrimSpace(req.GetSortColumn())
+	if len(sortColumnTrim) > 0 {
+		columns := map[string]string{
+			"id":                 "id",
+			"title":              "title",
+			"content":            "content",
+			"classroom_id":       "classroom_id",
+			"reporting_stage_id": "reporting_stage_id",
+			"author_id":          "author_id",
+			"created_at":         "created_at",
+			"updated_at":         "updated_at",
+		}
+		if stringInMap(sortColumnTrim, columns) {
+			sortColumn = sortColumnTrim
+		}
+	}
+
+	if req.IsDesc {
+		sortOrder = "desc"
+	}
+
+	if req.GetClassroomID() > 0 {
+		classroomID = req.GetClassroomID()
+	}
+
+	res, err := u.postClient.GetAllPostsOfClassroom(ctx, &postSvcV1.GetAllPostsOfClassroomRequest{
+		Limit:       limit,
+		Page:        page,
+		TitleSearch: titleSearch,
+		SortColumn:  sortColumn,
+		SortOrder:   sortOrder,
+		ClassroomID: classroomID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var posts []*pb.PostResponse
+	for _, p := range res.GetPosts() {
+		posts = append(posts, &pb.PostResponse{
+			Id:               p.Id,
+			Title:            p.Title,
+			Content:          p.Content,
+			ClassroomID:      p.ClassroomID,
+			ReportingStageID: p.ReportingStageID,
+			AuthorID:         p.AuthorID,
+			CreatedAt:        p.CreatedAt,
+			UpdatedAt:        p.UpdatedAt,
+		})
+	}
+
+	return &pb.GetAllPostsOfClassroomResponse{
 		Response: &pb.CommonPostResponse{
 			StatusCode: res.GetResponse().StatusCode,
 			Message:    res.GetResponse().Message,

@@ -62,10 +62,11 @@ func (h *ExerciseHdl) GetExercise(ctx context.Context, req *exercisepb.GetExerci
 			Minutes: int32(e.Deadline.Minute()),
 			Seconds: int32(e.Deadline.Second()),
 		},
-
-		Score:     int32(e.Score),
-		CreatedAt: timestamppb.New(e.CreatedAt),
-		UpdatedAt: timestamppb.New(e.UpdatedAt),
+		Score:            int32(e.Score),
+		ReportingStageID: int32(e.ReportingStageID),
+		AuthorID:         int32(e.AuthorID),
+		CreatedAt:        timestamppb.New(e.CreatedAt),
+		UpdatedAt:        timestamppb.New(e.UpdatedAt),
 	}
 
 	resp := &exercisepb.GetExerciseResponse{
@@ -92,11 +93,13 @@ func (c *ExerciseHdl) UpdateExercise(ctx context.Context, req *exercisepb.Update
 	}
 
 	if err := c.Service.UpdateExercise(ctx, int(req.GetId()), service.ExerciseInputSvc{
-		Title:       e.Title,
-		Content:     e.Content,
-		ClassroomID: e.ClassroomID,
-		Deadline:    e.Deadline,
-		Score:       e.Score,
+		Title:            e.Title,
+		Content:          e.Content,
+		ClassroomID:      e.ClassroomID,
+		Deadline:         e.Deadline,
+		Score:            e.Score,
+		ReportingStageID: e.ReportingStageID,
+		AuthorID:         e.AuthorID,
 	}); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -166,9 +169,11 @@ func (h *ExerciseHdl) GetExercises(ctx context.Context, req *exercisepb.GetExerc
 				Minutes: int32(e.Deadline.Minute()),
 				Seconds: int32(e.Deadline.Second()),
 			},
-			Score:     int32(e.Score),
-			CreatedAt: timestamppb.New(e.CreatedAt),
-			UpdatedAt: timestamppb.New(e.UpdatedAt),
+			Score:            int32(e.Score),
+			ReportingStageID: int32(e.ReportingStageID),
+			AuthorID:         int32(e.AuthorID),
+			CreatedAt:        timestamppb.New(e.CreatedAt),
+			UpdatedAt:        timestamppb.New(e.UpdatedAt),
 		})
 	}
 
@@ -178,6 +183,60 @@ func (h *ExerciseHdl) GetExercises(ctx context.Context, req *exercisepb.GetExerc
 			Message:    "Success",
 		},
 		Exercises:  psResp,
+		TotalCount: int32(count),
+	}, nil
+}
+
+func (h *ExerciseHdl) GetAllExercisesOfClassroom(ctx context.Context, req *exercisepb.GetAllExercisesOfClassroomRequest) (*exercisepb.GetAllExercisesOfClassroomResponse, error) {
+	log.Println("calling get all exercises of a classroom...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	filter := service.ExerciseFilterSvc{
+		Limit:       int(req.GetLimit()),
+		Page:        int(req.GetPage()),
+		TitleSearch: req.GetTitleSearch(),
+		SortColumn:  req.GetSortColumn(),
+		SortOrder:   req.GetSortOrder(),
+	}
+
+	es, count, err := h.Service.GetAllExercisesOfClassroom(ctx, filter, int(req.GetClassroomID()))
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var esResp []*exercisepb.ExerciseResponse
+	for _, e := range es {
+		esResp = append(esResp, &exercisepb.ExerciseResponse{
+			Id:          int32(e.ID),
+			Title:       e.Title,
+			Content:     e.Content,
+			ClassroomID: int32(e.ClassroomID),
+			Deadline: &datetime.DateTime{
+				Day:     int32(e.Deadline.Day()),
+				Month:   int32(e.Deadline.Month()),
+				Year:    int32(e.Deadline.Year()),
+				Hours:   int32(e.Deadline.Hour()),
+				Minutes: int32(e.Deadline.Minute()),
+				Seconds: int32(e.Deadline.Second()),
+			},
+			Score:            int32(e.Score),
+			ReportingStageID: int32(e.ReportingStageID),
+			AuthorID:         int32(e.AuthorID),
+			CreatedAt:        timestamppb.New(e.CreatedAt),
+			UpdatedAt:        timestamppb.New(e.UpdatedAt),
+		})
+	}
+
+	return &exercisepb.GetAllExercisesOfClassroomResponse{
+		Response: &exercisepb.CommonExerciseResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Exercises:  esResp,
 		TotalCount: int32(count),
 	}, nil
 }
@@ -195,10 +254,12 @@ func validateAndConvertExercise(pbExercise *exercisepb.ExerciseInput) (service.E
 	}
 
 	return service.ExerciseInputSvc{
-		Title:       pbExercise.Title,
-		Content:     pbExercise.Content,
-		ClassroomID: int(pbExercise.ClassroomID),
-		Deadline:    deadline,
-		Score:       int(pbExercise.Score),
+		Title:            pbExercise.Title,
+		Content:          pbExercise.Content,
+		ClassroomID:      int(pbExercise.ClassroomID),
+		Deadline:         deadline,
+		Score:            int(pbExercise.Score),
+		ReportingStageID: int(pbExercise.ReportingStageID),
+		AuthorID:         int(pbExercise.AuthorID),
 	}, nil
 }

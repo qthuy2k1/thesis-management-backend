@@ -12,13 +12,15 @@ import (
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
+	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 )
 
 const (
-	listenAddress    = "0.0.0.0:9091"
-	classroomAddress = "classroom:9091"
-	postAddress      = "post:9091"
-	exerciseAddress  = "exercise:9091"
+	listenAddress         = "0.0.0.0:9091"
+	classroomAddress      = "classroom:9091"
+	postAddress           = "post:9091"
+	exerciseAddress       = "exercise:9091"
+	reportingStageAddress = "reporting-stage:9091"
 )
 
 func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
@@ -48,11 +50,20 @@ func newExerciseSvcClient() (exerciseSvcV1.ExerciseServiceClient, error) {
 	return exerciseSvcV1.NewExerciseServiceClient(conn), nil
 }
 
+func newReportingStageSvcClient() (rpsSvcV1.ReportingStageServiceClient, error) {
+	conn, err := grpc.DialContext(context.TODO(), reportingStageAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, fmt.Errorf("reporting stage client: %w", err)
+	}
+
+	return rpsSvcV1.NewReportingStageServiceClient(conn), nil
+}
+
 func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	log.Printf("method %q called\n", info.FullMethod)
+	log.Printf("APIGW service: method %q called\n", info.FullMethod)
 	resp, err := handler(ctx, req)
 	if err != nil {
-		log.Printf("method %q failed: %s\n", info.FullMethod, err)
+		log.Printf("APIGW serivce: method %q failed: %s\n", info.FullMethod, err)
 	}
 	return resp, err
 }
@@ -78,15 +89,22 @@ func main() {
 		panic(err)
 	}
 
+	// connect to reporting stage svc
+	rpsClient, err := newReportingStageSvcClient()
+	if err != nil {
+		panic(err)
+	}
+
 	lis, err := net.Listen("tcp", listenAddress)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
 
-	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient))
-	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient))
+	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient))
+	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient))
 	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient))
+	pb.RegisterReportingStageServiceServer(s, NewReportingStagesService(rpsClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
