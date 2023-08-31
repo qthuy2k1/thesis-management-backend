@@ -59,6 +59,8 @@ message PostInput {
     string title = 1 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string content = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     int32 classroomID = 3 [(validate.rules).int32.gte = 1];
+    int32 reportingStageID = 4 [(validate.rules).int32.gte = 1];
+    int32 authorID = 5 [(validate.rules).int32.gte = 1];
 }
 
 message PostResponse {
@@ -66,8 +68,10 @@ message PostResponse {
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string content = 3 [(validate.rules).string = {min_len: 2}];
     int32 classroomID = 4 [(validate.rules).int32.gte = 1];
-    google.protobuf.Timestamp created_at = 5 [(validate.rules).timestamp.required = true];
-    google.protobuf.Timestamp updated_at = 6 [(validate.rules).timestamp.required = true];
+    int32 reportingStageID = 5 [(validate.rules).int32.gte = 1];
+    int32 authorID = 6 [(validate.rules).int32.gte = 1];
+    google.protobuf.Timestamp createdAt = 7 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp updatedAt = 8 [(validate.rules).timestamp.required = true];
 }
 
 message CreatePostRequest {
@@ -108,17 +112,14 @@ message DeletePostResponse {
     CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
 }
 
-message PostFilter {
+
+// ====== GET ALL ======
+message GetPostsRequest {
     int32 page = 1;
     int32 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
     bool isDesc = 5;
-}
-
-// ====== GET ALL ======
-message GetPostsRequest {
-    PostFilter filter = 1;    
 }
 
 message GetPostsResponse {
@@ -129,8 +130,12 @@ message GetPostsResponse {
 
 // ====== GET ALL OF CLASSROOM ======
 message GetAllPostsOfClassroomRequest {
-    PostFilter filter = 1;
-    int32 classroomID = 2 [(validate.rules).int32.gte = 1];
+    int32 page = 1;
+    int32 limit = 2;
+    string titleSearch = 3;
+    string sortColumn = 4;
+    bool isDesc = 5;
+    int32 classroomID = 6 [(validate.rules).int32.gte = 1];
 }
 
 message GetAllPostsOfClassroomResponse {

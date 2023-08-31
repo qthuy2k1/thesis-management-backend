@@ -17,6 +17,8 @@ service ExerciseService {
     rpc DeleteExercise(DeleteExerciseRequest) returns (DeleteExerciseResponse){ }
 
     rpc GetExercises(GetExercisesRequest) returns (GetExercisesResponse) {}
+
+    rpc GetAllExercisesOfClassroom(GetAllExercisesOfClassroomRequest) returns (GetAllExercisesOfClassroomResponse) {}
 }
 
 message CommonExerciseResponse {
@@ -32,6 +34,8 @@ message ExerciseInput {
     int32 classroomID = 3;
     google.type.DateTime deadline = 4;
     int32 score = 5;
+    int32 reportingStageID = 6;
+    int32 authorID = 7;
 }
 
 message ExerciseResponse {
@@ -41,8 +45,10 @@ message ExerciseResponse {
     int32 classroomID = 4;
     google.type.DateTime deadline = 5;
     int32 score = 6;
-    google.protobuf.Timestamp created_at = 7;
-    google.protobuf.Timestamp updated_at = 8;
+    int32 reportingStageID = 7;
+    int32 authorID = 8;
+    google.protobuf.Timestamp created_at = 9;
+    google.protobuf.Timestamp updated_at = 10;
 }
 
 message CreateExerciseRequest {
@@ -83,14 +89,13 @@ message DeleteExerciseResponse {
     CommonExerciseResponse response = 1;
 }
 
-
 // ====== GET ALL ======
 message GetExercisesRequest {
     int32 page = 1;
     int32 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
-    string sortOrder = 5;
+    string sortOrder = 5; 
 }
 
 message GetExercisesResponse {
@@ -99,4 +104,18 @@ message GetExercisesResponse {
     repeated ExerciseResponse exercises = 3;
 }
 
+// ====== GET ALL OF CLASSROOM ======
+message GetAllExercisesOfClassroomRequest {
+    int32 page = 1;
+    int32 limit = 2;
+    string titleSearch = 3;
+    string sortColumn = 4;
+    string sortOrder = 5; 
+    int32 classroomID = 6;
+}
 
+message GetAllExercisesOfClassroomResponse {
+    CommonExerciseResponse response = 1;
+    int32 totalCount = 2;
+    repeated ExerciseResponse exercises = 3;
+}

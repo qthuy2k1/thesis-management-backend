@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package reportingStage.v1;
+
+option go_package="github.com/qthuy2k1/thesis-management-backend/reporting-stage/api/v1";
+
+service ReportingStageService {
+    rpc CreateReportingStage(CreateReportingStageRequest) returns (CreateReportingStageResponse){
+        
+    }
+    
+    rpc GetReportingStage(GetReportingStageRequest) returns (GetReportingStageResponse){
+        
+    }
+
+    rpc UpdateReportingStage(UpdateReportingStageRequest) returns (UpdateReportingStageResponse){
+        
+    }
+
+    rpc DeleteReportingStage(DeleteReportingStageRequest) returns (DeleteReportingStageResponse){
+        
+    }
+
+    rpc GetReportingStages(GetReportingStagesRequest) returns (GetReportingStagesResponse) {
+        
+    }
+}
+
+message CommonReportingStageResponse {
+    int32 statusCode = 1;
+    string message = 2;
+}
+
+
+// ====== reportingStage ======
+message ReportingStageInput {
+    string name = 1;
+    string description = 2;
+}
+
+message ReportingStageResponse {
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+}
+
+message CreateReportingStageRequest {
+   ReportingStageInput reportingStage = 1;
+}
+
+message CreateReportingStageResponse {
+    CommonReportingStageResponse response = 1;
+}
+
+
+// ====== GET ======
+message GetReportingStageRequest {
+    int32 id = 1;
+}
+
+message GetReportingStageResponse {
+    CommonReportingStageResponse response = 1;
+    ReportingStageResponse reportingStage = 2;
+}
+
+// ====== PUT ======
+message UpdateReportingStageRequest {
+    int32 id = 1;
+    ReportingStageInput reportingStage = 2;
+}
+
+message UpdateReportingStageResponse {
+    CommonReportingStageResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteReportingStageRequest {
+    int32 id = 1; 
+}
+
+message DeleteReportingStageResponse {
+    CommonReportingStageResponse response = 1;
+}
+
+// ====== GET ALL ======
+message GetReportingStagesRequest {}
+
+message GetReportingStagesResponse {
+    CommonReportingStageResponse response = 1; 
+    repeated ReportingStageResponse reportingStages = 3;
+}
+
+

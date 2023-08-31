@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package api.reportingStage.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package="github.com/qthuy2k1/thesis-management-backend/reporting-stage/api/v1";
+
+service ReportingStageService {
+    rpc CreateReportingStage(CreateReportingStageRequest) returns (CreateReportingStageResponse){
+        option (google.api.http) = {
+            post: "/api/reporting-stage"
+            body: "*"
+        };
+    }
+    
+    rpc GetReportingStage(GetReportingStageRequest) returns (GetReportingStageResponse){
+        option (google.api.http) = {
+            get: "/api/reporting-stage/{id}"
+        };
+    }
+
+    rpc UpdateReportingStage(UpdateReportingStageRequest) returns (UpdateReportingStageResponse){
+        option (google.api.http) = {
+            put: "/api/reporting-stage/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteReportingStage(DeleteReportingStageRequest) returns (DeleteReportingStageResponse){
+        option (google.api.http) = {
+            delete: "/api/reporting-stage/{id}"
+        };
+    }
+
+    rpc GetReportingStages(GetReportingStagesRequest) returns (GetReportingStagesResponse) {
+        option (google.api.http) = {
+            get: "/api/reporting-stage"
+        };
+    }
+}
+
+message CommonReportingStageResponse {
+    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    string message = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+
+// ====== reportingStage ======
+message ReportingStageInput {
+    string name = 1 [(validate.rules).string = {min_len: 2}];
+    string description = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+message ReportingStageResponse {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    string name = 2 [(validate.rules).string = {min_len: 2}];
+    string description = 3 [(validate.rules).string = {min_len: 2}];
+}
+
+message CreateReportingStageRequest {
+   ReportingStageInput reportingStage = 1 [(validate.rules).message = {required: true}];
+}
+
+message CreateReportingStageResponse {
+    CommonReportingStageResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ======
+message GetReportingStageRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+}
+
+message GetReportingStageResponse {
+    CommonReportingStageResponse response = 1 [(validate.rules).message = {required: true}];
+    ReportingStageResponse reportingStage = 2 [(validate.rules).message = {required: true}];
+}
+
+// ====== PUT ======
+message UpdateReportingStageRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    ReportingStageInput reportingStage = 2 [(validate.rules).message = {required: true}];
+}
+
+message UpdateReportingStageResponse {
+    CommonReportingStageResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== DELETE ======
+message DeleteReportingStageRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+}
+
+message DeleteReportingStageResponse {
+    CommonReportingStageResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== GET ALL ======
+message GetReportingStagesRequest {}
+
+message GetReportingStagesResponse {
+    CommonReportingStageResponse response = 1 [(validate.rules).message = {required: true}]; 
+    repeated ReportingStageResponse reportingStages = 3;
+}

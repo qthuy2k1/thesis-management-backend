@@ -42,33 +42,33 @@
             "format": "int32"
           },
           {
-            "name": "filter.page",
+            "name": "page",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "filter.limit",
+            "name": "limit",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "filter.titleSearch",
+            "name": "titleSearch",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "filter.sortColumn",
+            "name": "sortColumn",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "filter.isDesc",
+            "name": "isDesc",
             "in": "query",
             "required": false,
             "type": "boolean"
@@ -98,33 +98,33 @@
         },
         "parameters": [
           {
-            "name": "filter.page",
+            "name": "page",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "filter.limit",
+            "name": "limit",
             "in": "query",
             "required": false,
             "type": "integer",
             "format": "int32"
           },
           {
-            "name": "filter.titleSearch",
+            "name": "titleSearch",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "filter.sortColumn",
+            "name": "sortColumn",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "filter.isDesc",
+            "name": "isDesc",
             "in": "query",
             "required": false,
             "type": "boolean"
@@ -397,28 +397,6 @@
         }
       }
     },
-    "v1ExerciseFilter": {
-      "type": "object",
-      "properties": {
-        "page": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "limit": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "titleSearch": {
-          "type": "string"
-        },
-        "sortColumn": {
-          "type": "string"
-        },
-        "isDesc": {
-          "type": "boolean"
-        }
-      }
-    },
     "v1ExerciseInput": {
       "type": "object",
       "properties": {
@@ -436,6 +414,14 @@
           "$ref": "#/definitions/typeDateTime"
         },
         "score": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "reportingStageID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "authorID": {
           "type": "integer",
           "format": "int32"
         }
@@ -460,10 +446,17 @@
           "format": "int32"
         },
         "deadline": {
-          "$ref": "#/definitions/typeDateTime",
-          "title": "google.protobuf.Timestamp deadline = 5 [(validate.rules).timestamp.required = true];"
+          "$ref": "#/definitions/typeDateTime"
         },
         "score": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "reportingStageID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "authorID": {
           "type": "integer",
           "format": "int32"
         },

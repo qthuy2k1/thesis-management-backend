@@ -9,24 +9,25 @@ import (
 )
 
 type ExerciseInputSvc struct {
-	ID          int
-	Title       string
-	Content     string
-	ClassroomID int
-	Deadline    time.Time
-	Score       int
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Title            string
+	Content          string
+	ClassroomID      int
+	Deadline         time.Time
+	Score            int
+	ReportingStageID int
+	AuthorID         int
 }
 
 // CreateExercise creates a new exercise in db given by exercise model
 func (s *ExerciseSvc) CreateExercise(ctx context.Context, e ExerciseInputSvc) error {
 	eRepo := repository.ExerciseInputRepo{
-		Title:       e.Title,
-		Content:     e.Content,
-		ClassroomID: e.ClassroomID,
-		Deadline:    e.Deadline,
-		Score:       e.Score,
+		Title:            e.Title,
+		Content:          e.Content,
+		ClassroomID:      e.ClassroomID,
+		Deadline:         e.Deadline,
+		Score:            e.Score,
+		ReportingStageID: e.ReportingStageID,
+		AuthorID:         e.AuthorID,
 	}
 
 	if err := s.Repository.CreateExercise(ctx, eRepo); err != nil {
@@ -50,25 +51,29 @@ func (s *ExerciseSvc) GetExercise(ctx context.Context, id int) (ExerciseOutputSv
 	}
 
 	return ExerciseOutputSvc{
-		ID:          e.ID,
-		Title:       e.Title,
-		Content:     e.Content,
-		ClassroomID: e.ClassroomID,
-		Deadline:    e.Deadline,
-		Score:       e.Score,
-		CreatedAt:   e.CreatedAt,
-		UpdatedAt:   e.UpdatedAt,
+		ID:               e.ID,
+		Title:            e.Title,
+		Content:          e.Content,
+		ClassroomID:      e.ClassroomID,
+		Deadline:         e.Deadline,
+		Score:            e.Score,
+		ReportingStageID: e.ReportingStageID,
+		AuthorID:         e.AuthorID,
+		CreatedAt:        e.CreatedAt,
+		UpdatedAt:        e.UpdatedAt,
 	}, nil
 }
 
 // UpdateExercise updates the specified exercise by id
 func (s *ExerciseSvc) UpdateExercise(ctx context.Context, id int, exercise ExerciseInputSvc) error {
 	if err := s.Repository.UpdateExercise(ctx, id, repository.ExerciseInputRepo{
-		Title:       exercise.Title,
-		Content:     exercise.Content,
-		ClassroomID: exercise.ClassroomID,
-		Deadline:    exercise.Deadline,
-		Score:       exercise.Score,
+		Title:            exercise.Title,
+		Content:          exercise.Content,
+		ClassroomID:      exercise.ClassroomID,
+		Deadline:         exercise.Deadline,
+		Score:            exercise.Score,
+		ReportingStageID: exercise.ReportingStageID,
+		AuthorID:         exercise.AuthorID,
 	}); err != nil {
 		if errors.Is(err, repository.ErrExerciseNotFound) {
 			return ErrExerciseNotFound
@@ -92,14 +97,16 @@ func (s *ExerciseSvc) DeleteExercise(ctx context.Context, id int) error {
 }
 
 type ExerciseOutputSvc struct {
-	ID          int
-	Title       string
-	Content     string
-	ClassroomID int
-	Deadline    time.Time
-	Score       int
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID               int
+	Title            string
+	Content          string
+	ClassroomID      int
+	Deadline         time.Time
+	Score            int
+	ReportingStageID int
+	AuthorID         int
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 }
 
 type ExerciseFilterSvc struct {
@@ -126,16 +133,50 @@ func (s *ExerciseSvc) GetExercises(ctx context.Context, filter ExerciseFilterSvc
 	var psSvc []ExerciseOutputSvc
 	for _, e := range esRepo {
 		psSvc = append(psSvc, ExerciseOutputSvc{
-			ID:          e.ID,
-			Title:       e.Title,
-			Content:     e.Content,
-			ClassroomID: e.ClassroomID,
-			Deadline:    e.Deadline,
-			Score:       e.Score,
-			CreatedAt:   e.CreatedAt,
-			UpdatedAt:   e.UpdatedAt,
+			ID:               e.ID,
+			Title:            e.Title,
+			Content:          e.Content,
+			ClassroomID:      e.ClassroomID,
+			Deadline:         e.Deadline,
+			Score:            e.Score,
+			ReportingStageID: e.ReportingStageID,
+			AuthorID:         e.AuthorID,
+			CreatedAt:        e.CreatedAt,
+			UpdatedAt:        e.UpdatedAt,
 		})
 	}
 
 	return psSvc, count, nil
+}
+
+// GetAllExercisesOfClassroom returns a list of exercises in a classroom in db with filter
+func (s *ExerciseSvc) GetAllExercisesOfClassroom(ctx context.Context, filter ExerciseFilterSvc, classroomID int) ([]ExerciseOutputSvc, int, error) {
+	psRepo, count, err := s.Repository.GetAllExercisesOfClassroom(ctx, repository.ExerciseFilterRepo{
+		Limit:       filter.Limit,
+		Page:        filter.Page,
+		TitleSearch: filter.TitleSearch,
+		SortColumn:  filter.SortColumn,
+		SortOrder:   filter.SortOrder,
+	}, classroomID)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var esSvc []ExerciseOutputSvc
+	for _, e := range psRepo {
+		esSvc = append(esSvc, ExerciseOutputSvc{
+			ID:               e.ID,
+			Title:            e.Title,
+			Content:          e.Content,
+			ClassroomID:      e.ClassroomID,
+			Deadline:         e.Deadline,
+			Score:            e.Score,
+			ReportingStageID: e.ReportingStageID,
+			AuthorID:         e.AuthorID,
+			CreatedAt:        e.CreatedAt,
+			UpdatedAt:        e.UpdatedAt,
+		})
+	}
+
+	return esSvc, count, nil
 }

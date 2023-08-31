@@ -351,6 +351,74 @@ func (m *ClassroomResponse) validate(all bool) error {
 		}
 	}
 
+	for idx, item := range m.GetPost() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ClassroomResponseValidationError{
+						field:  fmt.Sprintf("Post[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ClassroomResponseValidationError{
+						field:  fmt.Sprintf("Post[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ClassroomResponseValidationError{
+					field:  fmt.Sprintf("Post[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	for idx, item := range m.GetExercise() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ClassroomResponseValidationError{
+						field:  fmt.Sprintf("Exercise[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ClassroomResponseValidationError{
+						field:  fmt.Sprintf("Exercise[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ClassroomResponseValidationError{
+					field:  fmt.Sprintf("Exercise[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	if len(errors) > 0 {
 		return ClassroomResponseMultiError(errors)
 	}
@@ -430,6 +498,376 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ClassroomResponseValidationError{}
+
+// Validate checks the field values on PostResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *PostResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PostResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in PostResponseMultiError, or
+// nil if none found.
+func (m *PostResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PostResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Title
+
+	// no validation rules for Content
+
+	// no validation rules for ClassroomID
+
+	// no validation rules for ReportingStageID
+
+	// no validation rules for AuthorID
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, PostResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, PostResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return PostResponseValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, PostResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, PostResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return PostResponseValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return PostResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// PostResponseMultiError is an error wrapping multiple validation errors
+// returned by PostResponse.ValidateAll() if the designated constraints aren't met.
+type PostResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PostResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PostResponseMultiError) AllErrors() []error { return m }
+
+// PostResponseValidationError is the validation error returned by
+// PostResponse.Validate if the designated constraints aren't met.
+type PostResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PostResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PostResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PostResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PostResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PostResponseValidationError) ErrorName() string { return "PostResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e PostResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPostResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PostResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PostResponseValidationError{}
+
+// Validate checks the field values on ExerciseResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *ExerciseResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ExerciseResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ExerciseResponseMultiError, or nil if none found.
+func (m *ExerciseResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ExerciseResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Title
+
+	// no validation rules for Content
+
+	// no validation rules for ClassroomID
+
+	if all {
+		switch v := interface{}(m.GetDeadline()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "Deadline",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "Deadline",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetDeadline()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseResponseValidationError{
+				field:  "Deadline",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Score
+
+	// no validation rules for ReportingStageID
+
+	// no validation rules for AuthorID
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseResponseValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseResponseValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return ExerciseResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ExerciseResponseMultiError is an error wrapping multiple validation errors
+// returned by ExerciseResponse.ValidateAll() if the designated constraints
+// aren't met.
+type ExerciseResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ExerciseResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ExerciseResponseMultiError) AllErrors() []error { return m }
+
+// ExerciseResponseValidationError is the validation error returned by
+// ExerciseResponse.Validate if the designated constraints aren't met.
+type ExerciseResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ExerciseResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ExerciseResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ExerciseResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ExerciseResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ExerciseResponseValidationError) ErrorName() string { return "ExerciseResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ExerciseResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sExerciseResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ExerciseResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ExerciseResponseValidationError{}
 
 // Validate checks the field values on CreateClassroomRequest with the rules
 // defined in the proto definition for this message. If any rules are

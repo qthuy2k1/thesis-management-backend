@@ -6,16 +6,22 @@ import (
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
+	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
+	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
 )
 
 type classroomServiceGW struct {
 	pb.UnimplementedClassroomServiceServer
 	classroomClient classroomSvcV1.ClassroomServiceClient
+	postClient      postSvcV1.PostServiceClient
+	exerciseClient  exerciseSvcV1.ExerciseServiceClient
 }
 
-func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient) *classroomServiceGW {
+func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient) *classroomServiceGW {
 	return &classroomServiceGW{
 		classroomClient: classroomClient,
+		postClient:      postClient,
+		exerciseClient:  exerciseClient,
 	}
 }
 
@@ -49,6 +55,77 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 		return nil, err
 	}
 
+	filter := &postSvcV1.GetAllPostsOfClassroomRequest{
+		Page:        1,
+		Limit:       9999999,
+		TitleSearch: "",
+		SortColumn:  "created_at",
+		SortOrder:   "asc",
+	}
+
+	titleSearch := strings.TrimSpace(req.TitleSearch)
+	if titleSearch != "" {
+		filter.TitleSearch = titleSearch
+	}
+
+	sortColumn := strings.TrimSpace(req.SortColumn)
+	if sortColumn != "" {
+		filter.SortColumn = sortColumn
+	}
+	// Get all posts of classroom
+	resPost, err := u.postClient.GetAllPostsOfClassroom(ctx, &postSvcV1.GetAllPostsOfClassroomRequest{
+		ClassroomID: res.GetClassroom().GetId(),
+		Page:        filter.Page,
+		Limit:       filter.Limit,
+		TitleSearch: filter.TitleSearch,
+		SortColumn:  filter.SortColumn,
+		SortOrder:   filter.SortOrder,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var posts []*pb.PostInClassroomResponse
+	for _, p := range resPost.GetPosts() {
+		posts = append(posts, &pb.PostInClassroomResponse{
+			Id:               p.Id,
+			Title:            p.Title,
+			Content:          p.Content,
+			ClassroomID:      p.ClassroomID,
+			ReportingStageID: p.ReportingStageID,
+			AuthorID:         p.AuthorID,
+			CreatedAt:        p.CreatedAt,
+			UpdatedAt:        p.UpdatedAt,
+		})
+	}
+
+	// Get all exercises of classroom
+	resExercise, err := u.exerciseClient.GetAllExercisesOfClassroom(ctx, &exerciseSvcV1.GetAllExercisesOfClassroomRequest{
+		ClassroomID: res.GetClassroom().GetId(),
+		Page:        filter.Page,
+		Limit:       filter.Limit,
+		TitleSearch: filter.TitleSearch,
+		SortColumn:  filter.SortColumn,
+		SortOrder:   filter.SortOrder,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var exercises []*pb.ExerciseInClassroomResponse
+	for _, p := range resExercise.GetExercises() {
+		exercises = append(exercises, &pb.ExerciseInClassroomResponse{
+			Id:               p.Id,
+			Title:            p.Title,
+			Content:          p.Content,
+			ClassroomID:      p.ClassroomID,
+			ReportingStageID: p.ReportingStageID,
+			AuthorID:         p.AuthorID,
+			CreatedAt:        p.CreatedAt,
+			UpdatedAt:        p.UpdatedAt,
+		})
+	}
+
 	return &pb.GetClassroomResponse{
 		Response: &pb.CommonClassroomResponse{
 			StatusCode: res.GetResponse().GetStatusCode(),
@@ -65,6 +142,9 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 			Quantity:      res.GetClassroom().GetQuantity(),
 			CreatedAt:     res.GetClassroom().GetCreatedAt(),
 			UpdatedAt:     res.GetClassroom().GetUpdatedAt(),
+
+			Post:     posts,
+			Exercise: exercises,
 		},
 	}, nil
 }

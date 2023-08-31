@@ -62,6 +62,8 @@ message ExerciseInput {
     int32 classroomID = 3 [(validate.rules).int32.gte = 1];
     google.type.DateTime deadline = 4;
     int32 score = 5 [(validate.rules).int32.gte = 0];
+    int32 reportingStageID = 6 [(validate.rules).int32.gte = 1];
+    int32 authorID = 7 [(validate.rules).int32.gte = 1];
 }
 
 message ExerciseResponse {
@@ -69,11 +71,12 @@ message ExerciseResponse {
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string content = 3 [(validate.rules).string = {min_len: 2}];
     int32 classroomID = 4 [(validate.rules).int32.gte = 1];
-    // google.protobuf.Timestamp deadline = 5 [(validate.rules).timestamp.required = true];
     google.type.DateTime deadline = 5;
     int32 score = 6 [(validate.rules).int32.gte = 0];
-    google.protobuf.Timestamp created_at = 7 [(validate.rules).timestamp.required = true];
-    google.protobuf.Timestamp updated_at = 8 [(validate.rules).timestamp.required = true];
+    int32 reportingStageID = 7 [(validate.rules).int32.gte = 1];
+    int32 authorID = 8 [(validate.rules).int32.gte = 1];
+    google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
 }
 
 message CreateExerciseRequest {
@@ -115,17 +118,13 @@ message DeleteExerciseResponse {
 }
 
 
-message ExerciseFilter {
+// ====== GET ALL ======
+message GetExercisesRequest {
     int32 page = 1;
     int32 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
     bool isDesc = 5;
-}
-
-// ====== GET ALL ======
-message GetExercisesRequest {
-    ExerciseFilter filter = 1;    
 }
 
 message GetExercisesResponse {
@@ -136,8 +135,12 @@ message GetExercisesResponse {
 
 // ====== GET ALL OF CLASSROOM ======
 message GetAllExercisesOfClassroomRequest {
-    ExerciseFilter filter = 1;
-    int32 classroomID = 2 [(validate.rules).int32.gte = 1];
+    int32 page = 1;
+    int32 limit = 2;
+    string titleSearch = 3;
+    string sortColumn = 4;
+    bool isDesc = 5;
+    int32 classroomID = 6 [(validate.rules).int32.gte = 1];
 }
 
 message GetAllExercisesOfClassroomResponse {

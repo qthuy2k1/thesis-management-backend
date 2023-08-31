@@ -11,7 +11,7 @@ import (
 
 // QueryRowSQL is a wrapper function that logs the SQL command before executing it.
 func QueryRowSQL(ctx context.Context, db *sql.DB, funcName string, query string, args ...interface{}) (*sql.Row, error) {
-	log.Printf("Function %s is executing SQL command: %s", funcName, query)
+	log.Printf("Function \"%s\" is executing SQL command: %s", funcName, query)
 
 	// Prepare the SQL statement
 	stmt, err := db.PrepareContext(ctx, query)
@@ -29,7 +29,7 @@ func QueryRowSQL(ctx context.Context, db *sql.DB, funcName string, query string,
 
 // QuerySQL is a wrapper function that logs the SQL command before executing it.
 func QuerySQL(ctx context.Context, db *sql.DB, funcName string, query string, args ...interface{}) (*sql.Rows, error) {
-	log.Printf("Function %s is executing SQL command: %s", funcName, query)
+	log.Printf("Function \"%s\" is executing SQL command: %s", funcName, query)
 
 	// Prepare the SQL statement
 	stmt, err := db.PrepareContext(ctx, query)
@@ -51,7 +51,7 @@ func QuerySQL(ctx context.Context, db *sql.DB, funcName string, query string, ar
 
 // ExecSQL is a wrapper function that logs the SQL command before executing it.
 func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, args ...interface{}) (sql.Result, error) {
-	log.Printf("Function %s is executing SQL command: %s", funcName, query)
+	log.Printf("Function \"%s\" is executing SQL command: %s", funcName, query)
 	// Prepare the SQL statement
 	stmt, err := db.PrepareContext(ctx, query)
 	if err != nil {

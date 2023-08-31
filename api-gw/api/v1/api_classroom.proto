@@ -5,6 +5,7 @@ package api.classroom.v1;
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 import "validate/validate.proto";
+import "google/api/datetime.proto";
 
 option go_package="github.com/qthuy2k1/thesis_management_backend/classroom/api/v1";
 
@@ -71,8 +72,35 @@ message ClassroomResponse {
     string codeClassroom = 6 [(validate.rules).string = {min_len: 2}];
     string topicTags = 7 [(validate.rules).string = {min_len: 2}];
     int32 quantity = 8 [(validate.rules).int32.gte = 0];
-    google.protobuf.Timestamp created_at = 9 [(validate.rules).timestamp.required = true];
-    google.protobuf.Timestamp updated_at = 10 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
+
+    repeated PostInClassroomResponse post = 11;
+    repeated ExerciseInClassroomResponse exercise = 12;
+}
+
+message PostInClassroomResponse {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string content = 3 [(validate.rules).string = {min_len: 2}];
+    int32 classroomID = 4 [(validate.rules).int32.gte = 1];
+    int32 reportingStageID = 5 [(validate.rules).int32.gte = 1];
+    int32 authorID = 6 [(validate.rules).int32.gte = 1];
+    google.protobuf.Timestamp createdAt = 7 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp updatedAt = 8 [(validate.rules).timestamp.required = true];
+}
+
+message ExerciseInClassroomResponse {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string content = 3 [(validate.rules).string = {min_len: 2}];
+    int32 classroomID = 4 [(validate.rules).int32.gte = 1];
+    google.type.DateTime deadline = 5;
+    int32 score = 6 [(validate.rules).int32.gte = 0];
+    int32 reportingStageID = 7 [(validate.rules).int32.gte = 1];
+    int32 authorID = 8 [(validate.rules).int32.gte = 1];
+    google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
 }
 
 message CreateClassroomRequest {
@@ -87,6 +115,8 @@ message CreateClassroomResponse {
 // ====== GET ======
 message GetClassroomRequest {
     int32 id = 1 [(validate.rules).int32.gte = 1];
+    string titleSearch = 2;
+    string sortColumn = 3;
 }
 
 message GetClassroomResponse {

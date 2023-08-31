@@ -254,6 +254,28 @@ func (m *ExerciseInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if m.GetReportingStageID() < 1 {
+		err := ExerciseInputValidationError{
+			field:  "ReportingStageID",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetAuthorID() < 1 {
+		err := ExerciseInputValidationError{
+			field:  "AuthorID",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(errors) > 0 {
 		return ExerciseInputMultiError(errors)
 	}
@@ -431,6 +453,28 @@ func (m *ExerciseResponse) validate(all bool) error {
 		err := ExerciseResponseValidationError{
 			field:  "Score",
 			reason: "value must be greater than or equal to 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetReportingStageID() < 1 {
+		err := ExerciseResponseValidationError{
+			field:  "ReportingStageID",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetAuthorID() < 1 {
+		err := ExerciseResponseValidationError{
+			field:  "AuthorID",
+			reason: "value must be greater than or equal to 1",
 		}
 		if !all {
 			return err
@@ -1667,116 +1711,6 @@ var _ interface {
 	ErrorName() string
 } = DeleteExerciseResponseValidationError{}
 
-// Validate checks the field values on ExerciseFilter with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *ExerciseFilter) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on ExerciseFilter with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in ExerciseFilterMultiError,
-// or nil if none found.
-func (m *ExerciseFilter) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ExerciseFilter) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Page
-
-	// no validation rules for Limit
-
-	// no validation rules for TitleSearch
-
-	// no validation rules for SortColumn
-
-	// no validation rules for IsDesc
-
-	if len(errors) > 0 {
-		return ExerciseFilterMultiError(errors)
-	}
-
-	return nil
-}
-
-// ExerciseFilterMultiError is an error wrapping multiple validation errors
-// returned by ExerciseFilter.ValidateAll() if the designated constraints
-// aren't met.
-type ExerciseFilterMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ExerciseFilterMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ExerciseFilterMultiError) AllErrors() []error { return m }
-
-// ExerciseFilterValidationError is the validation error returned by
-// ExerciseFilter.Validate if the designated constraints aren't met.
-type ExerciseFilterValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ExerciseFilterValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ExerciseFilterValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ExerciseFilterValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ExerciseFilterValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ExerciseFilterValidationError) ErrorName() string { return "ExerciseFilterValidationError" }
-
-// Error satisfies the builtin error interface
-func (e ExerciseFilterValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sExerciseFilter.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ExerciseFilterValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ExerciseFilterValidationError{}
-
 // Validate checks the field values on GetExercisesRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -1799,34 +1733,15 @@ func (m *GetExercisesRequest) validate(all bool) error {
 
 	var errors []error
 
-	if all {
-		switch v := interface{}(m.GetFilter()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, GetExercisesRequestValidationError{
-					field:  "Filter",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, GetExercisesRequestValidationError{
-					field:  "Filter",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetFilter()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return GetExercisesRequestValidationError{
-				field:  "Filter",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Page
+
+	// no validation rules for Limit
+
+	// no validation rules for TitleSearch
+
+	// no validation rules for SortColumn
+
+	// no validation rules for IsDesc
 
 	if len(errors) > 0 {
 		return GetExercisesRequestMultiError(errors)
@@ -2118,34 +2033,15 @@ func (m *GetAllExercisesOfClassroomRequest) validate(all bool) error {
 
 	var errors []error
 
-	if all {
-		switch v := interface{}(m.GetFilter()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, GetAllExercisesOfClassroomRequestValidationError{
-					field:  "Filter",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, GetAllExercisesOfClassroomRequestValidationError{
-					field:  "Filter",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetFilter()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return GetAllExercisesOfClassroomRequestValidationError{
-				field:  "Filter",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
+	// no validation rules for Page
+
+	// no validation rules for Limit
+
+	// no validation rules for TitleSearch
+
+	// no validation rules for SortColumn
+
+	// no validation rules for IsDesc
 
 	if m.GetClassroomID() < 1 {
 		err := GetAllExercisesOfClassroomRequestValidationError{

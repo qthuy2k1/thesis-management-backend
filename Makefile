@@ -1,17 +1,17 @@
 postgres:
-	docker exec -it $(db)-db psql -U postgres -d thesis_management_$(db)s -h $(db)-db -p $(port)
+	docker exec -it $(service)-db psql -U postgres -d thesis_management_$(db)s -h $(service)-db -p 5432
 
 create_migration:
-	migrate create -ext sql -dir data/migrations/ -seq $(filename)
+	migrate create -ext sql -dir $(name)-svc/data/migrations/ -seq $(filename)
 
 migrate_up:
-	docker run --rm -v $(PWD)/$(db)-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(db)-db:5432/thesis_management_$(db)s?sslmode=disable" up 
+	docker run --rm -v $(PWD)/$(service)-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(service)-db:5432/thesis_management_$(db)s?sslmode=disable" up 
 
 migrate_down:
-	migrate -source file://$(PWD)/data/migrations/ -database postgres://postgres:root@localhost:5432/thesis_management_$(db)?sslmode=disable down
+	docker run --rm -v $(PWD)/$(db)-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(db)-db:5432/thesis_management_$(db)s?sslmode=disable" down $(ver)
 	
 migrate_force:
-	migrate -source file://$(PWD)/data/migrations/ -database "postgres://postgres:root@localhost:5432/thesis_management_$(db)?sslmode=disable" force $(ver)
+	docker run --rm -v $(PWD)/$(db)-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(db)-db:5432/thesis_management_$(db)s?sslmode=disable" force $(ver) 
 
 docker_volume_down:
 	docker-compose down --volumes
@@ -30,7 +30,7 @@ proto-api:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./api-gw/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 api_classroom.proto api_post.proto api_exercise.proto
+		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto
 	@echo "Done"
 
 proto-classroom:
@@ -81,7 +81,23 @@ proto-exercise:
 		 exercise.proto
 	@echo "Done"
 
-proto: proto-api proto-classroom proto-post proto-exercise
+proto-reporting-stage:
+	@echo "--> Generating gRPC clients for reporting stage API"
+	@protoc -I ./reporting-stage-svc/api/v1 \
+		--go_out ./reporting-stage-svc/api/goclient/v1 --go_opt paths=source_relative \
+	  	--go-grpc_out ./reporting-stage-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+		--grpc-gateway_out ./reporting-stage-svc/api/goclient/v1 \
+		--grpc-gateway_opt logtostderr=true \
+		--grpc-gateway_opt paths=source_relative \
+		--grpc-gateway_opt generate_unbound_methods=true \
+  		--openapiv2_out ./reporting-stage-svc/api/goclient/v1 \
+    	--openapiv2_opt logtostderr=true \
+		--validate_out="lang=go,paths=source_relative:./reporting-stage-svc/api/goclient/v1" \
+		--experimental_allow_proto3_optional \
+		 reporting_stage.proto
+	@echo "Done"
+
+proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage
 
 clean:
 	rm -rf ./out
@@ -93,11 +109,13 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/classroom ./classroom-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/post ./post-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/exercise ./exercise-svc
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/user ./user-svc
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/reporting-stage ./reporting-stage-svc
 
 run: clean build
 	@echo "--> Starting servers"
 	docker-compose build
-	docker-compose up
+	docker-compose up --remove-orphans
 
 down:
 	docker-compose down
@@ -109,6 +127,8 @@ docker-tag:
 	docker tag qthuy2k1/thesis-management-backend-classroom:latest qthuy2k1/thesis-management-backend-classroom:latest
 	docker tag qthuy2k1/thesis-management-backend-post:latest qthuy2k1/thesis-management-backend-post:latest
 	docker tag qthuy2k1/thesis-management-backend-exercise:latest qthuy2k1/thesis-management-backend-exercise:latest
+	docker tag qthuy2k1/thesis-management-backend-user:latest qthuy2k1/thesis-management-backend-user:latest
+	docker tag qthuy2k1/thesis-management-backend-reporting-stage:latest qthuy2k1/thesis-management-backend-reporting-stage:latest
 
 docker-push:
 	docker push qthuy2k1/thesis-management-backend:latest
@@ -116,3 +136,5 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-classroom:latest
 	docker push qthuy2k1/thesis-management-backend-post:latest
 	docker push qthuy2k1/thesis-management-backend-exercise:latest
+	docker push qthuy2k1/thesis-management-backend-user:latest
+	docker push qthuy2k1/thesis-management-backend-reporting-stage:latest

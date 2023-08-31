@@ -3,6 +3,7 @@ syntax = "proto3";
 package classroom.v1;
 
 import "google/protobuf/timestamp.proto";
+import "google/api/datetime.proto";
 
 option go_package="github.com/qthuy2k1/thesis_management_backend/classroom/api/v1";
 
@@ -49,7 +50,36 @@ message ClassroomResponse {
     int32 quantity = 8;
     google.protobuf.Timestamp created_at = 9;
     google.protobuf.Timestamp updated_at = 10;
+
+    repeated PostResponse post = 11;
+    repeated ExerciseResponse exercise = 12;
 }
+
+message PostResponse {
+    int32 id = 1;
+    string title = 2;
+    string content = 3;
+    int32 classroomID = 4;
+    int32 reportingStageID = 5;
+    int32 authorID = 6;
+    google.protobuf.Timestamp createdAt = 7;
+    google.protobuf.Timestamp updatedAt = 8;
+}
+
+message ExerciseResponse {
+    int32 id = 1;
+    string title = 2;
+    string content = 3;
+    int32 classroomID = 4;
+    google.type.DateTime deadline = 5;
+    int32 score = 6;
+    int32 reportingStageID = 7;
+    int32 authorID = 8;
+    google.protobuf.Timestamp createdAt = 9;
+    google.protobuf.Timestamp updatedAt = 10;
+}
+
+
 
 message CreateClassroomRequest {
    ClassroomInput classroom = 1;
