@@ -103,7 +103,7 @@ func main() {
 
 	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient))
 	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient))
-	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient))
+	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient))
 	pb.RegisterReportingStageServiceServer(s, NewReportingStagesService(rpsClient))
 
 	if err := s.Serve(lis); err != nil {

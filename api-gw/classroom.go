@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"sort"
 	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
@@ -85,9 +86,9 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 		return nil, err
 	}
 
-	var posts []*pb.PostInClassroomResponse
+	var postsAndExercises []*pb.PostsAndExercisesOfClassroom
 	for _, p := range resPost.GetPosts() {
-		posts = append(posts, &pb.PostInClassroomResponse{
+		postsAndExercises = append(postsAndExercises, &pb.PostsAndExercisesOfClassroom{
 			Id:               p.Id,
 			Title:            p.Title,
 			Content:          p.Content,
@@ -96,6 +97,7 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 			AuthorID:         p.AuthorID,
 			CreatedAt:        p.CreatedAt,
 			UpdatedAt:        p.UpdatedAt,
+			Type:             "post",
 		})
 	}
 
@@ -112,19 +114,26 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 		return nil, err
 	}
 
-	var exercises []*pb.ExerciseInClassroomResponse
 	for _, p := range resExercise.GetExercises() {
-		exercises = append(exercises, &pb.ExerciseInClassroomResponse{
+		postsAndExercises = append(postsAndExercises, &pb.PostsAndExercisesOfClassroom{
 			Id:               p.Id,
 			Title:            p.Title,
 			Content:          p.Content,
 			ClassroomID:      p.ClassroomID,
+			Deadline:         p.Deadline,
+			Score:            &p.Score,
 			ReportingStageID: p.ReportingStageID,
 			AuthorID:         p.AuthorID,
 			CreatedAt:        p.CreatedAt,
 			UpdatedAt:        p.UpdatedAt,
+			Type:             "exercise",
 		})
 	}
+
+	// Sort the combined slice by CreatedAt field
+	sort.Slice(postsAndExercises, func(i, j int) bool {
+		return postsAndExercises[i].CreatedAt.AsTime().Before(postsAndExercises[j].CreatedAt.AsTime())
+	})
 
 	return &pb.GetClassroomResponse{
 		Response: &pb.CommonClassroomResponse{
@@ -132,19 +141,17 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 			Message:    res.GetResponse().GetMessage(),
 		},
 		Classroom: &pb.ClassroomResponse{
-			Id:            res.GetClassroom().GetId(),
-			Title:         res.GetClassroom().GetTitle(),
-			Description:   res.GetClassroom().GetDescription(),
-			Status:        res.GetClassroom().GetStatus(),
-			CodeClassroom: res.GetClassroom().GetCodeClassroom(),
-			TopicTags:     res.GetClassroom().GetTopicTags(),
-			LecturerId:    res.GetClassroom().GetLecturerId(),
-			Quantity:      res.GetClassroom().GetQuantity(),
-			CreatedAt:     res.GetClassroom().GetCreatedAt(),
-			UpdatedAt:     res.GetClassroom().GetUpdatedAt(),
-
-			Post:     posts,
-			Exercise: exercises,
+			Id:                res.GetClassroom().GetId(),
+			Title:             res.GetClassroom().GetTitle(),
+			Description:       res.GetClassroom().GetDescription(),
+			Status:            res.GetClassroom().GetStatus(),
+			CodeClassroom:     res.GetClassroom().GetCodeClassroom(),
+			TopicTags:         res.GetClassroom().GetTopicTags(),
+			LecturerId:        res.GetClassroom().GetLecturerId(),
+			Quantity:          res.GetClassroom().GetQuantity(),
+			CreatedAt:         res.GetClassroom().GetCreatedAt(),
+			UpdatedAt:         res.GetClassroom().GetUpdatedAt(),
+			PostsAndExercises: postsAndExercises,
 		},
 	}, nil
 }

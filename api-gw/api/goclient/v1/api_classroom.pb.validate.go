@@ -468,7 +468,7 @@ func (m *ClassroomResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	for idx, item := range m.GetPost() {
+	for idx, item := range m.GetPostsAndExercises() {
 		_, _ = idx, item
 
 		if all {
@@ -476,7 +476,7 @@ func (m *ClassroomResponse) validate(all bool) error {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
 					errors = append(errors, ClassroomResponseValidationError{
-						field:  fmt.Sprintf("Post[%v]", idx),
+						field:  fmt.Sprintf("PostsAndExercises[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -484,7 +484,7 @@ func (m *ClassroomResponse) validate(all bool) error {
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
 					errors = append(errors, ClassroomResponseValidationError{
-						field:  fmt.Sprintf("Post[%v]", idx),
+						field:  fmt.Sprintf("PostsAndExercises[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -493,41 +493,7 @@ func (m *ClassroomResponse) validate(all bool) error {
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return ClassroomResponseValidationError{
-					field:  fmt.Sprintf("Post[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	for idx, item := range m.GetExercise() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ClassroomResponseValidationError{
-						field:  fmt.Sprintf("Exercise[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, ClassroomResponseValidationError{
-						field:  fmt.Sprintf("Exercise[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return ClassroomResponseValidationError{
-					field:  fmt.Sprintf("Exercise[%v]", idx),
+					field:  fmt.Sprintf("PostsAndExercises[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
@@ -616,22 +582,22 @@ var _ interface {
 	ErrorName() string
 } = ClassroomResponseValidationError{}
 
-// Validate checks the field values on PostInClassroomResponse with the rules
-// defined in the proto definition for this message. If any rules are
+// Validate checks the field values on PostsAndExercisesOfClassroom with the
+// rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *PostInClassroomResponse) Validate() error {
+func (m *PostsAndExercisesOfClassroom) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on PostInClassroomResponse with the
+// ValidateAll checks the field values on PostsAndExercisesOfClassroom with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// PostInClassroomResponseMultiError, or nil if none found.
-func (m *PostInClassroomResponse) ValidateAll() error {
+// PostsAndExercisesOfClassroomMultiError, or nil if none found.
+func (m *PostsAndExercisesOfClassroom) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *PostInClassroomResponse) validate(all bool) error {
+func (m *PostsAndExercisesOfClassroom) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -639,7 +605,7 @@ func (m *PostInClassroomResponse) validate(all bool) error {
 	var errors []error
 
 	if m.GetId() < 1 {
-		err := PostInClassroomResponseValidationError{
+		err := PostsAndExercisesOfClassroomValidationError{
 			field:  "Id",
 			reason: "value must be greater than or equal to 1",
 		}
@@ -650,7 +616,7 @@ func (m *PostInClassroomResponse) validate(all bool) error {
 	}
 
 	if l := utf8.RuneCountInString(m.GetTitle()); l < 2 || l > 200 {
-		err := PostInClassroomResponseValidationError{
+		err := PostsAndExercisesOfClassroomValidationError{
 			field:  "Title",
 			reason: "value length must be between 2 and 200 runes, inclusive",
 		}
@@ -661,7 +627,7 @@ func (m *PostInClassroomResponse) validate(all bool) error {
 	}
 
 	if utf8.RuneCountInString(m.GetContent()) < 2 {
-		err := PostInClassroomResponseValidationError{
+		err := PostsAndExercisesOfClassroomValidationError{
 			field:  "Content",
 			reason: "value length must be at least 2 runes",
 		}
@@ -672,7 +638,7 @@ func (m *PostInClassroomResponse) validate(all bool) error {
 	}
 
 	if m.GetClassroomID() < 1 {
-		err := PostInClassroomResponseValidationError{
+		err := PostsAndExercisesOfClassroomValidationError{
 			field:  "ClassroomID",
 			reason: "value must be greater than or equal to 1",
 		}
@@ -683,7 +649,7 @@ func (m *PostInClassroomResponse) validate(all bool) error {
 	}
 
 	if m.GetReportingStageID() < 1 {
-		err := PostInClassroomResponseValidationError{
+		err := PostsAndExercisesOfClassroomValidationError{
 			field:  "ReportingStageID",
 			reason: "value must be greater than or equal to 1",
 		}
@@ -694,7 +660,7 @@ func (m *PostInClassroomResponse) validate(all bool) error {
 	}
 
 	if m.GetAuthorID() < 1 {
-		err := PostInClassroomResponseValidationError{
+		err := PostsAndExercisesOfClassroomValidationError{
 			field:  "AuthorID",
 			reason: "value must be greater than or equal to 1",
 		}
@@ -705,7 +671,7 @@ func (m *PostInClassroomResponse) validate(all bool) error {
 	}
 
 	if m.GetCreatedAt() == nil {
-		err := PostInClassroomResponseValidationError{
+		err := PostsAndExercisesOfClassroomValidationError{
 			field:  "CreatedAt",
 			reason: "value is required",
 		}
@@ -716,7 +682,7 @@ func (m *PostInClassroomResponse) validate(all bool) error {
 	}
 
 	if m.GetUpdatedAt() == nil {
-		err := PostInClassroomResponseValidationError{
+		err := PostsAndExercisesOfClassroomValidationError{
 			field:  "UpdatedAt",
 			reason: "value is required",
 		}
@@ -726,112 +692,10 @@ func (m *PostInClassroomResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if len(errors) > 0 {
-		return PostInClassroomResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// PostInClassroomResponseMultiError is an error wrapping multiple validation
-// errors returned by PostInClassroomResponse.ValidateAll() if the designated
-// constraints aren't met.
-type PostInClassroomResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m PostInClassroomResponseMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m PostInClassroomResponseMultiError) AllErrors() []error { return m }
-
-// PostInClassroomResponseValidationError is the validation error returned by
-// PostInClassroomResponse.Validate if the designated constraints aren't met.
-type PostInClassroomResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e PostInClassroomResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e PostInClassroomResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e PostInClassroomResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e PostInClassroomResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e PostInClassroomResponseValidationError) ErrorName() string {
-	return "PostInClassroomResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e PostInClassroomResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sPostInClassroomResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = PostInClassroomResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = PostInClassroomResponseValidationError{}
-
-// Validate checks the field values on ExerciseInClassroomResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ExerciseInClassroomResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on ExerciseInClassroomResponse with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ExerciseInClassroomResponseMultiError, or nil if none found.
-func (m *ExerciseInClassroomResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ExerciseInClassroomResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if m.GetId() < 1 {
-		err := ExerciseInClassroomResponseValidationError{
-			field:  "Id",
-			reason: "value must be greater than or equal to 1",
+	if _, ok := _PostsAndExercisesOfClassroom_Type_InLookup[m.GetType()]; !ok {
+		err := PostsAndExercisesOfClassroomValidationError{
+			field:  "Type",
+			reason: "value must be in list [post exercise]",
 		}
 		if !all {
 			return err
@@ -839,137 +703,68 @@ func (m *ExerciseInClassroomResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if l := utf8.RuneCountInString(m.GetTitle()); l < 2 || l > 200 {
-		err := ExerciseInClassroomResponseValidationError{
-			field:  "Title",
-			reason: "value length must be between 2 and 200 runes, inclusive",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	if m.Deadline != nil {
 
-	if utf8.RuneCountInString(m.GetContent()) < 2 {
-		err := ExerciseInClassroomResponseValidationError{
-			field:  "Content",
-			reason: "value length must be at least 2 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if m.GetClassroomID() < 1 {
-		err := ExerciseInClassroomResponseValidationError{
-			field:  "ClassroomID",
-			reason: "value must be greater than or equal to 1",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if all {
-		switch v := interface{}(m.GetDeadline()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, ExerciseInClassroomResponseValidationError{
-					field:  "Deadline",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
+		if all {
+			switch v := interface{}(m.GetDeadline()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, PostsAndExercisesOfClassroomValidationError{
+						field:  "Deadline",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, PostsAndExercisesOfClassroomValidationError{
+						field:  "Deadline",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
 			}
-		case interface{ Validate() error }:
+		} else if v, ok := interface{}(m.GetDeadline()).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				errors = append(errors, ExerciseInClassroomResponseValidationError{
+				return PostsAndExercisesOfClassroomValidationError{
 					field:  "Deadline",
 					reason: "embedded message failed validation",
 					cause:  err,
-				})
+				}
 			}
 		}
-	} else if v, ok := interface{}(m.GetDeadline()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ExerciseInClassroomResponseValidationError{
-				field:  "Deadline",
-				reason: "embedded message failed validation",
-				cause:  err,
+
+	}
+
+	if m.Score != nil {
+
+		if m.GetScore() < 0 {
+			err := PostsAndExercisesOfClassroomValidationError{
+				field:  "Score",
+				reason: "value must be greater than or equal to 0",
 			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
-	}
 
-	if m.GetScore() < 0 {
-		err := ExerciseInClassroomResponseValidationError{
-			field:  "Score",
-			reason: "value must be greater than or equal to 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if m.GetReportingStageID() < 1 {
-		err := ExerciseInClassroomResponseValidationError{
-			field:  "ReportingStageID",
-			reason: "value must be greater than or equal to 1",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if m.GetAuthorID() < 1 {
-		err := ExerciseInClassroomResponseValidationError{
-			field:  "AuthorID",
-			reason: "value must be greater than or equal to 1",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if m.GetCreatedAt() == nil {
-		err := ExerciseInClassroomResponseValidationError{
-			field:  "CreatedAt",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if m.GetUpdatedAt() == nil {
-		err := ExerciseInClassroomResponseValidationError{
-			field:  "UpdatedAt",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {
-		return ExerciseInClassroomResponseMultiError(errors)
+		return PostsAndExercisesOfClassroomMultiError(errors)
 	}
 
 	return nil
 }
 
-// ExerciseInClassroomResponseMultiError is an error wrapping multiple
-// validation errors returned by ExerciseInClassroomResponse.ValidateAll() if
+// PostsAndExercisesOfClassroomMultiError is an error wrapping multiple
+// validation errors returned by PostsAndExercisesOfClassroom.ValidateAll() if
 // the designated constraints aren't met.
-type ExerciseInClassroomResponseMultiError []error
+type PostsAndExercisesOfClassroomMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ExerciseInClassroomResponseMultiError) Error() string {
+func (m PostsAndExercisesOfClassroomMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -978,12 +773,12 @@ func (m ExerciseInClassroomResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ExerciseInClassroomResponseMultiError) AllErrors() []error { return m }
+func (m PostsAndExercisesOfClassroomMultiError) AllErrors() []error { return m }
 
-// ExerciseInClassroomResponseValidationError is the validation error returned
-// by ExerciseInClassroomResponse.Validate if the designated constraints
+// PostsAndExercisesOfClassroomValidationError is the validation error returned
+// by PostsAndExercisesOfClassroom.Validate if the designated constraints
 // aren't met.
-type ExerciseInClassroomResponseValidationError struct {
+type PostsAndExercisesOfClassroomValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -991,24 +786,24 @@ type ExerciseInClassroomResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e ExerciseInClassroomResponseValidationError) Field() string { return e.field }
+func (e PostsAndExercisesOfClassroomValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ExerciseInClassroomResponseValidationError) Reason() string { return e.reason }
+func (e PostsAndExercisesOfClassroomValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ExerciseInClassroomResponseValidationError) Cause() error { return e.cause }
+func (e PostsAndExercisesOfClassroomValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ExerciseInClassroomResponseValidationError) Key() bool { return e.key }
+func (e PostsAndExercisesOfClassroomValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ExerciseInClassroomResponseValidationError) ErrorName() string {
-	return "ExerciseInClassroomResponseValidationError"
+func (e PostsAndExercisesOfClassroomValidationError) ErrorName() string {
+	return "PostsAndExercisesOfClassroomValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ExerciseInClassroomResponseValidationError) Error() string {
+func (e PostsAndExercisesOfClassroomValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1020,14 +815,14 @@ func (e ExerciseInClassroomResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sExerciseInClassroomResponse.%s: %s%s",
+		"invalid %sPostsAndExercisesOfClassroom.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ExerciseInClassroomResponseValidationError{}
+var _ error = PostsAndExercisesOfClassroomValidationError{}
 
 var _ interface {
 	Field() string
@@ -1035,7 +830,12 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ExerciseInClassroomResponseValidationError{}
+} = PostsAndExercisesOfClassroomValidationError{}
+
+var _PostsAndExercisesOfClassroom_Type_InLookup = map[string]struct{}{
+	"post":     {},
+	"exercise": {},
+}
 
 // Validate checks the field values on CreateClassroomRequest with the rules
 // defined in the proto definition for this message. If any rules are
