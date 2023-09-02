@@ -1,0 +1,194 @@
+{
+    "Create a post": {
+        // Method: POST
+        // URL: localhost:8081/api/post
+        "success": {
+            "input": {
+                "post": {
+                    "title": "Post 1",
+                    "content": "Content of post 1",
+                    "classroomID": "1",
+                    "reportingStageID": "1",
+                    "authorID": "1"
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 201,
+                    "message": "Created"
+                }
+            }
+        },
+        "create a existed post": {
+            "input": {
+                "post": {
+                    "title": "Post 1",
+                    "content": "Content of post 1",
+                    "classroomID": "1",
+                    "reportingStageID": "1",
+                    "authorID": "1"
+                }
+            },
+            "output": {
+                "code": 6,
+                "message": "err: post already exists",
+                "details": []
+            }
+        }
+    },
+    "Get a post": {
+        // Method: GET
+        // URL: localhost:8081/api/post/1
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                },
+                "post": {
+                    "id": 1,
+                    "title": "Bai 2",
+                    "content": "Bai 1a",
+                    "classroomID": 1,
+                    "reportingStageID": 1,
+                    "authorID": 1,
+                    "createdAt": "2023-09-01T15:48:35Z",
+                    "updatedAt": "2023-09-01T15:48:35Z"
+                }
+            }
+        },
+        "failed: post not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: post not found",
+                "details": []
+            }
+        }
+    },
+    "Delete a post": {
+        // Method: DELETE 
+        // URL: localhost:8081/api/post/1
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        },
+        "failed: post not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: post not found",
+                "details": []
+            }
+        }
+    },
+    "Update a post": {
+        // Method: PUT
+        // URL: localhost:8081/api/post/1
+        "success": {
+            "input": {
+                "post": {
+                    "title": "abccsdasssasdasd",
+                    "content": "abcaa",
+                    "classroomID": 1,
+                    "reportingStageID": 1,
+                    "authorID": 1
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        },
+        "update with a existed post title": {
+            "input": {
+                "post": {
+                    "title": "abccsdasssasdasd",
+                    "content": "abcaa",
+                    "classroomID": 1,
+                    "reportingStageID": 1,
+                    "authorID": 1
+                }
+            },
+            "output": {
+                "code": 6,
+                "message": "err: post already exists",
+                "details": []
+            }
+        }
+    },
+    "Get all posts": {
+        // Method: GET
+        // URL: localhost:8081/api/post
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "Success"
+                },
+                "totalCount": 2,
+                "posts": [
+                    {
+                        "id": 6,
+                        "title": "Bai 1",
+                        "content": "Bai 1a",
+                        "classroomID": 7,
+                        "reportingStageID": 1,
+                        "authorID": 1,
+                        "createdAt": "2023-09-01T15:48:30Z",
+                        "updatedAt": "2023-09-01T15:48:30Z"
+                    },
+                    {
+                        "id": 7,
+                        "title": "Bai 2",
+                        "content": "Bai 1a",
+                        "classroomID": 7,
+                        "reportingStageID": 1,
+                        "authorID": 1,
+                        "createdAt": "2023-09-01T15:48:35Z",
+                        "updatedAt": "2023-09-01T15:48:35Z"
+                    }
+                ]
+            }
+        }
+    },
+    "Get all posts of a classroom": {
+        // Method: GET
+        // URL: localhost:8081/api/classroom/1/post
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "Success"
+                },
+                "totalCount": 2,
+                "posts": [
+                    {
+                        "id": 6,
+                        "title": "Bai 1",
+                        "content": "Bai 1a",
+                        "classroomID": 1,
+                        "reportingStageID": 1,
+                        "authorID": 1,
+                        "createdAt": "2023-09-01T15:48:30Z",
+                        "updatedAt": "2023-09-01T15:48:30Z"
+                    },
+                    {
+                        "id": 7,
+                        "title": "Bai 2",
+                        "content": "Bai 1a",
+                        "classroomID": 1,
+                        "reportingStageID": 1,
+                        "authorID": 1,
+                        "createdAt": "2023-09-01T15:48:35Z",
+                        "updatedAt": "2023-09-01T15:48:35Z"
+                    }
+                ]
+            }
+        }
+    }
+}

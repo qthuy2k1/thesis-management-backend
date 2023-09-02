@@ -1,0 +1,252 @@
+{
+    "Create a classroom": {
+        // Method: POST
+        // URL: localhost:8081/api/classroom
+        "success": {
+            "input":{
+                "classroom": {
+                    "classroom": {
+                        "title": "Classroom 6",
+                        "description": "Classroom 6",
+                        "status": "Available",
+                        "lecturerId": 2,
+                        "codeClassroom": "HK2",
+                        "topicTags": "Web, Mobile", // separated by commas
+                        "quantity": 15
+                    } 
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 201,
+                    "message": "Created"
+                }
+            }
+        },
+        "create a existed classroom": {
+            "input":{
+                "classroom": {
+                    "title": "Classroom 6",
+                    "description": "Classroom 6",
+                    "status": "Available",
+                    "lecturerId": 2,
+                    "codeClassroom": "HK2",
+                    "topicTags": "Web, Mobile", // separated by commas
+                    "quantity": 15
+                } 
+            },
+            "output": {
+                "code": 6,
+                "message": "err: classroom already exists",
+                "details": []
+            }
+        }
+    },
+    "Get a classroom": {
+    // Method: GET
+    // URL: localhost:8081/api/classroom/1
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                },
+                "classroom": {
+                    "id": 7,
+                    "title": "Classroom 6",
+                    "description": "Classroom 6",
+                    "status": "Available",
+                    "lecturerId": 2,
+                    "codeClassroom": "HK2",
+                    "topicTags": "Web",
+                    "quantity": 15,
+                    "createdAt": "2023-09-01T15:01:00Z",
+                    "updatedAt": "2023-09-01T15:01:00Z",
+                    "postsAndExercises": [
+                        {
+                            "id": 8,
+                            "title": "Post 4",
+                            "content": "AAAAA Post 4",
+                            "classroomID": 7,
+                            "reportingStageID": 1,
+                            "authorID": 1,
+                            "createdAt": "2023-09-01T15:01:43Z",
+                            "updatedAt": "2023-09-01T15:01:43Z",
+                            "type": "post"
+                        },
+                        {
+                            "id": 9,
+                            "title": "Post 1",
+                            "content": "AAAAA Post 4",
+                            "classroomID": 7,
+                            "reportingStageID": 1,
+                            "authorID": 1,
+                            "createdAt": "2023-09-01T15:01:45Z",
+                            "updatedAt": "2023-09-01T15:01:45Z",
+                            "type": "post"
+                        },
+                        {
+                            "id": 10,
+                            "title": "Post 2",
+                            "content": "AAAAA Post 4",
+                            "classroomID": 7,
+                            "reportingStageID": 1,
+                            "authorID": 1,
+                            "createdAt": "2023-09-01T15:01:51Z",
+                            "updatedAt": "2023-09-01T15:01:51Z",
+                            "type": "post"
+                        },
+                        {
+                            "id": 11,
+                            "title": "Post 3",
+                            "content": "AAAAA Post 4",
+                            "classroomID": 7,
+                            "reportingStageID": 1,
+                            "authorID": 1,
+                            "createdAt": "2023-09-01T15:46:07Z",
+                            "updatedAt": "2023-09-01T15:46:07Z",
+                            "type": "post"
+                        },
+                        {
+                            "id": 6,
+                            "title": "Bai 1",
+                            "content": "Bai 1a",
+                            "classroomID": 7,
+                            "deadline": {
+                                "year": 2023,
+                                "month": 8,
+                                "day": 26,
+                                "hours": 12,
+                                "minutes": 1,
+                                "seconds": 1,
+                                "nanos": 0
+                            },
+                            "score": 100,
+                            "reportingStageID": 1,
+                            "authorID": 1,
+                            "createdAt": "2023-09-01T15:48:30Z",
+                            "updatedAt": "2023-09-01T15:48:30Z",
+                            "type": "exercise"
+                        },
+                        {
+                            "id": 7,
+                            "title": "Bai 2",
+                            "content": "Bai 1a",
+                            "classroomID": 7,
+                            "deadline": {
+                                "year": 2023,
+                                "month": 8,
+                                "day": 26,
+                                "hours": 12,
+                                "minutes": 1,
+                                "seconds": 1,
+                                "nanos": 0
+                            },
+                            "score": 100,
+                            "reportingStageID": 1,
+                            "authorID": 1,
+                            "createdAt": "2023-09-01T15:48:35Z",
+                            "updatedAt": "2023-09-01T15:48:35Z",
+                            "type": "exercise"
+                        }
+                    ]
+                }
+            }
+        },
+        "failed: classroom not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: classroom not found",
+                "details": []
+            }
+        }
+    },
+    "Delete a classroom": {
+    // Method: DELETE 
+    // URL: localhost:8081/api/classroom/1
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        },
+        "failed: classroom not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: classroom not found",
+                "details": []
+            }
+        }
+    },
+    "Update a classroom": {
+    // Method: PUT
+    // URL: localhost:8081/api/classroom/1
+        "success": {
+            "input": {
+                "classroom": {
+                    "title": "Classroom 6",
+                    "description": "Classroom 6",
+                    "status": "Available",
+                    "lecturerId": 2,
+                    "codeClassroom": "HK2",
+                    "topicTags": "Web, Mobile", // separated by commas
+                    "quantity": 15
+                } 
+            },
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        },
+        "update with a existed classroom title": {
+            "input": {
+                "classroom": {
+                    "title": "Classroom 6",
+                    "description": "Classroom 6",
+                    "status": "Available",
+                    "lecturerId": 2,
+                    "codeClassroom": "HK2",
+                    "topicTags": "Web, Mobile", // separated by commas
+                    "quantity": 15
+                } 
+            },
+            "output": {
+                "code": 6,
+                "message": "err: classroom already exists",
+                "details": []
+            }
+        }
+    },
+    "Get all classrooms": {
+        // Method: GET
+        // URL: localhost:8081/api/classroom
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "Success"
+                },
+                "totalCount": 1,
+                "classrooms": [
+                    {
+                        "id": 7,
+                        "title": "Classroom 6",
+                        "description": "Classroom 6",
+                        "status": "Available",
+                        "lecturerId": 2,
+                        "codeClassroom": "HK2",
+                        "topicTags": "Web",
+                        "quantity": 15,
+                        "createdAt": "2023-09-01T15:01:00Z",
+                        "updatedAt": "2023-09-01T15:01:00Z",
+                        "postsAndExercises": []
+                    }
+                ]
+            }
+        }
+    }
+}
