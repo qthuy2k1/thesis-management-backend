@@ -385,18 +385,11 @@
           "type": "string",
           "format": "date-time"
         },
-        "post": {
+        "postsAndExercises": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/v1PostInClassroomResponse"
-          }
-        },
-        "exercise": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1ExerciseInClassroomResponse"
+            "$ref": "#/definitions/v1PostsAndExercisesOfClassroom"
           }
         }
       }
@@ -437,7 +430,37 @@
         }
       }
     },
-    "v1ExerciseInClassroomResponse": {
+    "v1GetClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonClassroomResponse"
+        },
+        "classroom": {
+          "$ref": "#/definitions/v1ClassroomResponse"
+        }
+      }
+    },
+    "v1GetClassroomsResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonClassroomResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "classrooms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ClassroomResponse"
+          }
+        }
+      }
+    },
+    "v1PostsAndExercisesOfClassroom": {
       "type": "object",
       "properties": {
         "id": {
@@ -476,71 +499,9 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
-        }
-      }
-    },
-    "v1GetClassroomResponse": {
-      "type": "object",
-      "properties": {
-        "response": {
-          "$ref": "#/definitions/v1CommonClassroomResponse"
         },
-        "classroom": {
-          "$ref": "#/definitions/v1ClassroomResponse"
-        }
-      }
-    },
-    "v1GetClassroomsResponse": {
-      "type": "object",
-      "properties": {
-        "response": {
-          "$ref": "#/definitions/v1CommonClassroomResponse"
-        },
-        "totalCount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "classrooms": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1ClassroomResponse"
-          }
-        }
-      }
-    },
-    "v1PostInClassroomResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "title": {
+        "type": {
           "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "classroomID": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "reportingStageID": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "authorID": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
         }
       }
     },

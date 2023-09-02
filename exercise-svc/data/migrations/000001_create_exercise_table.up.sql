@@ -5,6 +5,6 @@ CREATE TABLE "exercises" (
   "classroom_id" integer NOT NULL,
   "deadline" timestamp NOT NULL,
   "score" integer NOT NULL,
-  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP WITHOUT TIME ZONE,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP WITHOUT TIME ZONE
 );

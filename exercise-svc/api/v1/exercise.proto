@@ -5,7 +5,7 @@ package exercise.v1;
 import "google/protobuf/timestamp.proto";
 import "google/api/datetime.proto";
 
-option go_package="github.com/qthuy2k1/thesis_management_backend/exercise/api/v1";
+option go_package="github.com/qthuy2k1/thesis-management-backend/exercise/api/v1";
 
 service ExerciseService {
     rpc CreateExercise(CreateExerciseRequest) returns (CreateExerciseResponse){}

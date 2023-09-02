@@ -1,0 +1,130 @@
+{
+    "Create a reporting stage": {
+    // Method: POST
+    // URL: localhost:8081/api/reporting-stage
+        "success": {
+            "input": {
+                "reportingStage": {
+                    "name": "Stage 1",
+                    "description": "Description of stage 1"
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 201,
+                    "message": "Created"
+                }
+            }
+        },
+        "create a existed reporing stage": {
+            "input": {
+                "reportingStage": {
+                    "name": "Stage 1",
+                    "description": "Description of stage 1"
+                }
+            },
+            "output": {
+                "code": 6,
+                "message": "err: reporting stage already exists",
+                "details": []
+            }
+        }
+    },
+    "Get a reporting stage": {
+    // Method: GET
+    // URL: localhost:8081/api/reporting-stage/1
+        "success": {
+            "output": {
+                "reportingStage": {
+                    "id": 1,
+                    "name": "Stage 1",
+                    "description": "Description of stage 1"
+                }
+            }
+        },
+        "failed: reporing stage not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: reporting stage not found",
+                "details": []
+            }
+        }
+    },
+    "Delete a reporting stage": {
+    // Method: DELETE 
+    // URL: localhost:8081/api/reporting-stage/1
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        },
+        "failed: reporing stage not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: reporting stage not found",
+                "details": []
+            }
+        }
+    },
+    "Update a reporting stage": {
+    // Method: PUT
+    // URL: localhost:8081/api/reporting-stage/1
+        "success": {
+            "input": {
+                "reportingStage": {
+                    "name": "Stage 1",
+                    "description": "Description of stage 1"
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        },
+        "update with a existed reporing stage nam": {
+            "input": {
+                "reportingStage": {
+                    "name": "Stage 1",
+                    "description": "Description of stage 1"
+                }
+            },
+            "output": {
+                "code": 6,
+                "message": "err: reporting stage already exists",
+                "details": []
+            }
+        }
+    },
+    "Get all reporting stages": {
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "Success"
+                },
+                "reportingStages": [
+                    {
+                        "id": 1,
+                        "name": "Test",
+                        "description": "Testtt"
+                    },
+                    {
+                        "id": 2,
+                        "name": "Test 2",
+                        "description": "test"
+                    },
+                    {
+                        "id": 4,
+                        "name": "Test 3",
+                        "description": "test 3"
+                    }
+                ]
+            }
+        }
+    }
+}

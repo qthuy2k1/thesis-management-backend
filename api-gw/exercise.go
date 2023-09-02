@@ -17,14 +17,18 @@ type exerciseServiceGW struct {
 	reportingStageClient rpsSvcV1.ReportingStageServiceClient
 }
 
-func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient) *exerciseServiceGW {
+func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportStageClient rpsSvcV1.ReportingStageServiceClient) *exerciseServiceGW {
 	return &exerciseServiceGW{
-		exerciseClient:  exerciseClient,
-		classroomClient: classroomClient,
+		exerciseClient:       exerciseClient,
+		classroomClient:      classroomClient,
+		reportingStageClient: reportStageClient,
 	}
 }
 
 func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateExerciseRequest) (*pb.CreateExerciseResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
 	exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: req.GetExercise().ClassroomID})
 	if err != nil {
 		return nil, err

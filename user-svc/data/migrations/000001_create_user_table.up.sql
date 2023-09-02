@@ -6,6 +6,6 @@ CREATE TABLE "users" (
   "classroom_id" integer not null,
   "score" integer,
   "reset_token" varchar,
-  "created_at" timestamp not null default current_timestamp,
-  "updated_at" timestamp not null default current_timestamp
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP WITHOUT TIME ZONE,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP(0)::TIMESTAMP WITHOUT TIME ZONE
 );
