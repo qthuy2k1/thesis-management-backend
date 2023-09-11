@@ -6,6 +6,7 @@ require (
 	github.com/golang/glog v1.1.2
 	github.com/golang/protobuf v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.0
+	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	golang.org/x/oauth2 v0.11.0
 	google.golang.org/genproto v0.0.0-20221207170731-23e4bf6bdc37

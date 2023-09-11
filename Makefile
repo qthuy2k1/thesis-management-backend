@@ -30,7 +30,7 @@ proto-api:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./api-gw/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto
+		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto
 	@echo "Done"
 
 proto-classroom:
@@ -97,7 +97,23 @@ proto-reporting-stage:
 		 reporting_stage.proto
 	@echo "Done"
 
-proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage
+proto-submission:
+	@echo "--> Generating gRPC clients for submission API"
+	@protoc -I ./submission-svc/api/v1 \
+		--go_out ./submission-svc/api/goclient/v1 --go_opt paths=source_relative \
+	  	--go-grpc_out ./submission-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+		--grpc-gateway_out ./submission-svc/api/goclient/v1 \
+		--grpc-gateway_opt logtostderr=true \
+		--grpc-gateway_opt paths=source_relative \
+		--grpc-gateway_opt generate_unbound_methods=true \
+  		--openapiv2_out ./submission-svc/api/goclient/v1 \
+    	--openapiv2_opt logtostderr=true \
+		--validate_out="lang=go,paths=source_relative:./submission-svc/api/goclient/v1" \
+		--experimental_allow_proto3_optional \
+		 submission.proto
+	@echo "Done"
+
+proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission
 
 clean:
 	rm -rf ./out
@@ -111,8 +127,9 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/exercise ./exercise-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/user ./user-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/reporting-stage ./reporting-stage-svc
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/submission ./submission-svc
 
-run: clean build
+build_and_run: clean build
 	@echo "--> Starting servers"
 	docker-compose build
 	docker-compose up --remove-orphans

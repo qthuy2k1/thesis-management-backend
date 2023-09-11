@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package api.submission.v1;
+
+import "google/api/annotations.proto";
+import "google/api/datetime.proto";
+import "validate/validate.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/submission/api/v1";
+
+service SubmissionService {
+    rpc CreateSubmission(CreateSubmissionRequest) returns (CreateSubmissionResponse){
+        option (google.api.http) = {
+            post: "/api/submission"
+            body: "*"
+        };
+    }
+
+    rpc GetSubmission(GetSubmissionRequest) returns (GetSubmissionResponse){
+        option (google.api.http) = {
+            get: "/api/submission/{id}"
+        };
+    }
+
+    rpc UpdateSubmission(UpdateSubmissionRequest) returns (UpdateSubmissionResponse){
+        option (google.api.http) = {
+            put: "/api/submission/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteSubmission(DeleteSubmissionRequest) returns (DeleteSubmissionResponse){
+        option (google.api.http) = {
+            delete: "/api/submission/{id}"
+        };
+    }
+
+    rpc GetAllSubmissionsOfExercise(GetAllSubmissionsOfExerciseRequest) returns (GetAllSubmissionsOfExerciseResponse) {
+        option (google.api.http) = {
+            get: "/api/exercise/{exerciseID}/submission"
+        };
+    }
+}
+
+message CommonSubmissionResponse {
+    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    string message = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+
+// ====== submission ======
+message SubmissionInput {
+    int32 userID = 1 [(validate.rules).int32.gte = 1];
+    int32 exerciseID = 2 [(validate.rules).int32.gte = 1];
+    google.type.DateTime submission_date = 3;
+    string status = 4 [(validate.rules).string = {min_len: 2}];
+
+}
+
+message SubmissionResponse {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int32 userID = 2 [(validate.rules).int32.gte = 1];
+    int32 exerciseID = 3 [(validate.rules).int32.gte = 1];
+    google.type.DateTime submission_date = 4;
+    string status = 5 [(validate.rules).string = {min_len: 2}];
+}
+
+message CreateSubmissionRequest {
+   SubmissionInput submission = 1 [(validate.rules).message = {required: true}];
+}
+
+message CreateSubmissionResponse {
+    CommonSubmissionResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ======
+message GetSubmissionRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+}
+
+message GetSubmissionResponse {
+    CommonSubmissionResponse response = 1 [(validate.rules).message = {required: true}];
+    SubmissionResponse submission = 2 [(validate.rules).message = {required: true}];
+}
+
+// ====== PUT ======
+message UpdateSubmissionRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    SubmissionInput submission = 2 [(validate.rules).message = {required: true}];
+}
+
+message UpdateSubmissionResponse {
+    CommonSubmissionResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== DELETE ======
+message DeleteSubmissionRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+}
+
+message DeleteSubmissionResponse {
+    CommonSubmissionResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== GET ALL OF EXERCISE ======
+message GetAllSubmissionsOfExerciseRequest {
+    int32 exerciseID = 1 [(validate.rules).int32.gte = 1];
+}
+
+message GetAllSubmissionsOfExerciseResponse {
+    CommonSubmissionResponse response = 1 [(validate.rules).message = {required: true}];
+    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    repeated SubmissionResponse submissions = 3;
+}

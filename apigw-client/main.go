@@ -46,6 +46,10 @@ func run() error {
 		return err
 	}
 
+	if err := gw.RegisterSubmissionServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts); err != nil {
+		return err
+	}
+
 	fmt.Println("The APIGW-Client starting on 0.0.0.0:8081")
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
 	return http.ListenAndServe(":8081", mux)

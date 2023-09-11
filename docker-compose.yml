@@ -7,8 +7,8 @@ services:
     networks:
       mynet:
     environment:
-      POSTGRES_USER: post
-      POSTGRES_PASSWORD: root
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: thesis_management_classrooms
     ports:
       - "5433:5432"
@@ -91,9 +91,27 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+  submission-db:
+    image: postgres:alpine
+    container_name: submission-db
+    networks:
+      mynet:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: thesis_management_submissions
+    ports:
+      - "5438:5432"
+    volumes:
+      - submission-db:/var/lib/postgresql/data
+      - ./script/submission/init-database-submission.sql:/docker-entrypoint-initdb.d/init-database.sql
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   api:
     build:
-      dockerfile: Dockerfile
+      dockerfile: ./api-gw/Dockerfile
       context: .
       args:
         - image_name=apigw
@@ -108,6 +126,7 @@ services:
       - exercise
       # - user
       - reporting-stage
+      - submission
     volumes:
       - .:/usr/src/app
     depends_on:
@@ -116,13 +135,11 @@ services:
       - exercise-db
       - user-db
       - reporting-stage-db
+      - submission-db
 
   classroom:
-    env_file:
-      - ./classroom-svc/.env
     build:
-      dockerfile: Dockerfile
-      context: .
+      dockerfile: ./classroom-svc/Dockerfile
       args:
         - image_name=classroom
     image: qthuy2k1/thesis-management-backend-classroom
@@ -134,10 +151,8 @@ services:
       - .:/usr/src/app
 
   post:
-    env_file:
-      - .env
     build:
-      dockerfile: Dockerfile
+      dockerfile: ./post-svc/Dockerfile
       context: .
       args:
         - image_name=post
@@ -150,10 +165,8 @@ services:
       - .:/usr/src/app
 
   exercise:
-    env_file:
-      - .env
     build:
-      dockerfile: Dockerfile
+      dockerfile: ./exercise-svc/Dockerfile
       context: .
       args:
         - image_name=exercise
@@ -185,7 +198,7 @@ services:
     env_file:
       - .env
     build:
-      dockerfile: Dockerfile
+      dockerfile: ./reporting-stage-svc/Dockerfile
       context: .
       args:
         - image_name=reporting-stage
@@ -196,10 +209,26 @@ services:
       - reporting-stage-db
     volumes:
       - .:/usr/src/app
+
+  submission:
+    env_file:
+      - .env
+    build:
+      dockerfile: ./submission-svc/Dockerfile
+      context: .
+      args:
+        - image_name=submission
+    image: qthuy2k1/thesis-management-backend-submission
+    networks:
+      mynet:
+    depends_on:
+      - submission-db
+    volumes:
+      - .:/usr/src/app
     
   apigw-client:
     build:
-      dockerfile: Dockerfile
+      dockerfile: ./apigw-client/Dockerfile
       context: .
       args:
         - image_name=apigw-client
@@ -218,6 +247,7 @@ services:
       - post
       # - user
       - reporting-stage
+      - submission
 
 volumes:
   classroom-db:
@@ -225,6 +255,7 @@ volumes:
   exercise-db:
   user-db:
   reporting-stage-db:
+  submission-db:
 
 networks:
   mynet:
