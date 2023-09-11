@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 	"net"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/qthuy2k1/thesis-management-backend/user-svc/pkg/db"
 	"google.golang.org/grpc"
 )
@@ -19,11 +21,11 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	// if err = godotenv.Load(); err != nil {
-	// 	log.Fatalf("Some error occured. Err: %s", err)
-	// }
+	if err = godotenv.Load(); err != nil {
+		log.Fatalf("Some error occured. Err: %s", err)
+	}
 
-	dbUrl := "postgres://postgres:root@user-db:5432/thesis_management_users?sslmode=disable"
+	dbUrl := os.Getenv("DB_URL")
 	_, err = db.Initialize(dbUrl)
 	if err != nil {
 		log.Fatalf("Could not set up database: %v", err)

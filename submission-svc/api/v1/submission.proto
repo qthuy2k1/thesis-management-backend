@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package submission.v1;
+
+import "google/api/datetime.proto";
+
+option go_package="github.com/qthuy2k1/thesis-management-backend/submission/api/v1";
+
+service SubmissionService {
+    rpc CreateSubmission(CreateSubmissionRequest) returns (CreateSubmissionResponse){}
+    
+    rpc GetSubmission(GetSubmissionRequest) returns (GetSubmissionResponse){}
+
+    rpc UpdateSubmission(UpdateSubmissionRequest) returns (UpdateSubmissionResponse){}
+
+    rpc DeleteSubmission(DeleteSubmissionRequest) returns (DeleteSubmissionResponse){ }
+
+    rpc GetAllSubmissionsOfExercise(GetAllSubmissionsOfExerciseRequest) returns (GetAllSubmissionsOfExerciseResponse) {}
+}
+
+message CommonSubmissionResponse {
+    int32 statusCode = 1;
+    string message = 2;
+}
+
+
+// ====== submission ======
+message SubmissionInput {
+    int32 userID = 1;
+    int32 exerciseID = 2;
+    google.type.DateTime submission_date = 3;
+    string status = 4;
+}
+
+message SubmissionResponse {
+    int32 id = 1;
+    int32 userID = 2;
+    int32 exerciseID = 3;
+    google.type.DateTime submission_date = 4;
+    string status = 5;
+}
+
+message CreateSubmissionRequest {
+   SubmissionInput submission = 1;
+}
+
+message CreateSubmissionResponse {
+    CommonSubmissionResponse response = 1;
+}
+
+
+// ====== GET ======
+message GetSubmissionRequest {
+    int32 id = 1;
+}
+
+message GetSubmissionResponse {
+    CommonSubmissionResponse response = 1;
+    SubmissionResponse submission = 2;
+}
+
+// ====== PUT ======
+message UpdateSubmissionRequest {
+    int32 id = 1;
+    SubmissionInput submission = 2;
+}
+
+message UpdateSubmissionResponse {
+    CommonSubmissionResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteSubmissionRequest {
+    int32 id = 1;
+}
+
+message DeleteSubmissionResponse {
+    CommonSubmissionResponse response = 1;
+}
+
+// ====== GET ALL OF EXERCISE ======
+message GetAllSubmissionsOfExerciseRequest {
+    int32 exerciseID = 1;
+}
+
+message GetAllSubmissionsOfExerciseResponse {
+    CommonSubmissionResponse response = 1;
+    int32 totalCount = 2;
+    repeated SubmissionResponse submissions = 3;
+}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net"
+	"os"
 
 	"google.golang.org/grpc"
 
@@ -12,6 +13,8 @@ import (
 	"github.com/qthuy2k1/thesis-management-backend/exercise-svc/internal/repository"
 	"github.com/qthuy2k1/thesis-management-backend/exercise-svc/internal/service"
 	"github.com/qthuy2k1/thesis-management-backend/exercise-svc/pkg/db"
+
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -35,11 +38,11 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	// if err = godotenv.Load(); err != nil {
-	// 	log.Fatalf("Some error occured. Err: %s", err)
-	// }
+	if err = godotenv.Load(); err != nil {
+		log.Fatalf("Some error occured. Err: %s", err)
+	}
 
-	dbUrl := "postgres://postgres:root@exercise-db:5432/thesis_management_exercises?sslmode=disable"
+	dbUrl := os.Getenv("DB_URL")
 	database, err := db.Initialize(dbUrl)
 	if err != nil {
 		log.Fatalf("Could not set up database: %v", err)
