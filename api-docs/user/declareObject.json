@@ -1,0 +1,13 @@
+{
+    "user": {
+        "id": "<string>",
+        "class": "<string>",
+        "major": "<string>", // optional
+        "phone": "<string>", // optional, 10-11 characters
+        "photoSrc": "<string>",
+        "role": "<string>", // values in: student, teacher, admin
+        "name": "<string>",
+        "email": "<string>",
+        "classroomID": "<string>" // optional
+    }
+}

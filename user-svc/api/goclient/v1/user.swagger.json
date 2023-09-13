@@ -1,0 +1,196 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "user.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "UserService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CommonUserResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
+    "v1DeleteUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
+    "v1GetAllUsersOfClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1UserResponse"
+          }
+        }
+      }
+    },
+    "v1GetUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "user": {
+          "$ref": "#/definitions/v1UserResponse"
+        }
+      }
+    },
+    "v1GetUsersResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1UserResponse"
+          }
+        }
+      }
+    },
+    "v1UpdateUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
+    "v1UserInput": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "classroomID": {
+          "type": "string"
+        }
+      },
+      "title": "====== user ======"
+    },
+    "v1UserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "classroomID": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

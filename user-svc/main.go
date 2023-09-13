@@ -1,18 +1,33 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
 	"os"
 
 	"github.com/joho/godotenv"
+	userpb "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
+	"github.com/qthuy2k1/thesis-management-backend/user-svc/internal/handler"
+	"github.com/qthuy2k1/thesis-management-backend/user-svc/internal/repository"
+	"github.com/qthuy2k1/thesis-management-backend/user-svc/internal/service"
 	"github.com/qthuy2k1/thesis-management-backend/user-svc/pkg/db"
 	"google.golang.org/grpc"
 )
 
 const (
 	listenAddress = "0.0.0.0:9091"
+	serviceName   = "User service"
 )
+
+func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	log.Printf("%s: method %q called\n", serviceName, info.FullMethod)
+	resp, err := handler(ctx, req)
+	if err != nil {
+		log.Printf("%s: method %q failed: %s\n", serviceName, info.FullMethod, err)
+	}
+	return resp, err
+}
 
 func main() {
 	log.Printf("Users service starting on %s", listenAddress)
@@ -26,20 +41,18 @@ func main() {
 	}
 
 	dbUrl := os.Getenv("DB_URL")
-	_, err = db.Initialize(dbUrl)
+	database, err := db.Initialize(dbUrl)
 	if err != nil {
 		log.Fatalf("Could not set up database: %v", err)
 	}
 
-	// log.Println(database)
+	repository := repository.NewUserRepo(database)
+	service := service.NewUserSvc(repository)
+	handler := handler.NewUserHdl(service)
 
-	// repository := repository.NewPostRepo(database)
-	// service := service.NewPostSvc(repository)
-	// handler := handler.NewPostHdl(service)
+	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
 
-	s := grpc.NewServer()
-
-	// postpb.RegisterPostServiceServer(s, handler)
+	userpb.RegisterUserServiceServer(s, handler)
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

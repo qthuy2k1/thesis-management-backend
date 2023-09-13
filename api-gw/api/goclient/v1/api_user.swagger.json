@@ -1,0 +1,391 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "api_user.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "UserService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/classroom/{classroomID}/user": {
+      "get": {
+        "operationId": "UserService_GetAllUsersOfClassroom",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllUsersOfClassroomResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "classroomID",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/user": {
+      "get": {
+        "operationId": "UserService_GetUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetUsersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ]
+      },
+      "post": {
+        "operationId": "UserService_CreateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/user/{id}": {
+      "get": {
+        "operationId": "UserService_GetUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      },
+      "delete": {
+        "operationId": "UserService_DeleteUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      },
+      "put": {
+        "operationId": "UserService_UpdateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/v1UserInput"
+                }
+              },
+              "title": "====== PUT ======"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CommonUserResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1UserInput"
+        }
+      }
+    },
+    "v1CreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
+    "v1DeleteUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
+    "v1GetAllUsersOfClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1UserResponse"
+          }
+        }
+      }
+    },
+    "v1GetUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "user": {
+          "$ref": "#/definitions/v1UserResponse"
+        }
+      }
+    },
+    "v1GetUsersResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "totalCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1UserResponse"
+          }
+        }
+      }
+    },
+    "v1UpdateUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
+    "v1UserInput": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "classroomID": {
+          "type": "string"
+        }
+      },
+      "title": "====== user ======"
+    },
+    "v1UserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "classroomID": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

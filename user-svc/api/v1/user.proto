@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package user.v1;
+
+option go_package="github.com/qthuy2k1/thesis-management-backend/user/api/v1";
+
+service UserService {
+    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse){}
+    
+    rpc GetUser(GetUserRequest) returns (GetUserResponse){}
+
+    rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse){}
+
+    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse){}
+
+    rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {}
+
+    rpc GetAllUsersOfClassroom(GetAllUsersOfClassroomRequest) returns (GetAllUsersOfClassroomResponse) {}
+}
+
+message CommonUserResponse {
+    int32 statusCode = 1;
+    string message = 2;
+}
+
+
+// ====== user ======
+message UserInput {
+    string class = 1;
+    optional string major = 2;
+    optional string phone = 3;
+    string photoSrc = 4;
+    string role = 5;
+    string name = 6;
+    string email = 7;
+    optional string classroomID = 8;
+}
+
+message UserResponse {
+    string id = 1;
+    string class = 2;
+    optional string major = 3;
+    optional string phone = 4;
+    string photoSrc = 5;
+    string role = 6;
+    string name = 7;
+    string email = 8;
+    string classroomID = 9;
+}
+
+message CreateUserRequest {
+   UserInput user = 1;
+}
+
+message CreateUserResponse {
+    CommonUserResponse response = 1;
+}
+
+
+// ====== GET ======
+message GetUserRequest {
+    int32 id = 1;
+}
+
+message GetUserResponse {
+    CommonUserResponse response = 1;
+    UserResponse user = 2;
+}
+
+// ====== PUT ======
+message UpdateUserRequest {
+    int32 id = 1;
+    UserInput user = 2;
+}
+
+message UpdateUserResponse {
+    CommonUserResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteUserRequest {
+    int32 id = 1;
+}
+
+message DeleteUserResponse {
+    CommonUserResponse response = 1;
+}
+
+message UserFilter {
+    
+}
+
+// ====== GET ALL ======
+message GetUsersRequest {}
+
+message GetUsersResponse {
+    CommonUserResponse response = 1; 
+    int32 totalCount = 2;
+    repeated UserResponse users = 3;
+}
+
+// ====== GET ALL OF CLASSROOM ======
+message GetAllUsersOfClassroomRequest {
+    int32 classroomID = 1;
+}
+
+message GetAllUsersOfClassroomResponse {
+    CommonUserResponse response = 1;
+    int32 totalCount = 2;
+    repeated UserResponse users = 3;
+}
