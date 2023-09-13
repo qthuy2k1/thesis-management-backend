@@ -124,7 +124,7 @@ services:
       - classroom
       - post
       - exercise
-      # - user
+      - user
       - reporting-stage
       - submission
     volumes:
@@ -178,21 +178,21 @@ services:
     volumes:
       - .:/usr/src/app
     
-  # user:
-  #   env_file:
-  #     - .env
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context: .
-  #     args:
-  #       - image_name=user
-  #   image: qthuy2k1/thesis-management-backend-user
-  #   networks:
-  #     mynet:
-  #   depends_on:
-  #     - user-db
-  #   volumes:
-  #     - .:/usr/src/app
+  user:
+    env_file:
+      - .env
+    build:
+      dockerfile: ./user-svc/Dockerfile
+      context: .
+      args:
+        - image_name=user
+    image: qthuy2k1/thesis-management-backend-user
+    networks:
+      mynet:
+    depends_on:
+      - user-db
+    volumes:
+      - .:/usr/src/app
 
   reporting-stage:
     env_file:
@@ -245,7 +245,7 @@ services:
       - api
       - classroom
       - post
-      # - user
+      - user
       - reporting-stage
       - submission
 

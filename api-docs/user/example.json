@@ -1,0 +1,209 @@
+{
+    "Create a user": {
+        // Method: POST
+        // URL: localhost:8081/api/user
+        "success": {
+            "input": {
+                "user": {
+                    "class": "Class 1",
+                    "major": "CNTT",
+                    "phone": "1231231231",
+                    "photoSrc": "testurl.vn",
+                    "role": "student",
+                    "name": "Full Name",
+                    "email": "name@example.com"
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 201,
+                    "message": "Created"
+                }
+            }
+        },
+        "create a existed user": {
+            "input": {
+                "user": {
+                    "class": "Class 1",
+                    "major": "CNTT",
+                    "phone": "1231231231",
+                    "photoSrc": "testurl.vn",
+                    "role": "student",
+                    "name": "Full Name",
+                    "email": "name@example.com"
+                }
+            },
+            "output": {
+                "code": 6,
+                "message": "err: user already exists",
+                "details": []
+            }
+        }
+    },
+    "Get a user": {
+        // Method: GET
+        // URL: localhost:8081/api/user/1
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                },
+                "user": {
+                    "id": 1,
+                    "class": "Class 1",
+                    "major": "CNTT",
+                    "phone": "1231231231",
+                    "photoSrc": "testurl.vn",
+                    "role": "student",
+                    "name": "Full Name",
+                    "email": "name@example.com",
+                    "classroomID": "0"
+                }
+            }
+        },
+        "failed: user not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: user not found",
+                "details": []
+            }
+        }
+    },
+    "Delete a user": {
+        // Method: DELETE 
+        // URL: localhost:8081/api/user/1
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        },
+        "failed: user not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: user not found",
+                "details": []
+            }
+        }
+    },
+    "Update a user": {
+        // Method: PUT
+        // URL: localhost:8081/api/user/1
+        "success": {
+            "input": {
+                "user": {
+                    "class": "Class 1",
+                    "major": "CNTT",
+                    "phone": "1231231231",
+                    "photoSrc": "testurl.vn",
+                    "role": "student",
+                    "name": "Full Name",
+                    "email": "name@example.com",
+                    "classroomID": "1" // update here
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        },
+        "update with a existed user title": {
+            "input": {
+                "user": {
+                    "class": "Class 1",
+                    "major": "CNTT",
+                    "phone": "1231231231",
+                    "photoSrc": "testurl.vn",
+                    "role": "student",
+                    "name": "Full Name",
+                    "email": "name@example.com",
+                    "classroomID": "1" // update here
+                }
+            },
+            "output": {
+                "code": 6,
+                "message": "err: user already exists",
+                "details": []
+            }
+        }
+    },
+    "Get all users": {
+        // Method: GET
+        // URL: localhost:8081/api/user
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "Success"
+                },
+                "totalCount": 2,
+                "users": [
+                    {
+                        "id": 1,
+                        "class": "Class 1",
+                        "major": "CNTT",
+                        "phone": "1231231231",
+                        "photoSrc": "testurl.vn",
+                        "role": "student",
+                        "name": "Full Name",
+                        "email": "name@example.com",
+                        "classroomID": "1" // update here
+                    },
+                    {
+                        "id": 2,
+                        "class": "Class 2",
+                        "major": "CNTT",
+                        "phone": "1231231231",
+                        "photoSrc": "testurl.vn",
+                        "role": "student",
+                        "name": "Full Name 2",
+                        "email": "name@example.com",
+                        "classroomID": "2" // update here
+                    }
+                ]
+            }
+        }
+    },
+    "Get all users of a classroom": {
+        // Method: GET
+        // URL: localhost:8081/api/classroom/1/user
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "Success"
+                },
+                "totalCount": 2,
+                "users": [
+                    {
+                        "id": 1,
+                        "class": "Class 1",
+                        "major": "CNTT",
+                        "phone": "1231231231",
+                        "photoSrc": "testurl.vn",
+                        "role": "student",
+                        "name": "Full Name",
+                        "email": "name@example.com",
+                        "classroomID": "1" // update here
+                    },
+                    {
+                        "id": 2,
+                        "class": "Class 2",
+                        "major": "CNTT",
+                        "phone": "1231231231",
+                        "photoSrc": "testurl.vn",
+                        "role": "student",
+                        "name": "Full Name 2",
+                        "email": "name@example.com",
+                        "classroomID": "2" // update here
+                    }
+                ]
+            }
+        }
+    }
+}

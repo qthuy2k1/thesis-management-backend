@@ -14,6 +14,7 @@ import (
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
+	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
 const (
@@ -23,6 +24,7 @@ const (
 	exerciseAddress       = "exercise:9091"
 	reportingStageAddress = "reporting-stage:9091"
 	submissionAddress     = "submission:9091"
+	userAddress           = "user:9091"
 )
 
 func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
@@ -70,6 +72,15 @@ func newSubmissionSvcClient() (submissionSvcV1.SubmissionServiceClient, error) {
 	return submissionSvcV1.NewSubmissionServiceClient(conn), nil
 }
 
+func newUserSvcClient() (userSvcV1.UserServiceClient, error) {
+	conn, err := grpc.DialContext(context.TODO(), userAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, fmt.Errorf("user client: %w", err)
+	}
+
+	return userSvcV1.NewUserServiceClient(conn), nil
+}
+
 func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	log.Printf("APIGW service: method %q called\n", info.FullMethod)
 	resp, err := handler(ctx, req)
@@ -112,6 +123,12 @@ func main() {
 		panic(err)
 	}
 
+	// connect to user svc
+	userClient, err := newUserSvcClient()
+	if err != nil {
+		panic(err)
+	}
+
 	lis, err := net.Listen("tcp", listenAddress)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -123,6 +140,7 @@ func main() {
 	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient))
 	pb.RegisterReportingStageServiceServer(s, NewReportingStagesService(rpsClient))
 	pb.RegisterSubmissionServiceServer(s, NewSubmissionsService(submissionClient, classroomClient, exerciseClient))
+	pb.RegisterUserServiceServer(s, NewUsersService(userClient, classroomClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

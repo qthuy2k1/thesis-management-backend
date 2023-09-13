@@ -1,0 +1,137 @@
+syntax = "proto3";
+
+package api.user.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/user/api/v1";
+
+service UserService {
+    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse){
+        option (google.api.http) = {
+            post: "/api/user"
+            body: "*"
+        };
+    }
+    
+    rpc GetUser(GetUserRequest) returns (GetUserResponse){
+        option (google.api.http) = {
+            get: "/api/user/{id}"
+        };
+    }
+
+    rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse){
+        option (google.api.http) = {
+            put: "/api/user/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse){
+        option (google.api.http) = {
+            delete: "/api/user/{id}"
+        };
+    }
+
+    rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {
+        option (google.api.http) = {
+            get: "/api/user"
+        };
+    }
+
+    rpc GetAllUsersOfClassroom(GetAllUsersOfClassroomRequest) returns (GetAllUsersOfClassroomResponse) {
+        option (google.api.http) = {
+            get: "/api/classroom/{classroomID}/user"
+        };
+    }
+}
+
+message CommonUserResponse {
+    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    string message = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+
+// ====== user ======
+message UserInput {
+    string class = 1 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 2 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 3 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 4;
+    string role = 5 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
+    string name = 6 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 7 [(validate.rules).string.email = true];
+    optional string classroomID = 8;
+}
+
+message UserResponse {
+    string id = 1;
+    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
+    string classroomID = 9;
+}
+
+message CreateUserRequest {
+   UserInput user = 1 [(validate.rules).message = {required: true}];
+}
+
+message CreateUserResponse {
+    CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ======
+message GetUserRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+}
+
+message GetUserResponse {
+    CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
+    UserResponse user = 2 [(validate.rules).message = {required: true}];
+}
+
+// ====== PUT ======
+message UpdateUserRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    UserInput user = 2 [(validate.rules).message = {required: true}];
+}
+
+message UpdateUserResponse {
+    CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== DELETE ======
+message DeleteUserRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+}
+
+message DeleteUserResponse {
+    CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ALL ======
+message GetUsersRequest {}
+
+message GetUsersResponse {
+    CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
+    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    repeated UserResponse users = 3;
+}
+
+// ====== GET ALL OF CLASSROOM ======
+message GetAllUsersOfClassroomRequest {
+    int32 classroomID = 1 [(validate.rules).int32.gte = 1];
+}
+
+message GetAllUsersOfClassroomResponse {
+    CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
+    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    repeated UserResponse users = 3;
+}

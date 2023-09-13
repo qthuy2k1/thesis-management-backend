@@ -8,7 +8,6 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
-	golang.org/x/oauth2 v0.11.0
 	google.golang.org/genproto v0.0.0-20221207170731-23e4bf6bdc37
 	google.golang.org/grpc v1.53.0-dev
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0
@@ -24,7 +23,6 @@ require (
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/tools v0.12.0 // indirect
-	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
 

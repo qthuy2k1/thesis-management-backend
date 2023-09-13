@@ -12,9 +12,9 @@ type IPostRepo interface {
 	GetPost(ctx context.Context, id int) (PostOutputRepo, error)
 	// CheckPostExists checks whether the specified post exists by name
 	IsPostExists(ctx context.Context, title string, classroomID int) (bool, error)
-	// UpdatePost updates the specified classroom by id
-	UpdatePost(ctx context.Context, id int, classroom PostInputRepo) error
-	// DeletePost deletes a classroom in db given by id
+	// UpdatePost updates the specified post by id
+	UpdatePost(ctx context.Context, id int, post PostInputRepo) error
+	// DeletePost deletes a post in db given by id
 	DeletePost(ctx context.Context, id int) error
 	// GetPosts returns a list of posts in db with filter
 	GetPosts(ctx context.Context, filter PostFilterRepo) ([]PostOutputRepo, int, error)
