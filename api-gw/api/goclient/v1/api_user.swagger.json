@@ -16,6 +16,44 @@
     "application/json"
   ],
   "paths": {
+    "/api/classroom/{classroomID}/approve/{userID}": {
+      "put": {
+        "operationId": "UserService_ApproveUserJoinClassroom",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ApproveUserJoinClassroomResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "classroomID",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
     "/api/classroom/{classroomID}/user": {
       "get": {
         "operationId": "UserService_GetAllUsersOfClassroom",
@@ -229,6 +267,14 @@
             "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "v1ApproveUserJoinClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
         }
       }
     },

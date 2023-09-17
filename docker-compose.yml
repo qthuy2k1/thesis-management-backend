@@ -3,108 +3,126 @@ version: '3.9'
 services:
   classroom-db:
     image: postgres:alpine
-    container_name: classroom-db
+    container_name: thesis-management-backend-classroom-db
     networks:
       mynet:
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: thesis_management_classrooms
-    ports:
-      - "5433:5432"
+    # ports:
+    #   - "5433:5432"
     volumes:
       - classroom-db:/var/lib/postgresql/data
-      - ./script/classroom/init-database-classroom.sql:/docker-entrypoint-initdb.d/init-database.sql
+      # - ./script/classroom/init-database-classroom.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
   
   post-db:
     image: postgres:alpine
-    container_name: post-db
+    container_name: thesis-management-backend-post-db
     networks:
       mynet:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
       POSTGRES_DB: thesis_management_posts
-    ports:
-      - "5434:5432"
+    # ports:
+    #   - "5434:5432"
     volumes:
       - post-db:/var/lib/postgresql/data
-      - ./script/post/init-database-post.sql:/docker-entrypoint-initdb.d/init-database.sql
+      # - ./script/post/init-database-post.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway" 
 
   exercise-db:
     image: postgres:alpine
-    container_name: exercise-db
+    container_name: thesis-management-backend-exercise-db
     networks:
       mynet:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
       POSTGRES_DB: thesis_management_exercises
-    ports:
-      - "5435:5432"
+    # ports:
+    #   - "5435:5432"
     volumes:
       - exercise-db:/var/lib/postgresql/data
-      - ./script/exercise/init-database-exercise.sql:/docker-entrypoint-initdb.d/init-database.sql
+      # - ./script/exercise/init-database-exercise.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
   user-db:
     image: postgres:alpine
-    container_name: user-db
+    container_name: thesis-management-backend-user-db
     networks:
       mynet:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
       POSTGRES_DB: thesis_management_users
-    ports:
-      - "5436:5432"
+    # ports:
+    #   - "5436:5432"
     volumes:
       - user-db:/var/lib/postgresql/data
-      - ./script/user/init-database-user.sql:/docker-entrypoint-initdb.d/init-database.sql
+      # - ./script/user/init-database-user.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
   reporting-stage-db:
     image: postgres:alpine
-    container_name: reporting-stage-db
+    container_name: thesis-management-backend-reporting-stage-db
     networks:
       mynet:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
       POSTGRES_DB: thesis_management_reporting_stages
-    ports:
-      - "5437:5432"
+    # ports:
+    #   - "5437:5432"
     volumes:
       - reporting-stage-db:/var/lib/postgresql/data
-      - ./script/reporting-stage/init-database-reporting-stage.sql:/docker-entrypoint-initdb.d/init-database.sql
+      # - ./script/reporting-stage/init-database-reporting-stage.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
   submission-db:
     image: postgres:alpine
-    container_name: submission-db
+    container_name: thesis-management-backend-submission-db
     networks:
       mynet:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
       POSTGRES_DB: thesis_management_submissions
-    ports:
-      - "5438:5432"
+    # ports:
+    #   - "5438:5432"
     volumes:
       - submission-db:/var/lib/postgresql/data
-      - ./script/submission/init-database-submission.sql:/docker-entrypoint-initdb.d/init-database.sql
+      # - ./script/submission/init-database-submission.sql:/docker-entrypoint-initdb.d/init-database.sql
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  classroom-waiting-list-db:
+    image: postgres:alpine
+    container_name: thesis-management-backend-classroom-waiting-list-db
+    networks:
+      mynet:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: thesis_management_waiting_lists
+    # ports:
+    #   - "5439:5432"
+    volumes:
+      - classroom-waiting-list-db:/var/lib/postgresql/data
+      # - ./script/waiting-list/init-database-waiting-list.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -136,6 +154,7 @@ services:
       - user-db
       - reporting-stage-db
       - submission-db
+      - classroom-waiting-list-db
 
   classroom:
     build:
@@ -225,6 +244,22 @@ services:
       - submission-db
     volumes:
       - .:/usr/src/app
+
+  classroom-waiting-list:
+    env_file:
+      - .env
+    build:
+      dockerfile: ./classroom-waiting-list-svc/Dockerfile
+      context: .
+      args:
+        - image_name=classroom-waiting-list
+    image: qthuy2k1/thesis-management-backend-classroom-waiting-list
+    networks:
+      mynet:
+    depends_on:
+      - classroom-waiting-list-db
+    volumes:
+      - .:/usr/src/app
     
   apigw-client:
     build:
@@ -248,6 +283,7 @@ services:
       - user
       - reporting-stage
       - submission
+      - classroom-waiting-list
 
 volumes:
   classroom-db:
@@ -256,6 +292,6 @@ volumes:
   user-db:
   reporting-stage-db:
   submission-db:
-
+  classroom-waiting-list-db:
 networks:
   mynet:

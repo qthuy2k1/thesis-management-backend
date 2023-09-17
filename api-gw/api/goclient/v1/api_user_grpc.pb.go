@@ -19,12 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserService_CreateUser_FullMethodName             = "/api.user.v1.UserService/CreateUser"
-	UserService_GetUser_FullMethodName                = "/api.user.v1.UserService/GetUser"
-	UserService_UpdateUser_FullMethodName             = "/api.user.v1.UserService/UpdateUser"
-	UserService_DeleteUser_FullMethodName             = "/api.user.v1.UserService/DeleteUser"
-	UserService_GetUsers_FullMethodName               = "/api.user.v1.UserService/GetUsers"
-	UserService_GetAllUsersOfClassroom_FullMethodName = "/api.user.v1.UserService/GetAllUsersOfClassroom"
+	UserService_CreateUser_FullMethodName               = "/api.user.v1.UserService/CreateUser"
+	UserService_GetUser_FullMethodName                  = "/api.user.v1.UserService/GetUser"
+	UserService_UpdateUser_FullMethodName               = "/api.user.v1.UserService/UpdateUser"
+	UserService_DeleteUser_FullMethodName               = "/api.user.v1.UserService/DeleteUser"
+	UserService_GetUsers_FullMethodName                 = "/api.user.v1.UserService/GetUsers"
+	UserService_GetAllUsersOfClassroom_FullMethodName   = "/api.user.v1.UserService/GetAllUsersOfClassroom"
+	UserService_ApproveUserJoinClassroom_FullMethodName = "/api.user.v1.UserService/ApproveUserJoinClassroom"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -37,6 +38,7 @@ type UserServiceClient interface {
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
 	GetAllUsersOfClassroom(ctx context.Context, in *GetAllUsersOfClassroomRequest, opts ...grpc.CallOption) (*GetAllUsersOfClassroomResponse, error)
+	ApproveUserJoinClassroom(ctx context.Context, in *ApproveUserJoinClassroomRequest, opts ...grpc.CallOption) (*ApproveUserJoinClassroomResponse, error)
 }
 
 type userServiceClient struct {
@@ -101,6 +103,15 @@ func (c *userServiceClient) GetAllUsersOfClassroom(ctx context.Context, in *GetA
 	return out, nil
 }
 
+func (c *userServiceClient) ApproveUserJoinClassroom(ctx context.Context, in *ApproveUserJoinClassroomRequest, opts ...grpc.CallOption) (*ApproveUserJoinClassroomResponse, error) {
+	out := new(ApproveUserJoinClassroomResponse)
+	err := c.cc.Invoke(ctx, UserService_ApproveUserJoinClassroom_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -111,6 +122,7 @@ type UserServiceServer interface {
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
 	GetAllUsersOfClassroom(context.Context, *GetAllUsersOfClassroomRequest) (*GetAllUsersOfClassroomResponse, error)
+	ApproveUserJoinClassroom(context.Context, *ApproveUserJoinClassroomRequest) (*ApproveUserJoinClassroomResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -135,6 +147,9 @@ func (UnimplementedUserServiceServer) GetUsers(context.Context, *GetUsersRequest
 }
 func (UnimplementedUserServiceServer) GetAllUsersOfClassroom(context.Context, *GetAllUsersOfClassroomRequest) (*GetAllUsersOfClassroomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllUsersOfClassroom not implemented")
+}
+func (UnimplementedUserServiceServer) ApproveUserJoinClassroom(context.Context, *ApproveUserJoinClassroomRequest) (*ApproveUserJoinClassroomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ApproveUserJoinClassroom not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -257,6 +272,24 @@ func _UserService_GetAllUsersOfClassroom_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ApproveUserJoinClassroom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApproveUserJoinClassroomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ApproveUserJoinClassroom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ApproveUserJoinClassroom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ApproveUserJoinClassroom(ctx, req.(*ApproveUserJoinClassroomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -287,6 +320,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllUsersOfClassroom",
 			Handler:    _UserService_GetAllUsersOfClassroom_Handler,
+		},
+		{
+			MethodName: "ApproveUserJoinClassroom",
+			Handler:    _UserService_ApproveUserJoinClassroom_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

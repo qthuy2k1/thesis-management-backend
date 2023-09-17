@@ -1,0 +1,146 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "waiting_list.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "WaitingListService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CommonWaitingListResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateWaitingListResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonWaitingListResponse"
+        }
+      }
+    },
+    "v1DeleteWaitingListResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonWaitingListResponse"
+        }
+      }
+    },
+    "v1GetWaitingListResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonWaitingListResponse"
+        },
+        "waitingList": {
+          "$ref": "#/definitions/v1WaitingListResponse"
+        }
+      }
+    },
+    "v1GetWaitingListsResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonWaitingListResponse"
+        },
+        "waitingLists": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1WaitingListResponse"
+          }
+        }
+      }
+    },
+    "v1UpdateWaitingListResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonWaitingListResponse"
+        }
+      }
+    },
+    "v1WaitingListInput": {
+      "type": "object",
+      "properties": {
+        "classroomID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "userID": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "====== waitingList ======"
+    },
+    "v1WaitingListResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "classroomID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "userID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

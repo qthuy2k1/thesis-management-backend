@@ -2342,3 +2342,273 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetAllUsersOfClassroomResponseValidationError{}
+
+// Validate checks the field values on ApproveUserJoinClassroomRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ApproveUserJoinClassroomRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ApproveUserJoinClassroomRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ApproveUserJoinClassroomRequestMultiError, or nil if none found.
+func (m *ApproveUserJoinClassroomRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ApproveUserJoinClassroomRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetClassroomID() < 1 {
+		err := ApproveUserJoinClassroomRequestValidationError{
+			field:  "ClassroomID",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetUserID() < 1 {
+		err := ApproveUserJoinClassroomRequestValidationError{
+			field:  "UserID",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return ApproveUserJoinClassroomRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ApproveUserJoinClassroomRequestMultiError is an error wrapping multiple
+// validation errors returned by ApproveUserJoinClassroomRequest.ValidateAll()
+// if the designated constraints aren't met.
+type ApproveUserJoinClassroomRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ApproveUserJoinClassroomRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ApproveUserJoinClassroomRequestMultiError) AllErrors() []error { return m }
+
+// ApproveUserJoinClassroomRequestValidationError is the validation error
+// returned by ApproveUserJoinClassroomRequest.Validate if the designated
+// constraints aren't met.
+type ApproveUserJoinClassroomRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ApproveUserJoinClassroomRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ApproveUserJoinClassroomRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ApproveUserJoinClassroomRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ApproveUserJoinClassroomRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ApproveUserJoinClassroomRequestValidationError) ErrorName() string {
+	return "ApproveUserJoinClassroomRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ApproveUserJoinClassroomRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sApproveUserJoinClassroomRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ApproveUserJoinClassroomRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ApproveUserJoinClassroomRequestValidationError{}
+
+// Validate checks the field values on ApproveUserJoinClassroomResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *ApproveUserJoinClassroomResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ApproveUserJoinClassroomResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ApproveUserJoinClassroomResponseMultiError, or nil if none found.
+func (m *ApproveUserJoinClassroomResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ApproveUserJoinClassroomResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetResponse() == nil {
+		err := ApproveUserJoinClassroomResponseValidationError{
+			field:  "Response",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if all {
+		switch v := interface{}(m.GetResponse()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ApproveUserJoinClassroomResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ApproveUserJoinClassroomResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ApproveUserJoinClassroomResponseValidationError{
+				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return ApproveUserJoinClassroomResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ApproveUserJoinClassroomResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// ApproveUserJoinClassroomResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ApproveUserJoinClassroomResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ApproveUserJoinClassroomResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ApproveUserJoinClassroomResponseMultiError) AllErrors() []error { return m }
+
+// ApproveUserJoinClassroomResponseValidationError is the validation error
+// returned by ApproveUserJoinClassroomResponse.Validate if the designated
+// constraints aren't met.
+type ApproveUserJoinClassroomResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ApproveUserJoinClassroomResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ApproveUserJoinClassroomResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ApproveUserJoinClassroomResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ApproveUserJoinClassroomResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ApproveUserJoinClassroomResponseValidationError) ErrorName() string {
+	return "ApproveUserJoinClassroomResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ApproveUserJoinClassroomResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sApproveUserJoinClassroomResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ApproveUserJoinClassroomResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ApproveUserJoinClassroomResponseValidationError{}

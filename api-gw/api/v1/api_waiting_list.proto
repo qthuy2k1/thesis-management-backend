@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package api.waitingList.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package="github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list/api/v1";
+
+service WaitingListService {
+    rpc CreateWaitingList(CreateWaitingListRequest) returns (CreateWaitingListResponse){
+        option (google.api.http) = {
+            post: "/api/waiting-list"
+            body: "*"
+        };
+    }
+    
+    rpc GetWaitingList(GetWaitingListRequest) returns (GetWaitingListResponse){
+        option (google.api.http) = {
+            get: "/api/waiting-list/{id}"
+        };
+    }
+
+    rpc UpdateWaitingList(UpdateWaitingListRequest) returns (UpdateWaitingListResponse){
+        option (google.api.http) = {
+            put: "/api/waiting-list/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteWaitingList(DeleteWaitingListRequest) returns (DeleteWaitingListResponse){
+        option (google.api.http) = {
+            delete: "/api/waiting-list/{id}"
+        };
+    }
+
+    rpc GetWaitingListsOfClassroom(GetWaitingListsRequest) returns (GetWaitingListsResponse) {
+        option (google.api.http) = {
+            get: "/api/classroom/{classroomID}/waiting-list"
+        };
+    }
+}
+
+message CommonWaitingListResponse {
+    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    string message = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+
+// ====== waitingList ======
+message WaitingListInput {
+    int32 classroomID = 1 [(validate.rules).int32.gte = 1];
+    int32 userID = 2 [(validate.rules).int32.gte = 1];
+}
+
+message WaitingListResponse {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int32 classroomID = 2 [(validate.rules).int32.gte = 1];
+    int32 userID = 3 [(validate.rules).int32.gte = 1];
+    google.protobuf.Timestamp createdAt = 4 [(validate.rules).timestamp.required = true];
+}
+
+message CreateWaitingListRequest {
+   WaitingListInput waitingList = 1 [(validate.rules).message = {required: true}];
+}
+
+message CreateWaitingListResponse {
+    CommonWaitingListResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ======
+message GetWaitingListRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+}
+
+message GetWaitingListResponse {
+    CommonWaitingListResponse response = 1 [(validate.rules).message = {required: true}];
+    WaitingListResponse waitingList = 2 [(validate.rules).message = {required: true}];
+}
+
+// ====== PUT ======
+message UpdateWaitingListRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    WaitingListInput waitingList = 2 [(validate.rules).message = {required: true}];
+}
+
+message UpdateWaitingListResponse {
+    CommonWaitingListResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== DELETE ======
+message DeleteWaitingListRequest {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+}
+
+message DeleteWaitingListResponse {
+    CommonWaitingListResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== GET ALL ======
+message GetWaitingListsRequest {
+    int32 classroomID = 1 [(validate.rules).int32.gte = 1];
+}
+
+message GetWaitingListsResponse {
+    CommonWaitingListResponse response = 1 [(validate.rules).message = {required: true}]; 
+    repeated WaitingListResponse waitingLists = 3;
+}
