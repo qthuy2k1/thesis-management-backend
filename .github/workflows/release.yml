@@ -21,6 +21,8 @@ jobs:
       - name: Build and push api-gw
         run: |
           cd ..
+          pwd
+          ls -la
           docker compose build
           docker push qthuy2k1/thesis-management-backend:latest
           docker push qthuy2k1/thesis-management-backend-apigw-client:latest
