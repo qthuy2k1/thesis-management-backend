@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package waitingList.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package="github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list/api/v1";
+
+service WaitingListService {
+    rpc CreateWaitingList(CreateWaitingListRequest) returns (CreateWaitingListResponse){
+        
+    }
+    
+    rpc GetWaitingList(GetWaitingListRequest) returns (GetWaitingListResponse){
+        
+    }
+
+    rpc UpdateWaitingList(UpdateWaitingListRequest) returns (UpdateWaitingListResponse){
+        
+    }
+
+    rpc DeleteWaitingList(DeleteWaitingListRequest) returns (DeleteWaitingListResponse){
+        
+    }
+
+    rpc GetWaitingListsOfClassroom(GetWaitingListsRequest) returns (GetWaitingListsResponse) {
+        
+    }
+}
+
+message CommonWaitingListResponse {
+    int32 statusCode = 1;
+    string message = 2;
+}
+
+
+// ====== waitingList ======
+message WaitingListInput {
+    int32 classroomID = 1;
+    int32 userID = 2;
+}
+
+message WaitingListResponse {
+    int32 id = 1;
+    int32 classroomID = 2;
+    int32 userID = 3;
+    google.protobuf.Timestamp createdAt = 4;
+}
+
+message CreateWaitingListRequest {
+   WaitingListInput waitingList = 1;
+}
+
+message CreateWaitingListResponse {
+    CommonWaitingListResponse response = 1;
+}
+
+
+// ====== GET ======
+message GetWaitingListRequest {
+    int32 id = 1;
+}
+
+message GetWaitingListResponse {
+    CommonWaitingListResponse response = 1;
+    WaitingListResponse waitingList = 2;
+}
+
+// ====== PUT ======
+message UpdateWaitingListRequest {
+    int32 id = 1;
+    WaitingListInput waitingList = 2;
+}
+
+message UpdateWaitingListResponse {
+    CommonWaitingListResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteWaitingListRequest {
+    int32 id = 1; 
+}
+
+message DeleteWaitingListResponse {
+    CommonWaitingListResponse response = 1;
+}
+
+// ====== GET ALL ======
+message GetWaitingListsRequest {
+    int32 classroomID = 1;
+}
+
+message GetWaitingListsResponse {
+    CommonWaitingListResponse response = 1; 
+    repeated WaitingListResponse waitingLists = 3;
+}
+
+

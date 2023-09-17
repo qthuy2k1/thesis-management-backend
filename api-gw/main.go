@@ -10,6 +10,7 @@ import (
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
+	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
@@ -25,6 +26,7 @@ const (
 	reportingStageAddress = "reporting-stage:9091"
 	submissionAddress     = "submission:9091"
 	userAddress           = "user:9091"
+	waitingListAddress    = "classroom-waiting-list:9091"
 )
 
 func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
@@ -81,6 +83,15 @@ func newUserSvcClient() (userSvcV1.UserServiceClient, error) {
 	return userSvcV1.NewUserServiceClient(conn), nil
 }
 
+func newWaitingListSvcClient() (waitingListSvcV1.WaitingListServiceClient, error) {
+	conn, err := grpc.DialContext(context.TODO(), waitingListAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, fmt.Errorf("clasroom waiting list client: %w", err)
+	}
+
+	return waitingListSvcV1.NewWaitingListServiceClient(conn), nil
+}
+
 func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	log.Printf("APIGW service: method %q called\n", info.FullMethod)
 	resp, err := handler(ctx, req)
@@ -129,6 +140,12 @@ func main() {
 		panic(err)
 	}
 
+	// connect to user svc
+	waitingListClient, err := newWaitingListSvcClient()
+	if err != nil {
+		panic(err)
+	}
+
 	lis, err := net.Listen("tcp", listenAddress)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -141,6 +158,7 @@ func main() {
 	pb.RegisterReportingStageServiceServer(s, NewReportingStagesService(rpsClient))
 	pb.RegisterSubmissionServiceServer(s, NewSubmissionsService(submissionClient, classroomClient, exerciseClient))
 	pb.RegisterUserServiceServer(s, NewUsersService(userClient, classroomClient))
+	pb.RegisterWaitingListServiceServer(s, NewWaitingListsService(waitingListClient, classroomClient, userClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

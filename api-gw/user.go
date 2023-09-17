@@ -25,6 +25,10 @@ func NewUsersService(userClient userSvcV1.UserServiceClient, classroomClient cla
 func (u *userServiceGW) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	if req.GetUser().GetClassroomID() != "" {
 		classroomID, err := strconv.Atoi(req.GetUser().GetClassroomID())
+		if err != nil {
+			return nil, err
+		}
+
 		exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: int32(classroomID)})
 		if err != nil {
 			return nil, err
@@ -99,6 +103,10 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 func (u *userServiceGW) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
 	if req.GetUser().GetClassroomID() != "" {
 		classroomID, err := strconv.Atoi(req.GetUser().GetClassroomID())
+		if err != nil {
+			return nil, err
+		}
+
 		exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: int32(classroomID)})
 		if err != nil {
 			return nil, err
@@ -234,5 +242,77 @@ func (u *userServiceGW) GetAllUsersOfClassroom(ctx context.Context, req *pb.GetA
 		},
 		TotalCount: res.GetTotalCount(),
 		Users:      users,
+	}, nil
+}
+
+func (u *userServiceGW) ApproveUserJoinClassroom(ctx context.Context, req *pb.ApproveUserJoinClassroomRequest) (*pb.ApproveUserJoinClassroomResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	clrRes, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{
+		ClassroomID: req.GetClassroomID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if !clrRes.GetExists() {
+		return &pb.ApproveUserJoinClassroomResponse{
+			Response: &pb.CommonUserResponse{
+				StatusCode: 404,
+				Message:    "Classroom does not exist",
+			},
+		}, nil
+	}
+
+	userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: req.GetUserID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if userRes.Response.StatusCode == 404 {
+		return &pb.ApproveUserJoinClassroomResponse{
+			Response: &pb.CommonUserResponse{
+				StatusCode: 404,
+				Message:    "User does not exist",
+			},
+		}, nil
+	}
+
+	classroomID := strconv.Itoa(int(req.GetClassroomID()))
+	res, err := u.userClient.UpdateUser(ctx, &userSvcV1.UpdateUserRequest{
+		Id: req.GetUserID(),
+		User: &userSvcV1.UserInput{
+			Class:       userRes.User.Class,
+			Major:       userRes.User.Major,
+			Phone:       userRes.User.Phone,
+			PhotoSrc:    userRes.User.PhotoSrc,
+			Role:        userRes.User.Role,
+			Name:        userRes.User.Name,
+			Email:       userRes.User.Email,
+			ClassroomID: &classroomID,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if res.Response.StatusCode != 200 {
+		return &pb.ApproveUserJoinClassroomResponse{
+			Response: &pb.CommonUserResponse{
+				StatusCode: res.GetResponse().GetStatusCode(),
+				Message:    res.GetResponse().GetMessage(),
+			},
+		}, nil
+	}
+
+	return &pb.ApproveUserJoinClassroomResponse{
+		Response: &pb.CommonUserResponse{
+			StatusCode: 200,
+			Message:    "OK",
+		},
 	}, nil
 }

@@ -30,7 +30,7 @@ proto-api:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./api-gw/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto
+		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto
 	@echo "Done"
 
 proto-classroom:
@@ -129,7 +129,23 @@ proto-user:
 		 user.proto
 	@echo "Done"
 
-proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user
+proto-waiting-list:
+	@echo "--> Generating gRPC clients for classroom-waiting-list API"
+	@protoc -I ./classroom-waiting-list-svc/api/v1 \
+		--go_out ./classroom-waiting-list-svc/api/goclient/v1 --go_opt paths=source_relative \
+	  	--go-grpc_out ./classroom-waiting-list-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+		--grpc-gateway_out ./classroom-waiting-list-svc/api/goclient/v1 \
+		--grpc-gateway_opt logtostderr=true \
+		--grpc-gateway_opt paths=source_relative \
+		--grpc-gateway_opt generate_unbound_methods=true \
+  		--openapiv2_out ./classroom-waiting-list-svc/api/goclient/v1 \
+    	--openapiv2_opt logtostderr=true \
+		--validate_out="lang=go,paths=source_relative:./classroom-waiting-list-svc/api/goclient/v1" \
+		--experimental_allow_proto3_optional \
+		 waiting_list.proto
+	@echo "Done"
+
+proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list
 
 clean:
 	rm -rf ./out
@@ -144,6 +160,7 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/user ./user-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/reporting-stage ./reporting-stage-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/submission ./submission-svc
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/classroom-waiting-list ./classroom-waiting-list-svc
 
 build_and_run: clean build
 	@echo "--> Starting servers"
@@ -155,6 +172,7 @@ down:
 	@echo "--> Server stopped"
 
 docker-tag:
+	# APP
 	docker tag qthuy2k1/thesis-management-backend:latest qthuy2k1/thesis-management-backend:latest
 	docker tag qthuy2k1/thesis-management-backend-apigw-client:latest qthuy2k1/thesis-management-backend-apigw-client:latest
 	docker tag qthuy2k1/thesis-management-backend-classroom:latest qthuy2k1/thesis-management-backend-classroom:latest
@@ -163,8 +181,41 @@ docker-tag:
 	docker tag qthuy2k1/thesis-management-backend-user:latest qthuy2k1/thesis-management-backend-user:latest
 	docker tag qthuy2k1/thesis-management-backend-reporting-stage:latest qthuy2k1/thesis-management-backend-reporting-stage:latest
 	docker tag qthuy2k1/thesis-management-backend-submission:latest qthuy2k1/thesis-management-backend-submisson:latest
+	docker tag qthuy2k1/thesis-management-backend-classroom-waiting-list:latest qthuy2k1/thesis-management-backend-classroom-waiting-list:latest
+	
+	# DB
+	docker tag postgres qthuy2k1/thesis-management-backend-classroom-db:latest
+	docker tag postgres qthuy2k1/thesis-management-backend-post-db:latest
+	docker tag postgres qthuy2k1/thesis-management-backend-exercise-db:latest
+	docker tag postgres qthuy2k1/thesis-management-backend-user-db:latest
+	docker tag postgres qthuy2k1/thesis-management-backend-reporting-stage-db:latest
+	docker tag postgres qthuy2k1/thesis-management-backend-submission-db:latest
+	docker tag postgres qthuy2k1/thesis-management-backend-classroom-waiting-list-db:latest
+
+
+docker-azure-tag:
+	# APP
+	docker tag thesismanagementapp.azurecr.io/thesis-management-backend:latest thesismanagementapp.azurecr.io/thesis-management-backend:latest
+	docker tag thesismanagementapp.azurecr.io/thesis-management-backend-apigw-client:latest thesismanagementapp.azurecr.io/thesis-management-backend-apigw-client:latest
+	docker tag thesismanagementapp.azurecr.io/thesis-management-backend-classroom:latest thesismanagementapp.azurecr.io/thesis-management-backend-classroom:latest
+	docker tag thesismanagementapp.azurecr.io/thesis-management-backend-post:latest thesismanagementapp.azurecr.io/thesis-management-backend-post:latest
+	docker tag thesismanagementapp.azurecr.io/thesis-management-backend-exercise:latest thesismanagementapp.azurecr.io/thesis-management-backend-exercise:latest
+	docker tag thesismanagementapp.azurecr.io/thesis-management-backend-user:latest thesismanagementapp.azurecr.io/thesis-management-backend-user:latest
+	docker tag thesismanagementapp.azurecr.io/thesis-management-backend-reporting-stage:latest thesismanagementapp.azurecr.io/thesis-management-backend-reporting-stage:latest
+	docker tag thesismanagementapp.azurecr.io/thesis-management-backend-submission:latest thesismanagementapp.azurecr.io/thesis-management-backend-submisson:latest
+	docker tag thesismanagementapp.azurecr.io/thesis-management-backend-classroom-waiting-list:latest thesismanagementapp.azurecr.io/thesis-management-backend-classroom-waiting-list:latest
+	
+	# DB
+	docker tag postgres thesismanagementapp.azurecr.io/thesis-management-backend-classroom-db:latest
+	docker tag postgres thesismanagementapp.azurecr.io/thesis-management-backend-post-db:latest
+	docker tag postgres thesismanagementapp.azurecr.io/thesis-management-backend-exercise-db:latest
+	docker tag postgres thesismanagementapp.azurecr.io/thesis-management-backend-user-db:latest
+	docker tag postgres thesismanagementapp.azurecr.io/thesis-management-backend-reporting-stage-db:latest
+	docker tag postgres thesismanagementapp.azurecr.io/thesis-management-backend-submission-db:latest
+	docker tag postgres thesismanagementapp.azurecr.io/thesis-management-backend-classroom-waiting-list-db:latest
 
 docker-push:
+	# APP
 	docker push qthuy2k1/thesis-management-backend:latest
 	docker push qthuy2k1/thesis-management-backend-apigw-client:latest
 	docker push qthuy2k1/thesis-management-backend-classroom:latest
@@ -173,3 +224,34 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-user:latest
 	docker push qthuy2k1/thesis-management-backend-reporting-stage:latest
 	docker push qthuy2k1/thesis-management-backend-submission:latest
+	docker push qthuy2k1/thesis-management-backend-classroom-waiting-list:latest
+
+	# DB
+	docker push qthuy2k1/thesis-management-backend-classroom-db:latest
+	docker push qthuy2k1/thesis-management-backend-post-db:latest
+	docker push qthuy2k1/thesis-management-backend-exercise-db:latest
+	docker push qthuy2k1/thesis-management-backend-user-db:latest
+	docker push qthuy2k1/thesis-management-backend-reporting-stage-db:latest
+	docker push qthuy2k1/thesis-management-backend-submission-db:latest
+	docker push qthuy2k1/thesis-management-backend-classroom-waiting-list-db:latest
+
+docker-azure-push:
+	# APP
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-apigw-client:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-classroom:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-post:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-exercise:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-user:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-reporting-stage:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-submission:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-classroom-waiting-list:latest
+
+	# DB
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-classroom-db:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-post-db:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-exercise-db:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-user-db:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-reporting-stage-db:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-submission-db:latest
+	docker push thesismanagementapp.azurecr.io/thesis-management-backend-classroom-waiting-list-db:latest

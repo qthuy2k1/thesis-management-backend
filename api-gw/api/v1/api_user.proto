@@ -45,6 +45,12 @@ service UserService {
             get: "/api/classroom/{classroomID}/user"
         };
     }
+
+    rpc ApproveUserJoinClassroom(ApproveUserJoinClassroomRequest) returns (ApproveUserJoinClassroomResponse) {
+        option (google.api.http) = {
+            put: "/api/classroom/{classroomID}/approve/{userID}"
+        };
+    }
 }
 
 message CommonUserResponse {
@@ -134,4 +140,14 @@ message GetAllUsersOfClassroomResponse {
     CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
     int32 totalCount = 2 [(validate.rules).int32.gte = 0];
     repeated UserResponse users = 3;
+}
+
+// ====== APPROVE USER JOIN CLASSROOM ======
+message ApproveUserJoinClassroomRequest {
+    int32 classroomID = 1 [(validate.rules).int32.gte = 1];
+    int32 userID = 2 [(validate.rules).int32.gte = 1];
+}
+
+message ApproveUserJoinClassroomResponse {
+    CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
 }
