@@ -20,20 +20,20 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push api-gw
         run: |
-        docker compose build
-        docker push qthuy2k1/thesis-management-backend:latest
-        docker push qthuy2k1/thesis-management-backend-apigw-client:latest
-        docker push qthuy2k1/thesis-management-backend-classroom:latest
-        docker push qthuy2k1/thesis-management-backend-post:latest
-        docker push qthuy2k1/thesis-management-backend-exercise:latest
-        docker push qthuy2k1/thesis-management-backend-user:latest
-        docker push qthuy2k1/thesis-management-backend-reporting-stage:latest
-        docker push qthuy2k1/thesis-management-backend-submission:latest
-        docker push qthuy2k1/thesis-management-backend-classroom-waiting-list:latest
-        docker push qthuy2k1/thesis-management-backend-classroom-db:latest
-        docker push qthuy2k1/thesis-management-backend-post-db:latest
-        docker push qthuy2k1/thesis-management-backend-exercise-db:latest
-        docker push qthuy2k1/thesis-management-backend-user-db:latest
-        docker push qthuy2k1/thesis-management-backend-reporting-stage-db:latest
-        docker push qthuy2k1/thesis-management-backend-submission-db:latest
-        docker push qthuy2k1/thesis-management-backend-classroom-waiting-list-db:latest
+          docker compose build
+          docker push qthuy2k1/thesis-management-backend:latest
+          docker push qthuy2k1/thesis-management-backend-apigw-client:latest
+          docker push qthuy2k1/thesis-management-backend-classroom:latest
+          docker push qthuy2k1/thesis-management-backend-post:latest
+          docker push qthuy2k1/thesis-management-backend-exercise:latest
+          docker push qthuy2k1/thesis-management-backend-user:latest
+          docker push qthuy2k1/thesis-management-backend-reporting-stage:latest
+          docker push qthuy2k1/thesis-management-backend-submission:latest
+          docker push qthuy2k1/thesis-management-backend-classroom-waiting-list:latest
+          docker push qthuy2k1/thesis-management-backend-classroom-db:latest
+          docker push qthuy2k1/thesis-management-backend-post-db:latest
+          docker push qthuy2k1/thesis-management-backend-exercise-db:latest
+          docker push qthuy2k1/thesis-management-backend-user-db:latest
+          docker push qthuy2k1/thesis-management-backend-reporting-stage-db:latest
+          docker push qthuy2k1/thesis-management-backend-submission-db:latest
+          docker push qthuy2k1/thesis-management-backend-classroom-waiting-list-db:latest
