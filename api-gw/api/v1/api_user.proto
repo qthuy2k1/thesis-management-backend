@@ -4,6 +4,7 @@ package api.user.v1;
 
 import "google/api/annotations.proto";
 import "validate/validate.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package="github.com/qthuy2k1/thesis_management_backend/user/api/v1";
 
@@ -51,6 +52,18 @@ service UserService {
             put: "/api/classroom/{classroomID}/approve/{userID}"
         };
     }
+
+    // rpc Login(LoginRequest) returns (LoginResponse) {
+    //     option (google.api.http) = {
+    //         post: "/api/login"
+    //     };
+    // }
+
+    rpc CheckStatusUserJoinClassroom(CheckStatusUserJoinClassroomRequest) returns (CheckStatusUserJoinClassroomResponse) {
+        option (google.api.http) = {
+            get: "/api/user/{id}/classroom-status"
+        };
+    }
 }
 
 message CommonUserResponse {
@@ -61,14 +74,15 @@ message CommonUserResponse {
 
 // ====== user ======
 message UserInput {
-    string class = 1 [(validate.rules).string = {min_len: 4, max_len: 10}];
-    optional string major = 2 [(validate.rules).string = {min_len: 2}];
-    optional string phone = 3 [(validate.rules).string = {min_len: 10, max_len: 11}];
-    string photoSrc = 4;
-    string role = 5 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
-    string name = 6 [(validate.rules).string = {min_len: 2, max_len: 200}];
-    string email = 7 [(validate.rules).string.email = true];
-    optional string classroomID = 8;
+    string id = 1;
+    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
+    optional string classroomID = 9;
 }
 
 message UserResponse {
@@ -80,7 +94,7 @@ message UserResponse {
     string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    string classroomID = 9;
+    optional string classroomID = 9;
 }
 
 message CreateUserRequest {
@@ -94,7 +108,7 @@ message CreateUserResponse {
 
 // ====== GET ======
 message GetUserRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    string id = 1;
 }
 
 message GetUserResponse {
@@ -104,7 +118,7 @@ message GetUserResponse {
 
 // ====== PUT ======
 message UpdateUserRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    string id = 1;
     UserInput user = 2 [(validate.rules).message = {required: true}];
 }
 
@@ -114,7 +128,7 @@ message UpdateUserResponse {
 
 // ====== DELETE ======
 message DeleteUserRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    string id = 1;
 }
 
 message DeleteUserResponse {
@@ -145,9 +159,42 @@ message GetAllUsersOfClassroomResponse {
 // ====== APPROVE USER JOIN CLASSROOM ======
 message ApproveUserJoinClassroomRequest {
     int32 classroomID = 1 [(validate.rules).int32.gte = 1];
-    int32 userID = 2 [(validate.rules).int32.gte = 1];
+    string userID = 2;
 }
 
 message ApproveUserJoinClassroomResponse {
     CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ======= LOGIN ======
+message LoginRequest {
+    
+}
+
+message LoginResponse {}
+
+message ClassroomUserResponse {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string description = 3 [(validate.rules).string = {min_len: 2}];
+    string status = 4 [(validate.rules).string = {min_len: 2}];
+    string lecturerId = 5;
+    string codeClassroom = 6 [(validate.rules).string = {min_len: 2}];
+    string topicTags = 7 [(validate.rules).string = {min_len: 2}];
+    int32 quantity = 8 [(validate.rules).int32.gte = 0];
+    google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
+}
+
+
+
+// ====== CHECK USER JOIN CLASSROOM ======
+message CheckStatusUserJoinClassroomRequest{
+    string id = 1;
+}
+
+message CheckStatusUserJoinClassroomResponse{
+    string status = 1;
+    ClassroomUserResponse classroom = 2;
 }

@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	WaitingListService_CreateWaitingList_FullMethodName          = "/api.waitingList.v1.WaitingListService/CreateWaitingList"
-	WaitingListService_GetWaitingList_FullMethodName             = "/api.waitingList.v1.WaitingListService/GetWaitingList"
-	WaitingListService_UpdateWaitingList_FullMethodName          = "/api.waitingList.v1.WaitingListService/UpdateWaitingList"
-	WaitingListService_DeleteWaitingList_FullMethodName          = "/api.waitingList.v1.WaitingListService/DeleteWaitingList"
-	WaitingListService_GetWaitingListsOfClassroom_FullMethodName = "/api.waitingList.v1.WaitingListService/GetWaitingListsOfClassroom"
+	WaitingListService_CreateWaitingList_FullMethodName                 = "/api.waitingList.v1.WaitingListService/CreateWaitingList"
+	WaitingListService_GetWaitingList_FullMethodName                    = "/api.waitingList.v1.WaitingListService/GetWaitingList"
+	WaitingListService_UpdateWaitingList_FullMethodName                 = "/api.waitingList.v1.WaitingListService/UpdateWaitingList"
+	WaitingListService_DeleteWaitingList_FullMethodName                 = "/api.waitingList.v1.WaitingListService/DeleteWaitingList"
+	WaitingListService_GetWaitingListsOfClassroom_FullMethodName        = "/api.waitingList.v1.WaitingListService/GetWaitingListsOfClassroom"
+	WaitingListService_CheckUserInWaitingListOfClassroom_FullMethodName = "/api.waitingList.v1.WaitingListService/CheckUserInWaitingListOfClassroom"
 )
 
 // WaitingListServiceClient is the client API for WaitingListService service.
@@ -35,6 +36,7 @@ type WaitingListServiceClient interface {
 	UpdateWaitingList(ctx context.Context, in *UpdateWaitingListRequest, opts ...grpc.CallOption) (*UpdateWaitingListResponse, error)
 	DeleteWaitingList(ctx context.Context, in *DeleteWaitingListRequest, opts ...grpc.CallOption) (*DeleteWaitingListResponse, error)
 	GetWaitingListsOfClassroom(ctx context.Context, in *GetWaitingListsRequest, opts ...grpc.CallOption) (*GetWaitingListsResponse, error)
+	CheckUserInWaitingListOfClassroom(ctx context.Context, in *CheckUserInWaitingListClassroomRequest, opts ...grpc.CallOption) (*CheckUserInWaitingListClassroomResponse, error)
 }
 
 type waitingListServiceClient struct {
@@ -90,6 +92,15 @@ func (c *waitingListServiceClient) GetWaitingListsOfClassroom(ctx context.Contex
 	return out, nil
 }
 
+func (c *waitingListServiceClient) CheckUserInWaitingListOfClassroom(ctx context.Context, in *CheckUserInWaitingListClassroomRequest, opts ...grpc.CallOption) (*CheckUserInWaitingListClassroomResponse, error) {
+	out := new(CheckUserInWaitingListClassroomResponse)
+	err := c.cc.Invoke(ctx, WaitingListService_CheckUserInWaitingListOfClassroom_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WaitingListServiceServer is the server API for WaitingListService service.
 // All implementations must embed UnimplementedWaitingListServiceServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type WaitingListServiceServer interface {
 	UpdateWaitingList(context.Context, *UpdateWaitingListRequest) (*UpdateWaitingListResponse, error)
 	DeleteWaitingList(context.Context, *DeleteWaitingListRequest) (*DeleteWaitingListResponse, error)
 	GetWaitingListsOfClassroom(context.Context, *GetWaitingListsRequest) (*GetWaitingListsResponse, error)
+	CheckUserInWaitingListOfClassroom(context.Context, *CheckUserInWaitingListClassroomRequest) (*CheckUserInWaitingListClassroomResponse, error)
 	mustEmbedUnimplementedWaitingListServiceServer()
 }
 
@@ -120,6 +132,9 @@ func (UnimplementedWaitingListServiceServer) DeleteWaitingList(context.Context, 
 }
 func (UnimplementedWaitingListServiceServer) GetWaitingListsOfClassroom(context.Context, *GetWaitingListsRequest) (*GetWaitingListsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWaitingListsOfClassroom not implemented")
+}
+func (UnimplementedWaitingListServiceServer) CheckUserInWaitingListOfClassroom(context.Context, *CheckUserInWaitingListClassroomRequest) (*CheckUserInWaitingListClassroomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckUserInWaitingListOfClassroom not implemented")
 }
 func (UnimplementedWaitingListServiceServer) mustEmbedUnimplementedWaitingListServiceServer() {}
 
@@ -224,6 +239,24 @@ func _WaitingListService_GetWaitingListsOfClassroom_Handler(srv interface{}, ctx
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WaitingListService_CheckUserInWaitingListOfClassroom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckUserInWaitingListClassroomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WaitingListServiceServer).CheckUserInWaitingListOfClassroom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WaitingListService_CheckUserInWaitingListOfClassroom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WaitingListServiceServer).CheckUserInWaitingListOfClassroom(ctx, req.(*CheckUserInWaitingListClassroomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WaitingListService_ServiceDesc is the grpc.ServiceDesc for WaitingListService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +283,10 @@ var WaitingListService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetWaitingListsOfClassroom",
 			Handler:    _WaitingListService_GetWaitingListsOfClassroom_Handler,
+		},
+		{
+			MethodName: "CheckUserInWaitingListOfClassroom",
+			Handler:    _WaitingListService_CheckUserInWaitingListOfClassroom_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -1675,3 +1675,221 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetWaitingListsResponseValidationError{}
+
+// Validate checks the field values on CheckUserInWaitingListClassroomRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *CheckUserInWaitingListClassroomRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// CheckUserInWaitingListClassroomRequest with the rules defined in the proto
+// definition for this message. If any rules are violated, the result is a
+// list of violation errors wrapped in
+// CheckUserInWaitingListClassroomRequestMultiError, or nil if none found.
+func (m *CheckUserInWaitingListClassroomRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CheckUserInWaitingListClassroomRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserID
+
+	if len(errors) > 0 {
+		return CheckUserInWaitingListClassroomRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CheckUserInWaitingListClassroomRequestMultiError is an error wrapping
+// multiple validation errors returned by
+// CheckUserInWaitingListClassroomRequest.ValidateAll() if the designated
+// constraints aren't met.
+type CheckUserInWaitingListClassroomRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CheckUserInWaitingListClassroomRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CheckUserInWaitingListClassroomRequestMultiError) AllErrors() []error { return m }
+
+// CheckUserInWaitingListClassroomRequestValidationError is the validation
+// error returned by CheckUserInWaitingListClassroomRequest.Validate if the
+// designated constraints aren't met.
+type CheckUserInWaitingListClassroomRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CheckUserInWaitingListClassroomRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CheckUserInWaitingListClassroomRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CheckUserInWaitingListClassroomRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CheckUserInWaitingListClassroomRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CheckUserInWaitingListClassroomRequestValidationError) ErrorName() string {
+	return "CheckUserInWaitingListClassroomRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CheckUserInWaitingListClassroomRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCheckUserInWaitingListClassroomRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CheckUserInWaitingListClassroomRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CheckUserInWaitingListClassroomRequestValidationError{}
+
+// Validate checks the field values on CheckUserInWaitingListClassroomResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the first error encountered is returned, or nil if
+// there are no violations.
+func (m *CheckUserInWaitingListClassroomResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on
+// CheckUserInWaitingListClassroomResponse with the rules defined in the proto
+// definition for this message. If any rules are violated, the result is a
+// list of violation errors wrapped in
+// CheckUserInWaitingListClassroomResponseMultiError, or nil if none found.
+func (m *CheckUserInWaitingListClassroomResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CheckUserInWaitingListClassroomResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for IsIn
+
+	// no validation rules for ClassroomID
+
+	if len(errors) > 0 {
+		return CheckUserInWaitingListClassroomResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// CheckUserInWaitingListClassroomResponseMultiError is an error wrapping
+// multiple validation errors returned by
+// CheckUserInWaitingListClassroomResponse.ValidateAll() if the designated
+// constraints aren't met.
+type CheckUserInWaitingListClassroomResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CheckUserInWaitingListClassroomResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CheckUserInWaitingListClassroomResponseMultiError) AllErrors() []error { return m }
+
+// CheckUserInWaitingListClassroomResponseValidationError is the validation
+// error returned by CheckUserInWaitingListClassroomResponse.Validate if the
+// designated constraints aren't met.
+type CheckUserInWaitingListClassroomResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CheckUserInWaitingListClassroomResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CheckUserInWaitingListClassroomResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CheckUserInWaitingListClassroomResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CheckUserInWaitingListClassroomResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CheckUserInWaitingListClassroomResponseValidationError) ErrorName() string {
+	return "CheckUserInWaitingListClassroomResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CheckUserInWaitingListClassroomResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCheckUserInWaitingListClassroomResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CheckUserInWaitingListClassroomResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CheckUserInWaitingListClassroomResponseValidationError{}

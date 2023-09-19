@@ -10,7 +10,7 @@ import (
 
 type WaitingListInputSvc struct {
 	ClassroomID int
-	UserID      int
+	UserID      string
 }
 
 // CreateWaitingList creates a new waiting list in db given by waiting list model
@@ -78,7 +78,7 @@ func (s *WaitingListSvc) DeleteWaitingList(ctx context.Context, id int) error {
 type WaitingListOutputSvc struct {
 	ID          int
 	ClassroomID int
-	UserID      int
+	UserID      string
 	CreatedAt   time.Time
 }
 
@@ -100,4 +100,14 @@ func (s *WaitingListSvc) GetWaitingListsOfClassroom(ctx context.Context, classro
 	}
 
 	return wtsSvc, nil
+}
+
+// CheckUserInWaitingListOfClassroom returns a boolean indicating whether user is in waiting list
+func (s *WaitingListSvc) CheckUserInWaitingListOfClassroom(ctx context.Context, userID string) (bool, int, error) {
+	isIn, classroomID, err := s.Repository.CheckUserInWaitingListOfClassroom(ctx, userID)
+	if err != nil {
+		return false, 0, err
+	}
+
+	return isIn, classroomID, nil
 }

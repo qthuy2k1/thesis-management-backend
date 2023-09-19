@@ -45,6 +45,18 @@
         }
       }
     },
+    "v1CheckUserInWaitingListClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "isIn": {
+          "type": "boolean"
+        },
+        "classroomID": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "v1CommonWaitingListResponse": {
       "type": "object",
       "properties": {
@@ -115,8 +127,7 @@
           "format": "int32"
         },
         "userID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         }
       },
       "title": "====== waitingList ======"
@@ -133,8 +144,7 @@
           "format": "int32"
         },
         "userID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         },
         "createdAt": {
           "type": "string",

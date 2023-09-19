@@ -214,16 +214,7 @@ func (m *ClassroomInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetLecturerId() < 1 {
-		err := ClassroomInputValidationError{
-			field:  "LecturerId",
-			reason: "value must be greater than or equal to 1",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for LecturerId
 
 	if utf8.RuneCountInString(m.GetCodeClassroom()) < 2 {
 		err := ClassroomInputValidationError{
@@ -402,16 +393,7 @@ func (m *ClassroomResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetLecturerId() < 1 {
-		err := ClassroomResponseValidationError{
-			field:  "LecturerId",
-			reason: "value must be greater than or equal to 1",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for LecturerId
 
 	if utf8.RuneCountInString(m.GetCodeClassroom()) < 2 {
 		err := ClassroomResponseValidationError{
@@ -659,16 +641,7 @@ func (m *PostsAndExercisesOfClassroom) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetAuthorID() < 1 {
-		err := PostsAndExercisesOfClassroomValidationError{
-			field:  "AuthorID",
-			reason: "value must be greater than or equal to 1",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for AuthorID
 
 	if m.GetCreatedAt() == nil {
 		err := PostsAndExercisesOfClassroomValidationError{

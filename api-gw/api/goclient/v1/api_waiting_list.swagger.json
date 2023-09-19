@@ -47,6 +47,36 @@
         ]
       }
     },
+    "/api/user/{userID}/waiting-list": {
+      "get": {
+        "operationId": "WaitingListService_CheckUserInWaitingListOfClassroom",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CheckUserInWaitingListClassroomResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WaitingListService"
+        ]
+      }
+    },
     "/api/waiting-list": {
       "post": {
         "operationId": "WaitingListService_CreateWaitingList",
@@ -212,6 +242,56 @@
         }
       }
     },
+    "v1CheckUserInWaitingListClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "classroom": {
+          "$ref": "#/definitions/v1ClassroomWTLResponse"
+        }
+      }
+    },
+    "v1ClassroomWTLResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "lecturerId": {
+          "type": "string"
+        },
+        "codeClassroom": {
+          "type": "string"
+        },
+        "topicTags": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "v1CommonWaitingListResponse": {
       "type": "object",
       "properties": {
@@ -290,8 +370,7 @@
           "format": "int32"
         },
         "userID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         }
       },
       "title": "====== waitingList ======"
@@ -308,8 +387,7 @@
           "format": "int32"
         },
         "userID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         },
         "createdAt": {
           "type": "string",

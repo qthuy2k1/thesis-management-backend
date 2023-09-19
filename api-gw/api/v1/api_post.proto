@@ -60,7 +60,7 @@ message PostInput {
     string content = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     int32 classroomID = 3 [(validate.rules).int32.gte = 1];
     int32 reportingStageID = 4 [(validate.rules).int32.gte = 1];
-    int32 authorID = 5 [(validate.rules).int32.gte = 1];
+    string authorID = 5;
 }
 
 message PostResponse {
@@ -69,7 +69,7 @@ message PostResponse {
     string content = 3 [(validate.rules).string = {min_len: 2}];
     int32 classroomID = 4 [(validate.rules).int32.gte = 1];
     int32 reportingStageID = 5 [(validate.rules).int32.gte = 1];
-    int32 authorID = 6 [(validate.rules).int32.gte = 1];
+    string authorID = 6;
     google.protobuf.Timestamp createdAt = 7 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 8 [(validate.rules).timestamp.required = true];
 }

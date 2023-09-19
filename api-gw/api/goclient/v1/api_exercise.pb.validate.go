@@ -265,16 +265,7 @@ func (m *ExerciseInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetAuthorID() < 1 {
-		err := ExerciseInputValidationError{
-			field:  "AuthorID",
-			reason: "value must be greater than or equal to 1",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for AuthorID
 
 	if len(errors) > 0 {
 		return ExerciseInputMultiError(errors)
@@ -471,16 +462,7 @@ func (m *ExerciseResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetAuthorID() < 1 {
-		err := ExerciseResponseValidationError{
-			field:  "AuthorID",
-			reason: "value must be greater than or equal to 1",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for AuthorID
 
 	if m.GetCreatedAt() == nil {
 		err := ExerciseResponseValidationError{

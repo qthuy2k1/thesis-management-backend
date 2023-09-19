@@ -6,19 +6,24 @@ import (
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
+	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
 type userServiceGW struct {
 	pb.UnimplementedUserServiceServer
-	userClient      userSvcV1.UserServiceClient
-	classroomClient classroomSvcV1.ClassroomServiceClient
+	userClient        userSvcV1.UserServiceClient
+	classroomClient   classroomSvcV1.ClassroomServiceClient
+	waitingListClient waitingListSvcV1.WaitingListServiceClient
 }
 
-func NewUsersService(userClient userSvcV1.UserServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient) *userServiceGW {
+func NewUsersService(userClient userSvcV1.UserServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, waitingListClient waitingListSvcV1.WaitingListServiceClient) *userServiceGW {
 	return &userServiceGW{
-		userClient:      userClient,
-		classroomClient: classroomClient,
+		userClient:        userClient,
+		classroomClient:   classroomClient,
+		waitingListClient: waitingListClient,
+		// jwtManager:      jwtManager,
+		// accessibleRoles: accessibleRoles,
 	}
 }
 
@@ -50,6 +55,7 @@ func (u *userServiceGW) CreateUser(ctx context.Context, req *pb.CreateUserReques
 
 	res, err := u.userClient.CreateUser(ctx, &userSvcV1.CreateUserRequest{
 		User: &userSvcV1.UserInput{
+			Id:          req.GetUser().GetId(),
 			Class:       req.GetUser().GetClass(),
 			Major:       &major,
 			Phone:       &phone,
@@ -80,6 +86,7 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 
 	major := res.GetUser().GetMajor()
 	phone := res.GetUser().GetPhone()
+	classroomID := res.GetUser().GetClassroomID()
 
 	return &pb.GetUserResponse{
 		Response: &pb.CommonUserResponse{
@@ -95,7 +102,7 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 			Role:        res.GetUser().GetRole(),
 			Name:        res.GetUser().GetName(),
 			Email:       res.GetUser().GetEmail(),
-			ClassroomID: res.GetUser().GetClassroomID(),
+			ClassroomID: &classroomID,
 		},
 	}, nil
 }
@@ -188,7 +195,7 @@ func (u *userServiceGW) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (
 			Role:        u.Role,
 			Name:        u.Name,
 			Email:       u.Email,
-			ClassroomID: u.ClassroomID,
+			ClassroomID: &u.ClassroomID,
 		})
 	}
 
@@ -231,7 +238,7 @@ func (u *userServiceGW) GetAllUsersOfClassroom(ctx context.Context, req *pb.GetA
 			Role:        u.Role,
 			Name:        u.Name,
 			Email:       u.Email,
-			ClassroomID: u.ClassroomID,
+			ClassroomID: &u.ClassroomID,
 		})
 	}
 
@@ -313,6 +320,115 @@ func (u *userServiceGW) ApproveUserJoinClassroom(ctx context.Context, req *pb.Ap
 		Response: &pb.CommonUserResponse{
 			StatusCode: 200,
 			Message:    "OK",
+		},
+	}, nil
+}
+
+// func (u *userServiceGW) Authorize(ctx context.Context, method string) error {
+// 	accessibleRoles, ok := u.accessibleRoles[method]
+// 	if !ok {
+// 		// everyone can access
+// 		return nil
+// 	}
+
+// 	md, ok := metadata.FromIncomingContext(ctx)
+// 	if !ok {
+// 		return status.Errorf(codes.Unauthenticated, "metadata is not provided")
+// 	}
+
+// 	values := md["authorization"]
+// 	if len(values) == 0 {
+// 		return status.Errorf(codes.Unauthenticated, "authorization token is not provided")
+// 	}
+
+// 	accessToken := values[0]
+// 	claims, err := u.jwtManager.Verify(accessToken)
+// 	if err != nil {
+// 		return status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
+// 	}
+
+// 	for _, role := range accessibleRoles {
+// 		if role == claims.Role {
+// 			return nil
+// 		}
+// 	}
+
+// 	return status.Error(codes.PermissionDenied, "no permission to access this RPC")
+// }
+
+func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *pb.CheckStatusUserJoinClassroomRequest) (*pb.CheckStatusUserJoinClassroomResponse, error) {
+	userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: req.GetId(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	classroomID, err := strconv.Atoi(userRes.GetUser().GetClassroomID())
+	if err != nil {
+		return nil, err
+	}
+
+	if classroomID == 0 {
+		wtlRes, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
+			UserID: req.GetId(),
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if wtlRes.IsIn {
+			clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
+				Id: wtlRes.GetClassroomID(),
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			return &pb.CheckStatusUserJoinClassroomResponse{
+				Status: "WAITING",
+				Classroom: &pb.ClassroomUserResponse{
+					Id:            clrRes.GetClassroom().GetId(),
+					Title:         clrRes.GetClassroom().GetTitle(),
+					Description:   clrRes.GetClassroom().GetDescription(),
+					Status:        clrRes.GetClassroom().GetStatus(),
+					LecturerId:    clrRes.GetClassroom().GetLecturerId(),
+					CodeClassroom: clrRes.GetClassroom().GetCodeClassroom(),
+					TopicTags:     clrRes.GetClassroom().GetTopicTags(),
+					Quantity:      clrRes.GetClassroom().GetQuantity(),
+					CreatedAt:     clrRes.GetClassroom().GetCreatedAt(),
+					UpdatedAt:     clrRes.GetClassroom().GetUpdatedAt(),
+				},
+			}, nil
+		} else {
+			return &pb.CheckStatusUserJoinClassroomResponse{
+				Status:    "NOT REGISTERED",
+				Classroom: &pb.ClassroomUserResponse{},
+			}, nil
+		}
+	}
+
+	// classroomID != 0
+	clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
+		Id: int32(classroomID),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CheckStatusUserJoinClassroomResponse{
+		Status: "ADDED",
+		Classroom: &pb.ClassroomUserResponse{
+			Id:            clrRes.GetClassroom().GetId(),
+			Title:         clrRes.GetClassroom().GetTitle(),
+			Description:   clrRes.GetClassroom().GetDescription(),
+			Status:        clrRes.GetClassroom().GetStatus(),
+			LecturerId:    clrRes.GetClassroom().GetLecturerId(),
+			CodeClassroom: clrRes.GetClassroom().GetCodeClassroom(),
+			TopicTags:     clrRes.GetClassroom().GetTopicTags(),
+			Quantity:      clrRes.GetClassroom().GetQuantity(),
+			CreatedAt:     clrRes.GetClassroom().GetCreatedAt(),
+			UpdatedAt:     clrRes.GetClassroom().GetUpdatedAt(),
 		},
 	}, nil
 }

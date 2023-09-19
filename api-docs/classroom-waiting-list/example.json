@@ -1,0 +1,136 @@
+{
+    "Create a waiting list": {
+        // Method: POST
+        // URL: localhost:8081/api/waiting-list
+        "success": {
+            "input": {
+                "waitingList": {
+                    "user_id": "1adadaa",
+                    "classroom_id": 1
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 201,
+                    "message": "Created"
+                }
+            }
+        },
+        "create a existed waiting list": {
+            "input": {
+                "waitingList": {
+                    "user_id": "1adadaa",
+                    "classroom_id": 1
+                }
+            },
+            "output": {
+                "code": 6,
+                "message": "err: waiting list already exists",
+                "details": []
+            }
+        }
+    },
+    "Get a waiting list": {
+        // Method: GET
+        // URL: localhost:8081/api/waiting-list/1
+        "success": {
+            "output": {
+                "waitingList": {
+                    "id": 1,
+                    "user_id": "1adadaa",
+                    "classroom_id": 1,
+                    "created_at": "2023-19-09T20:19:19"
+                }
+            }
+        },
+        "failed: waiting list not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: waiting list not found",
+                "details": []
+            }
+        }
+    },
+    "Delete a waiting list": {
+        // Method: DELETE 
+        // URL: localhost:8081/api/waiting-list/1
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        },
+        "failed: waiting list not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: waiting list not found",
+                "details": []
+            }
+        }
+    },
+    "Update a waiting list": {
+        // Method: PUT
+        // URL: localhost:8081/api/waiting-list/1
+        "success": {
+            "input": {
+                "waitingList": {
+                    "user_id": "1adadaa",
+                    "classroom_id": 1
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        },
+        "update with a existed waiting list nam": {
+            "input": {
+                "waitingList": {
+                    "user_id": "1adadaa",
+                    "classroom_id": 1
+                }
+            },
+            "output": {
+                "code": 6,
+                "message": "err: waiting list already exists",
+                "details": []
+            }
+        }
+    },
+    "Get all waiting lists of a classroom": {
+        // Method: GET
+        // URL: localhost:8081/api/classroom/1(classroom id)/waiting-list
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "Success"
+                },
+                "waitingLists": [
+                    {
+                        "id": 1,
+                        "user_id": "1adadaa",
+                        "classroom_id": 1,
+                        "created_at": "2023-19-09T20:19:19"
+                    },
+                    {
+                        "id": 2,
+                        "user_id": "1adadaa",
+                        "classroom_id": 2,
+                        "created_at": "2023-19-09T20:19:19"
+                    },
+                    {
+                        "id": 4,
+                        "user_id": "1adadaa",
+                        "classroom_id": 3,
+                        "created_at": "2023-19-09T20:19:19"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -15,6 +15,8 @@ require (
 )
 
 require (
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/lyft/protoc-gen-star/v2 v2.0.3 // indirect
@@ -27,7 +29,9 @@ require (
 )
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/envoyproxy/protoc-gen-validate v1.0.2
+	github.com/redis/go-redis/v9 v9.1.0
 	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/text v0.12.0 // indirect

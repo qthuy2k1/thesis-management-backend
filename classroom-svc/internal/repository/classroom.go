@@ -75,7 +75,7 @@ type ClassroomInputRepo struct {
 	Title         string
 	Description   string
 	Status        string
-	LecturerID    int
+	LecturerID    string
 	CodeClassroom string
 	TopicTags     string
 	Quantity      int
@@ -107,7 +107,7 @@ type ClassroomOutputRepo struct {
 	Title         string
 	Description   string
 	Status        string
-	LecturerID    int
+	LecturerID    string
 	CodeClassroom string
 	TopicTags     string
 	Quantity      int

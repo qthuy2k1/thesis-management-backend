@@ -129,8 +129,7 @@
           "type": "string"
         },
         "lecturerId": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         },
         "codeClassroom": {
           "type": "string"
@@ -162,8 +161,7 @@
           "type": "string"
         },
         "lecturerId": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         },
         "codeClassroom": {
           "type": "string"
@@ -256,8 +254,7 @@
           "format": "int32"
         },
         "authorID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         },
         "createdAt": {
           "type": "string",
@@ -321,8 +318,7 @@
           "format": "int32"
         },
         "authorID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         },
         "createdAt": {
           "type": "string",

@@ -181,16 +181,7 @@ func (m *SubmissionInput) validate(all bool) error {
 
 	var errors []error
 
-	if m.GetUserID() < 1 {
-		err := SubmissionInputValidationError{
-			field:  "UserID",
-			reason: "value must be greater than or equal to 1",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for UserID
 
 	if m.GetExerciseID() < 1 {
 		err := SubmissionInputValidationError{
@@ -354,16 +345,7 @@ func (m *SubmissionResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetUserID() < 1 {
-		err := SubmissionResponseValidationError{
-			field:  "UserID",
-			reason: "value must be greater than or equal to 1",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for UserID
 
 	if m.GetExerciseID() < 1 {
 		err := SubmissionResponseValidationError{

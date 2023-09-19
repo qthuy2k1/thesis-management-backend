@@ -145,7 +145,23 @@ proto-waiting-list:
 		 waiting_list.proto
 	@echo "Done"
 
-proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list
+proto-redis:
+	@echo "--> Generating gRPC clients for redis API"
+	@protoc -I ./redis-svc/api/v1 \
+		--go_out ./redis-svc/api/goclient/v1 --go_opt paths=source_relative \
+	  	--go-grpc_out ./redis-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+		--grpc-gateway_out ./redis-svc/api/goclient/v1 \
+		--grpc-gateway_opt logtostderr=true \
+		--grpc-gateway_opt paths=source_relative \
+		--grpc-gateway_opt generate_unbound_methods=true \
+  		--openapiv2_out ./redis-svc/api/goclient/v1 \
+    	--openapiv2_opt logtostderr=true \
+		--validate_out="lang=go,paths=source_relative:./redis-svc/api/goclient/v1" \
+		--experimental_allow_proto3_optional \
+		 redis.proto
+	@echo "Done"
+
+proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-redis
 
 clean:
 	rm -rf ./out

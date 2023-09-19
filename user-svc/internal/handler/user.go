@@ -41,14 +41,14 @@ func (h *UserHdl) GetUser(ctx context.Context, req *userpb.GetUserRequest) (*use
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
-	u, err := h.Service.GetUser(ctx, int(req.GetId()))
+	u, err := h.Service.GetUser(ctx, req.GetId())
 	if err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
 	pResp := userpb.UserResponse{
-		Id:          strconv.Itoa(u.ID),
+		Id:          u.ID,
 		Class:       u.Class,
 		Major:       u.Major,
 		Phone:       u.Phone,
@@ -66,6 +66,7 @@ func (h *UserHdl) GetUser(ctx context.Context, req *userpb.GetUserRequest) (*use
 		},
 		User: &pResp,
 	}
+
 	return resp, nil
 }
 
@@ -82,7 +83,7 @@ func (c *UserHdl) UpdateUser(ctx context.Context, req *userpb.UpdateUserRequest)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
-	if err := c.Service.UpdateUser(ctx, int(req.GetId()), service.UserInputSvc{
+	if err := c.Service.UpdateUser(ctx, req.GetId(), service.UserInputSvc{
 		Class:       u.Class,
 		Major:       u.Major,
 		Phone:       u.Phone,
@@ -111,7 +112,7 @@ func (h *UserHdl) DeleteUser(ctx context.Context, req *userpb.DeleteUserRequest)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
-	if err := h.Service.DeleteUser(ctx, int(req.GetId())); err != nil {
+	if err := h.Service.DeleteUser(ctx, req.GetId()); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
@@ -140,7 +141,7 @@ func (h *UserHdl) GetUsers(ctx context.Context, req *userpb.GetUsersRequest) (*u
 	var psResp []*userpb.UserResponse
 	for _, u := range ps {
 		psResp = append(psResp, &userpb.UserResponse{
-			Id:          strconv.Itoa(u.ID),
+			Id:          u.ID,
 			Class:       u.Class,
 			Major:       u.Major,
 			Phone:       u.Phone,
@@ -178,7 +179,7 @@ func (h *UserHdl) GetAllUsersOfClassroom(ctx context.Context, req *userpb.GetAll
 	var psResp []*userpb.UserResponse
 	for _, u := range ps {
 		psResp = append(psResp, &userpb.UserResponse{
-			Id:          strconv.Itoa(u.ID),
+			Id:          u.ID,
 			Class:       u.Class,
 			Major:       u.Major,
 			Phone:       u.Phone,
@@ -204,8 +205,11 @@ func validateAndConvertUser(pbUser *userpb.UserInput) (service.UserInputSvc, err
 	if err := pbUser.Validate(); err != nil {
 		return service.UserInputSvc{}, err
 	}
+
+	log.Println(*pbUser.ClassroomID != "")
+
 	classroomID := 0
-	if pbUser.ClassroomID != nil {
+	if pbUser.ClassroomID != nil && *pbUser.ClassroomID != "" {
 		c, err := strconv.Atoi(*pbUser.ClassroomID)
 		if err != nil {
 			return service.UserInputSvc{}, err
@@ -214,6 +218,7 @@ func validateAndConvertUser(pbUser *userpb.UserInput) (service.UserInputSvc, err
 	}
 
 	return service.UserInputSvc{
+		ID:          pbUser.Id,
 		Class:       pbUser.Class,
 		Major:       pbUser.Major,
 		Phone:       pbUser.Phone,

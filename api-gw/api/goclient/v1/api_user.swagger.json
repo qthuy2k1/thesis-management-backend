@@ -45,8 +45,7 @@
             "name": "userID",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
           }
         ],
         "tags": [
@@ -159,8 +158,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
           }
         ],
         "tags": [
@@ -188,8 +186,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
           }
         ],
         "tags": [
@@ -217,8 +214,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
           },
           {
             "name": "body",
@@ -233,6 +229,36 @@
               },
               "title": "====== PUT ======"
             }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/user/{id}/classroom-status": {
+      "get": {
+        "operationId": "UserService_CheckStatusUserJoinClassroom",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CheckStatusUserJoinClassroomResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [
@@ -275,6 +301,56 @@
       "properties": {
         "response": {
           "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
+    "v1CheckStatusUserJoinClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "classroom": {
+          "$ref": "#/definitions/v1ClassroomUserResponse"
+        }
+      }
+    },
+    "v1ClassroomUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "lecturerId": {
+          "type": "string"
+        },
+        "codeClassroom": {
+          "type": "string"
+        },
+        "topicTags": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -374,6 +450,9 @@
     "v1UserInput": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string"
+        },
         "class": {
           "type": "string"
         },

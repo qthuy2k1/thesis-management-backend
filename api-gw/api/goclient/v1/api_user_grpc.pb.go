@@ -19,13 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserService_CreateUser_FullMethodName               = "/api.user.v1.UserService/CreateUser"
-	UserService_GetUser_FullMethodName                  = "/api.user.v1.UserService/GetUser"
-	UserService_UpdateUser_FullMethodName               = "/api.user.v1.UserService/UpdateUser"
-	UserService_DeleteUser_FullMethodName               = "/api.user.v1.UserService/DeleteUser"
-	UserService_GetUsers_FullMethodName                 = "/api.user.v1.UserService/GetUsers"
-	UserService_GetAllUsersOfClassroom_FullMethodName   = "/api.user.v1.UserService/GetAllUsersOfClassroom"
-	UserService_ApproveUserJoinClassroom_FullMethodName = "/api.user.v1.UserService/ApproveUserJoinClassroom"
+	UserService_CreateUser_FullMethodName                   = "/api.user.v1.UserService/CreateUser"
+	UserService_GetUser_FullMethodName                      = "/api.user.v1.UserService/GetUser"
+	UserService_UpdateUser_FullMethodName                   = "/api.user.v1.UserService/UpdateUser"
+	UserService_DeleteUser_FullMethodName                   = "/api.user.v1.UserService/DeleteUser"
+	UserService_GetUsers_FullMethodName                     = "/api.user.v1.UserService/GetUsers"
+	UserService_GetAllUsersOfClassroom_FullMethodName       = "/api.user.v1.UserService/GetAllUsersOfClassroom"
+	UserService_ApproveUserJoinClassroom_FullMethodName     = "/api.user.v1.UserService/ApproveUserJoinClassroom"
+	UserService_CheckStatusUserJoinClassroom_FullMethodName = "/api.user.v1.UserService/CheckStatusUserJoinClassroom"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -39,6 +40,7 @@ type UserServiceClient interface {
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
 	GetAllUsersOfClassroom(ctx context.Context, in *GetAllUsersOfClassroomRequest, opts ...grpc.CallOption) (*GetAllUsersOfClassroomResponse, error)
 	ApproveUserJoinClassroom(ctx context.Context, in *ApproveUserJoinClassroomRequest, opts ...grpc.CallOption) (*ApproveUserJoinClassroomResponse, error)
+	CheckStatusUserJoinClassroom(ctx context.Context, in *CheckStatusUserJoinClassroomRequest, opts ...grpc.CallOption) (*CheckStatusUserJoinClassroomResponse, error)
 }
 
 type userServiceClient struct {
@@ -112,6 +114,15 @@ func (c *userServiceClient) ApproveUserJoinClassroom(ctx context.Context, in *Ap
 	return out, nil
 }
 
+func (c *userServiceClient) CheckStatusUserJoinClassroom(ctx context.Context, in *CheckStatusUserJoinClassroomRequest, opts ...grpc.CallOption) (*CheckStatusUserJoinClassroomResponse, error) {
+	out := new(CheckStatusUserJoinClassroomResponse)
+	err := c.cc.Invoke(ctx, UserService_CheckStatusUserJoinClassroom_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -123,6 +134,7 @@ type UserServiceServer interface {
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
 	GetAllUsersOfClassroom(context.Context, *GetAllUsersOfClassroomRequest) (*GetAllUsersOfClassroomResponse, error)
 	ApproveUserJoinClassroom(context.Context, *ApproveUserJoinClassroomRequest) (*ApproveUserJoinClassroomResponse, error)
+	CheckStatusUserJoinClassroom(context.Context, *CheckStatusUserJoinClassroomRequest) (*CheckStatusUserJoinClassroomResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -150,6 +162,9 @@ func (UnimplementedUserServiceServer) GetAllUsersOfClassroom(context.Context, *G
 }
 func (UnimplementedUserServiceServer) ApproveUserJoinClassroom(context.Context, *ApproveUserJoinClassroomRequest) (*ApproveUserJoinClassroomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ApproveUserJoinClassroom not implemented")
+}
+func (UnimplementedUserServiceServer) CheckStatusUserJoinClassroom(context.Context, *CheckStatusUserJoinClassroomRequest) (*CheckStatusUserJoinClassroomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckStatusUserJoinClassroom not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -290,6 +305,24 @@ func _UserService_ApproveUserJoinClassroom_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_CheckStatusUserJoinClassroom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckStatusUserJoinClassroomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CheckStatusUserJoinClassroom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CheckStatusUserJoinClassroom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CheckStatusUserJoinClassroom(ctx, req.(*CheckStatusUserJoinClassroomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -324,6 +357,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ApproveUserJoinClassroom",
 			Handler:    _UserService_ApproveUserJoinClassroom_Handler,
+		},
+		{
+			MethodName: "CheckStatusUserJoinClassroom",
+			Handler:    _UserService_CheckStatusUserJoinClassroom_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

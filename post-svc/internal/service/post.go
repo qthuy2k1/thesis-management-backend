@@ -13,7 +13,7 @@ type PostInputSvc struct {
 	Content          string
 	ClassroomID      int
 	ReportingStageID int
-	AuthorID         int
+	AuthorID         string
 }
 
 // CreatePost creates a new post in db given by post model
@@ -94,7 +94,7 @@ type PostOutputSvc struct {
 	Content          string
 	ClassroomID      int
 	ReportingStageID int
-	AuthorID         int
+	AuthorID         string
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }

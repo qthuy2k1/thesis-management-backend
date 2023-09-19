@@ -9,7 +9,7 @@ import (
 )
 
 type SubmissionInputRepo struct {
-	UserID         int
+	UserID         string
 	ExerciseID     int
 	SubmissionDate time.Time
 	Status         string
@@ -87,7 +87,7 @@ func (r *SubmissionRepo) CreateSubmission(ctx context.Context, s SubmissionInput
 
 type SubmissionOutputRepo struct {
 	ID             int
-	UserID         int
+	UserID         string
 	ExerciseID     int
 	SubmissionDate time.Time
 	Status         string

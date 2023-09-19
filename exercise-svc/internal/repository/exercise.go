@@ -16,7 +16,7 @@ type ExerciseInputRepo struct {
 	Deadline         time.Time
 	Score            int
 	ReportingStageID int
-	AuthorID         int
+	AuthorID         string
 }
 
 // QueryRowSQL is a wrapper function that logs the SQL command before executing it.
@@ -107,7 +107,7 @@ type ExerciseOutputRepo struct {
 	Deadline         time.Time
 	Score            int
 	ReportingStageID int
-	AuthorID         int
+	AuthorID         string
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type SubmissionInputSvc struct {
-	UserID         int
+	UserID         string
 	ExerciseID     int
 	SubmissionDate time.Time
 	Status         string
@@ -65,7 +65,7 @@ func (s *SubmissionSvc) DeleteSubmission(ctx context.Context, id int) error {
 
 type SubmissionOutputSvc struct {
 	ID             int
-	UserID         int
+	UserID         string
 	ExerciseID     int
 	SubmissionDate time.Time
 	Status         string
