@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -71,7 +72,7 @@ func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, arg
 
 type WaitingListInputRepo struct {
 	ClassroomID int
-	UserID      int
+	UserID      string
 	CreatedAt   time.Time
 }
 
@@ -97,7 +98,7 @@ func (r *WaitingListRepo) CreateWaitingList(ctx context.Context, wt WaitingListI
 type WaitingListOutputRepo struct {
 	ID          int
 	ClassroomID int
-	UserID      int
+	UserID      string
 	CreatedAt   time.Time
 }
 
@@ -120,7 +121,7 @@ func (r *WaitingListRepo) GetWaitingList(ctx context.Context, id int) (WaitingLi
 }
 
 // CheckWaitingListExists checks whether the specified waiting_list exists (true == exist)
-func (r *WaitingListRepo) IsWaitingListExists(ctx context.Context, classroomID int, userID int) (bool, error) {
+func (r *WaitingListRepo) IsWaitingListExists(ctx context.Context, classroomID int, userID string) (bool, error) {
 	var exists bool
 	row, err := QueryRowSQL(ctx, r.Database, "IsWaitingListExists", "SELECT EXISTS(SELECT 1 FROM waiting_lists WHERE classroom_id = $1 AND user_id = $2)", classroomID, userID)
 	if err != nil {
@@ -191,4 +192,31 @@ func (r *WaitingListRepo) GetWaitingListsOfClassroom(ctx context.Context, classr
 	}
 
 	return waiting_lists, nil
+}
+
+// CheckUserInWaitingListOfClassroom returns a boolean indicating whether user is in waiting list
+func (r *WaitingListRepo) CheckUserInWaitingListOfClassroom(ctx context.Context, userID string) (bool, int, error) {
+	query := []string{fmt.Sprintf("SELECT id, user_id, classroom_id FROM waiting_lists WHERE user_id = '%s' LIMIT 1", userID)}
+
+	row, err := QueryRowSQL(ctx, r.Database, "CheckUserInWaitingListOfClassroom", strings.Join(query, " "))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, 0, nil
+		}
+		return false, 0, err
+	}
+
+	var waitingList WaitingListOutputRepo
+	if err := row.Scan(&waitingList.ID, &waitingList.UserID, &waitingList.ClassroomID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, 0, nil
+		}
+		return false, 0, err
+	}
+
+	if waitingList.ClassroomID > 0 {
+		return true, waitingList.ClassroomID, nil
+	}
+
+	return false, 0, nil
 }

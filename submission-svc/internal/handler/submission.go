@@ -103,7 +103,7 @@ func (h *SubmissionHdl) GetAllSubmissionsOfExercise(ctx context.Context, req *su
 	for _, s := range ss {
 		ssResp = append(ssResp, &submissionpb.SubmissionResponse{
 			Id:         int32(s.ID),
-			UserID:     int32(s.UserID),
+			UserID:     s.UserID,
 			ExerciseID: int32(s.ExerciseID),
 			SubmissionDate: &datetime.DateTime{
 				Year:    int32(s.SubmissionDate.Year()),
@@ -139,7 +139,7 @@ func validateAndConvertSubmission(pbSubmission *submissionpb.SubmissionInput) (s
 	}
 
 	return service.SubmissionInputSvc{
-		UserID:         int(pbSubmission.UserID),
+		UserID:         pbSubmission.UserID,
 		ExerciseID:     int(pbSubmission.ExerciseID),
 		SubmissionDate: submissionDate,
 		Status:         pbSubmission.Status,

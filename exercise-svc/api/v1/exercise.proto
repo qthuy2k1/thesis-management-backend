@@ -35,7 +35,7 @@ message ExerciseInput {
     google.type.DateTime deadline = 4;
     int32 score = 5;
     int32 reportingStageID = 6;
-    int32 authorID = 7;
+    string authorID = 7;
 }
 
 message ExerciseResponse {
@@ -46,7 +46,7 @@ message ExerciseResponse {
     google.type.DateTime deadline = 5;
     int32 score = 6;
     int32 reportingStageID = 7;
-    int32 authorID = 8;
+    string authorID = 8;
     google.protobuf.Timestamp created_at = 9;
     google.protobuf.Timestamp updated_at = 10;
 }

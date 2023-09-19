@@ -53,7 +53,7 @@ func (h *PostHdl) GetPost(ctx context.Context, req *postpb.GetPostRequest) (*pos
 		Content:          p.Content,
 		ClassroomID:      int32(p.ClassroomID),
 		ReportingStageID: int32(p.ReportingStageID),
-		AuthorID:         int32(p.AuthorID),
+		AuthorID:         p.AuthorID,
 		CreatedAt:        timestamppb.New(p.CreatedAt),
 		UpdatedAt:        timestamppb.New(p.UpdatedAt),
 	}
@@ -149,7 +149,7 @@ func (h *PostHdl) GetPosts(ctx context.Context, req *postpb.GetPostsRequest) (*p
 			Content:          p.Content,
 			ClassroomID:      int32(p.ClassroomID),
 			ReportingStageID: int32(p.ReportingStageID),
-			AuthorID:         int32(p.AuthorID),
+			AuthorID:         p.AuthorID,
 			CreatedAt:        timestamppb.New(p.CreatedAt),
 			UpdatedAt:        timestamppb.New(p.UpdatedAt),
 		})
@@ -194,7 +194,7 @@ func (h *PostHdl) GetAllPostsOfClassroom(ctx context.Context, req *postpb.GetAll
 			Content:          p.Content,
 			ClassroomID:      int32(p.ClassroomID),
 			ReportingStageID: int32(p.ReportingStageID),
-			AuthorID:         int32(p.AuthorID),
+			AuthorID:         p.AuthorID,
 			CreatedAt:        timestamppb.New(p.CreatedAt),
 			UpdatedAt:        timestamppb.New(p.UpdatedAt),
 		})
@@ -220,6 +220,6 @@ func validateAndConvertPost(pbPost *postpb.PostInput) (service.PostInputSvc, err
 		Content:          pbPost.Content,
 		ClassroomID:      int(pbPost.ClassroomID),
 		ReportingStageID: int(pbPost.ReportingStageID),
-		AuthorID:         int(pbPost.AuthorID),
+		AuthorID:         pbPost.AuthorID,
 	}, nil
 }

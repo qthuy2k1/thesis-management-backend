@@ -163,6 +163,8 @@ func (m *UserInput) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Id
+
 	// no validation rules for Class
 
 	// no validation rules for PhotoSrc

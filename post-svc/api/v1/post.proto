@@ -32,7 +32,7 @@ message PostInput {
     string content = 2;
     int32 classroomID = 3;
     int32 reportingStageID = 4;
-    int32 authorID = 5;
+    string authorID = 5;
 }
 
 message PostResponse {
@@ -41,7 +41,7 @@ message PostResponse {
     string content = 3;
     int32 classroomID = 4;
     int32 reportingStageID = 5;
-    int32 authorID = 6;
+    string authorID = 6;
     google.protobuf.Timestamp created_at = 7;
     google.protobuf.Timestamp updated_at = 8;
 }

@@ -8,6 +8,7 @@ import (
 )
 
 type UserInputSvc struct {
+	ID          string
 	Email       string
 	Class       string
 	Major       *string
@@ -21,6 +22,7 @@ type UserInputSvc struct {
 // CreateUser creates a new user in db given by user model
 func (s *UserSvc) CreateUser(ctx context.Context, u UserInputSvc) error {
 	pRepo := repository.UserInputRepo{
+		ID:          u.ID,
 		Class:       u.Class,
 		Major:       u.Major,
 		Phone:       u.Phone,
@@ -42,7 +44,7 @@ func (s *UserSvc) CreateUser(ctx context.Context, u UserInputSvc) error {
 }
 
 // GetUser returns a user in db given by id
-func (s *UserSvc) GetUser(ctx context.Context, id int) (UserOutputSvc, error) {
+func (s *UserSvc) GetUser(ctx context.Context, id string) (UserOutputSvc, error) {
 	u, err := s.Repository.GetUser(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrUserNotFound) {
@@ -65,7 +67,7 @@ func (s *UserSvc) GetUser(ctx context.Context, id int) (UserOutputSvc, error) {
 }
 
 // UpdateUser updates the specified user by id
-func (s *UserSvc) UpdateUser(ctx context.Context, id int, user UserInputSvc) error {
+func (s *UserSvc) UpdateUser(ctx context.Context, id string, user UserInputSvc) error {
 	if err := s.Repository.UpdateUser(ctx, id, repository.UserInputRepo{
 		Class:       user.Class,
 		Major:       user.Major,
@@ -86,7 +88,7 @@ func (s *UserSvc) UpdateUser(ctx context.Context, id int, user UserInputSvc) err
 }
 
 // DeleteUser deletes a user in db given by id
-func (s *UserSvc) DeleteUser(ctx context.Context, id int) error {
+func (s *UserSvc) DeleteUser(ctx context.Context, id string) error {
 	if err := s.Repository.DeleteUser(ctx, id); err != nil {
 		if errors.Is(err, repository.ErrUserNotFound) {
 			return ErrUserNotFound
@@ -98,7 +100,7 @@ func (s *UserSvc) DeleteUser(ctx context.Context, id int) error {
 }
 
 type UserOutputSvc struct {
-	ID          int
+	ID          string
 	Email       string
 	Class       string
 	Major       *string

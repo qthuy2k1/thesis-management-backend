@@ -3,7 +3,7 @@ version: '3.9'
 services:
   classroom-db:
     image: postgres:alpine
-    container_name: thesis-management-backend-classroom-db
+    container_name: classroom-db
     networks:
       mynet:
     environment:
@@ -21,7 +21,7 @@ services:
   
   post-db:
     image: postgres:alpine
-    container_name: thesis-management-backend-post-db
+    container_name: post-db
     networks:
       mynet:
     environment:
@@ -39,7 +39,7 @@ services:
 
   exercise-db:
     image: postgres:alpine
-    container_name: thesis-management-backend-exercise-db
+    container_name: exercise-db
     networks:
       mynet:
     environment:
@@ -57,7 +57,7 @@ services:
 
   user-db:
     image: postgres:alpine
-    container_name: thesis-management-backend-user-db
+    container_name: user-db
     networks:
       mynet:
     environment:
@@ -75,7 +75,7 @@ services:
 
   reporting-stage-db:
     image: postgres:alpine
-    container_name: thesis-management-backend-reporting-stage-db
+    container_name: reporting-stage-db
     networks:
       mynet:
     environment:
@@ -93,7 +93,7 @@ services:
 
   submission-db:
     image: postgres:alpine
-    container_name: thesis-management-backend-submission-db
+    container_name: submission-db
     networks:
       mynet:
     environment:
@@ -111,7 +111,7 @@ services:
 
   classroom-waiting-list-db:
     image: postgres:alpine
-    container_name: thesis-management-backend-classroom-waiting-list-db
+    container_name: classroom-waiting-list-db
     networks:
       mynet:
     environment:

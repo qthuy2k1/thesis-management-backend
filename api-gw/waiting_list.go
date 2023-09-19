@@ -155,3 +155,42 @@ func (u *waitingListServiceGW) GetWaitingListsOfClassroom(ctx context.Context, r
 		WaitingLists: waitingLists,
 	}, nil
 }
+
+func (u *waitingListServiceGW) CheckUserInWaitingListClassroom(ctx context.Context, req *pb.CheckUserInWaitingListClassroomRequest) (*pb.CheckUserInWaitingListClassroomResponse, error) {
+	res, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
+		UserID: req.GetUserID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if res.IsIn {
+		clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
+			Id: res.GetClassroomID(),
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		return &pb.CheckUserInWaitingListClassroomResponse{
+			Status: "WAITING",
+			Classroom: &pb.ClassroomWTLResponse{
+				Id:            clrRes.GetClassroom().GetId(),
+				Title:         clrRes.GetClassroom().GetTitle(),
+				Description:   clrRes.GetClassroom().GetDescription(),
+				Status:        clrRes.GetClassroom().GetStatus(),
+				LecturerId:    clrRes.GetClassroom().GetLecturerId(),
+				CodeClassroom: clrRes.GetClassroom().GetCodeClassroom(),
+				TopicTags:     clrRes.GetClassroom().GetTopicTags(),
+				Quantity:      clrRes.GetClassroom().GetQuantity(),
+				CreatedAt:     clrRes.GetClassroom().GetCreatedAt(),
+				UpdatedAt:     clrRes.GetClassroom().GetUpdatedAt(),
+			},
+		}, nil
+	}
+
+	return &pb.CheckUserInWaitingListClassroomResponse{
+		Status:    "NOT REGISTERED",
+		Classroom: &pb.ClassroomWTLResponse{},
+	}, nil
+}

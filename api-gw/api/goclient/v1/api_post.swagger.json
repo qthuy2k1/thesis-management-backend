@@ -401,8 +401,7 @@
           "format": "int32"
         },
         "authorID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         }
       },
       "title": "====== POST ======"
@@ -429,8 +428,7 @@
           "format": "int32"
         },
         "authorID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         },
         "createdAt": {
           "type": "string",

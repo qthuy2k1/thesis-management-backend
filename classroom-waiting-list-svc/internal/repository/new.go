@@ -11,13 +11,15 @@ type IWaitingListRepo interface {
 	// GetWaitingList returns a waiting list in db given by id
 	GetWaitingList(ctx context.Context, id int) (WaitingListOutputRepo, error)
 	// CheckWaitingListExists checks whether the specified waiting list exists by name
-	IsWaitingListExists(ctx context.Context, classroomID int, userID int) (bool, error)
+	IsWaitingListExists(ctx context.Context, classroomID int, userID string) (bool, error)
 	// UpdateWaitingList updates the specified rs by id
 	UpdateWaitingList(ctx context.Context, id int, wt WaitingListInputRepo) error
 	// DeleteWaitingList deletes a rs in db given by id
 	DeleteWaitingList(ctx context.Context, id int) error
 	// GetWaitingLists returns a list of waiting lists in db with filter
 	GetWaitingListsOfClassroom(ctx context.Context, classroomID int) ([]WaitingListOutputRepo, error)
+	// CheckUserInWaitingListOfClassroom returns a boolean indicating whether user is in waiting list
+	CheckUserInWaitingListOfClassroom(ctx context.Context, userID string) (bool, int, error)
 }
 
 type WaitingListRepo struct {

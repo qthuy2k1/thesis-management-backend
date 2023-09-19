@@ -13,7 +13,7 @@ type ClassroomInputSvc struct {
 	Title         string
 	Description   string
 	Status        string
-	LecturerID    int
+	LecturerID    string
 	CodeClassroom string
 	TopicTags     string
 	Quantity      int
@@ -116,7 +116,7 @@ type ClassroomOutputSvc struct {
 	Title         string
 	Description   string
 	Status        string
-	LecturerID    int
+	LecturerID    string
 	CodeClassroom string
 	TopicTags     string
 	Quantity      int

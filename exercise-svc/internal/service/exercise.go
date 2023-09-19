@@ -15,7 +15,7 @@ type ExerciseInputSvc struct {
 	Deadline         time.Time
 	Score            int
 	ReportingStageID int
-	AuthorID         int
+	AuthorID         string
 }
 
 // CreateExercise creates a new exercise in db given by exercise model
@@ -104,7 +104,7 @@ type ExerciseOutputSvc struct {
 	Deadline         time.Time
 	Score            int
 	ReportingStageID int
-	AuthorID         int
+	AuthorID         string
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }

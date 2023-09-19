@@ -170,8 +170,7 @@
       "type": "object",
       "properties": {
         "userID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         },
         "exerciseID": {
           "type": "integer",
@@ -194,8 +193,7 @@
           "format": "int32"
         },
         "userID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         },
         "exerciseID": {
           "type": "integer",

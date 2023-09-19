@@ -64,7 +64,7 @@ func (h *ExerciseHdl) GetExercise(ctx context.Context, req *exercisepb.GetExerci
 		},
 		Score:            int32(e.Score),
 		ReportingStageID: int32(e.ReportingStageID),
-		AuthorID:         int32(e.AuthorID),
+		AuthorID:         e.AuthorID,
 		CreatedAt:        timestamppb.New(e.CreatedAt),
 		UpdatedAt:        timestamppb.New(e.UpdatedAt),
 	}
@@ -171,7 +171,7 @@ func (h *ExerciseHdl) GetExercises(ctx context.Context, req *exercisepb.GetExerc
 			},
 			Score:            int32(e.Score),
 			ReportingStageID: int32(e.ReportingStageID),
-			AuthorID:         int32(e.AuthorID),
+			AuthorID:         e.AuthorID,
 			CreatedAt:        timestamppb.New(e.CreatedAt),
 			UpdatedAt:        timestamppb.New(e.UpdatedAt),
 		})
@@ -225,7 +225,7 @@ func (h *ExerciseHdl) GetAllExercisesOfClassroom(ctx context.Context, req *exerc
 			},
 			Score:            int32(e.Score),
 			ReportingStageID: int32(e.ReportingStageID),
-			AuthorID:         int32(e.AuthorID),
+			AuthorID:         e.AuthorID,
 			CreatedAt:        timestamppb.New(e.CreatedAt),
 			UpdatedAt:        timestamppb.New(e.UpdatedAt),
 		})
@@ -260,6 +260,6 @@ func validateAndConvertExercise(pbExercise *exercisepb.ExerciseInput) (service.E
 		Deadline:         deadline,
 		Score:            int(pbExercise.Score),
 		ReportingStageID: int(pbExercise.ReportingStageID),
-		AuthorID:         int(pbExercise.AuthorID),
+		AuthorID:         pbExercise.AuthorID,
 	}, nil
 }

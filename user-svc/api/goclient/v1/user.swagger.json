@@ -133,6 +133,9 @@
     "v1UserInput": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string"
+        },
         "class": {
           "type": "string"
         },

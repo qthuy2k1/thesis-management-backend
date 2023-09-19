@@ -56,7 +56,7 @@ message ClassroomInput {
     string title = 1 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string description = 2 [(validate.rules).string = {min_len: 2}];
     string status = 3 [(validate.rules).string = {min_len: 2}];
-    int32 lecturerId = 4 [(validate.rules).int32.gte = 1];
+    string lecturerId = 4;
     string codeClassroom = 5 [(validate.rules).string = {min_len: 2}];
     string topicTags = 6 [(validate.rules).string = {min_len: 2}];
     int32 quantity = 7 [(validate.rules).int32.gte = 0];
@@ -68,7 +68,7 @@ message ClassroomResponse {
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string description = 3 [(validate.rules).string = {min_len: 2}];
     string status = 4 [(validate.rules).string = {min_len: 2}];
-    int32 lecturerId = 5 [(validate.rules).int32.gte = 1];
+    string lecturerId = 5;
     string codeClassroom = 6 [(validate.rules).string = {min_len: 2}];
     string topicTags = 7 [(validate.rules).string = {min_len: 2}];
     int32 quantity = 8 [(validate.rules).int32.gte = 0];
@@ -86,7 +86,7 @@ message PostsAndExercisesOfClassroom {
     optional google.type.DateTime deadline = 5;
     optional int32 score = 6 [(validate.rules).int32.gte = 0];
     int32 reportingStageID = 7 [(validate.rules).int32.gte = 1];
-    int32 authorID = 8 [(validate.rules).int32.gte = 1];
+    string authorID = 8;
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
     string type = 11 [(validate.rules).string = {in: ["post", "exercise"]}];

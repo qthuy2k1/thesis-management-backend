@@ -40,6 +40,12 @@ service WaitingListService {
             get: "/api/classroom/{classroomID}/waiting-list"
         };
     }
+
+    rpc CheckUserInWaitingListOfClassroom(CheckUserInWaitingListClassroomRequest) returns (CheckUserInWaitingListClassroomResponse) {
+        option (google.api.http) = {
+            get: "/api/user/{userID}/waiting-list"
+        };
+    }
 }
 
 message CommonWaitingListResponse {
@@ -51,13 +57,13 @@ message CommonWaitingListResponse {
 // ====== waitingList ======
 message WaitingListInput {
     int32 classroomID = 1 [(validate.rules).int32.gte = 1];
-    int32 userID = 2 [(validate.rules).int32.gte = 1];
+    string userID = 2;
 }
 
 message WaitingListResponse {
     int32 id = 1 [(validate.rules).int32.gte = 1];
     int32 classroomID = 2 [(validate.rules).int32.gte = 1];
-    int32 userID = 3 [(validate.rules).int32.gte = 1];
+    string userID = 3;
     google.protobuf.Timestamp createdAt = 4 [(validate.rules).timestamp.required = true];
 }
 
@@ -107,4 +113,27 @@ message GetWaitingListsRequest {
 message GetWaitingListsResponse {
     CommonWaitingListResponse response = 1 [(validate.rules).message = {required: true}]; 
     repeated WaitingListResponse waitingLists = 3;
+}
+
+message ClassroomWTLResponse {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string description = 3 [(validate.rules).string = {min_len: 2}];
+    string status = 4 [(validate.rules).string = {min_len: 2}];
+    string lecturerId = 5;
+    string codeClassroom = 6 [(validate.rules).string = {min_len: 2}];
+    string topicTags = 7 [(validate.rules).string = {min_len: 2}];
+    int32 quantity = 8 [(validate.rules).int32.gte = 0];
+    google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
+}
+
+// ====== CHECK USER IN WAITING LIST OF CLASSROOM ======
+message CheckUserInWaitingListClassroomRequest{
+    string userID = 1;
+}
+
+message CheckUserInWaitingListClassroomResponse{
+    string status = 1;
+    ClassroomWTLResponse classroom = 2;
 }

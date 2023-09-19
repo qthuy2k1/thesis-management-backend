@@ -50,7 +50,7 @@ func (h *WaitingListHdl) GetWaitingList(ctx context.Context, req *waitingListpb.
 	pResp := waitingListpb.WaitingListResponse{
 		Id:          int32(wt.ID),
 		ClassroomID: int32(wt.ClassroomID),
-		UserID:      int32(wt.UserID),
+		UserID:      wt.UserID,
 		CreatedAt:   timestamppb.New(wt.CreatedAt),
 	}
 
@@ -131,7 +131,7 @@ func (h *WaitingListHdl) GetWaitingListsOfClassroom(ctx context.Context, req *wa
 		wtsResp = append(wtsResp, &waitingListpb.WaitingListResponse{
 			Id:          int32(wt.ID),
 			ClassroomID: int32(wt.ClassroomID),
-			UserID:      int32(wt.UserID),
+			UserID:      wt.UserID,
 			CreatedAt:   timestamppb.New(wt.CreatedAt),
 		})
 	}
@@ -145,6 +145,19 @@ func (h *WaitingListHdl) GetWaitingListsOfClassroom(ctx context.Context, req *wa
 	}, nil
 }
 
+func (h *WaitingListHdl) CheckUserInWaitingListOfClassroom(ctx context.Context, req *waitingListpb.CheckUserInWaitingListClassroomRequest) (*waitingListpb.CheckUserInWaitingListClassroomResponse, error) {
+	isIn, classroomID, err := h.Service.CheckUserInWaitingListOfClassroom(ctx, req.GetUserID())
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	return &waitingListpb.CheckUserInWaitingListClassroomResponse{
+		IsIn:        isIn,
+		ClassroomID: int32(classroomID),
+	}, nil
+}
+
 func validateAndConvertWaitingList(pbWaitingList *waitingListpb.WaitingListInput) (service.WaitingListInputSvc, error) {
 	if err := pbWaitingList.Validate(); err != nil {
 		return service.WaitingListInputSvc{}, err
@@ -152,6 +165,6 @@ func validateAndConvertWaitingList(pbWaitingList *waitingListpb.WaitingListInput
 
 	return service.WaitingListInputSvc{
 		ClassroomID: int(pbWaitingList.GetClassroomID()),
-		UserID:      int(pbWaitingList.GetUserID()),
+		UserID:      pbWaitingList.GetUserID(),
 	}, nil
 }

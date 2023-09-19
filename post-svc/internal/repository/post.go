@@ -75,7 +75,7 @@ type PostInputRepo struct {
 	Content          string
 	ClassroomID      int
 	ReportingStageID int
-	AuthorID         int
+	AuthorID         string
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }
@@ -105,7 +105,7 @@ type PostOutputRepo struct {
 	Content          string
 	ClassroomID      int
 	ReportingStageID int
-	AuthorID         int
+	AuthorID         string
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }

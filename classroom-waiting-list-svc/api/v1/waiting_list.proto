@@ -26,6 +26,10 @@ service WaitingListService {
     rpc GetWaitingListsOfClassroom(GetWaitingListsRequest) returns (GetWaitingListsResponse) {
         
     }
+
+    rpc CheckUserInWaitingListOfClassroom(CheckUserInWaitingListClassroomRequest) returns (CheckUserInWaitingListClassroomResponse) {
+        
+    }
 }
 
 message CommonWaitingListResponse {
@@ -37,13 +41,13 @@ message CommonWaitingListResponse {
 // ====== waitingList ======
 message WaitingListInput {
     int32 classroomID = 1;
-    int32 userID = 2;
+    string userID = 2;
 }
 
 message WaitingListResponse {
     int32 id = 1;
     int32 classroomID = 2;
-    int32 userID = 3;
+    string userID = 3;
     google.protobuf.Timestamp createdAt = 4;
 }
 
@@ -96,3 +100,12 @@ message GetWaitingListsResponse {
 }
 
 
+// ====== CHECK USER IN WAITING LIST OF CLASSROOM ======
+message CheckUserInWaitingListClassroomRequest{
+    string userID = 1;
+}
+
+message CheckUserInWaitingListClassroomResponse{
+    bool isIn = 1;
+    int32 classroomID = 2;
+}
