@@ -55,6 +55,22 @@ func (u *waitingListServiceGW) CreateWaitingList(ctx context.Context, req *pb.Cr
 		}, nil
 	}
 
+	wtlExistRes, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
+		UserID: req.GetWaitingList().GetUserID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if wtlExistRes.IsIn {
+		return &pb.CreateWaitingListResponse{
+			Response: &pb.CommonWaitingListResponse{
+				StatusCode: 400,
+				Message:    "User already requested to join a classroom",
+			},
+		}, nil
+	}
+
 	res, err := u.waitingListClient.CreateWaitingList(ctx, &waitingListSvcV1.CreateWaitingListRequest{
 		WaitingList: &waitingListSvcV1.WaitingListInput{
 			ClassroomID: req.GetWaitingList().GetClassroomID(),
