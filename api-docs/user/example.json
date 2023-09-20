@@ -5,6 +5,7 @@
         "success": {
             "input": {
                 "user": {
+                    "id": "120u84",
                     "class": "Class 1",
                     "major": "CNTT",
                     "phone": "1231231231",
@@ -24,6 +25,7 @@
         "create a existed user": {
             "input": {
                 "user": {
+                    "id": "123817238912",
                     "class": "Class 1",
                     "major": "CNTT",
                     "phone": "1231231231",
@@ -50,7 +52,7 @@
                     "message": "OK"
                 },
                 "user": {
-                    "id": 1,
+                    "id": "181278iab",
                     "class": "Class 1",
                     "major": "CNTT",
                     "phone": "1231231231",
