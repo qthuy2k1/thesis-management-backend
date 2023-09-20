@@ -11,6 +11,7 @@ import (
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
+	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
@@ -27,6 +28,7 @@ const (
 	submissionAddress     = "submission:9091"
 	userAddress           = "user:9091"
 	waitingListAddress    = "classroom-waiting-list:9091"
+	commentAddress        = "comment:9091"
 )
 
 func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
@@ -92,6 +94,15 @@ func newWaitingListSvcClient() (waitingListSvcV1.WaitingListServiceClient, error
 	return waitingListSvcV1.NewWaitingListServiceClient(conn), nil
 }
 
+func newCommentSvcClient() (commentSvcV1.CommentServiceClient, error) {
+	conn, err := grpc.DialContext(context.TODO(), commentAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, fmt.Errorf("clasroom waiting list client: %w", err)
+	}
+
+	return commentSvcV1.NewCommentServiceClient(conn), nil
+}
+
 func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	log.Printf("APIGW service: method %q called\n", info.FullMethod)
 	resp, err := handler(ctx, req)
@@ -140,8 +151,14 @@ func main() {
 		panic(err)
 	}
 
-	// connect to user svc
+	// connect to classrom waiting list svc
 	waitingListClient, err := newWaitingListSvcClient()
+	if err != nil {
+		panic(err)
+	}
+
+	// connect to comment svc
+	commentClient, err := newCommentSvcClient()
 	if err != nil {
 		panic(err)
 	}
@@ -153,12 +170,13 @@ func main() {
 	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
 
 	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient))
-	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient))
-	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient))
+	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient, commentClient))
+	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient, commentClient))
 	pb.RegisterReportingStageServiceServer(s, NewReportingStagesService(rpsClient))
 	pb.RegisterSubmissionServiceServer(s, NewSubmissionsService(submissionClient, classroomClient, exerciseClient))
 	pb.RegisterUserServiceServer(s, NewUsersService(userClient, classroomClient, waitingListClient))
 	pb.RegisterWaitingListServiceServer(s, NewWaitingListsService(waitingListClient, classroomClient, userClient))
+	pb.RegisterCommentServiceServer(s, NewCommentsService(commentClient, postClient, exerciseClient, userClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

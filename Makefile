@@ -30,7 +30,7 @@ proto-api:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./api-gw/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto
+		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto api_comment.proto
 	@echo "Done"
 
 proto-classroom:
@@ -161,7 +161,24 @@ proto-redis:
 		 redis.proto
 	@echo "Done"
 
-proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-redis
+proto-comment:
+	@echo "--> Generating gRPC clients for comment API"
+	@protoc -I ./comment-svc/api/v1 \
+		--go_out ./comment-svc/api/goclient/v1 --go_opt paths=source_relative \
+	  	--go-grpc_out ./comment-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+		--grpc-gateway_out ./comment-svc/api/goclient/v1 \
+		--grpc-gateway_opt logtostderr=true \
+		--grpc-gateway_opt paths=source_relative \
+		--grpc-gateway_opt generate_unbound_methods=true \
+  		--openapiv2_out ./comment-svc/api/goclient/v1 \
+    	--openapiv2_opt logtostderr=true \
+		--validate_out="lang=go,paths=source_relative:./comment-svc/api/goclient/v1" \
+		--experimental_allow_proto3_optional \
+		 comment.proto
+	@echo "Done"
+
+
+proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-redis proto-comment
 
 clean:
 	rm -rf ./out
@@ -177,6 +194,7 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/reporting-stage ./reporting-stage-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/submission ./submission-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/classroom-waiting-list ./classroom-waiting-list-svc
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/comment ./comment-svc
 
 build_and_run: clean build
 	@echo "--> Starting servers"
@@ -198,6 +216,7 @@ docker-tag:
 	docker tag qthuy2k1/thesis-management-backend-reporting-stage:latest qthuy2k1/thesis-management-backend-reporting-stage:latest
 	docker tag qthuy2k1/thesis-management-backend-submission:latest qthuy2k1/thesis-management-backend-submisson:latest
 	docker tag qthuy2k1/thesis-management-backend-classroom-waiting-list:latest qthuy2k1/thesis-management-backend-classroom-waiting-list:latest
+	docker tag qthuy2k1/thesis-management-backend-comment:latest qthuy2k1/thesis-management-backend-comment:latest
 	
 	# DB
 	docker tag postgres qthuy2k1/thesis-management-backend-classroom-db:latest
@@ -207,6 +226,7 @@ docker-tag:
 	docker tag postgres qthuy2k1/thesis-management-backend-reporting-stage-db:latest
 	docker tag postgres qthuy2k1/thesis-management-backend-submission-db:latest
 	docker tag postgres qthuy2k1/thesis-management-backend-classroom-waiting-list-db:latest
+	docker tag postgres qthuy2k1/thesis-management-backend-comment-db:latest
 
 
 docker-azure-tag:
@@ -241,6 +261,7 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-reporting-stage:latest
 	docker push qthuy2k1/thesis-management-backend-submission:latest
 	docker push qthuy2k1/thesis-management-backend-classroom-waiting-list:latest
+	docker push qthuy2k1/thesis-management-backend-comment:latest
 
 	# DB
 	docker push qthuy2k1/thesis-management-backend-classroom-db:latest
@@ -250,6 +271,7 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-reporting-stage-db:latest
 	docker push qthuy2k1/thesis-management-backend-submission-db:latest
 	docker push qthuy2k1/thesis-management-backend-classroom-waiting-list-db:latest
+	docker push qthuy2k1/thesis-management-backend-comment-db:latest
 
 docker-azure-push:
 	# APP
@@ -271,3 +293,21 @@ docker-azure-push:
 	docker push thesismanagementapp.azurecr.io/thesis-management-backend-reporting-stage-db:latest
 	docker push thesismanagementapp.azurecr.io/thesis-management-backend-submission-db:latest
 	docker push thesismanagementapp.azurecr.io/thesis-management-backend-classroom-waiting-list-db:latest
+
+
+migrate_all_up:
+	docker run --rm -v $(PWD)/classroom-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@classroom-db:5432/thesis_management_classrooms?sslmode=disable" up
+
+	docker run --rm -v $(PWD)/post-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@post-db:5432/thesis_management_posts?sslmode=disable" up
+
+	docker run --rm -v $(PWD)/exercise-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@exercise-db:5432/thesis_management_exercises?sslmode=disable" up
+
+	docker run --rm -v $(PWD)/user-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@user-db:5432/thesis_management_users?sslmode=disable" up
+
+	docker run --rm -v $(PWD)/reporting-stage-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@reporting-stage-db:5432/thesis_management_reporting_stages?sslmode=disable" up
+
+	docker run --rm -v $(PWD)/submission-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@submission-db:5432/thesis_management_submissions?sslmode=disable" up
+
+	docker run --rm -v $(PWD)/classroom-waiting-list-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@classroom-waiting-list-db:5432/thesis_management_waiting_lists?sslmode=disable" up
+
+	docker run --rm -v $(PWD)/comment-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@comment-db:5432/thesis_management_comments?sslmode=disable" up

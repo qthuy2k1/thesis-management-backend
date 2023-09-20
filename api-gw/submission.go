@@ -33,10 +33,10 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 		return nil, err
 	}
 
-	if exists.GetResponse().StatusCode == 400 {
+	if exists.GetResponse().StatusCode == 404 {
 		return &pb.CreateSubmissionResponse{
 			Response: &pb.CommonSubmissionResponse{
-				StatusCode: 400,
+				StatusCode: 404,
 				Message:    "Exercise does not exist",
 			},
 		}, nil
@@ -89,10 +89,10 @@ func (u *submissionServiceGW) UpdateSubmission(ctx context.Context, req *pb.Upda
 		return nil, err
 	}
 
-	if exists.GetResponse().StatusCode == 400 {
+	if exists.GetResponse().StatusCode == 404 {
 		return &pb.UpdateSubmissionResponse{
 			Response: &pb.CommonSubmissionResponse{
-				StatusCode: 400,
+				StatusCode: 404,
 				Message:    "Exercise does not exist",
 			},
 		}, nil

@@ -20,6 +20,7 @@ require (
 	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/lyft/protoc-gen-star/v2 v2.0.3 // indirect
+	github.com/rs/cors v1.10.0 // indirect
 	github.com/spf13/afero v1.9.2 // indirect
 	github.com/stretchr/testify v1.8.2 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect

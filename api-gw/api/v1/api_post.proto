@@ -82,6 +82,13 @@ message CreatePostResponse {
     CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
 }
 
+message CommentPostResponse {
+    int32 id = 1;
+    string userID = 2;
+    int32 postID = 3;
+    string content = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
 
 // ====== GET ======
 message GetPostRequest {
@@ -91,6 +98,7 @@ message GetPostRequest {
 message GetPostResponse {
     CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
     PostResponse post = 2 [(validate.rules).message = {required: true}];
+    repeated CommentPostResponse comments = 3;
 }
 
 // ====== PUT ======

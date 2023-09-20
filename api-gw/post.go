@@ -6,6 +6,7 @@ import (
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
+	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 )
@@ -15,13 +16,15 @@ type postServiceGW struct {
 	postClient           postSvcV1.PostServiceClient
 	classroomClient      classroomSvcV1.ClassroomServiceClient
 	reportingStageClient rpsSvcV1.ReportingStageServiceClient
+	commentClient        commentSvcV1.CommentServiceClient
 }
 
-func NewPostsService(postClient postSvcV1.PostServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportingStageClient rpsSvcV1.ReportingStageServiceClient) *postServiceGW {
+func NewPostsService(postClient postSvcV1.PostServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportingStageClient rpsSvcV1.ReportingStageServiceClient, commentCLient commentSvcV1.CommentServiceClient) *postServiceGW {
 	return &postServiceGW{
 		postClient:           postClient,
 		classroomClient:      classroomClient,
 		reportingStageClient: reportingStageClient,
+		commentClient:        commentCLient,
 	}
 }
 
@@ -34,7 +37,7 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 	if !exists.GetExists() {
 		return &pb.CreatePostResponse{
 			Response: &pb.CommonPostResponse{
-				StatusCode: 400,
+				StatusCode: 404,
 				Message:    "Classroom does not exist",
 			},
 		}, nil
@@ -45,10 +48,10 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 		return nil, err
 	}
 
-	if rpsRes.GetResponse().GetStatusCode() == 400 {
+	if rpsRes.GetResponse().GetStatusCode() == 404 {
 		return &pb.CreatePostResponse{
 			Response: &pb.CommonPostResponse{
-				StatusCode: 400,
+				StatusCode: 404,
 				Message:    "Reporting stage does not exist",
 			},
 		}, nil
@@ -81,6 +84,24 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 		return nil, err
 	}
 
+	commentRes, err := u.commentClient.GetCommentsOfAPost(ctx, &commentSvcV1.GetCommentsOfAPostRequest{
+		PostID: req.GetId(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var comments []*pb.CommentPostResponse
+	for _, c := range commentRes.GetComments() {
+		comments = append(comments, &pb.CommentPostResponse{
+			Id:        c.Id,
+			UserID:    c.UserID,
+			PostID:    *c.PostID,
+			Content:   c.Content,
+			CreatedAt: c.CreatedAt,
+		})
+	}
+
 	return &pb.GetPostResponse{
 		Response: &pb.CommonPostResponse{
 			StatusCode: res.GetResponse().StatusCode,
@@ -96,6 +117,7 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 			CreatedAt:        res.GetPost().CreatedAt,
 			UpdatedAt:        res.GetPost().UpdatedAt,
 		},
+		Comments: comments,
 	}, nil
 }
 
@@ -105,10 +127,10 @@ func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostReques
 		return nil, err
 	}
 
-	if rpsRes.GetResponse().GetStatusCode() == 400 {
+	if rpsRes.GetResponse().GetStatusCode() == 404 {
 		return &pb.UpdatePostResponse{
 			Response: &pb.CommonPostResponse{
-				StatusCode: 400,
+				StatusCode: 404,
 				Message:    "Reporting stage does not exist",
 			},
 		}, nil
@@ -122,7 +144,7 @@ func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostReques
 	if !exists.GetExists() {
 		return &pb.UpdatePostResponse{
 			Response: &pb.CommonPostResponse{
-				StatusCode: 400,
+				StatusCode: 404,
 				Message:    "Classroom does not exist",
 			},
 		}, nil

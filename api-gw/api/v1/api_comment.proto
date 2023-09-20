@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package api.comment.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/comment/api/v1";
+
+service CommentService {
+    rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse){
+        option (google.api.http) = {
+            post: "/api/comment"
+            body: "*"
+        };
+    }
+}
+
+message CommonCommentResponse {
+    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    string message = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+message CommentInput {
+    string userID = 2;
+    optional int32 postID = 3;
+    optional int32 exerciseID = 4;
+    string content = 5;
+}
+
+message CreateCommentRequest {
+   CommentInput comment = 1 [(validate.rules).message = {required: true}];
+}
+
+message CreateCommentResponse {
+    CommonCommentResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
