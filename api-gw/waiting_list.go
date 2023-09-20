@@ -175,11 +175,61 @@ func (u *waitingListServiceGW) UpdateWaitingList(ctx context.Context, req *pb.Up
 }
 
 func (u *waitingListServiceGW) DeleteWaitingList(ctx context.Context, req *pb.DeleteWaitingListRequest) (*pb.DeleteWaitingListResponse, error) {
+	wtl, err := u.waitingListClient.GetWaitingList(ctx, &waitingListSvcV1.GetWaitingListRequest{
+		Id: req.GetId(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if wtl.Response.StatusCode == 404 {
+		return &pb.DeleteWaitingListResponse{
+			Response: &pb.CommonWaitingListResponse{
+				StatusCode: 404,
+				Message:    "waiting list is not found",
+			},
+		}, nil
+	}
+
 	res, err := u.waitingListClient.DeleteWaitingList(ctx, &waitingListSvcV1.DeleteWaitingListRequest{
 		Id: req.GetId(),
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: wtl.WaitingList.UserID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	classroomID := "0"
+	userUpdateRes, err := u.userClient.UpdateUser(ctx, &userSvcV1.UpdateUserRequest{
+		Id: userRes.User.Id,
+		User: &userSvcV1.UserInput{
+			Class:       userRes.User.Class,
+			Major:       userRes.User.Major,
+			Phone:       userRes.User.Phone,
+			PhotoSrc:    userRes.User.PhotoSrc,
+			Role:        userRes.User.Role,
+			Email:       userRes.User.Email,
+			Name:        userRes.User.Name,
+			ClassroomID: &classroomID,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if userUpdateRes.Response.StatusCode != 200 {
+		return &pb.DeleteWaitingListResponse{
+			Response: &pb.CommonWaitingListResponse{
+				StatusCode: userUpdateRes.Response.StatusCode,
+				Message:    userUpdateRes.Response.Message,
+			},
+		}, nil
 	}
 
 	return &pb.DeleteWaitingListResponse{

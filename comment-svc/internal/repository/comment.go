@@ -142,7 +142,7 @@ func (r *CommentRepo) DeleteComment(ctx context.Context, id int) error {
 
 // GetComment returns a list of comments in db with filter
 func (r *CommentRepo) GetCommentsOfAPost(ctx context.Context, postID int) ([]CommentOutputRepo, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetComments", fmt.Sprintf("SELECT id, user_id, post_id, exercise_id, content, created_at FROM comments WHERE post_id = %d", postID))
+	rows, err := QuerySQL(ctx, r.Database, "GetComments", fmt.Sprintf("SELECT id, user_id, post_id, exercise_id, content, created_at FROM comments WHERE post_id = %d ORDER BY created_at DESC", postID))
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +175,7 @@ func (r *CommentRepo) GetCommentsOfAPost(ctx context.Context, postID int) ([]Com
 
 // GetComment returns a list of comments in db with filter
 func (r *CommentRepo) GetCommentsOfAExercise(ctx context.Context, exerciseID int) ([]CommentOutputRepo, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetComments", fmt.Sprintf("SELECT id, user_id, post_id, exercise_id, content, created_at FROM comments WHERE post_id = %d", exerciseID))
+	rows, err := QuerySQL(ctx, r.Database, "GetComments", fmt.Sprintf("SELECT id, user_id, post_id, exercise_id, content, created_at FROM comments WHERE post_id = %d ORDER BY created_at DESC", exerciseID))
 	if err != nil {
 		return nil, err
 	}
