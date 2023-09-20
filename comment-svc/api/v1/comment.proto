@@ -1,0 +1,77 @@
+
+syntax = "proto3";
+
+package comment.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package="github.com/qthuy2k1/thesis-management-backend/comment/api/v1";
+
+service CommentService {
+    rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse){}
+    
+    rpc GetComment(GetCommentRequest) returns (GetCommentResponse){}
+
+    rpc GetCommentsOfAPost(GetCommentsOfAPostRequest) returns (GetCommentsResponse) {}
+
+    rpc GetCommentsOfAExercise(GetCommentsOfAExerciseRequest) returns (GetCommentsResponse) {}
+}
+
+
+message CommonCommentResponse {
+    int32 statusCode = 1;
+    string message = 2;
+}
+
+// ====== POST ======
+message CommentInput {
+    string userID = 1;
+    optional int32 postID = 2;
+    optional int32 exerciseID = 3;
+    string content = 4;
+}
+
+
+message CommentResponse {
+    int32 id = 1;
+    string userID = 2;
+    optional int32 postID = 3;
+    optional int32 exerciseID = 4;
+    string content = 5;
+    google.protobuf.Timestamp created_at = 6;
+}
+
+
+message CreateCommentRequest {
+   CommentInput comment = 1;
+}
+
+message CreateCommentResponse {
+    CommonCommentResponse response = 1;
+}
+
+
+// ====== GET ======
+message GetCommentRequest {
+    int32 id = 1;
+}
+
+message GetCommentResponse {
+    CommonCommentResponse response = 1;
+    CommentResponse comment = 2;
+} 
+
+
+// ====== GET ALL ======
+message GetCommentsOfAPostRequest {
+    int32 postID = 1;
+}
+
+message GetCommentsOfAExerciseRequest {
+    int32 exerciseID = 1;
+}
+
+message GetCommentsResponse {
+    CommonCommentResponse response = 1;
+    repeated CommentResponse comments = 2;
+}

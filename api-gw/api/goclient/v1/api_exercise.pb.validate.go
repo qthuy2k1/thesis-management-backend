@@ -848,6 +848,145 @@ var _ interface {
 	ErrorName() string
 } = CreateExerciseResponseValidationError{}
 
+// Validate checks the field values on CommentExerciseResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CommentExerciseResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CommentExerciseResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CommentExerciseResponseMultiError, or nil if none found.
+func (m *CommentExerciseResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CommentExerciseResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for UserID
+
+	// no validation rules for ExerciseID
+
+	// no validation rules for Content
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CommentExerciseResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CommentExerciseResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CommentExerciseResponseValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return CommentExerciseResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// CommentExerciseResponseMultiError is an error wrapping multiple validation
+// errors returned by CommentExerciseResponse.ValidateAll() if the designated
+// constraints aren't met.
+type CommentExerciseResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CommentExerciseResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CommentExerciseResponseMultiError) AllErrors() []error { return m }
+
+// CommentExerciseResponseValidationError is the validation error returned by
+// CommentExerciseResponse.Validate if the designated constraints aren't met.
+type CommentExerciseResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CommentExerciseResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CommentExerciseResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CommentExerciseResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CommentExerciseResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CommentExerciseResponseValidationError) ErrorName() string {
+	return "CommentExerciseResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CommentExerciseResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCommentExerciseResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CommentExerciseResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CommentExerciseResponseValidationError{}
+
 // Validate checks the field values on GetExerciseRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -1061,6 +1200,40 @@ func (m *GetExerciseResponse) validate(all bool) error {
 				cause:  err,
 			}
 		}
+	}
+
+	for idx, item := range m.GetComments() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetExerciseResponseValidationError{
+						field:  fmt.Sprintf("Comments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetExerciseResponseValidationError{
+						field:  fmt.Sprintf("Comments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetExerciseResponseValidationError{
+					field:  fmt.Sprintf("Comments[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
 	}
 
 	if len(errors) > 0 {

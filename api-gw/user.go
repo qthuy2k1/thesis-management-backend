@@ -42,7 +42,7 @@ func (u *userServiceGW) CreateUser(ctx context.Context, req *pb.CreateUserReques
 		if !exists.GetExists() {
 			return &pb.CreateUserResponse{
 				Response: &pb.CommonUserResponse{
-					StatusCode: 400,
+					StatusCode: 404,
 					Message:    "Classroom does not exist",
 				},
 			}, nil
@@ -122,7 +122,7 @@ func (u *userServiceGW) UpdateUser(ctx context.Context, req *pb.UpdateUserReques
 		if !exists.GetExists() {
 			return &pb.UpdateUserResponse{
 				Response: &pb.CommonUserResponse{
-					StatusCode: 400,
+					StatusCode: 404,
 					Message:    "Classroom does not exist",
 				},
 			}, nil

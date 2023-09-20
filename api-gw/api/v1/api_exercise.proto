@@ -87,6 +87,13 @@ message CreateExerciseResponse {
     CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
 }
 
+message CommentExerciseResponse {
+    int32 id = 1;
+    string userID = 2;
+    int32 exerciseID = 3;
+    string content = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
 
 // ====== GET ======
 message GetExerciseRequest {
@@ -96,6 +103,7 @@ message GetExerciseRequest {
 message GetExerciseResponse {
     CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
     ExerciseResponse exercise = 2 [(validate.rules).message = {required: true}];
+    repeated CommentExerciseResponse comments = 3;
 }
 
 // ====== PUT ======

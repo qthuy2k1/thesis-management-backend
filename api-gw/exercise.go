@@ -6,6 +6,7 @@ import (
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
+	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 )
@@ -15,13 +16,15 @@ type exerciseServiceGW struct {
 	exerciseClient       exerciseSvcV1.ExerciseServiceClient
 	classroomClient      classroomSvcV1.ClassroomServiceClient
 	reportingStageClient rpsSvcV1.ReportingStageServiceClient
+	commentClient        commentSvcV1.CommentServiceClient
 }
 
-func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportStageClient rpsSvcV1.ReportingStageServiceClient) *exerciseServiceGW {
+func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportStageClient rpsSvcV1.ReportingStageServiceClient, commentClient commentSvcV1.CommentServiceClient) *exerciseServiceGW {
 	return &exerciseServiceGW{
 		exerciseClient:       exerciseClient,
 		classroomClient:      classroomClient,
 		reportingStageClient: reportStageClient,
+		commentClient:        commentClient,
 	}
 }
 
@@ -37,7 +40,7 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 	if !exists.GetExists() {
 		return &pb.CreateExerciseResponse{
 			Response: &pb.CommonExerciseResponse{
-				StatusCode: 400,
+				StatusCode: 404,
 				Message:    "Classroom does not exist",
 			},
 		}, nil
@@ -48,10 +51,10 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 		return nil, err
 	}
 
-	if rpsRes.GetResponse().GetStatusCode() == 400 {
+	if rpsRes.GetResponse().GetStatusCode() == 404 {
 		return &pb.CreateExerciseResponse{
 			Response: &pb.CommonExerciseResponse{
-				StatusCode: 400,
+				StatusCode: 404,
 				Message:    "Reporting stage does not exist",
 			},
 		}, nil
@@ -86,6 +89,24 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 		return nil, err
 	}
 
+	commentRes, err := u.commentClient.GetCommentsOfAExercise(ctx, &commentSvcV1.GetCommentsOfAExerciseRequest{
+		ExerciseID: req.GetId(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var comments []*pb.CommentExerciseResponse
+	for _, c := range commentRes.GetComments() {
+		comments = append(comments, &pb.CommentExerciseResponse{
+			Id:         c.Id,
+			UserID:     c.UserID,
+			ExerciseID: *c.ExerciseID,
+			Content:    c.Content,
+			CreatedAt:  c.CreatedAt,
+		})
+	}
+
 	return &pb.GetExerciseResponse{
 		Response: &pb.CommonExerciseResponse{
 			StatusCode: res.GetResponse().StatusCode,
@@ -103,6 +124,7 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 			CreatedAt:        res.GetExercise().CreatedAt,
 			UpdatedAt:        res.GetExercise().UpdatedAt,
 		},
+		Comments: comments,
 	}, nil
 }
 
@@ -112,10 +134,10 @@ func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateEx
 		return nil, err
 	}
 
-	if rpsRes.GetResponse().GetStatusCode() == 400 {
+	if rpsRes.GetResponse().GetStatusCode() == 404 {
 		return &pb.UpdateExerciseResponse{
 			Response: &pb.CommonExerciseResponse{
-				StatusCode: 400,
+				StatusCode: 404,
 				Message:    "Reporting stage does not exist",
 			},
 		}, nil
@@ -129,7 +151,7 @@ func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateEx
 	if !exists.GetExists() {
 		return &pb.UpdateExerciseResponse{
 			Response: &pb.CommonExerciseResponse{
-				StatusCode: 400,
+				StatusCode: 404,
 				Message:    "Classroom does not exist",
 			},
 		}, nil

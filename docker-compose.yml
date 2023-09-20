@@ -14,7 +14,7 @@ services:
       - "5433:5432"
     volumes:
       - classroom-db:/var/lib/postgresql/data
-      # - ./script/classroom/init-database-classroom.sql:/docker-entrypoint-initdb.d/init-database.sql
+      - ./script/classroom/init-database-classroom.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -32,7 +32,7 @@ services:
       - "5434:5432"
     volumes:
       - post-db:/var/lib/postgresql/data
-      # - ./script/post/init-database-post.sql:/docker-entrypoint-initdb.d/init-database.sql
+      - ./script/post/init-database-post.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway" 
@@ -50,7 +50,7 @@ services:
       - "5435:5432"
     volumes:
       - exercise-db:/var/lib/postgresql/data
-      # - ./script/exercise/init-database-exercise.sql:/docker-entrypoint-initdb.d/init-database.sql
+      - ./script/exercise/init-database-exercise.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -68,7 +68,7 @@ services:
       - "5436:5432"
     volumes:
       - user-db:/var/lib/postgresql/data
-      # - ./script/user/init-database-user.sql:/docker-entrypoint-initdb.d/init-database.sql
+      - ./script/user/init-database-user.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -86,7 +86,7 @@ services:
       - "5437:5432"
     volumes:
       - reporting-stage-db:/var/lib/postgresql/data
-      # - ./script/reporting-stage/init-database-reporting-stage.sql:/docker-entrypoint-initdb.d/init-database.sql
+      - ./script/reporting-stage/init-database-reporting-stage.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -104,7 +104,7 @@ services:
       - "5438:5432"
     volumes:
       - submission-db:/var/lib/postgresql/data
-      # - ./script/submission/init-database-submission.sql:/docker-entrypoint-initdb.d/init-database.sql
+      - ./script/submission/init-database-submission.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -122,7 +122,25 @@ services:
       - "5439:5432"
     volumes:
       - classroom-waiting-list-db:/var/lib/postgresql/data
-      # - ./script/waiting-list/init-database-waiting-list.sql:/docker-entrypoint-initdb.d/init-database.sql
+      - ./script/waiting-list/init-database-waiting-list.sql:/docker-entrypoint-initdb.d/init-database.sql
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  comment-db:
+    image: postgres:alpine
+    container_name: comment-db
+    networks:
+      mynet:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: thesis_management_waiting_lists
+    ports:
+      - "5440:5432"
+    volumes:
+      - comment-db:/var/lib/postgresql/data
+      - ./script/comment/init-database-comment.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -155,6 +173,7 @@ services:
       - reporting-stage-db
       - submission-db
       - classroom-waiting-list-db
+      - comment-db
 
   classroom:
     build:
@@ -260,6 +279,22 @@ services:
       - classroom-waiting-list-db
     volumes:
       - .:/usr/src/app
+
+  comment:
+    env_file:
+      - .env
+    build:
+      dockerfile: ./comment-svc/Dockerfile
+      context: .
+      args:
+        - image_name=comment
+    image: qthuy2k1/thesis-management-backend-comment
+    networks:
+      mynet:
+    depends_on:
+      - comment-db
+    volumes:
+      - .:/usr/src/app
     
   apigw-client:
     build:
@@ -284,6 +319,7 @@ services:
       - reporting-stage
       - submission
       - classroom-waiting-list
+      - comment
 
 volumes:
   classroom-db:
@@ -293,5 +329,6 @@ volumes:
   reporting-stage-db:
   submission-db:
   classroom-waiting-list-db:
+  comment-db:
 networks:
   mynet:

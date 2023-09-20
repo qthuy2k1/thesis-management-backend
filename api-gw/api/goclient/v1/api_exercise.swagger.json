@@ -361,6 +361,29 @@
       },
       "description": "Represents a time zone from the\n[IANA Time Zone Database](https://www.iana.org/time-zones)."
     },
+    "v1CommentExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "userID": {
+          "type": "string"
+        },
+        "exerciseID": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "content": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "v1CommonExerciseResponse": {
       "type": "object",
       "properties": {
@@ -495,6 +518,13 @@
         },
         "exercise": {
           "$ref": "#/definitions/v1ExerciseResponse"
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1CommentExerciseResponse"
+          }
         }
       }
     },

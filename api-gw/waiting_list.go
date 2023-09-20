@@ -35,7 +35,7 @@ func (u *waitingListServiceGW) CreateWaitingList(ctx context.Context, req *pb.Cr
 	if !clrExists.GetExists() {
 		return &pb.CreateWaitingListResponse{
 			Response: &pb.CommonWaitingListResponse{
-				StatusCode: 400,
+				StatusCode: 404,
 				Message:    "Classroom does not exist",
 			},
 		}, nil
@@ -46,10 +46,10 @@ func (u *waitingListServiceGW) CreateWaitingList(ctx context.Context, req *pb.Cr
 		return nil, err
 	}
 
-	if userExists.GetResponse().GetStatusCode() == 400 {
+	if userExists.GetResponse().GetStatusCode() == 404 {
 		return &pb.CreateWaitingListResponse{
 			Response: &pb.CommonWaitingListResponse{
-				StatusCode: 400,
+				StatusCode: 404,
 				Message:    "User does not exist",
 			},
 		}, nil
@@ -110,6 +110,51 @@ func (u *waitingListServiceGW) GetWaitingList(ctx context.Context, req *pb.GetWa
 }
 
 func (u *waitingListServiceGW) UpdateWaitingList(ctx context.Context, req *pb.UpdateWaitingListRequest) (*pb.UpdateWaitingListResponse, error) {
+	clrExists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{
+		ClassroomID: req.GetWaitingList().GetClassroomID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if !clrExists.GetExists() {
+		return &pb.UpdateWaitingListResponse{
+			Response: &pb.CommonWaitingListResponse{
+				StatusCode: 404,
+				Message:    "Classroom does not exist",
+			},
+		}, nil
+	}
+
+	userExists, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.GetWaitingList().GetUserID()})
+	if err != nil {
+		return nil, err
+	}
+
+	if userExists.GetResponse().GetStatusCode() == 404 {
+		return &pb.UpdateWaitingListResponse{
+			Response: &pb.CommonWaitingListResponse{
+				StatusCode: 404,
+				Message:    "User does not exist",
+			},
+		}, nil
+	}
+
+	wtlExistRes, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
+		UserID: req.GetWaitingList().GetUserID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if wtlExistRes.IsIn {
+		return &pb.UpdateWaitingListResponse{
+			Response: &pb.CommonWaitingListResponse{
+				StatusCode: 400,
+				Message:    "User already requested to join a classroom",
+			},
+		}, nil
+	}
 	res, err := u.waitingListClient.UpdateWaitingList(ctx, &waitingListSvcV1.UpdateWaitingListRequest{
 		Id: req.GetId(),
 		WaitingList: &waitingListSvcV1.WaitingListInput{
