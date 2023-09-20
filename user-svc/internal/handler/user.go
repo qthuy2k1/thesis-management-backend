@@ -206,8 +206,6 @@ func validateAndConvertUser(pbUser *userpb.UserInput) (service.UserInputSvc, err
 		return service.UserInputSvc{}, err
 	}
 
-	log.Println(*pbUser.ClassroomID != "")
-
 	classroomID := 0
 	if pbUser.ClassroomID != nil && *pbUser.ClassroomID != "" {
 		c, err := strconv.Atoi(*pbUser.ClassroomID)

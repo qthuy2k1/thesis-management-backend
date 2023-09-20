@@ -311,3 +311,22 @@ migrate_all_up:
 	docker run --rm -v $(PWD)/classroom-waiting-list-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@classroom-waiting-list-db:5432/thesis_management_waiting_lists?sslmode=disable" up
 
 	docker run --rm -v $(PWD)/comment-svc/data/migrations/:/migrations --network api_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@comment-db:5432/thesis_management_comments?sslmode=disable" up
+
+partner_migrate_all_up:
+	docker run --rm -v "D:/Web Dev/thesis-management-backend/classroom-svc/data/migrations/:/migrations" --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@classroom-db:5432/thesis_management_classrooms?sslmode=disable" up
+
+	docker run --rm -v "D:/Web Dev/thesis-management-backend/post-svc/data/migrations/:/migrations" --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@post-db:5432/thesis_management_posts?sslmode=disable" up
+
+	docker run --rm -v "D:/Web Dev/thesis-management-backend/exercise-svc/data/migrations/:/migrations" --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@exercise-db:5432/thesis_management_exercises?sslmode=disable" up
+
+	docker run --rm -v "D:/Web Dev/thesis-management-backend/user-svc/data/migrations/:/migrations" --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@user-db:5432/thesis_management_users?sslmode=disable" up
+
+	docker run --rm -v "D:/Web Dev/thesis-management-backend/reporting-stage-svc/data/migrations/:/migrations" --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@reporting-stage-db:5432/thesis_management_reporting_stages?sslmode=disable" up
+
+	docker run --rm -v "D:/Web Dev/thesis-management-backend  /submission-svc/data/migrations/:/migrations" --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@submission-db:5432/thesis_management_submissions?sslmode=disable" up
+
+	docker run --rm -v "D:/Web Dev/thesis-management-backend/classroom-waiting-list-svc/data/migrations/:/migrations" --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@classroom-waiting-list-db:5432/thesis_management_waiting_lists?sslmode=disable" up
+
+	docker run --rm -v "D:/Web Dev/thesis-management-backend/comment-svc/data/migrations/:/migrations" --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@comment-db:5432/thesis_management_comments?sslmode=disable" up
+
+
