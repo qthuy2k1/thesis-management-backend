@@ -33,6 +33,7 @@ func allowCORS(h http.Handler) http.Handler {
 				return
 			}
 		}
+		preflightHandler(w, r)
 		h.ServeHTTP(w, r)
 	})
 }
@@ -56,6 +57,10 @@ func run() error {
 	// Register gRPC server endpoint
 	// Note: Make sure the gRPC server is running properly and accessible
 	mux := runtime.NewServeMux()
+	s := &http.Server{
+		Addr:    ":8081",
+		Handler: allowCORS(mux),
+	}
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
 	if err := gw.RegisterClassroomServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts); err != nil {
@@ -91,11 +96,6 @@ func run() error {
 	}
 
 	fmt.Println("The APIGW-Client starting on 0.0.0.0:8081")
-	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	s := &http.Server{
-		Addr:    ":8081",
-		Handler: allowCORS(mux),
-	}
 	go func() {
 		<-ctx.Done()
 		glog.Infof("Shutting down the http server")
@@ -104,6 +104,7 @@ func run() error {
 		}
 	}()
 
+	// Start HTTP server (and proxy calls to gRPC server endpoint)
 	glog.Infof("The APIGW-Client starting on 0.0.0.0:%s", "8081")
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
 		glog.Errorf("Failed to listen and serve: %v", err)
