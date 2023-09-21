@@ -18,6 +18,6 @@ func Initialize(dbUrl string) (*sql.DB, error) {
 		return db, err
 	}
 
-	log.Println("Reporting Stage database connection etablished")
+	log.Println("Submission database connection etablished")
 	return db, nil
 }
