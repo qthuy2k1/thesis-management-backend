@@ -87,7 +87,7 @@ type UserInputRepo struct {
 
 // CreateUser creates a new user in db given by user model
 func (r *UserRepo) CreateUser(ctx context.Context, u UserInputRepo) error {
-	exists, err := r.IsUserExists(ctx, u.Email)
+	exists, err := r.IsUserExists(ctx, u.Email, u.ID)
 	if err != nil {
 		logger(err, "in IsUserExists function", "CreateUser")
 		return err
@@ -140,9 +140,9 @@ func (r *UserRepo) GetUser(ctx context.Context, id string) (UserOutputRepo, erro
 }
 
 // CheckUserExists checks whether the specified user exists by title (true == exist)
-func (r *UserRepo) IsUserExists(ctx context.Context, email string) (bool, error) {
+func (r *UserRepo) IsUserExists(ctx context.Context, email, id string) (bool, error) {
 	var exists bool
-	row, err := QueryRowSQL(ctx, r.Database, "IsUserExists", "SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)", email)
+	row, err := QueryRowSQL(ctx, r.Database, "IsUserExists", "SELECT EXISTS(SELECT 1 FROM users WHERE email = $1 AND id = $2)", email, id)
 	if err != nil {
 		logger(err, "Query sql", "IsUserExists")
 		return false, err

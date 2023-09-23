@@ -370,18 +370,63 @@ func (m *PostResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetReportingStageID() < 1 {
-		err := PostResponseValidationError{
-			field:  "ReportingStageID",
-			reason: "value must be greater than or equal to 1",
+	if all {
+		switch v := interface{}(m.GetReportingStage()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, PostResponseValidationError{
+					field:  "ReportingStage",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, PostResponseValidationError{
+					field:  "ReportingStage",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
 		}
-		if !all {
-			return err
+	} else if v, ok := interface{}(m.GetReportingStage()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return PostResponseValidationError{
+				field:  "ReportingStage",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
 		}
-		errors = append(errors, err)
 	}
 
-	// no validation rules for AuthorID
+	if all {
+		switch v := interface{}(m.GetAuthor()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, PostResponseValidationError{
+					field:  "Author",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, PostResponseValidationError{
+					field:  "Author",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetAuthor()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return PostResponseValidationError{
+				field:  "Author",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if m.GetCreatedAt() == nil {
 		err := PostResponseValidationError{
@@ -481,6 +526,382 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = PostResponseValidationError{}
+
+// Validate checks the field values on ReportingStagePostResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ReportingStagePostResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ReportingStagePostResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ReportingStagePostResponseMultiError, or nil if none found.
+func (m *ReportingStagePostResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ReportingStagePostResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetId() < 1 {
+		err := ReportingStagePostResponseValidationError{
+			field:  "Id",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetName()) < 2 {
+		err := ReportingStagePostResponseValidationError{
+			field:  "Name",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetDescription()) < 2 {
+		err := ReportingStagePostResponseValidationError{
+			field:  "Description",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return ReportingStagePostResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ReportingStagePostResponseMultiError is an error wrapping multiple
+// validation errors returned by ReportingStagePostResponse.ValidateAll() if
+// the designated constraints aren't met.
+type ReportingStagePostResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ReportingStagePostResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ReportingStagePostResponseMultiError) AllErrors() []error { return m }
+
+// ReportingStagePostResponseValidationError is the validation error returned
+// by ReportingStagePostResponse.Validate if the designated constraints aren't met.
+type ReportingStagePostResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ReportingStagePostResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ReportingStagePostResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ReportingStagePostResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ReportingStagePostResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ReportingStagePostResponseValidationError) ErrorName() string {
+	return "ReportingStagePostResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ReportingStagePostResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReportingStagePostResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ReportingStagePostResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ReportingStagePostResponseValidationError{}
+
+// Validate checks the field values on AuthorPostResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AuthorPostResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AuthorPostResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AuthorPostResponseMultiError, or nil if none found.
+func (m *AuthorPostResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthorPostResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if l := utf8.RuneCountInString(m.GetClass()); l < 4 || l > 10 {
+		err := AuthorPostResponseValidationError{
+			field:  "Class",
+			reason: "value length must be between 4 and 10 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for PhotoSrc
+
+	if _, ok := _AuthorPostResponse_Role_InLookup[m.GetRole()]; !ok {
+		err := AuthorPostResponseValidationError{
+			field:  "Role",
+			reason: "value must be in list [teacher student admin]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetName()); l < 2 || l > 200 {
+		err := AuthorPostResponseValidationError{
+			field:  "Name",
+			reason: "value length must be between 2 and 200 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if err := m._validateEmail(m.GetEmail()); err != nil {
+		err = AuthorPostResponseValidationError{
+			field:  "Email",
+			reason: "value must be a valid email address",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.Major != nil {
+
+		if utf8.RuneCountInString(m.GetMajor()) < 2 {
+			err := AuthorPostResponseValidationError{
+				field:  "Major",
+				reason: "value length must be at least 2 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.Phone != nil {
+
+		if l := utf8.RuneCountInString(m.GetPhone()); l < 10 || l > 11 {
+			err := AuthorPostResponseValidationError{
+				field:  "Phone",
+				reason: "value length must be between 10 and 11 runes, inclusive",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.ClassroomID != nil {
+		// no validation rules for ClassroomID
+	}
+
+	if len(errors) > 0 {
+		return AuthorPostResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *AuthorPostResponse) _validateHostname(host string) error {
+	s := strings.ToLower(strings.TrimSuffix(host, "."))
+
+	if len(host) > 253 {
+		return errors.New("hostname cannot exceed 253 characters")
+	}
+
+	for _, part := range strings.Split(s, ".") {
+		if l := len(part); l == 0 || l > 63 {
+			return errors.New("hostname part must be non-empty and cannot exceed 63 characters")
+		}
+
+		if part[0] == '-' {
+			return errors.New("hostname parts cannot begin with hyphens")
+		}
+
+		if part[len(part)-1] == '-' {
+			return errors.New("hostname parts cannot end with hyphens")
+		}
+
+		for _, r := range part {
+			if (r < 'a' || r > 'z') && (r < '0' || r > '9') && r != '-' {
+				return fmt.Errorf("hostname parts can only contain alphanumeric characters or hyphens, got %q", string(r))
+			}
+		}
+	}
+
+	return nil
+}
+
+func (m *AuthorPostResponse) _validateEmail(addr string) error {
+	a, err := mail.ParseAddress(addr)
+	if err != nil {
+		return err
+	}
+	addr = a.Address
+
+	if len(addr) > 254 {
+		return errors.New("email addresses cannot exceed 254 characters")
+	}
+
+	parts := strings.SplitN(addr, "@", 2)
+
+	if len(parts[0]) > 64 {
+		return errors.New("email address local phrase cannot exceed 64 characters")
+	}
+
+	return m._validateHostname(parts[1])
+}
+
+// AuthorPostResponseMultiError is an error wrapping multiple validation errors
+// returned by AuthorPostResponse.ValidateAll() if the designated constraints
+// aren't met.
+type AuthorPostResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthorPostResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthorPostResponseMultiError) AllErrors() []error { return m }
+
+// AuthorPostResponseValidationError is the validation error returned by
+// AuthorPostResponse.Validate if the designated constraints aren't met.
+type AuthorPostResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthorPostResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AuthorPostResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AuthorPostResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AuthorPostResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AuthorPostResponseValidationError) ErrorName() string {
+	return "AuthorPostResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthorPostResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthorPostResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthorPostResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthorPostResponseValidationError{}
+
+var _AuthorPostResponse_Role_InLookup = map[string]struct{}{
+	"teacher": {},
+	"student": {},
+	"admin":   {},
+}
 
 // Validate checks the field values on CreatePostRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, the
@@ -790,7 +1211,34 @@ func (m *CommentPostResponse) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for UserID
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CommentPostResponseValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CommentPostResponseValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CommentPostResponseValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	// no validation rules for PostID
 

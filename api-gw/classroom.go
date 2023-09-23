@@ -9,20 +9,26 @@ import (
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
+	reportingStageSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
+	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
 type classroomServiceGW struct {
 	pb.UnimplementedClassroomServiceServer
-	classroomClient classroomSvcV1.ClassroomServiceClient
-	postClient      postSvcV1.PostServiceClient
-	exerciseClient  exerciseSvcV1.ExerciseServiceClient
+	classroomClient      classroomSvcV1.ClassroomServiceClient
+	postClient           postSvcV1.PostServiceClient
+	exerciseClient       exerciseSvcV1.ExerciseServiceClient
+	reportingStageClient reportingStageSvcV1.ReportingStageServiceClient
+	userClient           userSvcV1.UserServiceClient
 }
 
-func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient) *classroomServiceGW {
+func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, reportingStageClient reportingStageSvcV1.ReportingStageServiceClient, userClient userSvcV1.UserServiceClient) *classroomServiceGW {
 	return &classroomServiceGW{
-		classroomClient: classroomClient,
-		postClient:      postClient,
-		exerciseClient:  exerciseClient,
+		classroomClient:      classroomClient,
+		postClient:           postClient,
+		exerciseClient:       exerciseClient,
+		reportingStageClient: reportingStageClient,
+		userClient:           userClient,
 	}
 }
 
@@ -73,6 +79,7 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 	if sortColumn != "" {
 		filter.SortColumn = sortColumn
 	}
+
 	// Get all posts of classroom
 	resPost, err := u.postClient.GetAllPostsOfClassroom(ctx, &postSvcV1.GetAllPostsOfClassroomRequest{
 		ClassroomID: res.GetClassroom().GetId(),
@@ -88,16 +95,44 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 
 	var postsAndExercises []*pb.PostsAndExercisesOfClassroom
 	for _, p := range resPost.GetPosts() {
+		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{
+			Id: p.ReportingStageID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: p.AuthorID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
 		postsAndExercises = append(postsAndExercises, &pb.PostsAndExercisesOfClassroom{
-			Id:               p.Id,
-			Title:            p.Title,
-			Content:          p.Content,
-			ClassroomID:      p.ClassroomID,
-			ReportingStageID: p.ReportingStageID,
-			AuthorID:         p.AuthorID,
-			CreatedAt:        p.CreatedAt,
-			UpdatedAt:        p.UpdatedAt,
-			Type:             "post",
+			Id:          p.Id,
+			Title:       p.Title,
+			Content:     p.Content,
+			ClassroomID: p.ClassroomID,
+			ReportingStage: &pb.ReportingStageClassroomResponse{
+				Id:          reportingStageRes.ReportingStage.Id,
+				Name:        reportingStageRes.ReportingStage.Name,
+				Description: reportingStageRes.ReportingStage.Description,
+			},
+			Author: &pb.AuthorClassroomResponse{
+				Id:          authorRes.User.Id,
+				Class:       authorRes.User.Class,
+				Major:       authorRes.User.Major,
+				Phone:       authorRes.User.Phone,
+				PhotoSrc:    authorRes.User.PhotoSrc,
+				Role:        authorRes.User.Role,
+				Name:        authorRes.User.Name,
+				Email:       authorRes.User.Email,
+				ClassroomID: &authorRes.User.ClassroomID,
+			},
+			CreatedAt: p.CreatedAt,
+			UpdatedAt: p.UpdatedAt,
+			Type:      "post",
 		})
 	}
 
@@ -115,18 +150,46 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 	}
 
 	for _, p := range resExercise.GetExercises() {
+		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{
+			Id: p.ReportingStageID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: p.AuthorID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
 		postsAndExercises = append(postsAndExercises, &pb.PostsAndExercisesOfClassroom{
-			Id:               p.Id,
-			Title:            p.Title,
-			Content:          p.Content,
-			ClassroomID:      p.ClassroomID,
-			Deadline:         p.Deadline,
-			Score:            &p.Score,
-			ReportingStageID: p.ReportingStageID,
-			AuthorID:         p.AuthorID,
-			CreatedAt:        p.CreatedAt,
-			UpdatedAt:        p.UpdatedAt,
-			Type:             "exercise",
+			Id:          p.Id,
+			Title:       p.Title,
+			Content:     p.Content,
+			ClassroomID: p.ClassroomID,
+			Deadline:    p.Deadline,
+			Score:       &p.Score,
+			ReportingStage: &pb.ReportingStageClassroomResponse{
+				Id:          reportingStageRes.ReportingStage.Id,
+				Name:        reportingStageRes.ReportingStage.Name,
+				Description: reportingStageRes.ReportingStage.Description,
+			},
+			Author: &pb.AuthorClassroomResponse{
+				Id:          authorRes.User.Id,
+				Class:       authorRes.User.Class,
+				Major:       authorRes.User.Major,
+				Phone:       authorRes.User.Phone,
+				PhotoSrc:    authorRes.User.PhotoSrc,
+				Role:        authorRes.User.Role,
+				Name:        authorRes.User.Name,
+				Email:       authorRes.User.Email,
+				ClassroomID: &authorRes.User.ClassroomID,
+			},
+			CreatedAt: p.CreatedAt,
+			UpdatedAt: p.UpdatedAt,
+			Type:      "exercise",
 		})
 	}
 
@@ -135,19 +198,36 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 		return postsAndExercises[i].CreatedAt.AsTime().Before(postsAndExercises[j].CreatedAt.AsTime())
 	})
 
+	lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: res.GetClassroom().LecturerId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return &pb.GetClassroomResponse{
 		Response: &pb.CommonClassroomResponse{
 			StatusCode: res.GetResponse().GetStatusCode(),
 			Message:    res.GetResponse().GetMessage(),
 		},
 		Classroom: &pb.ClassroomResponse{
-			Id:                res.GetClassroom().GetId(),
-			Title:             res.GetClassroom().GetTitle(),
-			Description:       res.GetClassroom().GetDescription(),
-			Status:            res.GetClassroom().GetStatus(),
-			CodeClassroom:     res.GetClassroom().GetCodeClassroom(),
-			TopicTags:         res.GetClassroom().GetTopicTags(),
-			LecturerId:        res.GetClassroom().GetLecturerId(),
+			Id:            res.GetClassroom().GetId(),
+			Title:         res.GetClassroom().GetTitle(),
+			Description:   res.GetClassroom().GetDescription(),
+			Status:        res.GetClassroom().GetStatus(),
+			CodeClassroom: res.GetClassroom().GetCodeClassroom(),
+			TopicTags:     res.GetClassroom().GetTopicTags(),
+			Lecturer: &pb.AuthorClassroomResponse{
+				Id:          lecturerRes.User.Id,
+				Class:       lecturerRes.User.Class,
+				Major:       lecturerRes.User.Major,
+				Phone:       lecturerRes.User.Phone,
+				PhotoSrc:    lecturerRes.User.PhotoSrc,
+				Role:        lecturerRes.User.Role,
+				Name:        lecturerRes.User.Name,
+				Email:       lecturerRes.User.Email,
+				ClassroomID: &lecturerRes.User.ClassroomID,
+			},
 			Quantity:          res.GetClassroom().GetQuantity(),
 			CreatedAt:         res.GetClassroom().GetCreatedAt(),
 			UpdatedAt:         res.GetClassroom().GetUpdatedAt(),
@@ -262,17 +342,152 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 
 	var classrooms []*pb.ClassroomResponse
 	for _, c := range res.GetClassrooms() {
+		// Get all posts of classroom
+		resPost, err := u.postClient.GetAllPostsOfClassroom(ctx, &postSvcV1.GetAllPostsOfClassroomRequest{
+			ClassroomID: c.GetId(),
+			Page:        filter.Page,
+			Limit:       filter.Limit,
+			TitleSearch: filter.TitleSearch,
+			SortColumn:  filter.SortColumn,
+			SortOrder:   filter.SortOrder,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		var postsAndExercises []*pb.PostsAndExercisesOfClassroom
+		for _, p := range resPost.GetPosts() {
+			reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{
+				Id: p.ReportingStageID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+				Id: p.AuthorID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			postsAndExercises = append(postsAndExercises, &pb.PostsAndExercisesOfClassroom{
+				Id:          p.Id,
+				Title:       p.Title,
+				Content:     p.Content,
+				ClassroomID: p.ClassroomID,
+				ReportingStage: &pb.ReportingStageClassroomResponse{
+					Id:          reportingStageRes.ReportingStage.Id,
+					Name:        reportingStageRes.ReportingStage.Name,
+					Description: reportingStageRes.ReportingStage.Description,
+				},
+				Author: &pb.AuthorClassroomResponse{
+					Id:          authorRes.User.Id,
+					Class:       authorRes.User.Class,
+					Major:       authorRes.User.Major,
+					Phone:       authorRes.User.Phone,
+					PhotoSrc:    authorRes.User.PhotoSrc,
+					Role:        authorRes.User.Role,
+					Name:        authorRes.User.Name,
+					Email:       authorRes.User.Email,
+					ClassroomID: &authorRes.User.ClassroomID,
+				},
+				CreatedAt: p.CreatedAt,
+				UpdatedAt: p.UpdatedAt,
+				Type:      "post",
+			})
+		}
+
+		// Get all exercises of classroom
+		resExercise, err := u.exerciseClient.GetAllExercisesOfClassroom(ctx, &exerciseSvcV1.GetAllExercisesOfClassroomRequest{
+			ClassroomID: c.GetId(),
+			Page:        filter.Page,
+			Limit:       filter.Limit,
+			TitleSearch: filter.TitleSearch,
+			SortColumn:  filter.SortColumn,
+			SortOrder:   filter.SortOrder,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		for _, p := range resExercise.GetExercises() {
+			reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{
+				Id: p.ReportingStageID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+				Id: p.AuthorID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			postsAndExercises = append(postsAndExercises, &pb.PostsAndExercisesOfClassroom{
+				Id:          p.Id,
+				Title:       p.Title,
+				Content:     p.Content,
+				ClassroomID: p.ClassroomID,
+				Deadline:    p.Deadline,
+				Score:       &p.Score,
+				ReportingStage: &pb.ReportingStageClassroomResponse{
+					Id:          reportingStageRes.ReportingStage.Id,
+					Name:        reportingStageRes.ReportingStage.Name,
+					Description: reportingStageRes.ReportingStage.Description,
+				},
+				Author: &pb.AuthorClassroomResponse{
+					Id:          authorRes.User.Id,
+					Class:       authorRes.User.Class,
+					Major:       authorRes.User.Major,
+					Phone:       authorRes.User.Phone,
+					PhotoSrc:    authorRes.User.PhotoSrc,
+					Role:        authorRes.User.Role,
+					Name:        authorRes.User.Name,
+					Email:       authorRes.User.Email,
+					ClassroomID: &authorRes.User.ClassroomID,
+				},
+				CreatedAt: p.CreatedAt,
+				UpdatedAt: p.UpdatedAt,
+				Type:      "exercise",
+			})
+		}
+
+		// Sort the combined slice by CreatedAt field
+		sort.Slice(postsAndExercises, func(i, j int) bool {
+			return postsAndExercises[i].CreatedAt.AsTime().Before(postsAndExercises[j].CreatedAt.AsTime())
+		})
+
+		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: c.LecturerId,
+		})
+		if err != nil {
+			return nil, err
+		}
 		classrooms = append(classrooms, &pb.ClassroomResponse{
-			Id:            c.Id,
-			Title:         c.Title,
-			Description:   c.Description,
-			Status:        c.Status,
-			LecturerId:    c.LecturerId,
-			CodeClassroom: c.CodeClassroom,
-			TopicTags:     c.TopicTags,
-			Quantity:      c.Quantity,
-			CreatedAt:     c.CreatedAt,
-			UpdatedAt:     c.UpdatedAt,
+			Id:          c.Id,
+			Title:       c.Title,
+			Description: c.Description,
+			Status:      c.Status,
+			Lecturer: &pb.AuthorClassroomResponse{
+				Id:          lecturerRes.User.Id,
+				Class:       lecturerRes.User.Class,
+				Major:       lecturerRes.User.Major,
+				Phone:       lecturerRes.User.Phone,
+				PhotoSrc:    lecturerRes.User.PhotoSrc,
+				Role:        lecturerRes.User.Role,
+				Name:        lecturerRes.User.Name,
+				Email:       lecturerRes.User.Email,
+				ClassroomID: &lecturerRes.User.ClassroomID,
+			},
+			CodeClassroom:     c.CodeClassroom,
+			TopicTags:         c.TopicTags,
+			Quantity:          c.Quantity,
+			CreatedAt:         c.CreatedAt,
+			UpdatedAt:         c.UpdatedAt,
+			PostsAndExercises: postsAndExercises,
 		})
 	}
 

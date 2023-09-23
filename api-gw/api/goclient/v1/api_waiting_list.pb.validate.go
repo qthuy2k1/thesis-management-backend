@@ -305,18 +305,63 @@ func (m *WaitingListResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetClassroomID() < 1 {
-		err := WaitingListResponseValidationError{
-			field:  "ClassroomID",
-			reason: "value must be greater than or equal to 1",
+	if all {
+		switch v := interface{}(m.GetClassroom()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, WaitingListResponseValidationError{
+					field:  "Classroom",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, WaitingListResponseValidationError{
+					field:  "Classroom",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
 		}
-		if !all {
-			return err
+	} else if v, ok := interface{}(m.GetClassroom()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return WaitingListResponseValidationError{
+				field:  "Classroom",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
 		}
-		errors = append(errors, err)
 	}
 
-	// no validation rules for UserID
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, WaitingListResponseValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, WaitingListResponseValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return WaitingListResponseValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if m.GetCreatedAt() == nil {
 		err := WaitingListResponseValidationError{
@@ -408,6 +453,247 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = WaitingListResponseValidationError{}
+
+// Validate checks the field values on UserWaitingListResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UserWaitingListResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserWaitingListResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UserWaitingListResponseMultiError, or nil if none found.
+func (m *UserWaitingListResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserWaitingListResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if l := utf8.RuneCountInString(m.GetClass()); l < 4 || l > 10 {
+		err := UserWaitingListResponseValidationError{
+			field:  "Class",
+			reason: "value length must be between 4 and 10 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for PhotoSrc
+
+	if _, ok := _UserWaitingListResponse_Role_InLookup[m.GetRole()]; !ok {
+		err := UserWaitingListResponseValidationError{
+			field:  "Role",
+			reason: "value must be in list [teacher student admin]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetName()); l < 2 || l > 200 {
+		err := UserWaitingListResponseValidationError{
+			field:  "Name",
+			reason: "value length must be between 2 and 200 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if err := m._validateEmail(m.GetEmail()); err != nil {
+		err = UserWaitingListResponseValidationError{
+			field:  "Email",
+			reason: "value must be a valid email address",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.Major != nil {
+
+		if utf8.RuneCountInString(m.GetMajor()) < 2 {
+			err := UserWaitingListResponseValidationError{
+				field:  "Major",
+				reason: "value length must be at least 2 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.Phone != nil {
+
+		if l := utf8.RuneCountInString(m.GetPhone()); l < 10 || l > 11 {
+			err := UserWaitingListResponseValidationError{
+				field:  "Phone",
+				reason: "value length must be between 10 and 11 runes, inclusive",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.ClassroomID != nil {
+		// no validation rules for ClassroomID
+	}
+
+	if len(errors) > 0 {
+		return UserWaitingListResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *UserWaitingListResponse) _validateHostname(host string) error {
+	s := strings.ToLower(strings.TrimSuffix(host, "."))
+
+	if len(host) > 253 {
+		return errors.New("hostname cannot exceed 253 characters")
+	}
+
+	for _, part := range strings.Split(s, ".") {
+		if l := len(part); l == 0 || l > 63 {
+			return errors.New("hostname part must be non-empty and cannot exceed 63 characters")
+		}
+
+		if part[0] == '-' {
+			return errors.New("hostname parts cannot begin with hyphens")
+		}
+
+		if part[len(part)-1] == '-' {
+			return errors.New("hostname parts cannot end with hyphens")
+		}
+
+		for _, r := range part {
+			if (r < 'a' || r > 'z') && (r < '0' || r > '9') && r != '-' {
+				return fmt.Errorf("hostname parts can only contain alphanumeric characters or hyphens, got %q", string(r))
+			}
+		}
+	}
+
+	return nil
+}
+
+func (m *UserWaitingListResponse) _validateEmail(addr string) error {
+	a, err := mail.ParseAddress(addr)
+	if err != nil {
+		return err
+	}
+	addr = a.Address
+
+	if len(addr) > 254 {
+		return errors.New("email addresses cannot exceed 254 characters")
+	}
+
+	parts := strings.SplitN(addr, "@", 2)
+
+	if len(parts[0]) > 64 {
+		return errors.New("email address local phrase cannot exceed 64 characters")
+	}
+
+	return m._validateHostname(parts[1])
+}
+
+// UserWaitingListResponseMultiError is an error wrapping multiple validation
+// errors returned by UserWaitingListResponse.ValidateAll() if the designated
+// constraints aren't met.
+type UserWaitingListResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserWaitingListResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserWaitingListResponseMultiError) AllErrors() []error { return m }
+
+// UserWaitingListResponseValidationError is the validation error returned by
+// UserWaitingListResponse.Validate if the designated constraints aren't met.
+type UserWaitingListResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserWaitingListResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserWaitingListResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserWaitingListResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserWaitingListResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserWaitingListResponseValidationError) ErrorName() string {
+	return "UserWaitingListResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UserWaitingListResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserWaitingListResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserWaitingListResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserWaitingListResponseValidationError{}
+
+var _UserWaitingListResponse_Role_InLookup = map[string]struct{}{
+	"teacher": {},
+	"student": {},
+	"admin":   {},
+}
 
 // Validate checks the field values on CreateWaitingListRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -1893,7 +2179,34 @@ func (m *ClassroomWTLResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for LecturerId
+	if all {
+		switch v := interface{}(m.GetLecturer()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ClassroomWTLResponseValidationError{
+					field:  "Lecturer",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ClassroomWTLResponseValidationError{
+					field:  "Lecturer",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetLecturer()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ClassroomWTLResponseValidationError{
+				field:  "Lecturer",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if utf8.RuneCountInString(m.GetCodeClassroom()) < 2 {
 		err := ClassroomWTLResponseValidationError{
@@ -2029,6 +2342,248 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ClassroomWTLResponseValidationError{}
+
+// Validate checks the field values on LecturerWaitingListResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *LecturerWaitingListResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on LecturerWaitingListResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// LecturerWaitingListResponseMultiError, or nil if none found.
+func (m *LecturerWaitingListResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *LecturerWaitingListResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if l := utf8.RuneCountInString(m.GetClass()); l < 4 || l > 10 {
+		err := LecturerWaitingListResponseValidationError{
+			field:  "Class",
+			reason: "value length must be between 4 and 10 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for PhotoSrc
+
+	if _, ok := _LecturerWaitingListResponse_Role_InLookup[m.GetRole()]; !ok {
+		err := LecturerWaitingListResponseValidationError{
+			field:  "Role",
+			reason: "value must be in list [teacher student admin]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetName()); l < 2 || l > 200 {
+		err := LecturerWaitingListResponseValidationError{
+			field:  "Name",
+			reason: "value length must be between 2 and 200 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if err := m._validateEmail(m.GetEmail()); err != nil {
+		err = LecturerWaitingListResponseValidationError{
+			field:  "Email",
+			reason: "value must be a valid email address",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.Major != nil {
+
+		if utf8.RuneCountInString(m.GetMajor()) < 2 {
+			err := LecturerWaitingListResponseValidationError{
+				field:  "Major",
+				reason: "value length must be at least 2 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.Phone != nil {
+
+		if l := utf8.RuneCountInString(m.GetPhone()); l < 10 || l > 11 {
+			err := LecturerWaitingListResponseValidationError{
+				field:  "Phone",
+				reason: "value length must be between 10 and 11 runes, inclusive",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.ClassroomID != nil {
+		// no validation rules for ClassroomID
+	}
+
+	if len(errors) > 0 {
+		return LecturerWaitingListResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *LecturerWaitingListResponse) _validateHostname(host string) error {
+	s := strings.ToLower(strings.TrimSuffix(host, "."))
+
+	if len(host) > 253 {
+		return errors.New("hostname cannot exceed 253 characters")
+	}
+
+	for _, part := range strings.Split(s, ".") {
+		if l := len(part); l == 0 || l > 63 {
+			return errors.New("hostname part must be non-empty and cannot exceed 63 characters")
+		}
+
+		if part[0] == '-' {
+			return errors.New("hostname parts cannot begin with hyphens")
+		}
+
+		if part[len(part)-1] == '-' {
+			return errors.New("hostname parts cannot end with hyphens")
+		}
+
+		for _, r := range part {
+			if (r < 'a' || r > 'z') && (r < '0' || r > '9') && r != '-' {
+				return fmt.Errorf("hostname parts can only contain alphanumeric characters or hyphens, got %q", string(r))
+			}
+		}
+	}
+
+	return nil
+}
+
+func (m *LecturerWaitingListResponse) _validateEmail(addr string) error {
+	a, err := mail.ParseAddress(addr)
+	if err != nil {
+		return err
+	}
+	addr = a.Address
+
+	if len(addr) > 254 {
+		return errors.New("email addresses cannot exceed 254 characters")
+	}
+
+	parts := strings.SplitN(addr, "@", 2)
+
+	if len(parts[0]) > 64 {
+		return errors.New("email address local phrase cannot exceed 64 characters")
+	}
+
+	return m._validateHostname(parts[1])
+}
+
+// LecturerWaitingListResponseMultiError is an error wrapping multiple
+// validation errors returned by LecturerWaitingListResponse.ValidateAll() if
+// the designated constraints aren't met.
+type LecturerWaitingListResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m LecturerWaitingListResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m LecturerWaitingListResponseMultiError) AllErrors() []error { return m }
+
+// LecturerWaitingListResponseValidationError is the validation error returned
+// by LecturerWaitingListResponse.Validate if the designated constraints
+// aren't met.
+type LecturerWaitingListResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e LecturerWaitingListResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e LecturerWaitingListResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e LecturerWaitingListResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e LecturerWaitingListResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e LecturerWaitingListResponseValidationError) ErrorName() string {
+	return "LecturerWaitingListResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e LecturerWaitingListResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sLecturerWaitingListResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = LecturerWaitingListResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = LecturerWaitingListResponseValidationError{}
+
+var _LecturerWaitingListResponse_Role_InLookup = map[string]struct{}{
+	"teacher": {},
+	"student": {},
+	"admin":   {},
+}
 
 // Validate checks the field values on CheckUserInWaitingListClassroomRequest
 // with the rules defined in the proto definition for this message. If any

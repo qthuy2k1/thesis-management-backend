@@ -298,6 +298,38 @@
         }
       }
     },
+    "v1AuthorPostResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "classroomID": {
+          "type": "string"
+        }
+      }
+    },
     "v1CommentPostResponse": {
       "type": "object",
       "properties": {
@@ -305,8 +337,8 @@
           "type": "integer",
           "format": "int32"
         },
-        "userID": {
-          "type": "string"
+        "user": {
+          "$ref": "#/definitions/v1AuthorPostResponse"
         },
         "postID": {
           "type": "integer",
@@ -453,12 +485,11 @@
           "type": "integer",
           "format": "int32"
         },
-        "reportingStageID": {
-          "type": "integer",
-          "format": "int32"
+        "reportingStage": {
+          "$ref": "#/definitions/v1ReportingStagePostResponse"
         },
-        "authorID": {
-          "type": "string"
+        "author": {
+          "$ref": "#/definitions/v1AuthorPostResponse"
         },
         "createdAt": {
           "type": "string",
@@ -467,6 +498,21 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1ReportingStagePostResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
         }
       }
     },

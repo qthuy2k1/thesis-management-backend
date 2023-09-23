@@ -62,13 +62,30 @@ message ClassroomInput {
     int32 quantity = 7 [(validate.rules).int32.gte = 0];
 }
 
+message ReportingStageClassroomResponse {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    string name = 2 [(validate.rules).string = {min_len: 2}];
+    string description = 3 [(validate.rules).string = {min_len: 2}];   
+}
+
+message AuthorClassroomResponse {
+    string id = 1;
+    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
+    optional string classroomID = 9;
+}
 
 message ClassroomResponse {
     int32 id = 1 [(validate.rules).int32.gte = 1];
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string description = 3 [(validate.rules).string = {min_len: 2}];
     string status = 4 [(validate.rules).string = {min_len: 2}];
-    string lecturerId = 5;
+    AuthorClassroomResponse lecturer = 5;
     string codeClassroom = 6 [(validate.rules).string = {min_len: 2}];
     string topicTags = 7 [(validate.rules).string = {min_len: 2}];
     int32 quantity = 8 [(validate.rules).int32.gte = 0];
@@ -85,12 +102,13 @@ message PostsAndExercisesOfClassroom {
     int32 classroomID = 4 [(validate.rules).int32.gte = 1];
     optional google.type.DateTime deadline = 5;
     optional int32 score = 6 [(validate.rules).int32.gte = 0];
-    int32 reportingStageID = 7 [(validate.rules).int32.gte = 1];
-    string authorID = 8;
+    ReportingStageClassroomResponse reportingStage = 7;
+    AuthorClassroomResponse author = 8;
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
     string type = 11 [(validate.rules).string = {in: ["post", "exercise"]}];
 }
+
 
 message CreateClassroomRequest {
    ClassroomInput classroom = 1 [(validate.rules).message = {required: true}];
