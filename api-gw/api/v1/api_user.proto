@@ -53,17 +53,12 @@ service UserService {
         };
     }
 
-    // rpc Login(LoginRequest) returns (LoginResponse) {
-    //     option (google.api.http) = {
-    //         post: "/api/login"
-    //     };
-    // }
-
     rpc CheckStatusUserJoinClassroom(CheckStatusUserJoinClassroomRequest) returns (CheckStatusUserJoinClassroomResponse) {
         option (google.api.http) = {
             get: "/api/user/{id}/classroom-status"
         };
     }
+
 }
 
 message CommonUserResponse {

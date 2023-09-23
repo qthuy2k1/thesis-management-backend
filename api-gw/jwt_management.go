@@ -18,6 +18,7 @@ type UserClaims struct {
 	jwt.StandardClaims
 	Email string `json:"email"`
 	Role  string `json:"role"`
+	ID    string `json:"id"`
 }
 
 // NewJWTManager returns a new JWT manager

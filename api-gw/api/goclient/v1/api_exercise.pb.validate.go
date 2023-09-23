@@ -451,18 +451,63 @@ func (m *ExerciseResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetReportingStageID() < 1 {
-		err := ExerciseResponseValidationError{
-			field:  "ReportingStageID",
-			reason: "value must be greater than or equal to 1",
+	if all {
+		switch v := interface{}(m.GetReportingStage()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "ReportingStage",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "ReportingStage",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
 		}
-		if !all {
-			return err
+	} else if v, ok := interface{}(m.GetReportingStage()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseResponseValidationError{
+				field:  "ReportingStage",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
 		}
-		errors = append(errors, err)
 	}
 
-	// no validation rules for AuthorID
+	if all {
+		switch v := interface{}(m.GetAuthor()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "Author",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "Author",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetAuthor()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseResponseValidationError{
+				field:  "Author",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if m.GetCreatedAt() == nil {
 		err := ExerciseResponseValidationError{
@@ -563,6 +608,383 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ExerciseResponseValidationError{}
+
+// Validate checks the field values on ReportingStageExerciseResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ReportingStageExerciseResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ReportingStageExerciseResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ReportingStageExerciseResponseMultiError, or nil if none found.
+func (m *ReportingStageExerciseResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ReportingStageExerciseResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetId() < 1 {
+		err := ReportingStageExerciseResponseValidationError{
+			field:  "Id",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetName()) < 2 {
+		err := ReportingStageExerciseResponseValidationError{
+			field:  "Name",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetDescription()) < 2 {
+		err := ReportingStageExerciseResponseValidationError{
+			field:  "Description",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return ReportingStageExerciseResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ReportingStageExerciseResponseMultiError is an error wrapping multiple
+// validation errors returned by ReportingStageExerciseResponse.ValidateAll()
+// if the designated constraints aren't met.
+type ReportingStageExerciseResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ReportingStageExerciseResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ReportingStageExerciseResponseMultiError) AllErrors() []error { return m }
+
+// ReportingStageExerciseResponseValidationError is the validation error
+// returned by ReportingStageExerciseResponse.Validate if the designated
+// constraints aren't met.
+type ReportingStageExerciseResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ReportingStageExerciseResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ReportingStageExerciseResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ReportingStageExerciseResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ReportingStageExerciseResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ReportingStageExerciseResponseValidationError) ErrorName() string {
+	return "ReportingStageExerciseResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ReportingStageExerciseResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReportingStageExerciseResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ReportingStageExerciseResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ReportingStageExerciseResponseValidationError{}
+
+// Validate checks the field values on AuthorExerciseResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AuthorExerciseResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AuthorExerciseResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AuthorExerciseResponseMultiError, or nil if none found.
+func (m *AuthorExerciseResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthorExerciseResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if l := utf8.RuneCountInString(m.GetClass()); l < 4 || l > 10 {
+		err := AuthorExerciseResponseValidationError{
+			field:  "Class",
+			reason: "value length must be between 4 and 10 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for PhotoSrc
+
+	if _, ok := _AuthorExerciseResponse_Role_InLookup[m.GetRole()]; !ok {
+		err := AuthorExerciseResponseValidationError{
+			field:  "Role",
+			reason: "value must be in list [teacher student admin]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetName()); l < 2 || l > 200 {
+		err := AuthorExerciseResponseValidationError{
+			field:  "Name",
+			reason: "value length must be between 2 and 200 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if err := m._validateEmail(m.GetEmail()); err != nil {
+		err = AuthorExerciseResponseValidationError{
+			field:  "Email",
+			reason: "value must be a valid email address",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.Major != nil {
+
+		if utf8.RuneCountInString(m.GetMajor()) < 2 {
+			err := AuthorExerciseResponseValidationError{
+				field:  "Major",
+				reason: "value length must be at least 2 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.Phone != nil {
+
+		if l := utf8.RuneCountInString(m.GetPhone()); l < 10 || l > 11 {
+			err := AuthorExerciseResponseValidationError{
+				field:  "Phone",
+				reason: "value length must be between 10 and 11 runes, inclusive",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.ClassroomID != nil {
+		// no validation rules for ClassroomID
+	}
+
+	if len(errors) > 0 {
+		return AuthorExerciseResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *AuthorExerciseResponse) _validateHostname(host string) error {
+	s := strings.ToLower(strings.TrimSuffix(host, "."))
+
+	if len(host) > 253 {
+		return errors.New("hostname cannot exceed 253 characters")
+	}
+
+	for _, part := range strings.Split(s, ".") {
+		if l := len(part); l == 0 || l > 63 {
+			return errors.New("hostname part must be non-empty and cannot exceed 63 characters")
+		}
+
+		if part[0] == '-' {
+			return errors.New("hostname parts cannot begin with hyphens")
+		}
+
+		if part[len(part)-1] == '-' {
+			return errors.New("hostname parts cannot end with hyphens")
+		}
+
+		for _, r := range part {
+			if (r < 'a' || r > 'z') && (r < '0' || r > '9') && r != '-' {
+				return fmt.Errorf("hostname parts can only contain alphanumeric characters or hyphens, got %q", string(r))
+			}
+		}
+	}
+
+	return nil
+}
+
+func (m *AuthorExerciseResponse) _validateEmail(addr string) error {
+	a, err := mail.ParseAddress(addr)
+	if err != nil {
+		return err
+	}
+	addr = a.Address
+
+	if len(addr) > 254 {
+		return errors.New("email addresses cannot exceed 254 characters")
+	}
+
+	parts := strings.SplitN(addr, "@", 2)
+
+	if len(parts[0]) > 64 {
+		return errors.New("email address local phrase cannot exceed 64 characters")
+	}
+
+	return m._validateHostname(parts[1])
+}
+
+// AuthorExerciseResponseMultiError is an error wrapping multiple validation
+// errors returned by AuthorExerciseResponse.ValidateAll() if the designated
+// constraints aren't met.
+type AuthorExerciseResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthorExerciseResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthorExerciseResponseMultiError) AllErrors() []error { return m }
+
+// AuthorExerciseResponseValidationError is the validation error returned by
+// AuthorExerciseResponse.Validate if the designated constraints aren't met.
+type AuthorExerciseResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthorExerciseResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AuthorExerciseResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AuthorExerciseResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AuthorExerciseResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AuthorExerciseResponseValidationError) ErrorName() string {
+	return "AuthorExerciseResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthorExerciseResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthorExerciseResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthorExerciseResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthorExerciseResponseValidationError{}
+
+var _AuthorExerciseResponse_Role_InLookup = map[string]struct{}{
+	"teacher": {},
+	"student": {},
+	"admin":   {},
+}
 
 // Validate checks the field values on CreateExerciseRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -872,7 +1294,34 @@ func (m *CommentExerciseResponse) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for UserID
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CommentExerciseResponseValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CommentExerciseResponseValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CommentExerciseResponseValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	// no validation rules for ExerciseID
 

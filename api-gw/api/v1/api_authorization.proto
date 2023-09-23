@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package api.authorization.v1;
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/authorization/api/v1";
+
+service AuthorizationService {}

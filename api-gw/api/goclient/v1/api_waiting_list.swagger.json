@@ -269,8 +269,8 @@
         "status": {
           "type": "string"
         },
-        "lecturerId": {
-          "type": "string"
+        "lecturer": {
+          "$ref": "#/definitions/v1LecturerWaitingListResponse"
         },
         "codeClassroom": {
           "type": "string"
@@ -354,11 +354,75 @@
         }
       }
     },
+    "v1LecturerWaitingListResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "classroomID": {
+          "type": "string"
+        }
+      }
+    },
     "v1UpdateWaitingListResponse": {
       "type": "object",
       "properties": {
         "response": {
           "$ref": "#/definitions/v1CommonWaitingListResponse"
+        }
+      }
+    },
+    "v1UserWaitingListResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "classroomID": {
+          "type": "string"
         }
       }
     },
@@ -382,12 +446,11 @@
           "type": "integer",
           "format": "int32"
         },
-        "classroomID": {
-          "type": "integer",
-          "format": "int32"
+        "classroom": {
+          "$ref": "#/definitions/v1ClassroomWTLResponse"
         },
-        "userID": {
-          "type": "string"
+        "user": {
+          "$ref": "#/definitions/v1UserWaitingListResponse"
         },
         "createdAt": {
           "type": "string",

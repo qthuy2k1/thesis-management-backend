@@ -95,16 +95,65 @@ func (u *waitingListServiceGW) GetWaitingList(ctx context.Context, req *pb.GetWa
 		return nil, err
 	}
 
+	clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
+		Id: res.WaitingList.ClassroomID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: res.WaitingList.UserID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: clrRes.Classroom.LecturerId,
+	})
+
 	return &pb.GetWaitingListResponse{
 		Response: &pb.CommonWaitingListResponse{
 			StatusCode: res.GetResponse().StatusCode,
 			Message:    res.GetResponse().Message,
 		},
 		WaitingList: &pb.WaitingListResponse{
-			Id:          res.GetWaitingList().Id,
-			ClassroomID: res.GetWaitingList().GetClassroomID(),
-			UserID:      res.GetWaitingList().GetUserID(),
-			CreatedAt:   res.GetWaitingList().GetCreatedAt(),
+			Id: res.GetWaitingList().Id,
+			Classroom: &pb.ClassroomWTLResponse{
+				Id:          clrRes.Classroom.Id,
+				Title:       clrRes.Classroom.Title,
+				Description: clrRes.Classroom.Description,
+				Status:      clrRes.Classroom.Status,
+				Lecturer: &pb.LecturerWaitingListResponse{
+					Id:          lecturerRes.User.Id,
+					Class:       lecturerRes.User.Class,
+					Major:       lecturerRes.User.Major,
+					Phone:       lecturerRes.User.Phone,
+					PhotoSrc:    lecturerRes.User.PhotoSrc,
+					Role:        lecturerRes.User.Role,
+					Name:        lecturerRes.User.Name,
+					Email:       lecturerRes.User.Email,
+					ClassroomID: &lecturerRes.User.ClassroomID,
+				},
+				CodeClassroom: clrRes.Classroom.CodeClassroom,
+				TopicTags:     clrRes.Classroom.TopicTags,
+				Quantity:      clrRes.Classroom.Quantity,
+				CreatedAt:     clrRes.Classroom.CreatedAt,
+				UpdatedAt:     clrRes.Classroom.UpdatedAt,
+			},
+			User: &pb.UserWaitingListResponse{
+				Id:          userRes.User.Id,
+				Class:       userRes.User.Class,
+				Major:       userRes.User.Major,
+				Phone:       userRes.User.Phone,
+				PhotoSrc:    userRes.User.PhotoSrc,
+				Role:        userRes.User.Role,
+				Name:        userRes.User.Name,
+				Email:       userRes.User.Email,
+				ClassroomID: &userRes.User.ClassroomID,
+			},
+			CreatedAt: res.GetWaitingList().GetCreatedAt(),
 		},
 	}, nil
 }
@@ -250,11 +299,60 @@ func (u *waitingListServiceGW) GetWaitingListsOfClassroom(ctx context.Context, r
 
 	var waitingLists []*pb.WaitingListResponse
 	for _, p := range res.GetWaitingLists() {
+		clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
+			Id: p.ClassroomID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: p.UserID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: clrRes.Classroom.LecturerId,
+		})
+
 		waitingLists = append(waitingLists, &pb.WaitingListResponse{
-			Id:          p.Id,
-			ClassroomID: p.GetClassroomID(),
-			UserID:      p.GetUserID(),
-			CreatedAt:   p.GetCreatedAt(),
+			Id: p.Id,
+			Classroom: &pb.ClassroomWTLResponse{
+				Id:          clrRes.Classroom.Id,
+				Title:       clrRes.Classroom.Title,
+				Description: clrRes.Classroom.Description,
+				Status:      clrRes.Classroom.Status,
+				Lecturer: &pb.LecturerWaitingListResponse{
+					Id:          lecturerRes.User.Id,
+					Class:       lecturerRes.User.Class,
+					Major:       lecturerRes.User.Major,
+					Phone:       lecturerRes.User.Phone,
+					PhotoSrc:    lecturerRes.User.PhotoSrc,
+					Role:        lecturerRes.User.Role,
+					Name:        lecturerRes.User.Name,
+					Email:       lecturerRes.User.Email,
+					ClassroomID: &lecturerRes.User.ClassroomID,
+				},
+				CodeClassroom: clrRes.Classroom.CodeClassroom,
+				TopicTags:     clrRes.Classroom.TopicTags,
+				Quantity:      clrRes.Classroom.Quantity,
+				CreatedAt:     clrRes.Classroom.CreatedAt,
+				UpdatedAt:     clrRes.Classroom.UpdatedAt,
+			},
+			User: &pb.UserWaitingListResponse{
+				Id:          userRes.User.Id,
+				Class:       userRes.User.Class,
+				Major:       userRes.User.Major,
+				Phone:       userRes.User.Phone,
+				PhotoSrc:    userRes.User.PhotoSrc,
+				Role:        userRes.User.Role,
+				Name:        userRes.User.Name,
+				Email:       userRes.User.Email,
+				ClassroomID: &userRes.User.ClassroomID,
+			},
+			CreatedAt: p.GetCreatedAt(),
 		})
 	}
 
@@ -283,14 +381,28 @@ func (u *waitingListServiceGW) CheckUserInWaitingListClassroom(ctx context.Conte
 			return nil, err
 		}
 
+		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: clrRes.Classroom.LecturerId,
+		})
+
 		return &pb.CheckUserInWaitingListClassroomResponse{
 			Status: "WAITING",
 			Classroom: &pb.ClassroomWTLResponse{
-				Id:            clrRes.GetClassroom().GetId(),
-				Title:         clrRes.GetClassroom().GetTitle(),
-				Description:   clrRes.GetClassroom().GetDescription(),
-				Status:        clrRes.GetClassroom().GetStatus(),
-				LecturerId:    clrRes.GetClassroom().GetLecturerId(),
+				Id:          clrRes.GetClassroom().GetId(),
+				Title:       clrRes.GetClassroom().GetTitle(),
+				Description: clrRes.GetClassroom().GetDescription(),
+				Status:      clrRes.GetClassroom().GetStatus(),
+				Lecturer: &pb.LecturerWaitingListResponse{
+					Id:          lecturerRes.User.Id,
+					Class:       lecturerRes.User.Class,
+					Major:       lecturerRes.User.Major,
+					Phone:       lecturerRes.User.Phone,
+					PhotoSrc:    lecturerRes.User.PhotoSrc,
+					Role:        lecturerRes.User.Role,
+					Name:        lecturerRes.User.Name,
+					Email:       lecturerRes.User.Email,
+					ClassroomID: &lecturerRes.User.ClassroomID,
+				},
 				CodeClassroom: clrRes.GetClassroom().GetCodeClassroom(),
 				TopicTags:     clrRes.GetClassroom().GetTopicTags(),
 				Quantity:      clrRes.GetClassroom().GetQuantity(),

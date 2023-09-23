@@ -361,6 +361,38 @@
       },
       "description": "Represents a time zone from the\n[IANA Time Zone Database](https://www.iana.org/time-zones)."
     },
+    "v1AuthorExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "classroomID": {
+          "type": "string"
+        }
+      }
+    },
     "v1CommentExerciseResponse": {
       "type": "object",
       "properties": {
@@ -368,8 +400,8 @@
           "type": "integer",
           "format": "int32"
         },
-        "userID": {
-          "type": "string"
+        "user": {
+          "$ref": "#/definitions/v1AuthorExerciseResponse"
         },
         "exerciseID": {
           "type": "integer",
@@ -474,12 +506,11 @@
           "type": "integer",
           "format": "int32"
         },
-        "reportingStageID": {
-          "type": "integer",
-          "format": "int32"
+        "reportingStage": {
+          "$ref": "#/definitions/v1ReportingStageExerciseResponse"
         },
-        "authorID": {
-          "type": "string"
+        "author": {
+          "$ref": "#/definitions/v1AuthorExerciseResponse"
         },
         "createdAt": {
           "type": "string",
@@ -544,6 +575,21 @@
             "type": "object",
             "$ref": "#/definitions/v1ExerciseResponse"
           }
+        }
+      }
+    },
+    "v1ReportingStageExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
         }
       }
     },

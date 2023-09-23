@@ -11,7 +11,7 @@ type IUserRepo interface {
 	// GetUser returns a user in db given by id
 	GetUser(ctx context.Context, id string) (UserOutputRepo, error)
 	// CheckUserExists checks whether the specified user exists by name
-	IsUserExists(ctx context.Context, email string) (bool, error)
+	IsUserExists(ctx context.Context, email, id string) (bool, error)
 	// UpdateUser updates the specified user by id
 	UpdateUser(ctx context.Context, id string, user UserInputRepo) error
 	// DeleteUser deletes a classroom in db given by id

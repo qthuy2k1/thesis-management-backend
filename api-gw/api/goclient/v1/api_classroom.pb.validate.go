@@ -327,6 +327,383 @@ var _ interface {
 	ErrorName() string
 } = ClassroomInputValidationError{}
 
+// Validate checks the field values on ReportingStageClassroomResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ReportingStageClassroomResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ReportingStageClassroomResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ReportingStageClassroomResponseMultiError, or nil if none found.
+func (m *ReportingStageClassroomResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ReportingStageClassroomResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetId() < 1 {
+		err := ReportingStageClassroomResponseValidationError{
+			field:  "Id",
+			reason: "value must be greater than or equal to 1",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetName()) < 2 {
+		err := ReportingStageClassroomResponseValidationError{
+			field:  "Name",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetDescription()) < 2 {
+		err := ReportingStageClassroomResponseValidationError{
+			field:  "Description",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return ReportingStageClassroomResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ReportingStageClassroomResponseMultiError is an error wrapping multiple
+// validation errors returned by ReportingStageClassroomResponse.ValidateAll()
+// if the designated constraints aren't met.
+type ReportingStageClassroomResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ReportingStageClassroomResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ReportingStageClassroomResponseMultiError) AllErrors() []error { return m }
+
+// ReportingStageClassroomResponseValidationError is the validation error
+// returned by ReportingStageClassroomResponse.Validate if the designated
+// constraints aren't met.
+type ReportingStageClassroomResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ReportingStageClassroomResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ReportingStageClassroomResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ReportingStageClassroomResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ReportingStageClassroomResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ReportingStageClassroomResponseValidationError) ErrorName() string {
+	return "ReportingStageClassroomResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ReportingStageClassroomResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReportingStageClassroomResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ReportingStageClassroomResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ReportingStageClassroomResponseValidationError{}
+
+// Validate checks the field values on AuthorClassroomResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AuthorClassroomResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AuthorClassroomResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AuthorClassroomResponseMultiError, or nil if none found.
+func (m *AuthorClassroomResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthorClassroomResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if l := utf8.RuneCountInString(m.GetClass()); l < 4 || l > 10 {
+		err := AuthorClassroomResponseValidationError{
+			field:  "Class",
+			reason: "value length must be between 4 and 10 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for PhotoSrc
+
+	if _, ok := _AuthorClassroomResponse_Role_InLookup[m.GetRole()]; !ok {
+		err := AuthorClassroomResponseValidationError{
+			field:  "Role",
+			reason: "value must be in list [teacher student admin]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetName()); l < 2 || l > 200 {
+		err := AuthorClassroomResponseValidationError{
+			field:  "Name",
+			reason: "value length must be between 2 and 200 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if err := m._validateEmail(m.GetEmail()); err != nil {
+		err = AuthorClassroomResponseValidationError{
+			field:  "Email",
+			reason: "value must be a valid email address",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.Major != nil {
+
+		if utf8.RuneCountInString(m.GetMajor()) < 2 {
+			err := AuthorClassroomResponseValidationError{
+				field:  "Major",
+				reason: "value length must be at least 2 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.Phone != nil {
+
+		if l := utf8.RuneCountInString(m.GetPhone()); l < 10 || l > 11 {
+			err := AuthorClassroomResponseValidationError{
+				field:  "Phone",
+				reason: "value length must be between 10 and 11 runes, inclusive",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.ClassroomID != nil {
+		// no validation rules for ClassroomID
+	}
+
+	if len(errors) > 0 {
+		return AuthorClassroomResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *AuthorClassroomResponse) _validateHostname(host string) error {
+	s := strings.ToLower(strings.TrimSuffix(host, "."))
+
+	if len(host) > 253 {
+		return errors.New("hostname cannot exceed 253 characters")
+	}
+
+	for _, part := range strings.Split(s, ".") {
+		if l := len(part); l == 0 || l > 63 {
+			return errors.New("hostname part must be non-empty and cannot exceed 63 characters")
+		}
+
+		if part[0] == '-' {
+			return errors.New("hostname parts cannot begin with hyphens")
+		}
+
+		if part[len(part)-1] == '-' {
+			return errors.New("hostname parts cannot end with hyphens")
+		}
+
+		for _, r := range part {
+			if (r < 'a' || r > 'z') && (r < '0' || r > '9') && r != '-' {
+				return fmt.Errorf("hostname parts can only contain alphanumeric characters or hyphens, got %q", string(r))
+			}
+		}
+	}
+
+	return nil
+}
+
+func (m *AuthorClassroomResponse) _validateEmail(addr string) error {
+	a, err := mail.ParseAddress(addr)
+	if err != nil {
+		return err
+	}
+	addr = a.Address
+
+	if len(addr) > 254 {
+		return errors.New("email addresses cannot exceed 254 characters")
+	}
+
+	parts := strings.SplitN(addr, "@", 2)
+
+	if len(parts[0]) > 64 {
+		return errors.New("email address local phrase cannot exceed 64 characters")
+	}
+
+	return m._validateHostname(parts[1])
+}
+
+// AuthorClassroomResponseMultiError is an error wrapping multiple validation
+// errors returned by AuthorClassroomResponse.ValidateAll() if the designated
+// constraints aren't met.
+type AuthorClassroomResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthorClassroomResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthorClassroomResponseMultiError) AllErrors() []error { return m }
+
+// AuthorClassroomResponseValidationError is the validation error returned by
+// AuthorClassroomResponse.Validate if the designated constraints aren't met.
+type AuthorClassroomResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthorClassroomResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AuthorClassroomResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AuthorClassroomResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AuthorClassroomResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AuthorClassroomResponseValidationError) ErrorName() string {
+	return "AuthorClassroomResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthorClassroomResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthorClassroomResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthorClassroomResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthorClassroomResponseValidationError{}
+
+var _AuthorClassroomResponse_Role_InLookup = map[string]struct{}{
+	"teacher": {},
+	"student": {},
+	"admin":   {},
+}
+
 // Validate checks the field values on ClassroomResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, the
 // first error encountered is returned, or nil if there are no violations.
@@ -393,7 +770,34 @@ func (m *ClassroomResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for LecturerId
+	if all {
+		switch v := interface{}(m.GetLecturer()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ClassroomResponseValidationError{
+					field:  "Lecturer",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ClassroomResponseValidationError{
+					field:  "Lecturer",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetLecturer()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ClassroomResponseValidationError{
+				field:  "Lecturer",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if utf8.RuneCountInString(m.GetCodeClassroom()) < 2 {
 		err := ClassroomResponseValidationError{
@@ -630,18 +1034,63 @@ func (m *PostsAndExercisesOfClassroom) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetReportingStageID() < 1 {
-		err := PostsAndExercisesOfClassroomValidationError{
-			field:  "ReportingStageID",
-			reason: "value must be greater than or equal to 1",
+	if all {
+		switch v := interface{}(m.GetReportingStage()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, PostsAndExercisesOfClassroomValidationError{
+					field:  "ReportingStage",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, PostsAndExercisesOfClassroomValidationError{
+					field:  "ReportingStage",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
 		}
-		if !all {
-			return err
+	} else if v, ok := interface{}(m.GetReportingStage()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return PostsAndExercisesOfClassroomValidationError{
+				field:  "ReportingStage",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
 		}
-		errors = append(errors, err)
 	}
 
-	// no validation rules for AuthorID
+	if all {
+		switch v := interface{}(m.GetAuthor()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, PostsAndExercisesOfClassroomValidationError{
+					field:  "Author",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, PostsAndExercisesOfClassroomValidationError{
+					field:  "Author",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetAuthor()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return PostsAndExercisesOfClassroomValidationError{
+				field:  "Author",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if m.GetCreatedAt() == nil {
 		err := PostsAndExercisesOfClassroomValidationError{

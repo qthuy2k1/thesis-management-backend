@@ -68,10 +68,28 @@ message PostResponse {
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string content = 3 [(validate.rules).string = {min_len: 2}];
     int32 classroomID = 4 [(validate.rules).int32.gte = 1];
-    int32 reportingStageID = 5 [(validate.rules).int32.gte = 1];
-    string authorID = 6;
+    ReportingStagePostResponse reportingStage = 5;
+    AuthorPostResponse author = 6;
     google.protobuf.Timestamp createdAt = 7 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 8 [(validate.rules).timestamp.required = true];
+}
+
+message ReportingStagePostResponse {
+    int32 id = 1 [(validate.rules).int32.gte = 1];
+    string name = 2 [(validate.rules).string = {min_len: 2}];
+    string description = 3 [(validate.rules).string = {min_len: 2}];   
+}
+
+message AuthorPostResponse {
+    string id = 1;
+    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
+    optional string classroomID = 9;
 }
 
 message CreatePostRequest {
@@ -84,7 +102,7 @@ message CreatePostResponse {
 
 message CommentPostResponse {
     int32 id = 1;
-    string userID = 2;
+    AuthorPostResponse user = 2;
     int32 postID = 3;
     string content = 4;
     google.protobuf.Timestamp created_at = 5;
