@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"log"
-	"strconv"
 
 	userpb "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 	service "github.com/qthuy2k1/thesis-management-backend/user-svc/internal/service"
@@ -47,6 +46,8 @@ func (h *UserHdl) GetUser(ctx context.Context, req *userpb.GetUserRequest) (*use
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
+	classroomID := int64(*u.ClassroomID)
+
 	pResp := userpb.UserResponse{
 		Id:          u.ID,
 		Class:       u.Class,
@@ -56,7 +57,7 @@ func (h *UserHdl) GetUser(ctx context.Context, req *userpb.GetUserRequest) (*use
 		Role:        u.Role,
 		Name:        u.Name,
 		Email:       u.Email,
-		ClassroomID: strconv.Itoa(*u.ClassroomID),
+		ClassroomID: classroomID,
 	}
 
 	resp := &userpb.GetUserResponse{
@@ -140,6 +141,7 @@ func (h *UserHdl) GetUsers(ctx context.Context, req *userpb.GetUsersRequest) (*u
 
 	var psResp []*userpb.UserResponse
 	for _, u := range ps {
+		classroomID := int64(*u.ClassroomID)
 		psResp = append(psResp, &userpb.UserResponse{
 			Id:          u.ID,
 			Class:       u.Class,
@@ -149,7 +151,7 @@ func (h *UserHdl) GetUsers(ctx context.Context, req *userpb.GetUsersRequest) (*u
 			Role:        u.Role,
 			Name:        u.Name,
 			Email:       u.Email,
-			ClassroomID: strconv.Itoa(*u.ClassroomID),
+			ClassroomID: classroomID,
 		})
 	}
 
@@ -159,7 +161,7 @@ func (h *UserHdl) GetUsers(ctx context.Context, req *userpb.GetUsersRequest) (*u
 			Message:    "Success",
 		},
 		Users:      psResp,
-		TotalCount: int32(count),
+		TotalCount: int64(count),
 	}, nil
 }
 
@@ -178,6 +180,7 @@ func (h *UserHdl) GetAllUsersOfClassroom(ctx context.Context, req *userpb.GetAll
 
 	var psResp []*userpb.UserResponse
 	for _, u := range ps {
+		classroomID := int64(*u.ClassroomID)
 		psResp = append(psResp, &userpb.UserResponse{
 			Id:          u.ID,
 			Class:       u.Class,
@@ -187,7 +190,7 @@ func (h *UserHdl) GetAllUsersOfClassroom(ctx context.Context, req *userpb.GetAll
 			Role:        u.Role,
 			Name:        u.Name,
 			Email:       u.Email,
-			ClassroomID: strconv.Itoa(*u.ClassroomID),
+			ClassroomID: classroomID,
 		})
 	}
 
@@ -197,7 +200,7 @@ func (h *UserHdl) GetAllUsersOfClassroom(ctx context.Context, req *userpb.GetAll
 			Message:    "Success",
 		},
 		Users:      psResp,
-		TotalCount: int32(count),
+		TotalCount: int64(count),
 	}, nil
 }
 
@@ -207,12 +210,8 @@ func validateAndConvertUser(pbUser *userpb.UserInput) (service.UserInputSvc, err
 	}
 
 	classroomID := 0
-	if pbUser.ClassroomID != nil && *pbUser.ClassroomID != "" {
-		c, err := strconv.Atoi(*pbUser.ClassroomID)
-		if err != nil {
-			return service.UserInputSvc{}, err
-		}
-		classroomID = c
+	if pbUser.ClassroomID != nil && *pbUser.ClassroomID != 0 {
+		classroomID = int(*pbUser.ClassroomID)
 	}
 
 	return service.UserInputSvc{

@@ -50,7 +50,7 @@ service ExerciseService {
 }
 
 message CommonExerciseResponse {
-    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    int64 statusCode = 1 [(validate.rules).int64.gte = 1];
     string message = 2 [(validate.rules).string = {min_len: 2}];
 }
 
@@ -59,20 +59,32 @@ message CommonExerciseResponse {
 message ExerciseInput {
     string title = 1 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string content = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
-    int32 classroomID = 3 [(validate.rules).int32.gte = 1];
+    int64 classroomID = 3 [(validate.rules).int64.gte = 1];
     google.type.DateTime deadline = 4;
-    int32 score = 5 [(validate.rules).int32.gte = 0];
-    int32 reportingStageID = 6 [(validate.rules).int32.gte = 1];
+    int64 score = 5 [(validate.rules).int64.gte = 0];
+    int64 reportingStageID = 6 [(validate.rules).int64.gte = 1];
     string authorID = 7;
+    SubmissionExerciseInput submission = 8;
+    repeated AttachmentExerciseInput attachments = 9;
+}
+
+message SubmissionExerciseInput {
+    google.type.DateTime submission_date = 1;
+    string status = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+message AttachmentExerciseInput {
+    string fileURL = 1;
+    string status = 2;
 }
 
 message ExerciseResponse {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string content = 3 [(validate.rules).string = {min_len: 2}];
-    int32 classroomID = 4 [(validate.rules).int32.gte = 1];
+    int64 classroomID = 4 [(validate.rules).int64.gte = 1];
     google.type.DateTime deadline = 5;
-    int32 score = 6 [(validate.rules).int32.gte = 0];
+    int64 score = 6 [(validate.rules).int64.gte = 0];
     ReportingStageExerciseResponse reportingStage = 7;
     AuthorExerciseResponse author = 8;
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
@@ -80,7 +92,7 @@ message ExerciseResponse {
 }
 
 message ReportingStageExerciseResponse {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     string name = 2 [(validate.rules).string = {min_len: 2}];
     string description = 3 [(validate.rules).string = {min_len: 2}];   
 }
@@ -94,7 +106,7 @@ message AuthorExerciseResponse {
     string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    optional string classroomID = 9;
+    optional int64 classroomID = 9;
 }
 
 message CreateExerciseRequest {
@@ -106,16 +118,16 @@ message CreateExerciseResponse {
 }
 
 message CommentExerciseResponse {
-    int32 id = 1;
+    int64 id = 1;
     AuthorExerciseResponse user = 2;
-    int32 exerciseID = 3;
+    int64 exerciseID = 3;
     string content = 4;
     google.protobuf.Timestamp created_at = 5;
 }
 
 // ====== GET ======
 message GetExerciseRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
 }
 
 message GetExerciseResponse {
@@ -126,7 +138,7 @@ message GetExerciseResponse {
 
 // ====== PUT ======
 message UpdateExerciseRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     ExerciseInput exercise = 2 [(validate.rules).message = {required: true}];
 }
 
@@ -136,7 +148,7 @@ message UpdateExerciseResponse {
 
 // ====== DELETE ======
 message DeleteExerciseRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
 }
 
 message DeleteExerciseResponse {
@@ -146,8 +158,8 @@ message DeleteExerciseResponse {
 
 // ====== GET ALL ======
 message GetExercisesRequest {
-    int32 page = 1;
-    int32 limit = 2;
+    int64 page = 1;
+    int64 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
     bool isDesc = 5;
@@ -155,22 +167,22 @@ message GetExercisesRequest {
 
 message GetExercisesResponse {
     CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
-    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
     repeated ExerciseResponse exercises = 3;
 }
 
 // ====== GET ALL OF CLASSROOM ======
 message GetAllExercisesOfClassroomRequest {
-    int32 page = 1;
-    int32 limit = 2;
+    int64 page = 1;
+    int64 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
     bool isDesc = 5;
-    int32 classroomID = 6 [(validate.rules).int32.gte = 1];
+    int64 classroomID = 6 [(validate.rules).int64.gte = 1];
 }
 
 message GetAllExercisesOfClassroomResponse {
     CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
-    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
     repeated ExerciseResponse exercises = 3;
 }

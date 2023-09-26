@@ -5,10 +5,12 @@ import (
 	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
+	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
+	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
@@ -19,15 +21,19 @@ type exerciseServiceGW struct {
 	reportingStageClient rpsSvcV1.ReportingStageServiceClient
 	commentClient        commentSvcV1.CommentServiceClient
 	userClient           userSvcV1.UserServiceClient
+	submissionClient     submissionSvcV1.SubmissionServiceClient
+	attachmentClient     attachmentSvcV1.AttachmentServiceClient
 }
 
-func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportStageClient rpsSvcV1.ReportingStageServiceClient, commentClient commentSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient) *exerciseServiceGW {
+func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportStageClient rpsSvcV1.ReportingStageServiceClient, commentClient commentSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient, submissionClient submissionSvcV1.SubmissionServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient) *exerciseServiceGW {
 	return &exerciseServiceGW{
 		exerciseClient:       exerciseClient,
 		classroomClient:      classroomClient,
 		reportingStageClient: reportStageClient,
 		commentClient:        commentClient,
 		userClient:           userClient,
+		submissionClient:     submissionClient,
+		attachmentClient:     attachmentClient,
 	}
 }
 
@@ -76,6 +82,85 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	submissionRes, err := u.submissionClient.CreateSubmission(ctx, &submissionSvcV1.CreateSubmissionRequest{
+		Submission: &submissionSvcV1.SubmissionInput{
+			UserID:         req.GetExercise().GetAuthorID(),
+			ExerciseID:     res.GetExerciseID(),
+			SubmissionDate: req.GetExercise().GetSubmission().GetSubmissionDate(),
+			Status:         req.GetExercise().GetSubmission().GetStatus(),
+		},
+	})
+	if err != nil {
+		if _, err := u.exerciseClient.DeleteExercise(ctx, &exerciseSvcV1.DeleteExerciseRequest{
+			Id: res.GetExerciseID(),
+		}); err != nil {
+			return nil, err
+		}
+		return nil, err
+	}
+
+	if submissionRes.Response.GetStatusCode() != 201 {
+		if _, err := u.exerciseClient.DeleteExercise(ctx, &exerciseSvcV1.DeleteExerciseRequest{
+			Id: res.GetExerciseID(),
+		}); err != nil {
+			return nil, err
+		}
+
+		return &pb.CreateExerciseResponse{
+			Response: &pb.CommonExerciseResponse{
+				StatusCode: submissionRes.GetResponse().GetStatusCode(),
+				Message:    submissionRes.GetResponse().GetMessage(),
+			},
+		}, nil
+	}
+	for _, a := range req.GetExercise().GetAttachments() {
+		attachmentRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
+			Attachment: &attachmentSvcV1.AttachmentInput{
+				FileURL:      a.FileURL,
+				Status:       a.Status,
+				SubmissionID: submissionRes.GetSubmissionID(),
+				ExerciseID:   res.ExerciseID,
+				AuthorID:     req.GetExercise().GetAuthorID(),
+			},
+		})
+		if err != nil {
+			if _, errExercise := u.exerciseClient.DeleteExercise(ctx, &exerciseSvcV1.DeleteExerciseRequest{
+				Id: res.GetExerciseID(),
+			}); err != nil {
+				return nil, errExercise
+			}
+
+			if _, errSubmission := u.submissionClient.DeleteSubmission(ctx, &submissionSvcV1.DeleteSubmissionRequest{
+				Id: submissionRes.GetSubmissionID(),
+			}); err != nil {
+				return nil, errSubmission
+			}
+
+			return nil, err
+		}
+
+		if attachmentRes.Response.GetStatusCode() != 201 {
+			if _, errExercise := u.exerciseClient.DeleteExercise(ctx, &exerciseSvcV1.DeleteExerciseRequest{
+				Id: res.GetExerciseID(),
+			}); err != nil {
+				return nil, errExercise
+			}
+
+			if _, errSubmission := u.submissionClient.DeleteSubmission(ctx, &submissionSvcV1.DeleteSubmissionRequest{
+				Id: submissionRes.GetSubmissionID(),
+			}); err != nil {
+				return nil, errSubmission
+			}
+
+			return &pb.CreateExerciseResponse{
+				Response: &pb.CommonExerciseResponse{
+					StatusCode: attachmentRes.GetResponse().GetStatusCode(),
+					Message:    attachmentRes.GetResponse().GetMessage(),
+				},
+			}, nil
+		}
 	}
 
 	return &pb.CreateExerciseResponse{
@@ -250,8 +335,8 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 		return nil, err
 	}
 
-	var limit int32 = 5
-	var page int32 = 1
+	var limit int64 = 5
+	var page int64 = 1
 	titleSearch := ""
 	sortColumn := "id"
 	sortOrder := "asc"
@@ -362,12 +447,12 @@ func (u *exerciseServiceGW) GetAllExercisesOfClassroom(ctx context.Context, req 
 		return nil, err
 	}
 
-	var limit int32 = 5
-	var page int32 = 1
+	var limit int64 = 5
+	var page int64 = 1
 	titleSearch := ""
 	sortColumn := "id"
 	sortOrder := "asc"
-	var classroomID int32
+	var classroomID int64
 
 	if req.GetLimit() > 0 {
 		limit = req.GetLimit()

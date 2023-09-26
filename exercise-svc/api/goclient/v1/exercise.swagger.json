@@ -112,8 +112,8 @@
       "type": "object",
       "properties": {
         "statusCode": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "message": {
           "type": "string"
@@ -125,6 +125,10 @@
       "properties": {
         "response": {
           "$ref": "#/definitions/v1CommonExerciseResponse"
+        },
+        "exerciseID": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -146,19 +150,19 @@
           "type": "string"
         },
         "classroomID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "deadline": {
           "$ref": "#/definitions/typeDateTime"
         },
         "score": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "reportingStageID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "authorID": {
           "type": "string"
@@ -170,8 +174,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "title": {
           "type": "string"
@@ -180,19 +184,19 @@
           "type": "string"
         },
         "classroomID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "deadline": {
           "$ref": "#/definitions/typeDateTime"
         },
         "score": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "reportingStageID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "authorID": {
           "type": "string"
@@ -214,8 +218,8 @@
           "$ref": "#/definitions/v1CommonExerciseResponse"
         },
         "totalCount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "exercises": {
           "type": "array",
@@ -244,8 +248,8 @@
           "$ref": "#/definitions/v1CommonExerciseResponse"
         },
         "totalCount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "exercises": {
           "type": "array",

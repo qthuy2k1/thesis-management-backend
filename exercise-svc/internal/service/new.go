@@ -8,7 +8,7 @@ import (
 
 type IExerciseSvc interface {
 	// CreateExercise creates a new exercise in db given by exercise model
-	CreateExercise(ctx context.Context, e ExerciseInputSvc) error
+	CreateExercise(ctx context.Context, e ExerciseInputSvc) (int64, error)
 	// GetExercise returns a exercise in db given by id
 	GetExercise(ctx context.Context, id int) (ExerciseOutputSvc, error)
 	// UpdateExercise updates the specified classroom by id

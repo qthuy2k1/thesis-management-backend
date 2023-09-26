@@ -22,7 +22,7 @@ service ExerciseService {
 }
 
 message CommonExerciseResponse {
-    int32 statusCode = 1;
+    int64 statusCode = 1;
     string message = 2;
 }
 
@@ -31,21 +31,21 @@ message CommonExerciseResponse {
 message ExerciseInput {
     string title = 1;
     string content = 2;
-    int32 classroomID = 3;
+    int64 classroomID = 3;
     google.type.DateTime deadline = 4;
-    int32 score = 5;
-    int32 reportingStageID = 6;
+    int64 score = 5;
+    int64 reportingStageID = 6;
     string authorID = 7;
 }
 
 message ExerciseResponse {
-    int32 id = 1;
+    int64 id = 1;
     string title = 2;
     string content = 3;
-    int32 classroomID = 4;
+    int64 classroomID = 4;
     google.type.DateTime deadline = 5;
-    int32 score = 6;
-    int32 reportingStageID = 7;
+    int64 score = 6;
+    int64 reportingStageID = 7;
     string authorID = 8;
     google.protobuf.Timestamp created_at = 9;
     google.protobuf.Timestamp updated_at = 10;
@@ -57,12 +57,13 @@ message CreateExerciseRequest {
 
 message CreateExerciseResponse {
     CommonExerciseResponse response = 1;
+    int64 exerciseID = 2;
 }
 
 
 // ====== GET ======
 message GetExerciseRequest {
-    int32 id = 1;
+    int64 id = 1;
 }
 
 message GetExerciseResponse {
@@ -72,7 +73,7 @@ message GetExerciseResponse {
 
 // ====== PUT ======
 message UpdateExerciseRequest {
-    int32 id = 1;
+    int64 id = 1;
     ExerciseInput exercise = 2;
 }
 
@@ -82,7 +83,7 @@ message UpdateExerciseResponse {
 
 // ====== DELETE ======
 message DeleteExerciseRequest {
-    int32 id = 1;
+    int64 id = 1;
 }
 
 message DeleteExerciseResponse {
@@ -91,8 +92,8 @@ message DeleteExerciseResponse {
 
 // ====== GET ALL ======
 message GetExercisesRequest {
-    int32 page = 1;
-    int32 limit = 2;
+    int64 page = 1;
+    int64 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
     string sortOrder = 5; 
@@ -100,22 +101,22 @@ message GetExercisesRequest {
 
 message GetExercisesResponse {
     CommonExerciseResponse response = 1;
-    int32 totalCount = 2;
+    int64 totalCount = 2;
     repeated ExerciseResponse exercises = 3;
 }
 
 // ====== GET ALL OF CLASSROOM ======
 message GetAllExercisesOfClassroomRequest {
-    int32 page = 1;
-    int32 limit = 2;
+    int64 page = 1;
+    int64 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
     string sortOrder = 5; 
-    int32 classroomID = 6;
+    int64 classroomID = 6;
 }
 
 message GetAllExercisesOfClassroomResponse {
     CommonExerciseResponse response = 1;
-    int32 totalCount = 2;
+    int64 totalCount = 2;
     repeated ExerciseResponse exercises = 3;
 }

@@ -19,7 +19,7 @@ service UserService {
 }
 
 message CommonUserResponse {
-    int32 statusCode = 1;
+    int64 statusCode = 1;
     string message = 2;
 }
 
@@ -34,7 +34,7 @@ message UserInput {
     string role = 6;
     string name = 7;
     string email = 8;
-    optional string classroomID = 9;
+    optional int64 classroomID = 9;
 }
 
 message UserResponse {
@@ -46,7 +46,7 @@ message UserResponse {
     string role = 6;
     string name = 7;
     string email = 8;
-    string classroomID = 9;
+    int64 classroomID = 9;
 }
 
 message CreateUserRequest {
@@ -96,17 +96,17 @@ message GetUsersRequest {}
 
 message GetUsersResponse {
     CommonUserResponse response = 1; 
-    int32 totalCount = 2;
+    int64 totalCount = 2;
     repeated UserResponse users = 3;
 }
 
 // ====== GET ALL OF CLASSROOM ======
 message GetAllUsersOfClassroomRequest {
-    int32 classroomID = 1;
+    int64 classroomID = 1;
 }
 
 message GetAllUsersOfClassroomResponse {
     CommonUserResponse response = 1;
-    int32 totalCount = 2;
+    int64 totalCount = 2;
     repeated UserResponse users = 3;
 }

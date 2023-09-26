@@ -48,7 +48,7 @@ func (h *CommentHdl) GetComment(ctx context.Context, req *commentpb.GetCommentRe
 	}
 
 	commentResp := commentpb.CommentResponse{
-		Id: int32(comment.ID),
+		Id: int64(comment.ID),
 
 		CreatedAt: timestamppb.New(comment.CreatedAt),
 	}
@@ -78,13 +78,46 @@ func (h *CommentHdl) GetCommentsOfAPost(ctx context.Context, req *commentpb.GetC
 
 	var commentsResp []*commentpb.CommentResponse
 	for _, c := range comments {
-		postID := int32(*c.PostID)
-		exerciseID := int32(*c.ExerciseID)
+		postID := int64(*c.PostID)
 
 		commentsResp = append(commentsResp, &commentpb.CommentResponse{
-			Id:         int32(c.ID),
+			Id:        int64(c.ID),
+			UserID:    c.UserID,
+			PostID:    &postID,
+			Content:   c.Content,
+			CreatedAt: timestamppb.New(c.CreatedAt),
+		})
+	}
+
+	return &commentpb.GetCommentsResponse{
+		Response: &commentpb.CommonCommentResponse{
+			StatusCode: 200,
+			Message:    "Created",
+		},
+		Comments: commentsResp,
+	}, nil
+}
+
+func (h *CommentHdl) GetCommentsOfAExercise(ctx context.Context, req *commentpb.GetCommentsOfAExerciseRequest) (*commentpb.GetCommentsResponse, error) {
+	log.Println("calling get all comments of a exercise...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	comments, err := h.Service.GetCommentsOfAExercise(ctx, int(req.GetExerciseID()))
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var commentsResp []*commentpb.CommentResponse
+	for _, c := range comments {
+		exerciseID := int64(*c.ExerciseID)
+
+		commentsResp = append(commentsResp, &commentpb.CommentResponse{
+			Id:         int64(c.ID),
 			UserID:     c.UserID,
-			PostID:     &postID,
 			ExerciseID: &exerciseID,
 			Content:    c.Content,
 			CreatedAt:  timestamppb.New(c.CreatedAt),

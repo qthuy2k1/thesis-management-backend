@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -77,12 +78,18 @@ func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, arg
 }
 
 // CreateSubmission creates a new exercise in db given by exercise model
-func (r *SubmissionRepo) CreateSubmission(ctx context.Context, s SubmissionInputRepo) error {
-	if _, err := ExecSQL(ctx, r.Database, "CreateSubmission", "INSERT INTO submissions (user_id, exercise_id, submission_date, status) VALUES ($1, $2, $3, $4) RETURNING id", s.UserID, s.ExerciseID, s.SubmissionDate, s.Status); err != nil {
-		return err
+func (r *SubmissionRepo) CreateSubmission(ctx context.Context, s SubmissionInputRepo) (int64, error) {
+	row, err := QueryRowSQL(ctx, r.Database, "CreateSubmission", "INSERT INTO submissions (user_id, exercise_id, submission_date, status) VALUES ($1, $2, $3, $4) RETURNING id", s.UserID, s.ExerciseID, s.SubmissionDate, s.Status)
+	if err != nil {
+		return 0, err
 	}
 
-	return nil
+	var id int64
+	if err := row.Scan(&id); err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
 
 type SubmissionOutputRepo struct {
@@ -114,7 +121,7 @@ func (r *SubmissionRepo) GetSubmission(ctx context.Context, id int) (SubmissionO
 
 // UpdateSubmission updates the specified submission by id
 func (r *SubmissionRepo) UpdateSubmission(ctx context.Context, id int, s SubmissionInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdatePost", "UPDATE submissions SET user_id=$2, exercise_id=$3, submission_date=$4, status=$5 WHERE id=$1", id, s.UserID, s.ExerciseID, s.SubmissionDate, s.Status)
+	result, err := ExecSQL(ctx, r.Database, "UpdateSubmission", "UPDATE submissions SET user_id=$2, exercise_id=$3, submission_date=$4, status=$5 WHERE id=$1", id, s.UserID, s.ExerciseID, s.SubmissionDate, s.Status)
 	if err != nil {
 		return err
 	}
@@ -127,7 +134,7 @@ func (r *SubmissionRepo) UpdateSubmission(ctx context.Context, id int, s Submiss
 
 // DeleteSubmission deletes a exercise in db given by id
 func (r *SubmissionRepo) DeleteSubmission(ctx context.Context, id int) error {
-	result, err := ExecSQL(ctx, r.Database, "DeletePost", "DELETE FROM submissions WHERE id=$1", id)
+	result, err := ExecSQL(ctx, r.Database, "DeleteSubmission", "DELETE FROM submissions WHERE id=$1", id)
 	if err != nil {
 		return err
 	}
@@ -141,9 +148,7 @@ func (r *SubmissionRepo) DeleteSubmission(ctx context.Context, id int) error {
 
 // GetAllSubmissionsOfExercise returns all submissions of the specified exercise given by exercise id
 func (r *SubmissionRepo) GetAllSubmissionsOfExercise(ctx context.Context, exerciseID int) ([]SubmissionOutputRepo, int, error) {
-	query := []string{"SELECT id, user_id, exercise_id, submission_date, status FROM submissions"}
-
-	rows, err := QuerySQL(ctx, r.Database, "GetAllSubmissionsOfExercise", strings.Join(query, " "))
+	rows, err := QuerySQL(ctx, r.Database, "GetAllSubmissionsOfExercise", fmt.Sprintf("SELECT id, user_id, exercise_id, submission_date, status FROM submissions WHERE id=%d", exerciseID))
 	if err != nil {
 		return nil, 0, err
 	}

@@ -43,7 +43,7 @@ service SubmissionService {
 }
 
 message CommonSubmissionResponse {
-    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    int64 statusCode = 1 [(validate.rules).int64.gte = 1];
     string message = 2 [(validate.rules).string = {min_len: 2}];
 }
 
@@ -51,16 +51,16 @@ message CommonSubmissionResponse {
 // ====== submission ======
 message SubmissionInput {
     string userID = 1;
-    int32 exerciseID = 2 [(validate.rules).int32.gte = 1];
+    int64 exerciseID = 2 [(validate.rules).int64.gte = 1];
     google.type.DateTime submission_date = 3;
     string status = 4 [(validate.rules).string = {min_len: 2}];
 
 }
 
 message SubmissionResponse {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     string userID = 2;
-    int32 exerciseID = 3 [(validate.rules).int32.gte = 1];
+    int64 exerciseID = 3 [(validate.rules).int64.gte = 1];
     google.type.DateTime submission_date = 4;
     string status = 5 [(validate.rules).string = {min_len: 2}];
 }
@@ -76,7 +76,7 @@ message CreateSubmissionResponse {
 
 // ====== GET ======
 message GetSubmissionRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
 }
 
 message GetSubmissionResponse {
@@ -86,7 +86,7 @@ message GetSubmissionResponse {
 
 // ====== PUT ======
 message UpdateSubmissionRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     SubmissionInput submission = 2 [(validate.rules).message = {required: true}];
 }
 
@@ -96,7 +96,7 @@ message UpdateSubmissionResponse {
 
 // ====== DELETE ======
 message DeleteSubmissionRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
 }
 
 message DeleteSubmissionResponse {
@@ -105,11 +105,11 @@ message DeleteSubmissionResponse {
 
 // ====== GET ALL OF EXERCISE ======
 message GetAllSubmissionsOfExerciseRequest {
-    int32 exerciseID = 1 [(validate.rules).int32.gte = 1];
+    int64 exerciseID = 1 [(validate.rules).int64.gte = 1];
 }
 
 message GetAllSubmissionsOfExerciseResponse {
     CommonSubmissionResponse response = 1 [(validate.rules).message = {required: true}];
-    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
     repeated SubmissionResponse submissions = 3;
 }

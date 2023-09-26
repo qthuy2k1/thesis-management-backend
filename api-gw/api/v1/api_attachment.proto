@@ -1,0 +1,150 @@
+syntax = "proto3";
+
+package api.attachment.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "google/api/datetime.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/attachment/api/v1";
+
+service AttachmentService {
+    rpc CreateAttachment(CreateAttachmentRequest) returns (CreateAttachmentResponse){
+        option (google.api.http) = {
+            post: "/api/attachment"
+            body: "*"
+        };
+    }
+    
+    rpc GetAttachment(GetAttachmentRequest) returns (GetAttachmentResponse){
+        option (google.api.http) = {
+            get: "/api/attachment/{id}"
+        };
+    }
+
+    rpc UpdateAttachment(UpdateAttachmentRequest) returns (UpdateAttachmentResponse){
+        option (google.api.http) = {
+            put: "/api/attachment/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteAttachment(DeleteAttachmentRequest) returns (DeleteAttachmentResponse){
+        option (google.api.http) = {
+            delete: "/api/attachment/{id}"
+        };
+    }
+
+    rpc GetAttachmentsOfExercise(GetAttachmentsOfExerciseRequest) returns (GetAttachmentsOfExerciseResponse) {
+        option (google.api.http) = {
+            get: "/api/exercise/{exerciseID}/attachments"
+        };
+    }
+}
+
+
+message CommonAttachmentResponse {
+    int64 statusCode = 1 [(validate.rules).int64.gte = 1];
+    string message = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+
+// ====== POST ======
+message AttachmentInput {
+   string fileURL = 1;
+    string status = 2;
+    int64 submissionID = 3;
+    int64 exerciseID = 4;
+    string authorID = 5;
+}
+
+
+message AttachmentResponse {
+    int64 id = 1;
+    string fileURL = 2;
+    string status = 3;
+    SubmissionAttachmentResponse submission = 4; 
+    AuthorAttachmentResponse author = 6;
+    google.protobuf.Timestamp created_at = 7;
+}
+
+message SubmissionAttachmentResponse {
+    int64 id = 1;
+    string userID = 2;
+    int64 exerciseID = 3;
+    google.type.DateTime submission_date = 4;
+    string status = 5;
+}
+
+message AuthorAttachmentResponse {
+    string id = 1;
+    string class = 2;
+    optional string major = 3;
+    optional string phone = 4;
+    string photoSrc = 5;
+    string role = 6;
+    string name = 7;
+    string email = 8;
+    int64 classroomID = 9;
+}
+
+message CreateAttachmentRequest {
+   AttachmentInput attachment = 1 [(validate.rules).message = {required: true}];
+}
+
+message CreateAttachmentResponse {
+    CommonAttachmentResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ======
+message GetAttachmentRequest {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+    string titleSearch = 2;
+    string sortColumn = 3;
+}
+
+message GetAttachmentResponse {
+    CommonAttachmentResponse response = 1 [(validate.rules).message = {required: true}];
+    AttachmentResponse attachment = 2 [(validate.rules).message = {required: true}];
+} 
+
+message CheckAttachmentExistsRequest {
+    int64 attachmentID = 1 [(validate.rules).int64.gte = 1];
+}
+
+message CheckAttachmentExistsResponse {
+    bool exists = 1;
+}
+
+
+// ====== PUT ======
+message UpdateAttachmentRequest {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+    AttachmentInput attachment = 2 [(validate.rules).message = {required: true}];
+}
+
+message UpdateAttachmentResponse {
+    CommonAttachmentResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== DELETE ======
+message DeleteAttachmentRequest {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+}
+
+message DeleteAttachmentResponse {
+    CommonAttachmentResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ALL ======
+message GetAttachmentsOfExerciseRequest {
+    int64 exerciseID = 1;
+}
+
+message GetAttachmentsOfExerciseResponse {
+    CommonAttachmentResponse response = 1 [(validate.rules).message = {required: true}];
+    repeated AttachmentResponse attachments = 3;
+}

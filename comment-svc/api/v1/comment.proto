@@ -19,24 +19,24 @@ service CommentService {
 
 
 message CommonCommentResponse {
-    int32 statusCode = 1;
+    int64 statusCode = 1;
     string message = 2;
 }
 
 // ====== POST ======
 message CommentInput {
     string userID = 1;
-    optional int32 postID = 2;
-    optional int32 exerciseID = 3;
+    optional int64 postID = 2;
+    optional int64 exerciseID = 3;
     string content = 4;
 }
 
 
 message CommentResponse {
-    int32 id = 1;
+    int64 id = 1;
     string userID = 2;
-    optional int32 postID = 3;
-    optional int32 exerciseID = 4;
+    optional int64 postID = 3;
+    optional int64 exerciseID = 4;
     string content = 5;
     google.protobuf.Timestamp created_at = 6;
 }
@@ -53,7 +53,7 @@ message CreateCommentResponse {
 
 // ====== GET ======
 message GetCommentRequest {
-    int32 id = 1;
+    int64 id = 1;
 }
 
 message GetCommentResponse {
@@ -64,11 +64,11 @@ message GetCommentResponse {
 
 // ====== GET ALL ======
 message GetCommentsOfAPostRequest {
-    int32 postID = 1;
+    int64 postID = 1;
 }
 
 message GetCommentsOfAExerciseRequest {
-    int32 exerciseID = 1;
+    int64 exerciseID = 1;
 }
 
 message GetCommentsResponse {

@@ -23,7 +23,7 @@ service ClassroomService {
 
 
 message CommonClassroomResponse {
-    int32 statusCode = 1;
+    int64 statusCode = 1;
     string message = 2;
 }
 
@@ -35,19 +35,19 @@ message ClassroomInput {
     string lecturer_id = 4;
     string code_classroom = 5;
     string topic_tags = 6;
-    int32 quantity = 7;
+    int64 quantity = 7;
 }
 
 
 message ClassroomResponse {
-    int32 id = 1;
+    int64 id = 1;
     string title = 2;
     string description = 3;
     string status = 4;
     string lecturer_id = 5;
     string code_classroom = 6;
     string topic_tags = 7;
-    int32 quantity = 8;
+    int64 quantity = 8;
     google.protobuf.Timestamp created_at = 9;
     google.protobuf.Timestamp updated_at = 10;
 
@@ -56,24 +56,24 @@ message ClassroomResponse {
 }
 
 message PostResponse {
-    int32 id = 1;
+    int64 id = 1;
     string title = 2;
     string content = 3;
-    int32 classroomID = 4;
-    int32 reportingStageID = 5;
+    int64 classroomID = 4;
+    int64 reportingStageID = 5;
     string authorID = 6;
     google.protobuf.Timestamp createdAt = 7;
     google.protobuf.Timestamp updatedAt = 8;
 }
 
 message ExerciseResponse {
-    int32 id = 1;
+    int64 id = 1;
     string title = 2;
     string content = 3;
-    int32 classroomID = 4;
+    int64 classroomID = 4;
     google.type.DateTime deadline = 5;
-    int32 score = 6;
-    int32 reportingStageID = 7;
+    int64 score = 6;
+    int64 reportingStageID = 7;
     string authorID = 8;
     google.protobuf.Timestamp createdAt = 9;
     google.protobuf.Timestamp updatedAt = 10;
@@ -92,7 +92,7 @@ message CreateClassroomResponse {
 
 // ====== GET ======
 message GetClassroomRequest {
-    int32 id = 1;
+    int64 id = 1;
 }
 
 message GetClassroomResponse {
@@ -101,7 +101,7 @@ message GetClassroomResponse {
 } 
 
 message CheckClassroomExistsRequest {
-    int32 classroomID = 1;
+    int64 classroomID = 1;
 }
 
 message CheckClassroomExistsResponse {
@@ -111,7 +111,7 @@ message CheckClassroomExistsResponse {
 
 // ====== PUT ======
 message UpdateClassroomRequest {
-    int32 id = 1;
+    int64 id = 1;
     ClassroomInput classroom = 2;
 }
 
@@ -121,7 +121,7 @@ message UpdateClassroomResponse {
 
 // ====== DELETE ======
 message DeleteClassroomRequest {
-    int32 id = 1;
+    int64 id = 1;
 }
 
 message DeleteClassroomResponse {
@@ -132,8 +132,8 @@ message DeleteClassroomResponse {
 
 // ====== GET ALL ======
 message GetClassroomsRequest {
-    int32 page = 1;
-    int32 limit = 2;
+    int64 page = 1;
+    int64 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
     string sortOrder = 5;
@@ -141,6 +141,6 @@ message GetClassroomsRequest {
 
 message GetClassroomsResponse {
     CommonClassroomResponse response = 1;
-    int32 totalCount = 2;
+    int64 totalCount = 2;
     repeated ClassroomResponse classrooms = 3;
 }

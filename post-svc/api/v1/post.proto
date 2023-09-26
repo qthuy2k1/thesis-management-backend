@@ -21,7 +21,7 @@ service PostService {
 }
 
 message CommonPostResponse {
-    int32 statusCode = 1;
+    int64 statusCode = 1;
     string message = 2;
 }
 
@@ -30,17 +30,17 @@ message CommonPostResponse {
 message PostInput {
     string title = 1;
     string content = 2;
-    int32 classroomID = 3;
-    int32 reportingStageID = 4;
+    int64 classroomID = 3;
+    int64 reportingStageID = 4;
     string authorID = 5;
 }
 
 message PostResponse {
-    int32 id = 1;
+    int64 id = 1;
     string title = 2;
     string content = 3;
-    int32 classroomID = 4;
-    int32 reportingStageID = 5;
+    int64 classroomID = 4;
+    int64 reportingStageID = 5;
     string authorID = 6;
     google.protobuf.Timestamp created_at = 7;
     google.protobuf.Timestamp updated_at = 8;
@@ -57,7 +57,7 @@ message CreatePostResponse {
 
 // ====== GET ======
 message GetPostRequest {
-    int32 id = 1;
+    int64 id = 1;
 }
 
 message GetPostResponse {
@@ -67,7 +67,7 @@ message GetPostResponse {
 
 // ====== PUT ======
 message UpdatePostRequest {
-    int32 id = 1;
+    int64 id = 1;
     PostInput post = 2;
 }
 
@@ -77,7 +77,7 @@ message UpdatePostResponse {
 
 // ====== DELETE ======
 message DeletePostRequest {
-    int32 id = 1;
+    int64 id = 1;
 }
 
 message DeletePostResponse {
@@ -90,8 +90,8 @@ message PostFilter {
 
 // ====== GET ALL ======
 message GetPostsRequest {
-    int32 page = 1;
-    int32 limit = 2;
+    int64 page = 1;
+    int64 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
     string sortOrder = 5;
@@ -99,22 +99,22 @@ message GetPostsRequest {
 
 message GetPostsResponse {
     CommonPostResponse response = 1; 
-    int32 totalCount = 2;
+    int64 totalCount = 2;
     repeated PostResponse posts = 3;
 }
 
 // ====== GET ALL OF CLASSROOM ======
 message GetAllPostsOfClassroomRequest {
-    int32 page = 1;
-    int32 limit = 2;
+    int64 page = 1;
+    int64 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
     string sortOrder = 5;
-    int32 classroomID = 6;
+    int64 classroomID = 6;
 }
 
 message GetAllPostsOfClassroomResponse {
     CommonPostResponse response = 1;
-    int32 totalCount = 2;
+    int64 totalCount = 2;
     repeated PostResponse posts = 3;
 }

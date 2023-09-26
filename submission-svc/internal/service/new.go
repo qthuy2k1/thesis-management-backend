@@ -8,7 +8,7 @@ import (
 
 type ISubmissionSvc interface {
 	// CreateSubmission creates a new submission in db given by submission model
-	CreateSubmission(ctx context.Context, e SubmissionInputSvc) error
+	CreateSubmission(ctx context.Context, e SubmissionInputSvc) (int64, error)
 	// UpdateSubmission updates the specified submission by id
 	UpdateSubmission(ctx context.Context, id int, classroom SubmissionInputSvc) error
 	// DeleteSubmission deletes a submission in db given by id

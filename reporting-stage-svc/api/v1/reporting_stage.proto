@@ -27,7 +27,7 @@ service ReportingStageService {
 }
 
 message CommonReportingStageResponse {
-    int32 statusCode = 1;
+    int64 statusCode = 1;
     string message = 2;
 }
 
@@ -39,7 +39,7 @@ message ReportingStageInput {
 }
 
 message ReportingStageResponse {
-    int32 id = 1;
+    int64 id = 1;
     string name = 2;
     string description = 3;
 }
@@ -55,7 +55,7 @@ message CreateReportingStageResponse {
 
 // ====== GET ======
 message GetReportingStageRequest {
-    int32 id = 1;
+    int64 id = 1;
 }
 
 message GetReportingStageResponse {
@@ -65,7 +65,7 @@ message GetReportingStageResponse {
 
 // ====== PUT ======
 message UpdateReportingStageRequest {
-    int32 id = 1;
+    int64 id = 1;
     ReportingStageInput reportingStage = 2;
 }
 
@@ -75,7 +75,7 @@ message UpdateReportingStageResponse {
 
 // ====== DELETE ======
 message DeleteReportingStageRequest {
-    int32 id = 1; 
+    int64 id = 1; 
 }
 
 message DeleteReportingStageResponse {

@@ -112,6 +112,9 @@ func (u *waitingListServiceGW) GetWaitingList(ctx context.Context, req *pb.GetWa
 	lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 		Id: clrRes.Classroom.LecturerId,
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	return &pb.GetWaitingListResponse{
 		Response: &pb.CommonWaitingListResponse{
@@ -254,7 +257,7 @@ func (u *waitingListServiceGW) DeleteWaitingList(ctx context.Context, req *pb.De
 		return nil, err
 	}
 
-	classroomID := "0"
+	classroomID := int64(0)
 	userUpdateRes, err := u.userClient.UpdateUser(ctx, &userSvcV1.UpdateUserRequest{
 		Id: userRes.User.Id,
 		User: &userSvcV1.UserInput{
@@ -316,6 +319,9 @@ func (u *waitingListServiceGW) GetWaitingListsOfClassroom(ctx context.Context, r
 		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 			Id: clrRes.Classroom.LecturerId,
 		})
+		if err != nil {
+			return nil, err
+		}
 
 		waitingLists = append(waitingLists, &pb.WaitingListResponse{
 			Id: p.Id,
@@ -384,6 +390,9 @@ func (u *waitingListServiceGW) CheckUserInWaitingListClassroom(ctx context.Conte
 		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 			Id: clrRes.Classroom.LecturerId,
 		})
+		if err != nil {
+			return nil, err
+		}
 
 		return &pb.CheckUserInWaitingListClassroomResponse{
 			Status: "WAITING",

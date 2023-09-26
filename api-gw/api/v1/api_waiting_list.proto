@@ -50,19 +50,19 @@ service WaitingListService {
 }
 
 message CommonWaitingListResponse {
-    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    int64 statusCode = 1 [(validate.rules).int64.gte = 1];
     string message = 2 [(validate.rules).string = {min_len: 2}];
 }
 
 
 // ====== waitingList ======
 message WaitingListInput {
-    int32 classroomID = 1 [(validate.rules).int32.gte = 1];
+    int64 classroomID = 1 [(validate.rules).int64.gte = 1];
     string userID = 2;
 }
 
 message WaitingListResponse {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     ClassroomWTLResponse classroom = 2;
     UserWaitingListResponse user = 3;
     google.protobuf.Timestamp createdAt = 4 [(validate.rules).timestamp.required = true];
@@ -77,7 +77,7 @@ message UserWaitingListResponse {
     string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    optional string classroomID = 9;
+    optional int64 classroomID = 9;
 }
 
 message CreateWaitingListRequest {
@@ -91,7 +91,7 @@ message CreateWaitingListResponse {
 
 // ====== GET ======
 message GetWaitingListRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
 }
 
 message GetWaitingListResponse {
@@ -101,7 +101,7 @@ message GetWaitingListResponse {
 
 // ====== PUT ======
 message UpdateWaitingListRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     WaitingListInput waitingList = 2 [(validate.rules).message = {required: true}];
 }
 
@@ -111,7 +111,7 @@ message UpdateWaitingListResponse {
 
 // ====== DELETE ======
 message DeleteWaitingListRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
 }
 
 message DeleteWaitingListResponse {
@@ -120,7 +120,7 @@ message DeleteWaitingListResponse {
 
 // ====== GET ALL ======
 message GetWaitingListsRequest {
-    int32 classroomID = 1 [(validate.rules).int32.gte = 1];
+    int64 classroomID = 1 [(validate.rules).int64.gte = 1];
 }
 
 message GetWaitingListsResponse {
@@ -129,14 +129,14 @@ message GetWaitingListsResponse {
 }
 
 message ClassroomWTLResponse {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string description = 3 [(validate.rules).string = {min_len: 2}];
     string status = 4 [(validate.rules).string = {min_len: 2}];
     LecturerWaitingListResponse lecturer = 5;
     string codeClassroom = 6 [(validate.rules).string = {min_len: 2}];
     string topicTags = 7 [(validate.rules).string = {min_len: 2}];
-    int32 quantity = 8 [(validate.rules).int32.gte = 0];
+    int64 quantity = 8 [(validate.rules).int64.gte = 0];
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
 }
@@ -150,7 +150,7 @@ message LecturerWaitingListResponse {
     string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    optional string classroomID = 9;
+    optional int64 classroomID = 9;
 }
 
 // ====== CHECK USER IN WAITING LIST OF CLASSROOM ======

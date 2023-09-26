@@ -62,7 +62,7 @@ service UserService {
 }
 
 message CommonUserResponse {
-    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    int64 statusCode = 1 [(validate.rules).int64.gte = 1];
     string message = 2 [(validate.rules).string = {min_len: 2}];
 }
 
@@ -77,7 +77,7 @@ message UserInput {
     string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    optional string classroomID = 9;
+    optional int64 classroomID = 9;
 }
 
 message UserResponse {
@@ -89,7 +89,7 @@ message UserResponse {
     string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    optional string classroomID = 9;
+    optional int64 classroomID = 9;
 }
 
 message CreateUserRequest {
@@ -136,24 +136,24 @@ message GetUsersRequest {}
 
 message GetUsersResponse {
     CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
-    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
     repeated UserResponse users = 3;
 }
 
 // ====== GET ALL OF CLASSROOM ======
 message GetAllUsersOfClassroomRequest {
-    int32 classroomID = 1 [(validate.rules).int32.gte = 1];
+    int64 classroomID = 1 [(validate.rules).int64.gte = 1];
 }
 
 message GetAllUsersOfClassroomResponse {
     CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
-    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
     repeated UserResponse users = 3;
 }
 
 // ====== APPROVE USER JOIN CLASSROOM ======
 message ApproveUserJoinClassroomRequest {
-    int32 classroomID = 1 [(validate.rules).int32.gte = 1];
+    int64 classroomID = 1 [(validate.rules).int64.gte = 1];
     string userID = 2;
 }
 
@@ -170,14 +170,14 @@ message LoginRequest {
 message LoginResponse {}
 
 message ClassroomUserResponse {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string description = 3 [(validate.rules).string = {min_len: 2}];
     string status = 4 [(validate.rules).string = {min_len: 2}];
     string lecturerId = 5;
     string codeClassroom = 6 [(validate.rules).string = {min_len: 2}];
     string topicTags = 7 [(validate.rules).string = {min_len: 2}];
-    int32 quantity = 8 [(validate.rules).int32.gte = 0];
+    int64 quantity = 8 [(validate.rules).int64.gte = 0];
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
 }

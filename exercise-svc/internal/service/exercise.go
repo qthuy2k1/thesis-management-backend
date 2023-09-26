@@ -19,7 +19,7 @@ type ExerciseInputSvc struct {
 }
 
 // CreateExercise creates a new exercise in db given by exercise model
-func (s *ExerciseSvc) CreateExercise(ctx context.Context, e ExerciseInputSvc) error {
+func (s *ExerciseSvc) CreateExercise(ctx context.Context, e ExerciseInputSvc) (int64, error) {
 	eRepo := repository.ExerciseInputRepo{
 		Title:            e.Title,
 		Content:          e.Content,
@@ -30,14 +30,15 @@ func (s *ExerciseSvc) CreateExercise(ctx context.Context, e ExerciseInputSvc) er
 		AuthorID:         e.AuthorID,
 	}
 
-	if err := s.Repository.CreateExercise(ctx, eRepo); err != nil {
+	id, err := s.Repository.CreateExercise(ctx, eRepo)
+	if err != nil {
 		if errors.Is(err, repository.ErrExerciseExisted) {
-			return ErrExerciseExisted
+			return 0, ErrExerciseExisted
 		}
-		return err
+		return 0, err
 	}
 
-	return nil
+	return id, nil
 }
 
 // GetExercise returns a exercise in db given by id

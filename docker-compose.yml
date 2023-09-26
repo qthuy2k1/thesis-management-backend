@@ -135,12 +135,30 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: thesis_management_waiting_lists
+      POSTGRES_DB: thesis_management_comments
     ports:
       - "5440:5432"
     volumes:
       - comment-db:/var/lib/postgresql/data
       - ./script/comment/init-database-comment.sql:/docker-entrypoint-initdb.d/init-database.sql
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  attachment-db:
+    image: postgres:alpine
+    container_name: attachment-db
+    networks:
+      mynet:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: thesis_management_attachments
+    ports:
+      - "5441:5432"
+    volumes:
+      - attachment-db:/var/lib/postgresql/data
+      - ./script/attachment/init-database-attachment.sql:/docker-entrypoint-initdb.d/init-database.sql
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -174,12 +192,12 @@ services:
       - submission-db
       - classroom-waiting-list-db
       - comment-db
+      - attachment-db
 
   classroom:
     build:
       dockerfile: ./classroom-svc/Dockerfile
-      args:
-        - image_name=classroom
+      context: .
     image: qthuy2k1/thesis-management-backend-classroom
     networks:
       mynet:
@@ -192,8 +210,6 @@ services:
     build:
       dockerfile: ./post-svc/Dockerfile
       context: .
-      args:
-        - image_name=post
     image: qthuy2k1/thesis-management-backend-post
     networks:
       mynet:
@@ -206,8 +222,6 @@ services:
     build:
       dockerfile: ./exercise-svc/Dockerfile
       context: .
-      args:
-        - image_name=exercise
     image: qthuy2k1/thesis-management-backend-exercise
     networks:
       mynet:
@@ -222,8 +236,6 @@ services:
     build:
       dockerfile: ./user-svc/Dockerfile
       context: .
-      args:
-        - image_name=user
     image: qthuy2k1/thesis-management-backend-user
     networks:
       mynet:
@@ -238,8 +250,6 @@ services:
     build:
       dockerfile: ./reporting-stage-svc/Dockerfile
       context: .
-      args:
-        - image_name=reporting-stage
     image: qthuy2k1/thesis-management-backend-reporting-stage
     networks:
       mynet:
@@ -270,8 +280,6 @@ services:
     build:
       dockerfile: ./classroom-waiting-list-svc/Dockerfile
       context: .
-      args:
-        - image_name=classroom-waiting-list
     image: qthuy2k1/thesis-management-backend-classroom-waiting-list
     networks:
       mynet:
@@ -286,8 +294,6 @@ services:
     build:
       dockerfile: ./comment-svc/Dockerfile
       context: .
-      args:
-        - image_name=comment
     image: qthuy2k1/thesis-management-backend-comment
     networks:
       mynet:
@@ -295,13 +301,25 @@ services:
       - comment-db
     volumes:
       - .:/usr/src/app
+
+  attachment:
+    env_file:
+      - .env
+    build:
+      dockerfile: ./attachment-svc/Dockerfile
+      context: .
+    image: qthuy2k1/thesis-management-backend-attachment
+    networks:
+      mynet:
+    depends_on:
+      - attachment-db
+    volumes:
+      - .:/usr/src/app
     
   apigw-client:
     build:
       dockerfile: ./apigw-client/Dockerfile
       context: .
-      args:
-        - image_name=apigw-client
     image: qthuy2k1/thesis-management-backend-apigw-client
     networks:
       mynet:
@@ -320,6 +338,7 @@ services:
       - submission
       - classroom-waiting-list
       - comment
+      - attachment
 
 volumes:
   classroom-db:
@@ -330,5 +349,6 @@ volumes:
   submission-db:
   classroom-waiting-list-db:
   comment-db:
+  attachment-db:
 networks:
   mynet:

@@ -48,11 +48,11 @@ func (h *PostHdl) GetPost(ctx context.Context, req *postpb.GetPostRequest) (*pos
 	}
 
 	pResp := postpb.PostResponse{
-		Id:               int32(p.ID),
+		Id:               int64(p.ID),
 		Title:            p.Title,
 		Content:          p.Content,
-		ClassroomID:      int32(p.ClassroomID),
-		ReportingStageID: int32(p.ReportingStageID),
+		ClassroomID:      int64(p.ClassroomID),
+		ReportingStageID: int64(p.ReportingStageID),
 		AuthorID:         p.AuthorID,
 		CreatedAt:        timestamppb.New(p.CreatedAt),
 		UpdatedAt:        timestamppb.New(p.UpdatedAt),
@@ -144,11 +144,11 @@ func (h *PostHdl) GetPosts(ctx context.Context, req *postpb.GetPostsRequest) (*p
 	var psResp []*postpb.PostResponse
 	for _, p := range ps {
 		psResp = append(psResp, &postpb.PostResponse{
-			Id:               int32(p.ID),
+			Id:               int64(p.ID),
 			Title:            p.Title,
 			Content:          p.Content,
-			ClassroomID:      int32(p.ClassroomID),
-			ReportingStageID: int32(p.ReportingStageID),
+			ClassroomID:      int64(p.ClassroomID),
+			ReportingStageID: int64(p.ReportingStageID),
 			AuthorID:         p.AuthorID,
 			CreatedAt:        timestamppb.New(p.CreatedAt),
 			UpdatedAt:        timestamppb.New(p.UpdatedAt),
@@ -161,7 +161,7 @@ func (h *PostHdl) GetPosts(ctx context.Context, req *postpb.GetPostsRequest) (*p
 			Message:    "Success",
 		},
 		Posts:      psResp,
-		TotalCount: int32(count),
+		TotalCount: int64(count),
 	}, nil
 }
 
@@ -189,11 +189,11 @@ func (h *PostHdl) GetAllPostsOfClassroom(ctx context.Context, req *postpb.GetAll
 	var psResp []*postpb.PostResponse
 	for _, p := range ps {
 		psResp = append(psResp, &postpb.PostResponse{
-			Id:               int32(p.ID),
+			Id:               int64(p.ID),
 			Title:            p.Title,
 			Content:          p.Content,
-			ClassroomID:      int32(p.ClassroomID),
-			ReportingStageID: int32(p.ReportingStageID),
+			ClassroomID:      int64(p.ClassroomID),
+			ReportingStageID: int64(p.ReportingStageID),
 			AuthorID:         p.AuthorID,
 			CreatedAt:        timestamppb.New(p.CreatedAt),
 			UpdatedAt:        timestamppb.New(p.UpdatedAt),
@@ -206,7 +206,7 @@ func (h *PostHdl) GetAllPostsOfClassroom(ctx context.Context, req *postpb.GetAll
 			Message:    "Success",
 		},
 		Posts:      psResp,
-		TotalCount: int32(count),
+		TotalCount: int64(count),
 	}, nil
 }
 
