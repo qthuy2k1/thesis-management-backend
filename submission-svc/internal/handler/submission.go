@@ -19,8 +19,8 @@ func (h *SubmissionHdl) CreateSubmission(ctx context.Context, req *submissionpb.
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
-
-	if err := h.Service.CreateSubmission(ctx, e); err != nil {
+	id, err := h.Service.CreateSubmission(ctx, e)
+	if err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
@@ -30,6 +30,7 @@ func (h *SubmissionHdl) CreateSubmission(ctx context.Context, req *submissionpb.
 			StatusCode: 201,
 			Message:    "Created",
 		},
+		SubmissionID: id,
 	}
 
 	return resp, nil
@@ -102,9 +103,9 @@ func (h *SubmissionHdl) GetAllSubmissionsOfExercise(ctx context.Context, req *su
 	var ssResp []*submissionpb.SubmissionResponse
 	for _, s := range ss {
 		ssResp = append(ssResp, &submissionpb.SubmissionResponse{
-			Id:         int32(s.ID),
+			Id:         int64(s.ID),
 			UserID:     s.UserID,
-			ExerciseID: int32(s.ExerciseID),
+			ExerciseID: int64(s.ExerciseID),
 			SubmissionDate: &datetime.DateTime{
 				Year:    int32(s.SubmissionDate.Year()),
 				Month:   int32(s.SubmissionDate.Minute()),
@@ -123,7 +124,7 @@ func (h *SubmissionHdl) GetAllSubmissionsOfExercise(ctx context.Context, req *su
 			Message:    "Success",
 		},
 		Submissions: ssResp,
-		TotalCount:  int32(count),
+		TotalCount:  int64(count),
 	}, nil
 }
 

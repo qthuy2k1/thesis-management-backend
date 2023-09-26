@@ -81,7 +81,7 @@ func request_ExerciseService_GetExercise_0(ctx context.Context, marshaler runtim
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Int32(val)
+	protoReq.Id, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
@@ -107,7 +107,7 @@ func local_request_ExerciseService_GetExercise_0(ctx context.Context, marshaler 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Int32(val)
+	protoReq.Id, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
@@ -141,7 +141,7 @@ func request_ExerciseService_UpdateExercise_0(ctx context.Context, marshaler run
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Int32(val)
+	protoReq.Id, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
@@ -175,7 +175,7 @@ func local_request_ExerciseService_UpdateExercise_0(ctx context.Context, marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Int32(val)
+	protoReq.Id, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
@@ -201,7 +201,7 @@ func request_ExerciseService_DeleteExercise_0(ctx context.Context, marshaler run
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Int32(val)
+	protoReq.Id, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
@@ -227,7 +227,7 @@ func local_request_ExerciseService_DeleteExercise_0(ctx context.Context, marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Int32(val)
+	protoReq.Id, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
@@ -293,7 +293,7 @@ func request_ExerciseService_GetAllExercisesOfClassroom_0(ctx context.Context, m
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "classroomID")
 	}
 
-	protoReq.ClassroomID, err = runtime.Int32(val)
+	protoReq.ClassroomID, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "classroomID", err)
 	}
@@ -326,7 +326,7 @@ func local_request_ExerciseService_GetAllExercisesOfClassroom_0(ctx context.Cont
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "classroomID")
 	}
 
-	protoReq.ClassroomID, err = runtime.Int32(val)
+	protoReq.ClassroomID, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "classroomID", err)
 	}

@@ -271,7 +271,7 @@ func request_UserService_GetAllUsersOfClassroom_0(ctx context.Context, marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "classroomID")
 	}
 
-	protoReq.ClassroomID, err = runtime.Int32(val)
+	protoReq.ClassroomID, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "classroomID", err)
 	}
@@ -297,7 +297,7 @@ func local_request_UserService_GetAllUsersOfClassroom_0(ctx context.Context, mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "classroomID")
 	}
 
-	protoReq.ClassroomID, err = runtime.Int32(val)
+	protoReq.ClassroomID, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "classroomID", err)
 	}
@@ -323,7 +323,7 @@ func request_UserService_ApproveUserJoinClassroom_0(ctx context.Context, marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "classroomID")
 	}
 
-	protoReq.ClassroomID, err = runtime.Int32(val)
+	protoReq.ClassroomID, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "classroomID", err)
 	}
@@ -359,7 +359,7 @@ func local_request_UserService_ApproveUserJoinClassroom_0(ctx context.Context, m
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "classroomID")
 	}
 
-	protoReq.ClassroomID, err = runtime.Int32(val)
+	protoReq.ClassroomID, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "classroomID", err)
 	}

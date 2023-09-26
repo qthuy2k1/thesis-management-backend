@@ -49,8 +49,8 @@
       "type": "object",
       "properties": {
         "statusCode": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "message": {
           "type": "string"
@@ -80,8 +80,8 @@
           "$ref": "#/definitions/v1CommonPostResponse"
         },
         "totalCount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "posts": {
           "type": "array",
@@ -110,8 +110,8 @@
           "$ref": "#/definitions/v1CommonPostResponse"
         },
         "totalCount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "posts": {
           "type": "array",
@@ -132,12 +132,12 @@
           "type": "string"
         },
         "classroomID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "reportingStageID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "authorID": {
           "type": "string"
@@ -149,8 +149,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "title": {
           "type": "string"
@@ -159,12 +159,12 @@
           "type": "string"
         },
         "classroomID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "reportingStageID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "authorID": {
           "type": "string"

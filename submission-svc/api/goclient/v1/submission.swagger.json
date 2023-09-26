@@ -112,8 +112,8 @@
       "type": "object",
       "properties": {
         "statusCode": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "message": {
           "type": "string"
@@ -125,6 +125,10 @@
       "properties": {
         "response": {
           "$ref": "#/definitions/v1CommonSubmissionResponse"
+        },
+        "submissionID": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -143,8 +147,8 @@
           "$ref": "#/definitions/v1CommonSubmissionResponse"
         },
         "totalCount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "submissions": {
           "type": "array",
@@ -173,8 +177,8 @@
           "type": "string"
         },
         "exerciseID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "submissionDate": {
           "$ref": "#/definitions/typeDateTime"
@@ -189,15 +193,15 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "userID": {
           "type": "string"
         },
         "exerciseID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "submissionDate": {
           "$ref": "#/definitions/typeDateTime"

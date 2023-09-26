@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"strconv"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
@@ -28,13 +27,10 @@ func NewUsersService(userClient userSvcV1.UserServiceClient, classroomClient cla
 }
 
 func (u *userServiceGW) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	if req.GetUser().GetClassroomID() != "" {
-		classroomID, err := strconv.Atoi(req.GetUser().GetClassroomID())
-		if err != nil {
-			return nil, err
-		}
+	if req.GetUser().GetClassroomID() != 0 {
+		classroomID := req.GetUser().GetClassroomID()
 
-		exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: int32(classroomID)})
+		exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: int64(classroomID)})
 		if err != nil {
 			return nil, err
 		}
@@ -108,13 +104,10 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 }
 
 func (u *userServiceGW) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
-	if req.GetUser().GetClassroomID() != "" {
-		classroomID, err := strconv.Atoi(req.GetUser().GetClassroomID())
-		if err != nil {
-			return nil, err
-		}
+	if req.GetUser().GetClassroomID() != 0 {
+		classroomID := req.GetUser().GetClassroomID()
 
-		exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: int32(classroomID)})
+		exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: int64(classroomID)})
 		if err != nil {
 			return nil, err
 		}
@@ -214,7 +207,7 @@ func (u *userServiceGW) GetAllUsersOfClassroom(ctx context.Context, req *pb.GetA
 		return nil, err
 	}
 
-	var classroomID int32
+	var classroomID int64
 
 	if req.GetClassroomID() > 0 {
 		classroomID = req.GetClassroomID()
@@ -289,7 +282,7 @@ func (u *userServiceGW) ApproveUserJoinClassroom(ctx context.Context, req *pb.Ap
 		}, nil
 	}
 
-	classroomID := strconv.Itoa(int(req.GetClassroomID()))
+	classroomID := req.GetClassroomID()
 	res, err := u.userClient.UpdateUser(ctx, &userSvcV1.UpdateUserRequest{
 		Id: req.GetUserID(),
 		User: &userSvcV1.UserInput{
@@ -364,7 +357,7 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 		return nil, err
 	}
 
-	classroomID, err := strconv.Atoi(userRes.GetUser().GetClassroomID())
+	classroomID := userRes.GetUser().GetClassroomID()
 	if err != nil {
 		return nil, err
 	}
@@ -410,7 +403,7 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 
 	// classroomID != 0
 	clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
-		Id: int32(classroomID),
+		Id: int64(classroomID),
 	})
 	if err != nil {
 		return nil, err

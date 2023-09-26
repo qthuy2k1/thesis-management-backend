@@ -13,7 +13,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	gw "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
-	// "github.com/rs/cors"
 )
 
 var (
@@ -92,6 +91,10 @@ func run() error {
 	}
 
 	if err := gw.RegisterCommentServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts); err != nil {
+		return err
+	}
+
+	if err := gw.RegisterAttachmentServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts); err != nil {
 		return err
 	}
 

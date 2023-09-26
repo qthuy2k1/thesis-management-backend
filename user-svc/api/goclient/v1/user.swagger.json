@@ -49,8 +49,8 @@
       "type": "object",
       "properties": {
         "statusCode": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "message": {
           "type": "string"
@@ -80,8 +80,8 @@
           "$ref": "#/definitions/v1CommonUserResponse"
         },
         "totalCount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "users": {
           "type": "array",
@@ -110,8 +110,8 @@
           "$ref": "#/definitions/v1CommonUserResponse"
         },
         "totalCount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "users": {
           "type": "array",
@@ -158,7 +158,8 @@
           "type": "string"
         },
         "classroomID": {
-          "type": "string"
+          "type": "string",
+          "format": "int64"
         }
       },
       "title": "====== user ======"
@@ -191,7 +192,8 @@
           "type": "string"
         },
         "classroomID": {
-          "type": "string"
+          "type": "string",
+          "format": "int64"
         }
       }
     }

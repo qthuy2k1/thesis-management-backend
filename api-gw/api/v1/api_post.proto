@@ -49,7 +49,7 @@ service PostService {
 }
 
 message CommonPostResponse {
-    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    int64 statusCode = 1 [(validate.rules).int64.gte = 1];
     string message = 2 [(validate.rules).string = {min_len: 2}];
 }
 
@@ -58,16 +58,16 @@ message CommonPostResponse {
 message PostInput {
     string title = 1 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string content = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
-    int32 classroomID = 3 [(validate.rules).int32.gte = 1];
-    int32 reportingStageID = 4 [(validate.rules).int32.gte = 1];
+    int64 classroomID = 3 [(validate.rules).int64.gte = 1];
+    int64 reportingStageID = 4 [(validate.rules).int64.gte = 1];
     string authorID = 5;
 }
 
 message PostResponse {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string content = 3 [(validate.rules).string = {min_len: 2}];
-    int32 classroomID = 4 [(validate.rules).int32.gte = 1];
+    int64 classroomID = 4 [(validate.rules).int64.gte = 1];
     ReportingStagePostResponse reportingStage = 5;
     AuthorPostResponse author = 6;
     google.protobuf.Timestamp createdAt = 7 [(validate.rules).timestamp.required = true];
@@ -75,7 +75,7 @@ message PostResponse {
 }
 
 message ReportingStagePostResponse {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     string name = 2 [(validate.rules).string = {min_len: 2}];
     string description = 3 [(validate.rules).string = {min_len: 2}];   
 }
@@ -89,7 +89,7 @@ message AuthorPostResponse {
     string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    optional string classroomID = 9;
+    optional int64 classroomID = 9;
 }
 
 message CreatePostRequest {
@@ -101,16 +101,16 @@ message CreatePostResponse {
 }
 
 message CommentPostResponse {
-    int32 id = 1;
+    int64 id = 1;
     AuthorPostResponse user = 2;
-    int32 postID = 3;
+    int64 postID = 3;
     string content = 4;
     google.protobuf.Timestamp created_at = 5;
 }
 
 // ====== GET ======
 message GetPostRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
 }
 
 message GetPostResponse {
@@ -121,7 +121,7 @@ message GetPostResponse {
 
 // ====== PUT ======
 message UpdatePostRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     PostInput post = 2 [(validate.rules).message = {required: true}];
 }
 
@@ -131,7 +131,7 @@ message UpdatePostResponse {
 
 // ====== DELETE ======
 message DeletePostRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
 }
 
 message DeletePostResponse {
@@ -141,8 +141,8 @@ message DeletePostResponse {
 
 // ====== GET ALL ======
 message GetPostsRequest {
-    int32 page = 1;
-    int32 limit = 2;
+    int64 page = 1;
+    int64 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
     bool isDesc = 5;
@@ -150,22 +150,22 @@ message GetPostsRequest {
 
 message GetPostsResponse {
     CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
-    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
     repeated PostResponse posts = 3;
 }
 
 // ====== GET ALL OF CLASSROOM ======
 message GetAllPostsOfClassroomRequest {
-    int32 page = 1;
-    int32 limit = 2;
+    int64 page = 1;
+    int64 limit = 2;
     string titleSearch = 3;
     string sortColumn = 4;
     bool isDesc = 5;
-    int32 classroomID = 6 [(validate.rules).int32.gte = 1];
+    int64 classroomID = 6 [(validate.rules).int64.gte = 1];
 }
 
 message GetAllPostsOfClassroomResponse {
     CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
-    int32 totalCount = 2 [(validate.rules).int32.gte = 0];
+    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
     repeated PostResponse posts = 3;
 }

@@ -48,14 +48,14 @@ func (h *ClassroomHdl) GetClassroom(ctx context.Context, req *classroompb.GetCla
 	}
 
 	clrResp := classroompb.ClassroomResponse{
-		Id:            int32(clr.ID),
+		Id:            int64(clr.ID),
 		Title:         clr.Title,
 		Description:   clr.Description,
 		Status:        clr.Status,
 		LecturerId:    clr.LecturerID,
 		CodeClassroom: clr.CodeClassroom,
 		TopicTags:     clr.TopicTags,
-		Quantity:      int32(clr.Quantity),
+		Quantity:      int64(clr.Quantity),
 		CreatedAt:     timestamppb.New(clr.CreatedAt),
 		UpdatedAt:     timestamppb.New(clr.UpdatedAt),
 	}
@@ -166,14 +166,14 @@ func (h *ClassroomHdl) GetClassrooms(ctx context.Context, req *classroompb.GetCl
 	var clrsResp []*classroompb.ClassroomResponse
 	for _, c := range clrs {
 		clrsResp = append(clrsResp, &classroompb.ClassroomResponse{
-			Id:            int32(c.ID),
+			Id:            int64(c.ID),
 			Title:         c.Title,
 			Description:   c.Description,
 			Status:        c.Status,
 			LecturerId:    c.LecturerID,
 			CodeClassroom: c.CodeClassroom,
 			TopicTags:     c.TopicTags,
-			Quantity:      int32(c.Quantity),
+			Quantity:      int64(c.Quantity),
 			CreatedAt:     timestamppb.New(c.CreatedAt),
 			UpdatedAt:     timestamppb.New(c.UpdatedAt),
 		})
@@ -185,7 +185,7 @@ func (h *ClassroomHdl) GetClassrooms(ctx context.Context, req *classroompb.GetCl
 			Message:    "Success",
 		},
 		Classrooms: clrsResp,
-		TotalCount: int32(count),
+		TotalCount: int64(count),
 	}, nil
 }
 

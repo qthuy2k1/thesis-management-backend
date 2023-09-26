@@ -81,22 +81,28 @@ func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, arg
 }
 
 // CreateExercise creates a new exercise in db given by exercise model
-func (r *ExerciseRepo) CreateExercise(ctx context.Context, p ExerciseInputRepo) error {
+func (r *ExerciseRepo) CreateExercise(ctx context.Context, p ExerciseInputRepo) (int64, error) {
 	// check exercise exists
 	isExists, err := r.IsExerciseExists(ctx, p.ClassroomID, p.Title)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	if isExists {
-		return ErrExerciseExisted
+		return 0, ErrExerciseExisted
 	}
 
-	if _, err := ExecSQL(ctx, r.Database, "CreateExercise", "INSERT INTO exercises (title, content, classroom_id, deadline, score, reporting_stage_id, author_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", p.Title, p.Content, p.ClassroomID, p.Deadline, p.Score, p.ReportingStageID, p.AuthorID); err != nil {
-		return err
+	row, err := QueryRowSQL(ctx, r.Database, "CreateExercise", "INSERT INTO exercises (title, content, classroom_id, deadline, score, reporting_stage_id, author_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", p.Title, p.Content, p.ClassroomID, p.Deadline, p.Score, p.ReportingStageID, p.AuthorID)
+	if err != nil {
+		return 0, err
 	}
 
-	return nil
+	var id int64
+	if err := row.Scan(&id); err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
 
 type ExerciseOutputRepo struct {
@@ -148,7 +154,7 @@ func (r *ExerciseRepo) IsExerciseExists(ctx context.Context, classroomID int, ti
 
 // UpdateExercise updates the specified exercise by id
 func (r *ExerciseRepo) UpdateExercise(ctx context.Context, id int, exercise ExerciseInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdatePost", "UPDATE exercises SET title=$2, content=$3, classroom_id=$4, deadline=$5, score=$6, reporting_stage_id=$7, author_id=$8, updated_at=$8 WHERE id=$1", id, exercise.Title, exercise.Content, exercise.ClassroomID, exercise.Deadline, exercise.Score, exercise.ReportingStageID, exercise.AuthorID, time.Now())
+	result, err := ExecSQL(ctx, r.Database, "UpdateExercise", "UPDATE exercises SET title=$2, content=$3, classroom_id=$4, deadline=$5, score=$6, reporting_stage_id=$7, author_id=$8, updated_at=$8 WHERE id=$1", id, exercise.Title, exercise.Content, exercise.ClassroomID, exercise.Deadline, exercise.Score, exercise.ReportingStageID, exercise.AuthorID, time.Now())
 	if err != nil {
 		return err
 	}
@@ -161,7 +167,7 @@ func (r *ExerciseRepo) UpdateExercise(ctx context.Context, id int, exercise Exer
 
 // DeleteExercise deletes a exercise in db given by id
 func (r *ExerciseRepo) DeleteExercise(ctx context.Context, id int) error {
-	result, err := ExecSQL(ctx, r.Database, "DeletePost", "DELETE FROM exercises WHERE id=$1", id)
+	result, err := ExecSQL(ctx, r.Database, "DeleteExercise", "DELETE FROM exercises WHERE id=$1", id)
 	if err != nil {
 		return err
 	}

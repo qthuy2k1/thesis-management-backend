@@ -48,8 +48,8 @@ func (h *WaitingListHdl) GetWaitingList(ctx context.Context, req *waitingListpb.
 	}
 
 	pResp := waitingListpb.WaitingListResponse{
-		Id:          int32(wt.ID),
-		ClassroomID: int32(wt.ClassroomID),
+		Id:          int64(wt.ID),
+		ClassroomID: int64(wt.ClassroomID),
 		UserID:      wt.UserID,
 		CreatedAt:   timestamppb.New(wt.CreatedAt),
 	}
@@ -129,8 +129,8 @@ func (h *WaitingListHdl) GetWaitingListsOfClassroom(ctx context.Context, req *wa
 	var wtsResp []*waitingListpb.WaitingListResponse
 	for _, wt := range wts {
 		wtsResp = append(wtsResp, &waitingListpb.WaitingListResponse{
-			Id:          int32(wt.ID),
-			ClassroomID: int32(wt.ClassroomID),
+			Id:          int64(wt.ID),
+			ClassroomID: int64(wt.ClassroomID),
 			UserID:      wt.UserID,
 			CreatedAt:   timestamppb.New(wt.CreatedAt),
 		})
@@ -154,7 +154,7 @@ func (h *WaitingListHdl) CheckUserInWaitingListOfClassroom(ctx context.Context, 
 
 	return &waitingListpb.CheckUserInWaitingListClassroomResponse{
 		IsIn:        isIn,
-		ClassroomID: int32(classroomID),
+		ClassroomID: int64(classroomID),
 	}, nil
 }
 

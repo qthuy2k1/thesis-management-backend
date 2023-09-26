@@ -8,7 +8,6 @@ import (
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
-	reportingStageSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
@@ -123,7 +122,7 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 		})
 	}
 
-	reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{
+	reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
 		Id: res.Post.ReportingStageID,
 	})
 	if err != nil {
@@ -242,8 +241,8 @@ func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (
 		return nil, err
 	}
 
-	var limit int32 = 5
-	var page int32 = 1
+	var limit int64 = 5
+	var page int64 = 1
 	titleSearch := ""
 	sortColumn := "id"
 	sortOrder := "asc"
@@ -295,7 +294,7 @@ func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (
 
 	var posts []*pb.PostResponse
 	for _, p := range res.GetPosts() {
-		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{
+		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
 			Id: p.ReportingStageID,
 		})
 		if err != nil {
@@ -350,12 +349,12 @@ func (u *postServiceGW) GetAllPostsOfClassroom(ctx context.Context, req *pb.GetA
 		return nil, err
 	}
 
-	var limit int32 = 5
-	var page int32 = 1
+	var limit int64 = 5
+	var page int64 = 1
 	titleSearch := ""
 	sortColumn := "id"
 	sortOrder := "asc"
-	var classroomID int32
+	var classroomID int64
 
 	if req.GetLimit() > 0 {
 		limit = req.GetLimit()
@@ -409,7 +408,7 @@ func (u *postServiceGW) GetAllPostsOfClassroom(ctx context.Context, req *pb.GetA
 
 	var posts []*pb.PostResponse
 	for _, p := range res.GetPosts() {
-		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{
+		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
 			Id: p.ReportingStageID,
 		})
 		if err != nil {

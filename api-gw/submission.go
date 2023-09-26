@@ -140,7 +140,9 @@ func (u *submissionServiceGW) GetAllSubmissionsOfExercise(ctx context.Context, r
 		return nil, err
 	}
 
-	res, err := u.submissionClient.GetAllSubmissionsOfExercise(ctx, &submissionSvcV1.GetAllSubmissionsOfExerciseRequest{})
+	res, err := u.submissionClient.GetAllSubmissionsOfExercise(ctx, &submissionSvcV1.GetAllSubmissionsOfExerciseRequest{
+		ExerciseID: req.GetExerciseID(),
+	})
 	if err != nil {
 		return nil, err
 	}

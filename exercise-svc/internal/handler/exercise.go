@@ -21,7 +21,8 @@ func (h *ExerciseHdl) CreateExercise(ctx context.Context, req *exercisepb.Create
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
-	if err := h.Service.CreateExercise(ctx, e); err != nil {
+	id, err := h.Service.CreateExercise(ctx, e)
+	if err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
@@ -31,6 +32,7 @@ func (h *ExerciseHdl) CreateExercise(ctx context.Context, req *exercisepb.Create
 			StatusCode: 201,
 			Message:    "Created",
 		},
+		ExerciseID: id,
 	}
 
 	return resp, nil
@@ -50,10 +52,10 @@ func (h *ExerciseHdl) GetExercise(ctx context.Context, req *exercisepb.GetExerci
 	}
 
 	pResp := exercisepb.ExerciseResponse{
-		Id:          int32(e.ID),
+		Id:          int64(e.ID),
 		Title:       e.Title,
 		Content:     e.Content,
-		ClassroomID: int32(e.ClassroomID),
+		ClassroomID: int64(e.ClassroomID),
 		Deadline: &datetime.DateTime{
 			Day:     int32(e.Deadline.Day()),
 			Month:   int32(e.Deadline.Month()),
@@ -62,8 +64,8 @@ func (h *ExerciseHdl) GetExercise(ctx context.Context, req *exercisepb.GetExerci
 			Minutes: int32(e.Deadline.Minute()),
 			Seconds: int32(e.Deadline.Second()),
 		},
-		Score:            int32(e.Score),
-		ReportingStageID: int32(e.ReportingStageID),
+		Score:            int64(e.Score),
+		ReportingStageID: int64(e.ReportingStageID),
 		AuthorID:         e.AuthorID,
 		CreatedAt:        timestamppb.New(e.CreatedAt),
 		UpdatedAt:        timestamppb.New(e.UpdatedAt),
@@ -157,10 +159,10 @@ func (h *ExerciseHdl) GetExercises(ctx context.Context, req *exercisepb.GetExerc
 	var psResp []*exercisepb.ExerciseResponse
 	for _, e := range ps {
 		psResp = append(psResp, &exercisepb.ExerciseResponse{
-			Id:          int32(e.ID),
+			Id:          int64(e.ID),
 			Title:       e.Title,
 			Content:     e.Content,
-			ClassroomID: int32(e.ClassroomID),
+			ClassroomID: int64(e.ClassroomID),
 			Deadline: &datetime.DateTime{
 				Day:     int32(e.Deadline.Day()),
 				Month:   int32(e.Deadline.Month()),
@@ -169,8 +171,8 @@ func (h *ExerciseHdl) GetExercises(ctx context.Context, req *exercisepb.GetExerc
 				Minutes: int32(e.Deadline.Minute()),
 				Seconds: int32(e.Deadline.Second()),
 			},
-			Score:            int32(e.Score),
-			ReportingStageID: int32(e.ReportingStageID),
+			Score:            int64(e.Score),
+			ReportingStageID: int64(e.ReportingStageID),
 			AuthorID:         e.AuthorID,
 			CreatedAt:        timestamppb.New(e.CreatedAt),
 			UpdatedAt:        timestamppb.New(e.UpdatedAt),
@@ -183,7 +185,7 @@ func (h *ExerciseHdl) GetExercises(ctx context.Context, req *exercisepb.GetExerc
 			Message:    "Success",
 		},
 		Exercises:  psResp,
-		TotalCount: int32(count),
+		TotalCount: int64(count),
 	}, nil
 }
 
@@ -211,10 +213,10 @@ func (h *ExerciseHdl) GetAllExercisesOfClassroom(ctx context.Context, req *exerc
 	var esResp []*exercisepb.ExerciseResponse
 	for _, e := range es {
 		esResp = append(esResp, &exercisepb.ExerciseResponse{
-			Id:          int32(e.ID),
+			Id:          int64(e.ID),
 			Title:       e.Title,
 			Content:     e.Content,
-			ClassroomID: int32(e.ClassroomID),
+			ClassroomID: int64(e.ClassroomID),
 			Deadline: &datetime.DateTime{
 				Day:     int32(e.Deadline.Day()),
 				Month:   int32(e.Deadline.Month()),
@@ -223,8 +225,8 @@ func (h *ExerciseHdl) GetAllExercisesOfClassroom(ctx context.Context, req *exerc
 				Minutes: int32(e.Deadline.Minute()),
 				Seconds: int32(e.Deadline.Second()),
 			},
-			Score:            int32(e.Score),
-			ReportingStageID: int32(e.ReportingStageID),
+			Score:            int64(e.Score),
+			ReportingStageID: int64(e.ReportingStageID),
 			AuthorID:         e.AuthorID,
 			CreatedAt:        timestamppb.New(e.CreatedAt),
 			UpdatedAt:        timestamppb.New(e.UpdatedAt),
@@ -237,7 +239,7 @@ func (h *ExerciseHdl) GetAllExercisesOfClassroom(ctx context.Context, req *exerc
 			Message:    "Success",
 		},
 		Exercises:  esResp,
-		TotalCount: int32(count),
+		TotalCount: int64(count),
 	}, nil
 }
 

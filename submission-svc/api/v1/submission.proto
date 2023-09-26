@@ -19,7 +19,7 @@ service SubmissionService {
 }
 
 message CommonSubmissionResponse {
-    int32 statusCode = 1;
+    int64 statusCode = 1;
     string message = 2;
 }
 
@@ -27,15 +27,15 @@ message CommonSubmissionResponse {
 // ====== submission ======
 message SubmissionInput {
     string userID = 1;
-    int32 exerciseID = 2;
+    int64 exerciseID = 2;
     google.type.DateTime submission_date = 3;
     string status = 4;
 }
 
 message SubmissionResponse {
-    int32 id = 1;
+    int64 id = 1;
     string userID = 2;
-    int32 exerciseID = 3;
+    int64 exerciseID = 3;
     google.type.DateTime submission_date = 4;
     string status = 5;
 }
@@ -46,12 +46,13 @@ message CreateSubmissionRequest {
 
 message CreateSubmissionResponse {
     CommonSubmissionResponse response = 1;
+    int64 submissionID = 2;
 }
 
 
 // ====== GET ======
 message GetSubmissionRequest {
-    int32 id = 1;
+    int64 id = 1;
 }
 
 message GetSubmissionResponse {
@@ -61,7 +62,7 @@ message GetSubmissionResponse {
 
 // ====== PUT ======
 message UpdateSubmissionRequest {
-    int32 id = 1;
+    int64 id = 1;
     SubmissionInput submission = 2;
 }
 
@@ -71,7 +72,7 @@ message UpdateSubmissionResponse {
 
 // ====== DELETE ======
 message DeleteSubmissionRequest {
-    int32 id = 1;
+    int64 id = 1;
 }
 
 message DeleteSubmissionResponse {
@@ -80,11 +81,11 @@ message DeleteSubmissionResponse {
 
 // ====== GET ALL OF EXERCISE ======
 message GetAllSubmissionsOfExerciseRequest {
-    int32 exerciseID = 1;
+    int64 exerciseID = 1;
 }
 
 message GetAllSubmissionsOfExerciseResponse {
     CommonSubmissionResponse response = 1;
-    int32 totalCount = 2;
+    int64 totalCount = 2;
     repeated SubmissionResponse submissions = 3;
 }

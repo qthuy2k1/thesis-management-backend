@@ -17,14 +17,14 @@ service CommentService {
 }
 
 message CommonCommentResponse {
-    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    int64 statusCode = 1 [(validate.rules).int64.gte = 1];
     string message = 2 [(validate.rules).string = {min_len: 2}];
 }
 
 message CommentInput {
     string userID = 2;
-    optional int32 postID = 3;
-    optional int32 exerciseID = 4;
+    optional int64 postID = 3;
+    optional int64 exerciseID = 4;
     string content = 5;
 }
 

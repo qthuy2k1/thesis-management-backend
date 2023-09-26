@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package attachment.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package="github.com/qthuy2k1/thesis-management-backend/attachment/api/v1";
+
+service AttachmentService {
+    rpc CreateAttachment(CreateAttachmentRequest) returns (CreateAttachmentResponse){}
+    
+    rpc GetAttachment(GetAttachmentRequest) returns (GetAttachmentResponse){}
+
+    rpc UpdateAttachment(UpdateAttachmentRequest) returns (UpdateAttachmentResponse){}
+
+    rpc DeleteAttachment(DeleteAttachmentRequest) returns (DeleteAttachmentResponse){}
+
+    rpc GetAttachmentsOfExercise(GetAttachmentsOfExerciseRequest) returns (GetAttachmentsOfExerciseResponse) {}
+}
+
+
+message CommonAttachmentResponse {
+    int64 statusCode = 1;
+    string message = 2;
+}
+
+// ====== POST ======
+message AttachmentInput {
+    string fileURL = 1;
+    string status = 2;
+    int64 submissionID = 3;
+    int64 exerciseID = 4;
+    string authorID = 5;
+}
+
+
+message AttachmentResponse {
+    int64 id = 1;
+    string fileURL = 2;
+    string status = 3;
+    int64 submissionID = 4; 
+    int64 exerciseID = 5;
+    string authorID = 6;
+    google.protobuf.Timestamp created_at = 7;
+}
+
+
+message CreateAttachmentRequest {
+   AttachmentInput attachment = 1;
+}
+
+message CreateAttachmentResponse {
+    CommonAttachmentResponse response = 1;
+}
+
+
+// ====== GET ======
+message GetAttachmentRequest {
+    int64 id = 1;
+}
+
+message GetAttachmentResponse {
+    CommonAttachmentResponse response = 1;
+    AttachmentResponse attachment = 2;
+} 
+
+message CheckAttachmentExistsRequest {
+    int64 attachmentID = 1;
+}
+
+message CheckAttachmentExistsResponse {
+    bool exists = 1;
+}
+
+
+// ====== PUT ======
+message UpdateAttachmentRequest {
+    int64 id = 1;
+    AttachmentInput attachment = 2;
+}
+
+message UpdateAttachmentResponse {
+    CommonAttachmentResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteAttachmentRequest {
+    int64 id = 1;
+}
+
+message DeleteAttachmentResponse {
+    CommonAttachmentResponse response = 1;
+}
+
+
+// ====== GET ALL ======
+message GetAttachmentsOfExerciseRequest {
+    int64 exerciseID = 1;
+}
+
+message GetAttachmentsOfExerciseResponse {
+    CommonAttachmentResponse response = 1;
+    repeated AttachmentResponse attachments = 3;
+}
+

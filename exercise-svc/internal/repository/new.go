@@ -8,7 +8,7 @@ import (
 
 type IExerciseRepo interface {
 	// CreateExercise creates a new exercise in db given by exercise model
-	CreateExercise(ctx context.Context, clr ExerciseInputRepo) error
+	CreateExercise(ctx context.Context, clr ExerciseInputRepo) (int64, error)
 	// GetExercise returns a exercise in db given by id
 	GetExercise(ctx context.Context, id int) (ExerciseOutputRepo, error)
 	// CheckExerciseExists checks whether the specified exercise exists by name

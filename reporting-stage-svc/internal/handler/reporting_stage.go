@@ -47,7 +47,7 @@ func (h *ReportingStageHdl) GetReportingStage(ctx context.Context, req *reportin
 	}
 
 	pResp := reportingStagepb.ReportingStageResponse{
-		Id:          int32(p.ID),
+		Id:          int64(p.ID),
 		Name:        p.Name,
 		Description: p.Description,
 	}
@@ -127,7 +127,7 @@ func (h *ReportingStageHdl) GetReportingStages(ctx context.Context, req *reporti
 	var psResp []*reportingStagepb.ReportingStageResponse
 	for _, p := range ps {
 		psResp = append(psResp, &reportingStagepb.ReportingStageResponse{
-			Id:          int32(p.ID),
+			Id:          int64(p.ID),
 			Name:        p.Name,
 			Description: p.Description,
 		})

@@ -1,0 +1,164 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "attachment.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "AttachmentService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1AttachmentInput": {
+      "type": "object",
+      "properties": {
+        "fileURL": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "submissionID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "exerciseID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "authorID": {
+          "type": "string"
+        }
+      },
+      "title": "====== POST ======"
+    },
+    "v1AttachmentResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "fileURL": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "submissionID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "exerciseID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "authorID": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1CommonAttachmentResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "string",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateAttachmentResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonAttachmentResponse"
+        }
+      }
+    },
+    "v1DeleteAttachmentResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonAttachmentResponse"
+        }
+      }
+    },
+    "v1GetAttachmentResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonAttachmentResponse"
+        },
+        "attachment": {
+          "$ref": "#/definitions/v1AttachmentResponse"
+        }
+      }
+    },
+    "v1GetAttachmentsOfExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonAttachmentResponse"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1AttachmentResponse"
+          }
+        }
+      }
+    },
+    "v1UpdateAttachmentResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonAttachmentResponse"
+        }
+      }
+    }
+  }
+}

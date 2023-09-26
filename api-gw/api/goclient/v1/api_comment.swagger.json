@@ -85,12 +85,12 @@
           "type": "string"
         },
         "postID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "exerciseID": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "content": {
           "type": "string"
@@ -101,8 +101,8 @@
       "type": "object",
       "properties": {
         "statusCode": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string",
+          "format": "int64"
         },
         "message": {
           "type": "string"

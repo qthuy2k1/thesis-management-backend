@@ -7,7 +7,7 @@ import (
 
 type ISubmissionRepo interface {
 	// CreateSubmission creates a new submission in db given by submission model
-	CreateSubmission(ctx context.Context, clr SubmissionInputRepo) error
+	CreateSubmission(ctx context.Context, clr SubmissionInputRepo) (int64, error)
 	// UpdateSubmission updates the specified submission by id
 	UpdateSubmission(ctx context.Context, id int, submission SubmissionInputRepo) error
 	// DeleteSubmission deletes a submission in db given by id

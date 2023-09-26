@@ -16,7 +16,7 @@ type SubmissionInputSvc struct {
 }
 
 // CreateSubmission creates a new submission in db given by exercise model
-func (s *SubmissionSvc) CreateSubmission(ctx context.Context, submission SubmissionInputSvc) error {
+func (s *SubmissionSvc) CreateSubmission(ctx context.Context, submission SubmissionInputSvc) (int64, error) {
 	sRepo := repository.SubmissionInputRepo{
 		UserID:         submission.UserID,
 		ExerciseID:     submission.ExerciseID,
@@ -24,14 +24,15 @@ func (s *SubmissionSvc) CreateSubmission(ctx context.Context, submission Submiss
 		Status:         submission.Status,
 	}
 
-	if err := s.Repository.CreateSubmission(ctx, sRepo); err != nil {
+	id, err := s.Repository.CreateSubmission(ctx, sRepo)
+	if err != nil {
 		if errors.Is(err, repository.ErrSubmissionExisted) {
-			return ErrSubmissionExisted
+			return 0, ErrSubmissionExisted
 		}
-		return err
+		return 0, err
 	}
 
-	return nil
+	return id, nil
 }
 
 // UpdateSubmission updates the specified submission by id

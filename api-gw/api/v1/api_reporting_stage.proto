@@ -42,7 +42,7 @@ service ReportingStageService {
 }
 
 message CommonReportingStageResponse {
-    int32 statusCode = 1 [(validate.rules).int32.gte = 1];
+    int64 statusCode = 1 [(validate.rules).int64.gte = 1];
     string message = 2 [(validate.rules).string = {min_len: 2}];
 }
 
@@ -54,7 +54,7 @@ message ReportingStageInput {
 }
 
 message ReportingStageResponse {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     string name = 2 [(validate.rules).string = {min_len: 2}];
     string description = 3 [(validate.rules).string = {min_len: 2}];
 }
@@ -70,7 +70,7 @@ message CreateReportingStageResponse {
 
 // ====== GET ======
 message GetReportingStageRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
 }
 
 message GetReportingStageResponse {
@@ -80,7 +80,7 @@ message GetReportingStageResponse {
 
 // ====== PUT ======
 message UpdateReportingStageRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
     ReportingStageInput reportingStage = 2 [(validate.rules).message = {required: true}];
 }
 
@@ -90,7 +90,7 @@ message UpdateReportingStageResponse {
 
 // ====== DELETE ======
 message DeleteReportingStageRequest {
-    int32 id = 1 [(validate.rules).int32.gte = 1];
+    int64 id = 1 [(validate.rules).int64.gte = 1];
 }
 
 message DeleteReportingStageResponse {
