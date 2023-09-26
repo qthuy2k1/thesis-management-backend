@@ -57,7 +57,7 @@ func run() error {
 	// Note: Make sure the gRPC server is running properly and accessible
 	mux := runtime.NewServeMux()
 	s := &http.Server{
-		Addr:    ":8081",
+		Addr:    ":8080",
 		Handler: allowCORS(mux),
 	}
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
@@ -98,7 +98,7 @@ func run() error {
 		return err
 	}
 
-	fmt.Println("The APIGW-Client starting on 0.0.0.0:8081")
+	fmt.Println("The APIGW-Client starting on 0.0.0.0:8080")
 	go func() {
 		<-ctx.Done()
 		glog.Infof("Shutting down the http server")
@@ -108,7 +108,7 @@ func run() error {
 	}()
 
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	glog.Infof("The APIGW-Client starting on 0.0.0.0:%s", "8081")
+	glog.Infof("The APIGW-Client starting on 0.0.0.0:%s", "8080")
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
 		glog.Errorf("Failed to listen and serve: %v", err)
 		return err

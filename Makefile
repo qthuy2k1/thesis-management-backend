@@ -280,6 +280,7 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-submission:latest
 	docker push qthuy2k1/thesis-management-backend-classroom-waiting-list:latest
 	docker push qthuy2k1/thesis-management-backend-comment:latest
+	docker push qthuy2k1/thesis-management-backend-attachment:latest
 
 	# DB
 	docker push qthuy2k1/thesis-management-backend-classroom-db:latest
