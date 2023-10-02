@@ -1,0 +1,10 @@
+{
+    "topic": {
+        "id": "<integer>",
+        "typeTopic": "<string>",
+        "memberQuantity": "<integer>",
+        "studentID": "<string>",
+        "memberEmail": "<string>",
+        "description": "<string>"
+    }
+}

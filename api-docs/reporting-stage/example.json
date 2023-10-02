@@ -1,7 +1,7 @@
 {
     "Create a reporting stage": {
     // Method: POST
-    // URL: localhost:8081/api/reporting-stage
+    // URL: localhost:8080/api/reporting-stage
         "success": {
             "input": {
                 "reportingStage": {
@@ -32,7 +32,7 @@
     },
     "Get a reporting stage": {
     // Method: GET
-    // URL: localhost:8081/api/reporting-stage/1
+    // URL: localhost:8080/api/reporting-stage/1
         "success": {
             "output": {
                 "reportingStage": {
@@ -52,7 +52,7 @@
     },
     "Delete a reporting stage": {
     // Method: DELETE 
-    // URL: localhost:8081/api/reporting-stage/1
+    // URL: localhost:8080/api/reporting-stage/1
         "success": {
             "output": {
                 "response": {
@@ -71,7 +71,7 @@
     },
     "Update a reporting stage": {
     // Method: PUT
-    // URL: localhost:8081/api/reporting-stage/1
+    // URL: localhost:8080/api/reporting-stage/1
         "success": {
             "input": {
                 "reportingStage": {

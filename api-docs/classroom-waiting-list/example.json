@@ -1,7 +1,7 @@
 {
     "Create a waiting list": {
         // Method: POST
-        // URL: localhost:8081/api/waiting-list
+        // URL: localhost:8080/api/waiting-list
         "success": {
             "input": {
                 "waitingList": {
@@ -32,7 +32,7 @@
     },
     "Get a waiting list": {
         // Method: GET
-        // URL: localhost:8081/api/waiting-list/1
+        // URL: localhost:8080/api/waiting-list/1
         "success": {
             "output": {
                 "waitingList": {
@@ -53,7 +53,7 @@
     },
     "Delete a waiting list": {
         // Method: DELETE 
-        // URL: localhost:8081/api/waiting-list/1
+        // URL: localhost:8080/api/waiting-list/1
         "success": {
             "output": {
                 "response": {
@@ -72,7 +72,7 @@
     },
     "Update a waiting list": {
         // Method: PUT
-        // URL: localhost:8081/api/waiting-list/1
+        // URL: localhost:8080/api/waiting-list/1
         "success": {
             "input": {
                 "waitingList": {
@@ -103,7 +103,7 @@
     },
     "Get all waiting lists of a classroom": {
         // Method: GET
-        // URL: localhost:8081/api/classroom/1(classroom id)/waiting-list
+        // URL: localhost:8080/api/classroom/1(classroom id)/waiting-list
         "success": {
             "output": {
                 "response": {

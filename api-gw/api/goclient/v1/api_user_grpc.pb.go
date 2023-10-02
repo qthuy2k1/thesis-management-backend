@@ -27,6 +27,7 @@ const (
 	UserService_GetAllUsersOfClassroom_FullMethodName       = "/api.user.v1.UserService/GetAllUsersOfClassroom"
 	UserService_ApproveUserJoinClassroom_FullMethodName     = "/api.user.v1.UserService/ApproveUserJoinClassroom"
 	UserService_CheckStatusUserJoinClassroom_FullMethodName = "/api.user.v1.UserService/CheckStatusUserJoinClassroom"
+	UserService_UpdateBasicUser_FullMethodName              = "/api.user.v1.UserService/UpdateBasicUser"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -41,6 +42,7 @@ type UserServiceClient interface {
 	GetAllUsersOfClassroom(ctx context.Context, in *GetAllUsersOfClassroomRequest, opts ...grpc.CallOption) (*GetAllUsersOfClassroomResponse, error)
 	ApproveUserJoinClassroom(ctx context.Context, in *ApproveUserJoinClassroomRequest, opts ...grpc.CallOption) (*ApproveUserJoinClassroomResponse, error)
 	CheckStatusUserJoinClassroom(ctx context.Context, in *CheckStatusUserJoinClassroomRequest, opts ...grpc.CallOption) (*CheckStatusUserJoinClassroomResponse, error)
+	UpdateBasicUser(ctx context.Context, in *UpdateBasicUserRequest, opts ...grpc.CallOption) (*UpdateBasicUserResponse, error)
 }
 
 type userServiceClient struct {
@@ -123,6 +125,15 @@ func (c *userServiceClient) CheckStatusUserJoinClassroom(ctx context.Context, in
 	return out, nil
 }
 
+func (c *userServiceClient) UpdateBasicUser(ctx context.Context, in *UpdateBasicUserRequest, opts ...grpc.CallOption) (*UpdateBasicUserResponse, error) {
+	out := new(UpdateBasicUserResponse)
+	err := c.cc.Invoke(ctx, UserService_UpdateBasicUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -135,6 +146,7 @@ type UserServiceServer interface {
 	GetAllUsersOfClassroom(context.Context, *GetAllUsersOfClassroomRequest) (*GetAllUsersOfClassroomResponse, error)
 	ApproveUserJoinClassroom(context.Context, *ApproveUserJoinClassroomRequest) (*ApproveUserJoinClassroomResponse, error)
 	CheckStatusUserJoinClassroom(context.Context, *CheckStatusUserJoinClassroomRequest) (*CheckStatusUserJoinClassroomResponse, error)
+	UpdateBasicUser(context.Context, *UpdateBasicUserRequest) (*UpdateBasicUserResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -165,6 +177,9 @@ func (UnimplementedUserServiceServer) ApproveUserJoinClassroom(context.Context, 
 }
 func (UnimplementedUserServiceServer) CheckStatusUserJoinClassroom(context.Context, *CheckStatusUserJoinClassroomRequest) (*CheckStatusUserJoinClassroomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckStatusUserJoinClassroom not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateBasicUser(context.Context, *UpdateBasicUserRequest) (*UpdateBasicUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBasicUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -323,6 +338,24 @@ func _UserService_CheckStatusUserJoinClassroom_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_UpdateBasicUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateBasicUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateBasicUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdateBasicUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateBasicUser(ctx, req.(*UpdateBasicUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -361,6 +394,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckStatusUserJoinClassroom",
 			Handler:    _UserService_CheckStatusUserJoinClassroom_Handler,
+		},
+		{
+			MethodName: "UpdateBasicUser",
+			Handler:    _UserService_UpdateBasicUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

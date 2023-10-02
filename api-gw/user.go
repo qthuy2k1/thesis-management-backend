@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
@@ -422,6 +423,57 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 			Quantity:      clrRes.GetClassroom().GetQuantity(),
 			CreatedAt:     clrRes.GetClassroom().GetCreatedAt(),
 			UpdatedAt:     clrRes.GetClassroom().GetUpdatedAt(),
+		},
+	}, nil
+}
+
+func (u *userServiceGW) UpdateBasicUser(ctx context.Context, req *pb.UpdateBasicUserRequest) (*pb.UpdateBasicUserResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	log.Println(req.User)
+
+	userGetRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: req.GetId(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if userGetRes.Response.StatusCode != 200 {
+		return &pb.UpdateBasicUserResponse{
+			Response: &pb.CommonUserResponse{
+				StatusCode: userGetRes.Response.StatusCode,
+				Message:    userGetRes.Response.Message,
+			},
+		}, nil
+	}
+
+	major := req.GetUser().GetMajor()
+	phone := req.GetUser().GetPhone()
+	classroomID := userGetRes.GetUser().GetClassroomID()
+
+	res, err := u.userClient.UpdateUser(ctx, &userSvcV1.UpdateUserRequest{
+		Id: req.GetId(),
+		User: &userSvcV1.UserInput{
+			Class:       req.GetUser().GetClass(),
+			Major:       &major,
+			Phone:       &phone,
+			PhotoSrc:    req.GetUser().GetPhotoSrc(),
+			Name:        req.GetUser().GetName(),
+			Email:       req.GetUser().GetEmail(),
+			Role:        userGetRes.GetUser().GetRole(),
+			ClassroomID: &classroomID,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UpdateBasicUserResponse{
+		Response: &pb.CommonUserResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
 		},
 	}, nil
 }

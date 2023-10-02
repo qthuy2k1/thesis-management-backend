@@ -17,7 +17,7 @@ type AttachmentInputSvc struct {
 }
 
 // CreateClasroom creates a new attachment in db given by attachment model
-func (s *AttachmentSvc) CreateAttachment(ctx context.Context, att AttachmentInputSvc) error {
+func (s *AttachmentSvc) CreateAttachment(ctx context.Context, att AttachmentInputSvc) (AttachmentOutputSvc, error) {
 	attRepo := repository.AttachmentInputRepo{
 		FileURL:      att.FileURL,
 		Status:       att.Status,
@@ -25,15 +25,23 @@ func (s *AttachmentSvc) CreateAttachment(ctx context.Context, att AttachmentInpu
 		ExerciseID:   att.ExerciseID,
 		AuthorID:     att.AuthorID,
 	}
-
-	if err := s.Repository.CreateAttachment(ctx, attRepo); err != nil {
+	attRes, err := s.Repository.CreateAttachment(ctx, attRepo)
+	if err != nil {
 		if errors.Is(err, repository.ErrAttachmentExisted) {
-			return ErrAttachmentExisted
+			return AttachmentOutputSvc{}, ErrAttachmentExisted
 		}
-		return err
+		return AttachmentOutputSvc{}, err
 	}
 
-	return nil
+	return AttachmentOutputSvc{
+		ID:           attRes.ID,
+		FileURL:      attRes.FileURL,
+		Status:       attRes.Status,
+		SubmissionID: attRes.SubmissionID,
+		ExerciseID:   attRes.ExerciseID,
+		AuthorID:     attRes.AuthorID,
+		CreatedAt:    attRes.CreatedAt,
+	}, nil
 }
 
 // GetAttachment returns a attachment in db given by id
@@ -100,6 +108,29 @@ type AttachmentOutputSvc struct {
 // GetAttachment returns a list of attachments in db with filter
 func (s *AttachmentSvc) GetAttachmentsOfExercise(ctx context.Context, exerciseID int) ([]AttachmentOutputSvc, error) {
 	attsRepo, err := s.Repository.GetAttachmentsOfExercise(ctx, exerciseID)
+	if err != nil {
+		return nil, err
+	}
+
+	var attsSvc []AttachmentOutputSvc
+	for _, c := range attsRepo {
+		attsSvc = append(attsSvc, AttachmentOutputSvc{
+			ID:           c.ID,
+			FileURL:      c.FileURL,
+			Status:       c.Status,
+			SubmissionID: c.SubmissionID,
+			ExerciseID:   c.ExerciseID,
+			AuthorID:     c.AuthorID,
+			CreatedAt:    c.CreatedAt,
+		})
+	}
+
+	return attsSvc, nil
+}
+
+// GetAttachment returns a list of attachments in db with filter
+func (s *AttachmentSvc) GetAttachmentsOfSubmission(ctx context.Context, submissionID int) ([]AttachmentOutputSvc, error) {
+	attsRepo, err := s.Repository.GetAttachmentsOfSubmission(ctx, submissionID)
 	if err != nil {
 		return nil, err
 	}

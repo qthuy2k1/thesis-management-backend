@@ -59,6 +59,11 @@ service UserService {
         };
     }
 
+    rpc UpdateBasicUser(UpdateBasicUserRequest) returns (UpdateBasicUserResponse) {
+        option (google.api.http) = {
+            put: "/api/user/{id}/update-info"
+        };
+    }
 }
 
 message CommonUserResponse {
@@ -192,4 +197,25 @@ message CheckStatusUserJoinClassroomRequest{
 message CheckStatusUserJoinClassroomResponse{
     string status = 1;
     ClassroomUserResponse classroom = 2;
+}
+
+
+message UserBasicInput {
+    string class = 1 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 2 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 3 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 4;
+    string name = 5 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 6 [(validate.rules).string.email = true];
+}
+
+
+// ====== PUT ======
+message UpdateBasicUserRequest {
+    string id = 1;
+    UserInput user = 2 [(validate.rules).message = {required: true}];
+}
+
+message UpdateBasicUserResponse {
+    CommonUserResponse response = 1;
 }

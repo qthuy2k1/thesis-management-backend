@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package api.topic.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package="github.com/qthuy2k1/thesis-management-backend/topic/api/v1";
+
+service TopicService {
+     rpc CreateTopic(CreateTopicRequest) returns (CreateTopicResponse){
+        option (google.api.http) = {
+            post: "/api/topic"
+            body: "*"
+        };
+    }
+    
+    rpc GetTopic(GetTopicRequest) returns (GetTopicResponse){
+        option (google.api.http) = {
+            get: "/api/topic/{id}"
+        };
+    }
+
+    rpc UpdateTopic(UpdateTopicRequest) returns (UpdateTopicResponse){
+        option (google.api.http) = {
+            put: "/api/topic/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteTopic(DeleteTopicRequest) returns (DeleteTopicResponse){
+        option (google.api.http) = {
+            delete: "/api/topic/{id}"
+        };
+    }
+}
+
+
+message CommonTopicResponse {
+    int64 statusCode = 1;
+    string message = 2;
+}
+
+// ====== POST ======
+message TopicInput {
+    string title = 1;
+    string type_topic = 2;
+    int64 member_quanity = 3;
+    string student_id = 4;
+    string member_email = 5;
+    string description = 6;
+}
+
+
+message TopicResponse {
+    int64 id = 1;
+    string title = 2;
+    string type_topic = 3;
+    int64 member_quanity = 4;
+    UserTopicResponse student_id = 5;
+    string member_email = 6;
+    string description = 7;
+}
+
+
+message CreateTopicRequest {
+   TopicInput topic = 1;
+}
+
+message CreateTopicResponse {
+    CommonTopicResponse response = 1;
+}
+
+
+// ====== GET ======
+message GetTopicRequest {
+    int64 id = 1;
+}
+
+message GetTopicResponse {
+    CommonTopicResponse response = 1;
+    TopicResponse topic = 2;
+} 
+
+message CheckTopicExistsRequest {
+    int64 topicID = 1;
+}
+
+message CheckTopicExistsResponse {
+    bool exists = 1;
+}
+
+
+// ====== PUT ======
+message UpdateTopicRequest {
+    int64 id = 1;
+    TopicInput topic = 2;
+}
+
+message UpdateTopicResponse {
+    CommonTopicResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteTopicRequest {
+    int64 id = 1;
+}
+
+message DeleteTopicResponse {
+    CommonTopicResponse response = 1;
+}
+
+message UserTopicResponse {
+    string id = 1;
+    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
+    optional int64 classroomID = 9;
+}

@@ -265,6 +265,91 @@
           "UserService"
         ]
       }
+    },
+    "/api/user/{id}/update-info": {
+      "put": {
+        "operationId": "UserService_UpdateBasicUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateBasicUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "user.id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.class",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.major",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.phone",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.photoSrc",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.role",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.email",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.classroomID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -436,6 +521,14 @@
             "type": "object",
             "$ref": "#/definitions/v1UserResponse"
           }
+        }
+      }
+    },
+    "v1UpdateBasicUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
         }
       }
     },

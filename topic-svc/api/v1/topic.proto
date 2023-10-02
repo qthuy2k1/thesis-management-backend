@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package topic.v1;
+
+option go_package="github.com/qthuy2k1/thesis-management-backend/topic/api/v1";
+
+service TopicService {
+    rpc CreateTopic(CreateTopicRequest) returns (CreateTopicResponse){}
+    
+    rpc GetTopic(GetTopicRequest) returns (GetTopicResponse){}
+
+    rpc UpdateTopic(UpdateTopicRequest) returns (UpdateTopicResponse){}
+
+    rpc DeleteTopic(DeleteTopicRequest) returns (DeleteTopicResponse){}
+}
+
+
+message CommonTopicResponse {
+    int64 statusCode = 1;
+    string message = 2;
+}
+
+// ====== POST ======
+message TopicInput {
+    string title = 1;
+    string type_topic = 2;
+    int64 member_quanity = 3;
+    string student_id = 4;
+    string member_email = 5;
+    string description = 6;
+}
+
+
+message TopicResponse {
+    int64 id = 1;
+    string title = 2;
+    string type_topic = 3;
+    int64 member_quanity = 4;
+    string student_id = 5;
+    string member_email = 6;
+    string description = 7;
+}
+
+
+message CreateTopicRequest {
+   TopicInput topic = 1;
+}
+
+message CreateTopicResponse {
+    CommonTopicResponse response = 1;
+}
+
+
+// ====== GET ======
+message GetTopicRequest {
+    int64 id = 1;
+}
+
+message GetTopicResponse {
+    CommonTopicResponse response = 1;
+    TopicResponse topic = 2;
+} 
+
+message CheckTopicExistsRequest {
+    int64 topicID = 1;
+}
+
+message CheckTopicExistsResponse {
+    bool exists = 1;
+}
+
+
+// ====== PUT ======
+message UpdateTopicRequest {
+    int64 id = 1;
+    TopicInput topic = 2;
+}
+
+message UpdateTopicResponse {
+    CommonTopicResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteTopicRequest {
+    int64 id = 1;
+}
+
+message DeleteTopicResponse {
+    CommonTopicResponse response = 1;
+}

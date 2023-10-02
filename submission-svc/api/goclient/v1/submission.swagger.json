@@ -185,6 +185,13 @@
         },
         "status": {
           "type": "string"
+        },
+        "attachmentID": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       },
       "title": "====== submission ======"
@@ -208,6 +215,13 @@
         },
         "status": {
           "type": "string"
+        },
+        "attachmentID": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },

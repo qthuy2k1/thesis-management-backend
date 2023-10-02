@@ -30,6 +30,7 @@ message SubmissionInput {
     int64 exerciseID = 2;
     google.type.DateTime submission_date = 3;
     string status = 4;
+    repeated int64 attachmentID = 5;
 }
 
 message SubmissionResponse {
@@ -38,6 +39,7 @@ message SubmissionResponse {
     int64 exerciseID = 3;
     google.type.DateTime submission_date = 4;
     string status = 5;
+    repeated int64 attachmentID = 6;
 }
 
 message CreateSubmissionRequest {

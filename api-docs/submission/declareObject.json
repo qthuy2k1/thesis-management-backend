@@ -1,0 +1,10 @@
+{
+    "submission": {
+        "id": "<integer>",
+        "userID": "<string>",
+        "exercise_id": "<string>",
+        "submission_date": "<DateTime>",
+        "status": "<string>",
+        "attachments": "<AttachmentObject>"
+    }
+}

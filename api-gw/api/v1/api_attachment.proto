@@ -52,7 +52,7 @@ message CommonAttachmentResponse {
 
 // ====== POST ======
 message AttachmentInput {
-   string fileURL = 1;
+    string fileURL = 1;
     string status = 2;
     int64 submissionID = 3;
     int64 exerciseID = 4;

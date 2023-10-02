@@ -1,0 +1,26 @@
+{
+    "Get all attachments of a exercise": {
+        // Method: GET
+        // URL: localhost:8080/api/exercise/{exerciseID}/attachments
+        "success": {
+            "attachments": [
+                {
+                    "id": "8",
+                    "fileURL": "123712389.vn",
+                    "status": "Pending",
+                    "submission": {},
+                    "author": {},
+                    "createdAt": "2023-10-02T14:44:45Z"
+                },
+                {
+                    "id": "9",
+                    "fileURL": "123712389.vn",
+                    "status": "Pending",
+                    "submission": {},
+                    "author": {},
+                    "createdAt": "2023-10-02T14:47:38Z"
+                }
+            ]
+        }
+    }
+}

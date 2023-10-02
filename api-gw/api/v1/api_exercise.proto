@@ -64,8 +64,6 @@ message ExerciseInput {
     int64 score = 5 [(validate.rules).int64.gte = 0];
     int64 reportingStageID = 6 [(validate.rules).int64.gte = 1];
     string authorID = 7;
-    SubmissionExerciseInput submission = 8;
-    repeated AttachmentExerciseInput attachments = 9;
 }
 
 message SubmissionExerciseInput {
@@ -89,6 +87,7 @@ message ExerciseResponse {
     AuthorExerciseResponse author = 8;
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
+
 }
 
 message ReportingStageExerciseResponse {

@@ -1,7 +1,7 @@
 {
     "Create a classroom": {
         // Method: POST
-        // URL: localhost:8081/api/classroom
+        // URL: localhost:8080/api/classroom
         "success": {
             "input":{
                 "classroom": {
@@ -44,7 +44,7 @@
     },
     "Get a classroom": {
     // Method: GET
-    // URL: localhost:8081/api/classroom/1
+    // URL: localhost:8080/api/classroom/1
         "success": {
             "output": {
                 "response": {
@@ -163,7 +163,7 @@
     },
     "Delete a classroom": {
     // Method: DELETE 
-    // URL: localhost:8081/api/classroom/1
+    // URL: localhost:8080/api/classroom/1
         "success": {
             "output": {
                 "response": {
@@ -182,7 +182,7 @@
     },
     "Update a classroom": {
     // Method: PUT
-    // URL: localhost:8081/api/classroom/1
+    // URL: localhost:8080/api/classroom/1
         "success": {
             "input": {
                 "classroom": {
@@ -223,7 +223,7 @@
     },
     "Get all classrooms": {
         // Method: GET
-        // URL: localhost:8081/api/classroom
+        // URL: localhost:8080/api/classroom
         "success": {
             "output": {
                 "response": {

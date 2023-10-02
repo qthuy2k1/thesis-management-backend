@@ -1,0 +1,90 @@
+{
+    "Create a topic": {
+        // Method: POST
+        // URL: localhost:8080/api/topic
+        "success": {
+            "input": {
+                "topic": {
+                    "typeTopic": "<string>",
+                    "memberQuantity": "<integer>",
+                    "studentID": "<string>",
+                    "memberEmail": "<string>",
+                    "description": "<string>"
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 201,
+                    "message": "Created"
+                }
+            }
+        }
+    },
+    "Get a topic": {
+        // Method: GET
+        // URL: localhost:8080/api/topic/1
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                },
+                "topic": {
+                    "id": "<integer>",
+                    "typeTopic": "<string>",
+                    "memberQuantity": "<integer>",
+                    "studentID": "<string>",
+                    "memberEmail": "<string>",
+                    "description": "<string>"
+                }
+            }
+        },
+        "failed: topic not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: topic not found",
+                "details": []
+            }
+        }
+    },
+    "Delete a topic": {
+        // Method: DELETE 
+        // URL: localhost:8080/api/topic/1
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        },
+        "failed: topic not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: topic not found",
+                "details": []
+            }
+        }
+    },
+    "Update a topic": {
+        // Method: PUT
+        // URL: localhost:8080/api/topic/1
+        "success": {
+            "input": {
+                "topic": {
+                    "typeTopic": "<string>",
+                    "memberQuantity": "<integer>",
+                    "studentID": "<string>",
+                    "memberEmail": "<string>",
+                    "description": "<string>"
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        }
+    }
+}

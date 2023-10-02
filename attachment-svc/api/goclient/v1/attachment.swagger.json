@@ -115,6 +115,9 @@
       "properties": {
         "response": {
           "$ref": "#/definitions/v1CommonAttachmentResponse"
+        },
+        "attachmentRes": {
+          "$ref": "#/definitions/v1AttachmentResponse"
         }
       }
     },
@@ -138,6 +141,21 @@
       }
     },
     "v1GetAttachmentsOfExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonAttachmentResponse"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1AttachmentResponse"
+          }
+        }
+      }
+    },
+    "v1GetAttachmentsOfSubmissionResponse": {
       "type": "object",
       "properties": {
         "response": {

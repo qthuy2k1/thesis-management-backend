@@ -16,6 +16,8 @@ service AttachmentService {
     rpc DeleteAttachment(DeleteAttachmentRequest) returns (DeleteAttachmentResponse){}
 
     rpc GetAttachmentsOfExercise(GetAttachmentsOfExerciseRequest) returns (GetAttachmentsOfExerciseResponse) {}
+
+    rpc GetAttachmentsOfSubmission(GetAttachmentsOfSubmissionRequest) returns (GetAttachmentsOfSubmissionResponse) {}
 }
 
 
@@ -51,6 +53,7 @@ message CreateAttachmentRequest {
 
 message CreateAttachmentResponse {
     CommonAttachmentResponse response = 1;
+    AttachmentResponse attachmentRes = 2;
 }
 
 
@@ -103,3 +106,13 @@ message GetAttachmentsOfExerciseResponse {
     repeated AttachmentResponse attachments = 3;
 }
 
+
+// ====== GET ALL ======
+message GetAttachmentsOfSubmissionRequest {
+    int64 submissionID = 1;
+}
+
+message GetAttachmentsOfSubmissionResponse {
+    CommonAttachmentResponse response = 1;
+    repeated AttachmentResponse attachments = 3;
+}

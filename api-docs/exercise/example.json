@@ -1,7 +1,7 @@
 {
     "Create a exercise": {
         // Method: POST
-        // URL: localhost:8081/api/exercise
+        // URL: localhost:8080/api/exercise
         "success": {
             "input": {
                 "exercise": {
@@ -56,7 +56,7 @@
     },
     "Get a exercise": {
         // Method: GET
-        // URL: localhost:8081/api/exercise/1
+        // URL: localhost:8080/api/exercise/1
         "success": {
             "output": {
                 "response": {
@@ -95,7 +95,7 @@
     },
     "Delete a exercise": {
         // Method: DELETE 
-        // URL: localhost:8081/api/exercise/1
+        // URL: localhost:8080/api/exercise/1
         "success": {
             "output": {
                 "response": {
@@ -114,7 +114,7 @@
     },
     "Update a exercise": {
         // Method: PUT
-        // URL: localhost:8081/api/exercise/1
+        // URL: localhost:8080/api/exercise/1
         "success": {
             "input": {
                 "exercise": {
@@ -171,7 +171,7 @@
     },
     "Get all exercises": {
         // Method: GET
-        // URL: localhost:8081/api/exercise
+        // URL: localhost:8080/api/exercise
         "success": {
             "output": {
                 "response": {
@@ -226,7 +226,7 @@
     },
     "Get all exercises of a classroom": {
         // Method: GET
-        // URL: localhost:8081/api/classroom/1/exercise
+        // URL: localhost:8080/api/classroom/1/exercise
         "success": {
             "output": {
                 "response": {

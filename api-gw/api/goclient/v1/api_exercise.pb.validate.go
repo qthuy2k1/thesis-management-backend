@@ -267,69 +267,6 @@ func (m *ExerciseInput) validate(all bool) error {
 
 	// no validation rules for AuthorID
 
-	if all {
-		switch v := interface{}(m.GetSubmission()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, ExerciseInputValidationError{
-					field:  "Submission",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, ExerciseInputValidationError{
-					field:  "Submission",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetSubmission()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ExerciseInputValidationError{
-				field:  "Submission",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	for idx, item := range m.GetAttachments() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ExerciseInputValidationError{
-						field:  fmt.Sprintf("Attachments[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, ExerciseInputValidationError{
-						field:  fmt.Sprintf("Attachments[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return ExerciseInputValidationError{
-					field:  fmt.Sprintf("Attachments[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
 	if len(errors) > 0 {
 		return ExerciseInputMultiError(errors)
 	}

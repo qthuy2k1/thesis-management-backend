@@ -1,0 +1,1 @@
+CREATE DATABASE "thesis_management_submissions";
