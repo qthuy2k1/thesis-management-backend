@@ -1,7 +1,0 @@
-{
-    "reportingStage": {
-        "id": "<integer>",
-        "name": "<string>",
-        "description": "<string>"
-    }
-}

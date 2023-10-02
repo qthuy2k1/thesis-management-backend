@@ -1,0 +1,13 @@
+{
+    "classroom": {
+        "id": "<integer>",
+        "title": "<string>",
+        "description": "<string>",
+        "status": "<string>",
+        "codeClassroom": "<string>",
+        "topicTags" :"<string>",    // separate by a comma each tag (tag 1, tag 2, etc)
+        "quantity": "<integer>", 
+        "createdAt": "<dateTime>",
+        "updatedAt": "<dateTime>"
+    }
+}

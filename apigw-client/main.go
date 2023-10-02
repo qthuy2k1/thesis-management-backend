@@ -18,7 +18,7 @@ import (
 var (
 	// command-line options:
 	// gRPC server endpoint
-	grpcServerEndpoint = flag.String("grpc-server-endpoint", "host.docker.internal:9091", "gRPC server endpoint")
+	grpcServerEndpoint = flag.String("grpc-server-endpoint", "api:9091", "gRPC server endpoint")
 )
 
 // allowCORS allows Cross Origin Resoruce Sharing from any origin.
@@ -95,6 +95,10 @@ func run() error {
 	}
 
 	if err := gw.RegisterAttachmentServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts); err != nil {
+		return err
+	}
+
+	if err := gw.RegisterTopicServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts); err != nil {
 		return err
 	}
 

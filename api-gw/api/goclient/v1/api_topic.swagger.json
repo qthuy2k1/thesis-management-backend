@@ -1,0 +1,326 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "api_topic.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "TopicService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/topic": {
+      "post": {
+        "operationId": "TopicService_CreateTopic",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateTopicResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateTopicRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TopicService"
+        ]
+      }
+    },
+    "/api/topic/{id}": {
+      "get": {
+        "operationId": "TopicService_GetTopic",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetTopicResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "TopicService"
+        ]
+      },
+      "delete": {
+        "operationId": "TopicService_DeleteTopic",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteTopicResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "TopicService"
+        ]
+      },
+      "put": {
+        "operationId": "TopicService_UpdateTopic",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateTopicResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "topic": {
+                  "$ref": "#/definitions/v1TopicInput"
+                }
+              },
+              "title": "====== PUT ======"
+            }
+          }
+        ],
+        "tags": [
+          "TopicService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CommonTopicResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "string",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateTopicRequest": {
+      "type": "object",
+      "properties": {
+        "topic": {
+          "$ref": "#/definitions/v1TopicInput"
+        }
+      }
+    },
+    "v1CreateTopicResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonTopicResponse"
+        }
+      }
+    },
+    "v1DeleteTopicResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonTopicResponse"
+        }
+      }
+    },
+    "v1GetTopicResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonTopicResponse"
+        },
+        "topic": {
+          "$ref": "#/definitions/v1TopicResponse"
+        }
+      }
+    },
+    "v1TopicInput": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "typeTopic": {
+          "type": "string"
+        },
+        "memberQuanity": {
+          "type": "string",
+          "format": "int64"
+        },
+        "studentId": {
+          "type": "string"
+        },
+        "memberEmail": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "title": "====== POST ======"
+    },
+    "v1TopicResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "typeTopic": {
+          "type": "string"
+        },
+        "memberQuanity": {
+          "type": "string",
+          "format": "int64"
+        },
+        "studentId": {
+          "$ref": "#/definitions/v1UserTopicResponse"
+        },
+        "memberEmail": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "v1UpdateTopicResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonTopicResponse"
+        }
+      }
+    },
+    "v1UserTopicResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "classroomID": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    }
+  }
+}

@@ -8,7 +8,7 @@ import (
 
 type IAttachmentSvc interface {
 	// CreateClasroom creates a new attachment in db given by attachment model
-	CreateAttachment(ctx context.Context, clr AttachmentInputSvc) error
+	CreateAttachment(ctx context.Context, clr AttachmentInputSvc) (AttachmentOutputSvc, error)
 	// GetAttachment returns a attachment in db given by id
 	GetAttachment(ctx context.Context, id int) (AttachmentOutputSvc, error)
 	// UpdateAttachment updates the specified attachment by id
@@ -17,6 +17,8 @@ type IAttachmentSvc interface {
 	DeleteAttachment(ctx context.Context, id int) error
 	// GetAttachmentOfExercise returns a list of attachments of a exercise in db
 	GetAttachmentsOfExercise(ctx context.Context, exerciseID int) ([]AttachmentOutputSvc, error)
+	// GetAttachmentOfExercise returns a list of attachments of a submission in db
+	GetAttachmentsOfSubmission(ctx context.Context, submissionID int) ([]AttachmentOutputSvc, error)
 }
 
 type AttachmentSvc struct {

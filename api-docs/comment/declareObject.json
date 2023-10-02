@@ -1,0 +1,10 @@
+{
+    "comment": {
+        "id": "<integer>",
+        "userID": "<string>",
+        "postID": "<integer>", // If exerciseID is set, then exerciseID must not be set
+        "execiseID": "<integer>", // If postID is set, then exerciseID must not be set
+        "content": "<string>",
+        "createdAt": "<timestamp>"
+    }
+}

@@ -165,8 +165,10 @@ func Authorize(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo,
 
 	// jwtManager := NewJWTManager("something", time.Hour*24)
 	authApp, err := firebase.NewApp(ctx, &firebase.Config{
-		ProjectID: "thesis-course-registration",
+		ProjectID:        "thesis-course-registration",
+		ServiceAccountID: "444158407130",
 	})
+
 	if err != nil {
 		return nil, err
 	}

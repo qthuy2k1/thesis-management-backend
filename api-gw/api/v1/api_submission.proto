@@ -54,8 +54,17 @@ message SubmissionInput {
     int64 exerciseID = 2 [(validate.rules).int64.gte = 1];
     google.type.DateTime submission_date = 3;
     string status = 4 [(validate.rules).string = {min_len: 2}];
-
+    repeated AttachmentSubmissionInput attachments = 5;
 }
+
+message AttachmentSubmissionInput {
+    string fileURL = 1;
+    string status = 2;
+    int64 submissionID = 3;
+    int64 exerciseID = 4;
+    string authorID = 5;
+}
+
 
 message SubmissionResponse {
     int64 id = 1 [(validate.rules).int64.gte = 1];
@@ -63,6 +72,13 @@ message SubmissionResponse {
     int64 exerciseID = 3 [(validate.rules).int64.gte = 1];
     google.type.DateTime submission_date = 4;
     string status = 5 [(validate.rules).string = {min_len: 2}];
+    repeated AttachmentSubmissionResponse attachments = 6;
+}
+
+message AttachmentSubmissionResponse {
+    int64 id = 1;
+    string fileURL = 2;
+    string status = 3;
 }
 
 message CreateSubmissionRequest {

@@ -17,6 +17,7 @@ import (
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
+	topicSvcV1 "github.com/qthuy2k1/thesis-management-backend/topic-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
@@ -31,6 +32,7 @@ const (
 	waitingListAddress    = "classroom-waiting-list:9091"
 	commentAddress        = "comment:9091"
 	attachmentAddress     = "attachment:9091"
+	topicAddress          = "topic:9091"
 )
 
 func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
@@ -114,6 +116,15 @@ func newAttachmentSvcClient() (attachmentSvcV1.AttachmentServiceClient, error) {
 	return attachmentSvcV1.NewAttachmentServiceClient(conn), nil
 }
 
+func newTopicSvcClient() (topicSvcV1.TopicServiceClient, error) {
+	conn, err := grpc.DialContext(context.TODO(), topicAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, fmt.Errorf("topic client: %w", err)
+	}
+
+	return topicSvcV1.NewTopicServiceClient(conn), nil
+}
+
 func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	log.Printf("APIGW service: method %q called\n", info.FullMethod)
 	resp, err := handler(ctx, req)
@@ -180,6 +191,12 @@ func main() {
 		panic(err)
 	}
 
+	// connect to attachment svc
+	topicClient, err := newTopicSvcClient()
+	if err != nil {
+		panic(err)
+	}
+
 	lis, err := net.Listen("tcp", listenAddress)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -190,12 +207,13 @@ func main() {
 	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient, commentClient, userClient))
 	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient, commentClient, userClient, submissionClient, attachmentClient))
 	pb.RegisterReportingStageServiceServer(s, NewReportingStagesService(rpsClient))
-	pb.RegisterSubmissionServiceServer(s, NewSubmissionsService(submissionClient, classroomClient, exerciseClient))
+	pb.RegisterSubmissionServiceServer(s, NewSubmissionsService(submissionClient, classroomClient, exerciseClient, attachmentClient, userClient))
 	pb.RegisterUserServiceServer(s, NewUsersService(userClient, classroomClient, waitingListClient))
 	pb.RegisterWaitingListServiceServer(s, NewWaitingListsService(waitingListClient, classroomClient, userClient))
 	pb.RegisterCommentServiceServer(s, NewCommentsService(commentClient, postClient, exerciseClient, userClient))
 	pb.RegisterAuthorizationServiceServer(s, NewAuthService(userClient))
 	pb.RegisterAttachmentServiceServer(s, NewAttachmentsService(attachmentClient, userClient, submissionClient))
+	pb.RegisterTopicServiceServer(s, NewTopicsService(topicClient, userClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

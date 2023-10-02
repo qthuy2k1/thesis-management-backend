@@ -1,0 +1,154 @@
+{
+    "Create a submission": {
+        // Method: POST
+        // URL: localhost:8080/api/submission
+        "success": {
+            "input": {
+                "submission": {
+                    "userID": "asdyhaiyaass891",
+                    "exerciseID": 4,
+                    "submission_date": {
+                        "year": 2023,
+                        "month": "8",
+                        "day": "26",
+                        "hours": "12",
+                        "minutes": "1",
+                        "seconds": "1"
+                    },
+                    "status": "Submitted",
+                    "attachments": [
+                        {
+                            "fileURL": "123712389.vn",
+                            "status": "Submitted"
+                        },
+                        {
+                            "fileURL": "123712ssdsd389.vn",
+                            "status": "Submitted"
+                        }
+                    ]
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 201,
+                    "message": "Created"
+                }
+            }
+        }
+    },
+    "Delete a submission": {
+        // Method: DELETE 
+        // URL: localhost:8080/api/submission/1
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        },
+        "failed: submission not exists": {
+            "output": {
+                "code": 5,
+                "message": "err: submission not found",
+                "details": []
+            }
+        }
+    },
+    "Update a submission": {
+        // Method: PUT
+        // URL: localhost:8080/api/submission/1
+        "success": {
+            "input": {
+                "submission": {
+                    "userID": "asdyhaiyaass891",
+                    "exerciseID": 4,
+                    "submission_date": {
+                        "year": 2023,
+                        "month": "8",
+                        "day": "26",
+                        "hours": "12",
+                        "minutes": "1",
+                        "seconds": "1"
+                    },
+                    "status": "Submitted",
+                    "attachments": [
+                        {
+                            "fileURL": "123712389.vn",
+                            "status": "Submitted"
+                        },
+                        {
+                            "fileURL": "123712ssdsd389.vn",
+                            "status": "Submitted"
+                        }
+                    ]
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "OK"
+                }
+            }
+        }
+    },
+    "Get all submissions of a exercise": {
+        // Method: GET
+        // URL: localhost:8080/api/exercise/{exerciseID}/submission
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": "200",
+                    "message": "Success"
+                },
+                "totalCount": "2",
+                "submissions": [
+                    {
+                        "id": "14",
+                        "userID": "asdyhaiyaass891",
+                        "exerciseID": "4",
+                        "submissionDate": {
+                            "year": 2023,
+                            "month": 1,
+                            "day": 26,
+                            "hours": 12,
+                            "minutes": 1,
+                            "seconds": 1,
+                            "nanos": 0
+                        },
+                        "status": "Pending",
+                        "attachments": [
+                            {
+                                "id": "8",
+                                "fileURL": "123712389.vn",
+                                "status": "Pending"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "15",
+                        "userID": "asdyhaiyaass891",
+                        "exerciseID": "4",
+                        "submissionDate": {
+                            "year": 2023,
+                            "month": 1,
+                            "day": 26,
+                            "hours": 12,
+                            "minutes": 1,
+                            "seconds": 1,
+                            "nanos": 0
+                        },
+                        "status": "Pending",
+                        "attachments": [
+                            {
+                                "id": "9",
+                                "fileURL": "123712389.vn",
+                                "status": "Pending"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

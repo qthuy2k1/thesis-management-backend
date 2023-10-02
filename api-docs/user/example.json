@@ -1,7 +1,7 @@
 {
     "Create a user": {
         // Method: POST
-        // URL: localhost:8081/api/user
+        // URL: localhost:8080/api/user
         "success": {
             "input": {
                 "user": {
@@ -44,7 +44,7 @@
     },
     "Get a user": {
         // Method: GET
-        // URL: localhost:8081/api/user/1
+        // URL: localhost:8080/api/user/1
         "success": {
             "output": {
                 "response": {
@@ -74,7 +74,7 @@
     },
     "Delete a user": {
         // Method: DELETE 
-        // URL: localhost:8081/api/user/1
+        // URL: localhost:8080/api/user/1
         "success": {
             "output": {
                 "response": {
@@ -93,7 +93,7 @@
     },
     "Update a user": {
         // Method: PUT
-        // URL: localhost:8081/api/user/1
+        // URL: localhost:8080/api/user/1
         "success": {
             "input": {
                 "user": {
@@ -136,7 +136,7 @@
     },
     "Get all users": {
         // Method: GET
-        // URL: localhost:8081/api/user
+        // URL: localhost:8080/api/user
         "success": {
             "output": {
                 "response": {
@@ -173,7 +173,7 @@
     },
     "Get all users of a classroom": {
         // Method: GET
-        // URL: localhost:8081/api/classroom/1/user
+        // URL: localhost:8080/api/classroom/1/user
         "success": {
             "output": {
                 "response": {

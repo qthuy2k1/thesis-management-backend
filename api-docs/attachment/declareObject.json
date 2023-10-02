@@ -1,0 +1,10 @@
+{
+    "attachment": {
+        "id": "<integer>",
+        "fileURL": "<string>",
+        "status": "<string>",
+        "submissionID": "<integer>",
+        "exerciseID": "<integer>",
+        "authorID": "<string>"
+    }
+}

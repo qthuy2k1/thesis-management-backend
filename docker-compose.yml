@@ -163,6 +163,24 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+  topic-db:
+    image: postgres:alpine
+    container_name: topic-db
+    networks:
+      mynet:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: thesis_management_topics
+    ports:
+      - "5442:5432"
+    volumes:
+      - topic-db:/var/lib/postgresql/data
+      - ./script/topic/init-database-topic.sql:/docker-entrypoint-initdb.d/init-database.sql
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   api:
     build:
       dockerfile: ./api-gw/Dockerfile
@@ -193,6 +211,9 @@ services:
       - classroom-waiting-list-db
       - comment-db
       - attachment-db
+      - topic-db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   classroom:
     build:
@@ -315,6 +336,20 @@ services:
       - attachment-db
     volumes:
       - .:/usr/src/app
+
+  topic:
+    env_file:
+      - .env
+    build:
+      dockerfile: ./topic-svc/Dockerfile
+      context: .
+    image: qthuy2k1/thesis-management-backend-topic
+    networks:
+      mynet:
+    depends_on:
+      - topic-db
+    volumes:
+      - .:/usr/src/app
     
   apigw-client:
     build:
@@ -339,6 +374,9 @@ services:
       - classroom-waiting-list
       - comment
       - attachment
+      - topic
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 volumes:
   classroom-db:
@@ -350,5 +388,6 @@ volumes:
   classroom-waiting-list-db:
   comment-db:
   attachment-db:
+  topic-db:
 networks:
   mynet:

@@ -234,6 +234,40 @@ func (m *SubmissionInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	for idx, item := range m.GetAttachments() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, SubmissionInputValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, SubmissionInputValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return SubmissionInputValidationError{
+					field:  fmt.Sprintf("Attachments[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	if len(errors) > 0 {
 		return SubmissionInputMultiError(errors)
 	}
@@ -311,6 +345,118 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = SubmissionInputValidationError{}
+
+// Validate checks the field values on AttachmentSubmissionInput with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AttachmentSubmissionInput) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AttachmentSubmissionInput with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AttachmentSubmissionInputMultiError, or nil if none found.
+func (m *AttachmentSubmissionInput) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AttachmentSubmissionInput) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for FileURL
+
+	// no validation rules for Status
+
+	// no validation rules for SubmissionID
+
+	// no validation rules for ExerciseID
+
+	// no validation rules for AuthorID
+
+	if len(errors) > 0 {
+		return AttachmentSubmissionInputMultiError(errors)
+	}
+
+	return nil
+}
+
+// AttachmentSubmissionInputMultiError is an error wrapping multiple validation
+// errors returned by AttachmentSubmissionInput.ValidateAll() if the
+// designated constraints aren't met.
+type AttachmentSubmissionInputMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AttachmentSubmissionInputMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AttachmentSubmissionInputMultiError) AllErrors() []error { return m }
+
+// AttachmentSubmissionInputValidationError is the validation error returned by
+// AttachmentSubmissionInput.Validate if the designated constraints aren't met.
+type AttachmentSubmissionInputValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AttachmentSubmissionInputValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AttachmentSubmissionInputValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AttachmentSubmissionInputValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AttachmentSubmissionInputValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AttachmentSubmissionInputValidationError) ErrorName() string {
+	return "AttachmentSubmissionInputValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AttachmentSubmissionInputValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAttachmentSubmissionInput.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AttachmentSubmissionInputValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AttachmentSubmissionInputValidationError{}
 
 // Validate checks the field values on SubmissionResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -398,6 +544,40 @@ func (m *SubmissionResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	for idx, item := range m.GetAttachments() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, SubmissionResponseValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, SubmissionResponseValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return SubmissionResponseValidationError{
+					field:  fmt.Sprintf("Attachments[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	if len(errors) > 0 {
 		return SubmissionResponseMultiError(errors)
 	}
@@ -477,6 +657,115 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = SubmissionResponseValidationError{}
+
+// Validate checks the field values on AttachmentSubmissionResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AttachmentSubmissionResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AttachmentSubmissionResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AttachmentSubmissionResponseMultiError, or nil if none found.
+func (m *AttachmentSubmissionResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AttachmentSubmissionResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for FileURL
+
+	// no validation rules for Status
+
+	if len(errors) > 0 {
+		return AttachmentSubmissionResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// AttachmentSubmissionResponseMultiError is an error wrapping multiple
+// validation errors returned by AttachmentSubmissionResponse.ValidateAll() if
+// the designated constraints aren't met.
+type AttachmentSubmissionResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AttachmentSubmissionResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AttachmentSubmissionResponseMultiError) AllErrors() []error { return m }
+
+// AttachmentSubmissionResponseValidationError is the validation error returned
+// by AttachmentSubmissionResponse.Validate if the designated constraints
+// aren't met.
+type AttachmentSubmissionResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AttachmentSubmissionResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AttachmentSubmissionResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AttachmentSubmissionResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AttachmentSubmissionResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AttachmentSubmissionResponseValidationError) ErrorName() string {
+	return "AttachmentSubmissionResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AttachmentSubmissionResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAttachmentSubmissionResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AttachmentSubmissionResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AttachmentSubmissionResponseValidationError{}
 
 // Validate checks the field values on CreateSubmissionRequest with the rules
 // defined in the proto definition for this message. If any rules are

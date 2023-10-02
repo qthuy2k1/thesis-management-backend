@@ -3225,3 +3225,494 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CheckStatusUserJoinClassroomResponseValidationError{}
+
+// Validate checks the field values on UserBasicInput with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *UserBasicInput) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UserBasicInput with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in UserBasicInputMultiError,
+// or nil if none found.
+func (m *UserBasicInput) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UserBasicInput) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if l := utf8.RuneCountInString(m.GetClass()); l < 4 || l > 10 {
+		err := UserBasicInputValidationError{
+			field:  "Class",
+			reason: "value length must be between 4 and 10 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for PhotoSrc
+
+	if l := utf8.RuneCountInString(m.GetName()); l < 2 || l > 200 {
+		err := UserBasicInputValidationError{
+			field:  "Name",
+			reason: "value length must be between 2 and 200 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if err := m._validateEmail(m.GetEmail()); err != nil {
+		err = UserBasicInputValidationError{
+			field:  "Email",
+			reason: "value must be a valid email address",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.Major != nil {
+
+		if utf8.RuneCountInString(m.GetMajor()) < 2 {
+			err := UserBasicInputValidationError{
+				field:  "Major",
+				reason: "value length must be at least 2 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.Phone != nil {
+
+		if l := utf8.RuneCountInString(m.GetPhone()); l < 10 || l > 11 {
+			err := UserBasicInputValidationError{
+				field:  "Phone",
+				reason: "value length must be between 10 and 11 runes, inclusive",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return UserBasicInputMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *UserBasicInput) _validateHostname(host string) error {
+	s := strings.ToLower(strings.TrimSuffix(host, "."))
+
+	if len(host) > 253 {
+		return errors.New("hostname cannot exceed 253 characters")
+	}
+
+	for _, part := range strings.Split(s, ".") {
+		if l := len(part); l == 0 || l > 63 {
+			return errors.New("hostname part must be non-empty and cannot exceed 63 characters")
+		}
+
+		if part[0] == '-' {
+			return errors.New("hostname parts cannot begin with hyphens")
+		}
+
+		if part[len(part)-1] == '-' {
+			return errors.New("hostname parts cannot end with hyphens")
+		}
+
+		for _, r := range part {
+			if (r < 'a' || r > 'z') && (r < '0' || r > '9') && r != '-' {
+				return fmt.Errorf("hostname parts can only contain alphanumeric characters or hyphens, got %q", string(r))
+			}
+		}
+	}
+
+	return nil
+}
+
+func (m *UserBasicInput) _validateEmail(addr string) error {
+	a, err := mail.ParseAddress(addr)
+	if err != nil {
+		return err
+	}
+	addr = a.Address
+
+	if len(addr) > 254 {
+		return errors.New("email addresses cannot exceed 254 characters")
+	}
+
+	parts := strings.SplitN(addr, "@", 2)
+
+	if len(parts[0]) > 64 {
+		return errors.New("email address local phrase cannot exceed 64 characters")
+	}
+
+	return m._validateHostname(parts[1])
+}
+
+// UserBasicInputMultiError is an error wrapping multiple validation errors
+// returned by UserBasicInput.ValidateAll() if the designated constraints
+// aren't met.
+type UserBasicInputMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UserBasicInputMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UserBasicInputMultiError) AllErrors() []error { return m }
+
+// UserBasicInputValidationError is the validation error returned by
+// UserBasicInput.Validate if the designated constraints aren't met.
+type UserBasicInputValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UserBasicInputValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UserBasicInputValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UserBasicInputValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UserBasicInputValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UserBasicInputValidationError) ErrorName() string { return "UserBasicInputValidationError" }
+
+// Error satisfies the builtin error interface
+func (e UserBasicInputValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUserBasicInput.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UserBasicInputValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UserBasicInputValidationError{}
+
+// Validate checks the field values on UpdateBasicUserRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateBasicUserRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateBasicUserRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateBasicUserRequestMultiError, or nil if none found.
+func (m *UpdateBasicUserRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateBasicUserRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if m.GetUser() == nil {
+		err := UpdateBasicUserRequestValidationError{
+			field:  "User",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdateBasicUserRequestValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdateBasicUserRequestValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateBasicUserRequestValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return UpdateBasicUserRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateBasicUserRequestMultiError is an error wrapping multiple validation
+// errors returned by UpdateBasicUserRequest.ValidateAll() if the designated
+// constraints aren't met.
+type UpdateBasicUserRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateBasicUserRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateBasicUserRequestMultiError) AllErrors() []error { return m }
+
+// UpdateBasicUserRequestValidationError is the validation error returned by
+// UpdateBasicUserRequest.Validate if the designated constraints aren't met.
+type UpdateBasicUserRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateBasicUserRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateBasicUserRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateBasicUserRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateBasicUserRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateBasicUserRequestValidationError) ErrorName() string {
+	return "UpdateBasicUserRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateBasicUserRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateBasicUserRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateBasicUserRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateBasicUserRequestValidationError{}
+
+// Validate checks the field values on UpdateBasicUserResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateBasicUserResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateBasicUserResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateBasicUserResponseMultiError, or nil if none found.
+func (m *UpdateBasicUserResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateBasicUserResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetResponse()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdateBasicUserResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdateBasicUserResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateBasicUserResponseValidationError{
+				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return UpdateBasicUserResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateBasicUserResponseMultiError is an error wrapping multiple validation
+// errors returned by UpdateBasicUserResponse.ValidateAll() if the designated
+// constraints aren't met.
+type UpdateBasicUserResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateBasicUserResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateBasicUserResponseMultiError) AllErrors() []error { return m }
+
+// UpdateBasicUserResponseValidationError is the validation error returned by
+// UpdateBasicUserResponse.Validate if the designated constraints aren't met.
+type UpdateBasicUserResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateBasicUserResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateBasicUserResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateBasicUserResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateBasicUserResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateBasicUserResponseValidationError) ErrorName() string {
+	return "UpdateBasicUserResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateBasicUserResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateBasicUserResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateBasicUserResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateBasicUserResponseValidationError{}

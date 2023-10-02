@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AttachmentService_CreateAttachment_FullMethodName         = "/attachment.v1.AttachmentService/CreateAttachment"
-	AttachmentService_GetAttachment_FullMethodName            = "/attachment.v1.AttachmentService/GetAttachment"
-	AttachmentService_UpdateAttachment_FullMethodName         = "/attachment.v1.AttachmentService/UpdateAttachment"
-	AttachmentService_DeleteAttachment_FullMethodName         = "/attachment.v1.AttachmentService/DeleteAttachment"
-	AttachmentService_GetAttachmentsOfExercise_FullMethodName = "/attachment.v1.AttachmentService/GetAttachmentsOfExercise"
+	AttachmentService_CreateAttachment_FullMethodName           = "/attachment.v1.AttachmentService/CreateAttachment"
+	AttachmentService_GetAttachment_FullMethodName              = "/attachment.v1.AttachmentService/GetAttachment"
+	AttachmentService_UpdateAttachment_FullMethodName           = "/attachment.v1.AttachmentService/UpdateAttachment"
+	AttachmentService_DeleteAttachment_FullMethodName           = "/attachment.v1.AttachmentService/DeleteAttachment"
+	AttachmentService_GetAttachmentsOfExercise_FullMethodName   = "/attachment.v1.AttachmentService/GetAttachmentsOfExercise"
+	AttachmentService_GetAttachmentsOfSubmission_FullMethodName = "/attachment.v1.AttachmentService/GetAttachmentsOfSubmission"
 )
 
 // AttachmentServiceClient is the client API for AttachmentService service.
@@ -35,6 +36,7 @@ type AttachmentServiceClient interface {
 	UpdateAttachment(ctx context.Context, in *UpdateAttachmentRequest, opts ...grpc.CallOption) (*UpdateAttachmentResponse, error)
 	DeleteAttachment(ctx context.Context, in *DeleteAttachmentRequest, opts ...grpc.CallOption) (*DeleteAttachmentResponse, error)
 	GetAttachmentsOfExercise(ctx context.Context, in *GetAttachmentsOfExerciseRequest, opts ...grpc.CallOption) (*GetAttachmentsOfExerciseResponse, error)
+	GetAttachmentsOfSubmission(ctx context.Context, in *GetAttachmentsOfSubmissionRequest, opts ...grpc.CallOption) (*GetAttachmentsOfSubmissionResponse, error)
 }
 
 type attachmentServiceClient struct {
@@ -90,6 +92,15 @@ func (c *attachmentServiceClient) GetAttachmentsOfExercise(ctx context.Context, 
 	return out, nil
 }
 
+func (c *attachmentServiceClient) GetAttachmentsOfSubmission(ctx context.Context, in *GetAttachmentsOfSubmissionRequest, opts ...grpc.CallOption) (*GetAttachmentsOfSubmissionResponse, error) {
+	out := new(GetAttachmentsOfSubmissionResponse)
+	err := c.cc.Invoke(ctx, AttachmentService_GetAttachmentsOfSubmission_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AttachmentServiceServer is the server API for AttachmentService service.
 // All implementations must embed UnimplementedAttachmentServiceServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type AttachmentServiceServer interface {
 	UpdateAttachment(context.Context, *UpdateAttachmentRequest) (*UpdateAttachmentResponse, error)
 	DeleteAttachment(context.Context, *DeleteAttachmentRequest) (*DeleteAttachmentResponse, error)
 	GetAttachmentsOfExercise(context.Context, *GetAttachmentsOfExerciseRequest) (*GetAttachmentsOfExerciseResponse, error)
+	GetAttachmentsOfSubmission(context.Context, *GetAttachmentsOfSubmissionRequest) (*GetAttachmentsOfSubmissionResponse, error)
 	mustEmbedUnimplementedAttachmentServiceServer()
 }
 
@@ -120,6 +132,9 @@ func (UnimplementedAttachmentServiceServer) DeleteAttachment(context.Context, *D
 }
 func (UnimplementedAttachmentServiceServer) GetAttachmentsOfExercise(context.Context, *GetAttachmentsOfExerciseRequest) (*GetAttachmentsOfExerciseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAttachmentsOfExercise not implemented")
+}
+func (UnimplementedAttachmentServiceServer) GetAttachmentsOfSubmission(context.Context, *GetAttachmentsOfSubmissionRequest) (*GetAttachmentsOfSubmissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAttachmentsOfSubmission not implemented")
 }
 func (UnimplementedAttachmentServiceServer) mustEmbedUnimplementedAttachmentServiceServer() {}
 
@@ -224,6 +239,24 @@ func _AttachmentService_GetAttachmentsOfExercise_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AttachmentService_GetAttachmentsOfSubmission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAttachmentsOfSubmissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttachmentServiceServer).GetAttachmentsOfSubmission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttachmentService_GetAttachmentsOfSubmission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttachmentServiceServer).GetAttachmentsOfSubmission(ctx, req.(*GetAttachmentsOfSubmissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AttachmentService_ServiceDesc is the grpc.ServiceDesc for AttachmentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +283,10 @@ var AttachmentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAttachmentsOfExercise",
 			Handler:    _AttachmentService_GetAttachmentsOfExercise_Handler,
+		},
+		{
+			MethodName: "GetAttachmentsOfSubmission",
+			Handler:    _AttachmentService_GetAttachmentsOfSubmission_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

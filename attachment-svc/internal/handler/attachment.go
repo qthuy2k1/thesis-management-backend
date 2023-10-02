@@ -19,7 +19,8 @@ func (h *AttachmentHdl) CreateAttachment(ctx context.Context, req *attachmentpb.
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
-	if err := h.Service.CreateAttachment(ctx, att); err != nil {
+	attRes, err := h.Service.CreateAttachment(ctx, att)
+	if err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
@@ -28,6 +29,15 @@ func (h *AttachmentHdl) CreateAttachment(ctx context.Context, req *attachmentpb.
 		Response: &attachmentpb.CommonAttachmentResponse{
 			StatusCode: 201,
 			Message:    "Created",
+		},
+		AttachmentRes: &attachmentpb.AttachmentResponse{
+			Id:           int64(attRes.ID),
+			FileURL:      attRes.FileURL,
+			Status:       attRes.Status,
+			SubmissionID: int64(attRes.SubmissionID),
+			ExerciseID:   int64(attRes.ExerciseID),
+			AuthorID:     attRes.AuthorID,
+			CreatedAt:    timestamppb.New(attRes.CreatedAt),
 		},
 	}
 
@@ -146,6 +156,41 @@ func (h *AttachmentHdl) GetAttachmentsOfExercise(ctx context.Context, req *attac
 	}
 
 	return &attachmentpb.GetAttachmentsOfExerciseResponse{
+		Response: &attachmentpb.CommonAttachmentResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Attachments: attsResp,
+	}, nil
+}
+
+func (h *AttachmentHdl) GetAttachmentsOfSubmission(ctx context.Context, req *attachmentpb.GetAttachmentsOfSubmissionRequest) (*attachmentpb.GetAttachmentsOfSubmissionResponse, error) {
+	log.Println("calling get all attachments...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	atts, err := h.Service.GetAttachmentsOfSubmission(ctx, int(req.GetSubmissionID()))
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var attsResp []*attachmentpb.AttachmentResponse
+	for _, c := range atts {
+		attsResp = append(attsResp, &attachmentpb.AttachmentResponse{
+			Id:           int64(c.ID),
+			FileURL:      c.FileURL,
+			Status:       c.Status,
+			SubmissionID: int64(c.SubmissionID),
+			ExerciseID:   int64(c.ExerciseID),
+			AuthorID:     c.AuthorID,
+			CreatedAt:    timestamppb.New(c.CreatedAt),
+		})
+	}
+
+	return &attachmentpb.GetAttachmentsOfSubmissionResponse{
 		Response: &attachmentpb.CommonAttachmentResponse{
 			StatusCode: 200,
 			Message:    "Success",

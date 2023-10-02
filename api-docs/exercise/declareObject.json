@@ -1,0 +1,14 @@
+{
+    "exercise": {
+        "id": "<integer>",
+        "title": "<string>",
+        "content": "<string>",
+        "classroomID": "<integer>",
+        "deadline": "<dateTime>",
+        "score": "<integer>",
+        "reportingStageID": "<integer>",
+        "authorID": "<integer>",
+        "createdAt": "<dateTime>",
+        "updatedAt": "<dateTime>"
+      }
+}

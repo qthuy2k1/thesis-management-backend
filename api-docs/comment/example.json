@@ -1,0 +1,40 @@
+{
+    "Create a comment in a post": {
+        // Method: comment
+        // URL: localhost:8080/api/comment
+        "success": {
+            "input": {
+                "comment": {
+                    "userID": "12937198asda12",
+                    "postID": "1",
+                    "content": "This is comment"
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 201,
+                    "message": "Created"
+                }
+            }
+        }
+    },
+    "Create a comment in a exercise": {
+        // Method: comment
+        // URL: localhost:8080/api/comment
+        "success": {
+            "input": {
+                "comment": {
+                    "userID": "12937198asda12",
+                    "postID": "1",
+                    "content": "This is comment"
+                }
+            },
+            "output": {
+                "response": {
+                    "statusCode": 201,
+                    "message": "Created"
+                }
+            }
+        }
+    }
+}
