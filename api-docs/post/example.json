@@ -54,7 +54,43 @@
                     "authorID": 1,
                     "createdAt": "2023-09-01T15:48:35Z",
                     "updatedAt": "2023-09-01T15:48:35Z"
-                }
+                },
+                "comments": [
+                    {
+                        "id": 1,
+                        "user": {
+                            "id": "181278iab",
+                            "class": "Class 1",
+                            "major": "CNTT",
+                            "phone": "1231231231",
+                            "photoSrc": "testurl.vn",
+                            "role": "student",
+                            "name": "Full Name",
+                            "email": "name@example.com",
+                            "classroomID": "1"
+                        },
+                        "postID": "1",
+                        "content": "This is comment",
+                        "createdAt": "2023-09-01T15:48:35Z"
+                    },
+                    {
+                        "id": 2,
+                        "user": {
+                            "id": "181278iab",
+                            "class": "Class 1",
+                            "major": "CNTT",
+                            "phone": "1231231231",
+                            "photoSrc": "testurl.vn",
+                            "role": "student",
+                            "name": "Full Name",
+                            "email": "name@example.com",
+                            "classroomID": "1"
+                        },
+                        "postID": "1",
+                        "content": "This is comment",
+                        "createdAt": "2023-09-01T15:48:35Z"
+                    }
+                ]
             }
         },
         "failed: post not exists": {

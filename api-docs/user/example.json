@@ -207,5 +207,54 @@
                 ]
             }
         }
+    },
+    "approve user to join a classroom": {
+        // Method: PUT
+        // localhost:8080/api/{classroomID}/aprrove/{userID}
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "Success"
+                }
+            }
+        }
+    },
+    "check status of user whether joinning a classroom": {
+        // Method: GET
+        // localhost:8080/api/user/{userID}/classroom-status
+        "user not joinning a classroom yet": {
+            "status": "NOT REGISTERED"
+        },
+        "user is requesting to join a classroom": {
+            "status": "WAITING",
+            "classroom": {
+                "id": 7,
+                "title": "Classroom 6",
+                "description": "Classroom 6",
+                "status": "Available",
+                "lecturerId": 2,
+                "codeClassroom": "HK2",
+                "topicTags": "Web",
+                "quantity": 15,
+                "createdAt": "2023-09-01T15:01:00Z",
+                "updatedAt": "2023-09-01T15:01:00Z"
+            }
+        },
+        "user joined a classroom": {
+            "status": "ADDED",
+            "classroom": {
+                "id": 7,
+                "title": "Classroom 6",
+                "description": "Classroom 6",
+                "status": "Available",
+                "lecturerId": 2,
+                "codeClassroom": "HK2",
+                "topicTags": "Web",
+                "quantity": 15,
+                "createdAt": "2023-09-01T15:01:00Z",
+                "updatedAt": "2023-09-01T15:01:00Z"
+            }
+        }
     }
 }
