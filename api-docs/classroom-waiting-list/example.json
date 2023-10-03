@@ -132,5 +132,32 @@
                 ]
             }
         }
+    },
+    "Check user in waiting list of a classroom": {
+        // Method: GET
+        // URL: localhost:8080/api/user/{userID}/waiting-list
+        "user in a waiting list": {
+            "output": {
+                "status": "WAITING",
+                "classroom": {
+                    "id": 7,
+                    "title": "Classroom 6",
+                    "description": "Classroom 6",
+                    "status": "Available",
+                    "lecturerId": 2,
+                    "codeClassroom": "HK2",
+                    "topicTags": "Web",
+                    "quantity": 15,
+                    "createdAt": "2023-09-01T15:01:00Z",
+                    "updatedAt": "2023-09-01T15:01:00Z",
+                    "postsAndExercises": []
+                }
+            }
+        },
+        "user not registered yet": {
+            "output": {
+                "status": "NOT REGISTERED"
+            }
+        }
     }
 }
