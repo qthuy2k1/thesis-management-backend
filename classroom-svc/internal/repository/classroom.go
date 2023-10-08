@@ -71,16 +71,16 @@ func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, arg
 }
 
 type ClassroomInputRepo struct {
-	ID            int
-	Title         string
-	Description   string
-	Status        string
-	LecturerID    string
-	CodeClassroom string
-	TopicTags     string
-	Quantity      int
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	ID              int
+	Title           string
+	Description     string
+	Status          string
+	LecturerID      string
+	ClassCourse     string
+	TopicTags       string
+	QuantityStudent int
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }
 
 // CreateClasroom creates a new classroom in db given by classroom model
@@ -95,7 +95,7 @@ func (r *ClassroomRepo) CreateClassroom(ctx context.Context, clr ClassroomInputR
 		return ErrClassroomExisted
 	}
 
-	if _, err := ExecSQL(ctx, r.Database, "CreateClassroom", "INSERT INTO classrooms (title, description, status, lecturer_id, code_classroom, topic_tags, quantity) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", clr.Title, clr.Description, clr.Status, clr.LecturerID, clr.CodeClassroom, clr.TopicTags, clr.Quantity); err != nil {
+	if _, err := ExecSQL(ctx, r.Database, "CreateClassroom", "INSERT INTO classrooms (title, description, status, lecturer_id, class_course, topic_tags, quantity_student) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", clr.Title, clr.Description, clr.Status, clr.LecturerID, clr.ClassCourse, clr.TopicTags, clr.QuantityStudent); err != nil {
 		return err
 	}
 
@@ -103,27 +103,27 @@ func (r *ClassroomRepo) CreateClassroom(ctx context.Context, clr ClassroomInputR
 }
 
 type ClassroomOutputRepo struct {
-	ID            int
-	Title         string
-	Description   string
-	Status        string
-	LecturerID    string
-	CodeClassroom string
-	TopicTags     string
-	Quantity      int
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	ID              int
+	Title           string
+	Description     string
+	Status          string
+	LecturerID      string
+	ClassCourse     string
+	TopicTags       string
+	QuantityStudent int
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }
 
 // GetClassroom returns a classroom in db given by id
 func (r *ClassroomRepo) GetClassroom(ctx context.Context, id int) (ClassroomOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetClassroom", "SELECT id, title, description, status, lecturer_id, code_classroom, topic_tags, quantity, created_at, updated_at FROM classrooms WHERE id=$1", id)
+	row, err := QueryRowSQL(ctx, r.Database, "GetClassroom", "SELECT id, title, description, status, lecturer_id, class_course, topic_tags, quantity_student, created_at, updated_at FROM classrooms WHERE id=$1", id)
 	if err != nil {
 		return ClassroomOutputRepo{}, err
 	}
 	classroom := ClassroomOutputRepo{}
 
-	if err = row.Scan(&classroom.ID, &classroom.Title, &classroom.Description, &classroom.Status, &classroom.LecturerID, &classroom.CodeClassroom, &classroom.TopicTags, &classroom.Quantity, &classroom.CreatedAt, &classroom.UpdatedAt); err != nil {
+	if err = row.Scan(&classroom.ID, &classroom.Title, &classroom.Description, &classroom.Status, &classroom.LecturerID, &classroom.ClassCourse, &classroom.TopicTags, &classroom.QuantityStudent, &classroom.CreatedAt, &classroom.UpdatedAt); err != nil {
 		if err == sql.ErrNoRows {
 			return ClassroomOutputRepo{}, ErrClassroomNotFound
 		}
@@ -149,7 +149,7 @@ func (r *ClassroomRepo) IsClassroomExists(ctx context.Context, title string) (bo
 
 // UpdateClassroom updates the specified classroom by id
 func (r *ClassroomRepo) UpdateClassroom(ctx context.Context, id int, classroom ClassroomInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdateClassroom", "UPDATE classrooms SET title=$2, description=$3, status=$4, lecturer_id=$5, code_classroom=$6, topic_tags=$7, quantity=$8, updated_at=$9 WHERE id=$1", id, classroom.Title, classroom.Description, classroom.Status, classroom.LecturerID, classroom.CodeClassroom, classroom.TopicTags, classroom.Quantity, time.Now())
+	result, err := ExecSQL(ctx, r.Database, "UpdateClassroom", "UPDATE classrooms SET title=$2, description=$3, status=$4, lecturer_id=$5, class_course=$6, topic_tags=$7, quantity_student=$8, updated_at=$9 WHERE id=$1", id, classroom.Title, classroom.Description, classroom.Status, classroom.LecturerID, classroom.ClassCourse, classroom.TopicTags, classroom.QuantityStudent, time.Now())
 	if err != nil {
 		return err
 	}
@@ -186,7 +186,7 @@ type ClassroomFilterRepo struct {
 // GetClassroom returns a list of classrooms in db with filter
 func (r *ClassroomRepo) GetClassrooms(ctx context.Context, filter ClassroomFilterRepo) ([]ClassroomOutputRepo, int, error) {
 	var query []string
-	query = append(query, "SELECT id, title, description, status, lecturer_id, code_classroom, topic_tags, quantity, created_at, updated_at FROM classrooms")
+	query = append(query, "SELECT id, title, description, status, lecturer_id, class_course, topic_tags, quantity_student, created_at, updated_at FROM classrooms")
 
 	if filter.TitleSearch != "" {
 		query = append(query, fmt.Sprintf("WHERE UPPER(title) LIKE UPPER('%s')", "%"+filter.TitleSearch+"%"))
@@ -211,9 +211,9 @@ func (r *ClassroomRepo) GetClassrooms(ctx context.Context, filter ClassroomFilte
 			&classroom.Description,
 			&classroom.Status,
 			&classroom.LecturerID,
-			&classroom.CodeClassroom,
+			&classroom.ClassCourse,
 			&classroom.TopicTags,
-			&classroom.Quantity,
+			&classroom.QuantityStudent,
 			&classroom.CreatedAt,
 			&classroom.UpdatedAt,
 		)

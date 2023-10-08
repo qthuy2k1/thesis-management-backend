@@ -638,8 +638,6 @@ func (m *AuthorAttachmentResponse) validate(all bool) error {
 
 	// no validation rules for Email
 
-	// no validation rules for ClassroomID
-
 	if m.Major != nil {
 		// no validation rules for Major
 	}
@@ -1150,46 +1148,6 @@ func (m *GetAttachmentResponse) validate(all bool) error {
 	}
 
 	var errors []error
-
-	if m.GetResponse() == nil {
-		err := GetAttachmentResponseValidationError{
-			field:  "Response",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if all {
-		switch v := interface{}(m.GetResponse()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, GetAttachmentResponseValidationError{
-					field:  "Response",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, GetAttachmentResponseValidationError{
-					field:  "Response",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return GetAttachmentResponseValidationError{
-				field:  "Response",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
 
 	if m.GetAttachment() == nil {
 		err := GetAttachmentResponseValidationError{
@@ -2207,46 +2165,6 @@ func (m *GetAttachmentsOfExerciseResponse) validate(all bool) error {
 	}
 
 	var errors []error
-
-	if m.GetResponse() == nil {
-		err := GetAttachmentsOfExerciseResponseValidationError{
-			field:  "Response",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if all {
-		switch v := interface{}(m.GetResponse()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, GetAttachmentsOfExerciseResponseValidationError{
-					field:  "Response",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, GetAttachmentsOfExerciseResponseValidationError{
-					field:  "Response",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return GetAttachmentsOfExerciseResponseValidationError{
-				field:  "Response",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
 
 	for idx, item := range m.GetAttachments() {
 		_, _ = idx, item

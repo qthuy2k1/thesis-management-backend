@@ -46,18 +46,15 @@ func (h *UserHdl) GetUser(ctx context.Context, req *userpb.GetUserRequest) (*use
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
-	classroomID := int64(*u.ClassroomID)
-
 	pResp := userpb.UserResponse{
-		Id:          u.ID,
-		Class:       u.Class,
-		Major:       u.Major,
-		Phone:       u.Phone,
-		PhotoSrc:    u.PhotoSrc,
-		Role:        u.Role,
-		Name:        u.Name,
-		Email:       u.Email,
-		ClassroomID: classroomID,
+		Id:       u.ID,
+		Class:    u.Class,
+		Major:    u.Major,
+		Phone:    u.Phone,
+		PhotoSrc: u.PhotoSrc,
+		Role:     u.Role,
+		Name:     u.Name,
+		Email:    u.Email,
 	}
 
 	resp := &userpb.GetUserResponse{
@@ -85,14 +82,13 @@ func (c *UserHdl) UpdateUser(ctx context.Context, req *userpb.UpdateUserRequest)
 	}
 
 	if err := c.Service.UpdateUser(ctx, req.GetId(), service.UserInputSvc{
-		Class:       u.Class,
-		Major:       u.Major,
-		Phone:       u.Phone,
-		PhotoSrc:    u.PhotoSrc,
-		Role:        u.Role,
-		Name:        u.Name,
-		Email:       u.Email,
-		ClassroomID: u.ClassroomID,
+		Class:    u.Class,
+		Major:    u.Major,
+		Phone:    u.Phone,
+		PhotoSrc: u.PhotoSrc,
+		Role:     u.Role,
+		Name:     u.Name,
+		Email:    u.Email,
 	}); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -141,17 +137,15 @@ func (h *UserHdl) GetUsers(ctx context.Context, req *userpb.GetUsersRequest) (*u
 
 	var psResp []*userpb.UserResponse
 	for _, u := range ps {
-		classroomID := int64(*u.ClassroomID)
 		psResp = append(psResp, &userpb.UserResponse{
-			Id:          u.ID,
-			Class:       u.Class,
-			Major:       u.Major,
-			Phone:       u.Phone,
-			PhotoSrc:    u.PhotoSrc,
-			Role:        u.Role,
-			Name:        u.Name,
-			Email:       u.Email,
-			ClassroomID: classroomID,
+			Id:       u.ID,
+			Class:    u.Class,
+			Major:    u.Major,
+			Phone:    u.Phone,
+			PhotoSrc: u.PhotoSrc,
+			Role:     u.Role,
+			Name:     u.Name,
+			Email:    u.Email,
 		})
 	}
 
@@ -165,14 +159,8 @@ func (h *UserHdl) GetUsers(ctx context.Context, req *userpb.GetUsersRequest) (*u
 	}, nil
 }
 
-func (h *UserHdl) GetAllUsersOfClassroom(ctx context.Context, req *userpb.GetAllUsersOfClassroomRequest) (*userpb.GetAllUsersOfClassroomResponse, error) {
-	log.Println("calling get all users of a classroom...")
-	if err := req.Validate(); err != nil {
-		code, err := convertCtrlError(err)
-		return nil, status.Errorf(code, "err: %v", err)
-	}
-
-	ps, count, err := h.Service.GetAllUsersOfClassroom(ctx, int(req.GetClassroomID()))
+func (h *UserHdl) GetAllLecturers(ctx context.Context, req *userpb.GetAllLecturersRequest) (*userpb.GetAllLecturersResponse, error) {
+	ps, count, err := h.Service.GetAllLecturers(ctx)
 	if err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -180,27 +168,39 @@ func (h *UserHdl) GetAllUsersOfClassroom(ctx context.Context, req *userpb.GetAll
 
 	var psResp []*userpb.UserResponse
 	for _, u := range ps {
-		classroomID := int64(*u.ClassroomID)
 		psResp = append(psResp, &userpb.UserResponse{
-			Id:          u.ID,
-			Class:       u.Class,
-			Major:       u.Major,
-			Phone:       u.Phone,
-			PhotoSrc:    u.PhotoSrc,
-			Role:        u.Role,
-			Name:        u.Name,
-			Email:       u.Email,
-			ClassroomID: classroomID,
+			Id:       u.ID,
+			Class:    u.Class,
+			Major:    u.Major,
+			Phone:    u.Phone,
+			PhotoSrc: u.PhotoSrc,
+			Role:     u.Role,
+			Name:     u.Name,
+			Email:    u.Email,
 		})
 	}
 
-	return &userpb.GetAllUsersOfClassroomResponse{
+	return &userpb.GetAllLecturersResponse{
 		Response: &userpb.CommonUserResponse{
 			StatusCode: 200,
 			Message:    "Success",
 		},
-		Users:      psResp,
+		Lecturers:  psResp,
 		TotalCount: int64(count),
+	}, nil
+}
+
+func (h *UserHdl) UnsubscribeClassroom(ctx context.Context, req *userpb.UnsubscribeClassroomRequest) (*userpb.UnsubscribeClassroomResponse, error) {
+	if err := h.Service.UnsubscribeClassroom(ctx, req.MemberID, int(req.ClassroomID)); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	return &userpb.UnsubscribeClassroomResponse{
+		Response: &userpb.CommonUserResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
 	}, nil
 }
 
@@ -209,20 +209,14 @@ func validateAndConvertUser(pbUser *userpb.UserInput) (service.UserInputSvc, err
 		return service.UserInputSvc{}, err
 	}
 
-	classroomID := 0
-	if pbUser.ClassroomID != nil && *pbUser.ClassroomID != 0 {
-		classroomID = int(*pbUser.ClassroomID)
-	}
-
 	return service.UserInputSvc{
-		ID:          pbUser.Id,
-		Class:       pbUser.Class,
-		Major:       pbUser.Major,
-		Phone:       pbUser.Phone,
-		PhotoSrc:    pbUser.PhotoSrc,
-		Role:        pbUser.Role,
-		Name:        pbUser.Name,
-		Email:       pbUser.Email,
-		ClassroomID: &classroomID,
+		ID:       pbUser.Id,
+		Class:    pbUser.Class,
+		Major:    pbUser.Major,
+		Phone:    pbUser.Phone,
+		PhotoSrc: pbUser.PhotoSrc,
+		Role:     pbUser.Role,
+		Name:     pbUser.Name,
+		Email:    pbUser.Email,
 	}, nil
 }

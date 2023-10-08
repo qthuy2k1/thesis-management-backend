@@ -18,6 +18,8 @@ service PostService {
     rpc GetPosts(GetPostsRequest) returns (GetPostsResponse) {}
 
     rpc GetAllPostsOfClassroom(GetAllPostsOfClassroomRequest) returns (GetAllPostsOfClassroomResponse) {}
+
+    rpc GetAllPostsInReportingStage(GetAllPostsInReportingStageRequest) returns (GetAllPostsInReportingStageResponse) {}
 }
 
 message CommonPostResponse {
@@ -114,6 +116,18 @@ message GetAllPostsOfClassroomRequest {
 }
 
 message GetAllPostsOfClassroomResponse {
+    CommonPostResponse response = 1;
+    int64 totalCount = 2;
+    repeated PostResponse posts = 3;
+}
+
+
+message GetAllPostsInReportingStageRequest {
+    int64 classroomID = 1; 
+    int64 reportingStageID = 2;
+}
+
+message GetAllPostsInReportingStageResponse {
     CommonPostResponse response = 1;
     int64 totalCount = 2;
     repeated PostResponse posts = 3;

@@ -166,3 +166,27 @@ func (s *PostSvc) GetAllPostsOfClassroom(ctx context.Context, filter PostFilterS
 
 	return psSvc, count, nil
 }
+
+// GetAllPostsInReportingStage returns all posts of the specified reporting stage given by reporting stage id
+func (s *PostSvc) GetAllPostsInReportingStage(ctx context.Context, reportingStageID, classroomID int) ([]PostOutputSvc, int, error) {
+	psRepo, count, err := s.Repository.GetAllPostsInReportingStage(ctx, reportingStageID, classroomID)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var psSvc []PostOutputSvc
+	for _, p := range psRepo {
+		psSvc = append(psSvc, PostOutputSvc{
+			ID:               p.ID,
+			Title:            p.Title,
+			Content:          p.Content,
+			ClassroomID:      p.ClassroomID,
+			ReportingStageID: p.ReportingStageID,
+			AuthorID:         p.AuthorID,
+			CreatedAt:        p.CreatedAt,
+			UpdatedAt:        p.UpdatedAt,
+		})
+	}
+
+	return psSvc, count, nil
+}

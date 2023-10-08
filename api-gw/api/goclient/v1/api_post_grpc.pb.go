@@ -19,12 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	PostService_CreatePost_FullMethodName             = "/api.post.v1.PostService/CreatePost"
-	PostService_GetPost_FullMethodName                = "/api.post.v1.PostService/GetPost"
-	PostService_UpdatePost_FullMethodName             = "/api.post.v1.PostService/UpdatePost"
-	PostService_DeletePost_FullMethodName             = "/api.post.v1.PostService/DeletePost"
-	PostService_GetPosts_FullMethodName               = "/api.post.v1.PostService/GetPosts"
-	PostService_GetAllPostsOfClassroom_FullMethodName = "/api.post.v1.PostService/GetAllPostsOfClassroom"
+	PostService_CreatePost_FullMethodName                  = "/api.post.v1.PostService/CreatePost"
+	PostService_GetPost_FullMethodName                     = "/api.post.v1.PostService/GetPost"
+	PostService_UpdatePost_FullMethodName                  = "/api.post.v1.PostService/UpdatePost"
+	PostService_DeletePost_FullMethodName                  = "/api.post.v1.PostService/DeletePost"
+	PostService_GetPosts_FullMethodName                    = "/api.post.v1.PostService/GetPosts"
+	PostService_GetAllPostsOfClassroom_FullMethodName      = "/api.post.v1.PostService/GetAllPostsOfClassroom"
+	PostService_GetAllPostsInReportingStage_FullMethodName = "/api.post.v1.PostService/GetAllPostsInReportingStage"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -37,6 +38,7 @@ type PostServiceClient interface {
 	DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error)
 	GetPosts(ctx context.Context, in *GetPostsRequest, opts ...grpc.CallOption) (*GetPostsResponse, error)
 	GetAllPostsOfClassroom(ctx context.Context, in *GetAllPostsOfClassroomRequest, opts ...grpc.CallOption) (*GetAllPostsOfClassroomResponse, error)
+	GetAllPostsInReportingStage(ctx context.Context, in *GetAllPostsInReportingStageRequest, opts ...grpc.CallOption) (*GetAllPostsInReportingStageResponse, error)
 }
 
 type postServiceClient struct {
@@ -101,6 +103,15 @@ func (c *postServiceClient) GetAllPostsOfClassroom(ctx context.Context, in *GetA
 	return out, nil
 }
 
+func (c *postServiceClient) GetAllPostsInReportingStage(ctx context.Context, in *GetAllPostsInReportingStageRequest, opts ...grpc.CallOption) (*GetAllPostsInReportingStageResponse, error) {
+	out := new(GetAllPostsInReportingStageResponse)
+	err := c.cc.Invoke(ctx, PostService_GetAllPostsInReportingStage_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility
@@ -111,6 +122,7 @@ type PostServiceServer interface {
 	DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error)
 	GetPosts(context.Context, *GetPostsRequest) (*GetPostsResponse, error)
 	GetAllPostsOfClassroom(context.Context, *GetAllPostsOfClassroomRequest) (*GetAllPostsOfClassroomResponse, error)
+	GetAllPostsInReportingStage(context.Context, *GetAllPostsInReportingStageRequest) (*GetAllPostsInReportingStageResponse, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -135,6 +147,9 @@ func (UnimplementedPostServiceServer) GetPosts(context.Context, *GetPostsRequest
 }
 func (UnimplementedPostServiceServer) GetAllPostsOfClassroom(context.Context, *GetAllPostsOfClassroomRequest) (*GetAllPostsOfClassroomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllPostsOfClassroom not implemented")
+}
+func (UnimplementedPostServiceServer) GetAllPostsInReportingStage(context.Context, *GetAllPostsInReportingStageRequest) (*GetAllPostsInReportingStageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllPostsInReportingStage not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 
@@ -257,6 +272,24 @@ func _PostService_GetAllPostsOfClassroom_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_GetAllPostsInReportingStage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllPostsInReportingStageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetAllPostsInReportingStage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetAllPostsInReportingStage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetAllPostsInReportingStage(ctx, req.(*GetAllPostsInReportingStageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -287,6 +320,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllPostsOfClassroom",
 			Handler:    _PostService_GetAllPostsOfClassroom_Handler,
+		},
+		{
+			MethodName: "GetAllPostsInReportingStage",
+			Handler:    _PostService_GetAllPostsInReportingStage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

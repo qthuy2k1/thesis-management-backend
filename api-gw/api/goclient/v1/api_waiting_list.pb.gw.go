@@ -355,7 +355,7 @@ func RegisterWaitingListServiceHandlerServer(ctx context.Context, mux *runtime.S
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/CreateWaitingList", runtime.WithHTTPPathPattern("/api/waiting-list"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/CreateWaitingList", runtime.WithHTTPPathPattern("/api/requirement"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -380,7 +380,7 @@ func RegisterWaitingListServiceHandlerServer(ctx context.Context, mux *runtime.S
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/GetWaitingList", runtime.WithHTTPPathPattern("/api/waiting-list/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/GetWaitingList", runtime.WithHTTPPathPattern("/api/requirement/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -405,7 +405,7 @@ func RegisterWaitingListServiceHandlerServer(ctx context.Context, mux *runtime.S
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/UpdateWaitingList", runtime.WithHTTPPathPattern("/api/waiting-list/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/UpdateWaitingList", runtime.WithHTTPPathPattern("/api/requirement/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -430,7 +430,7 @@ func RegisterWaitingListServiceHandlerServer(ctx context.Context, mux *runtime.S
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/DeleteWaitingList", runtime.WithHTTPPathPattern("/api/waiting-list/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/DeleteWaitingList", runtime.WithHTTPPathPattern("/api/requirement/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -455,7 +455,7 @@ func RegisterWaitingListServiceHandlerServer(ctx context.Context, mux *runtime.S
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/GetWaitingListsOfClassroom", runtime.WithHTTPPathPattern("/api/classroom/{classroomID}/waiting-list"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/GetWaitingListsOfClassroom", runtime.WithHTTPPathPattern("/api/requirement/class/{classroomID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -480,7 +480,7 @@ func RegisterWaitingListServiceHandlerServer(ctx context.Context, mux *runtime.S
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/CheckUserInWaitingListOfClassroom", runtime.WithHTTPPathPattern("/api/user/{userID}/waiting-list"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/CheckUserInWaitingListOfClassroom", runtime.WithHTTPPathPattern("/api/user/{userID}/requirement"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -544,7 +544,7 @@ func RegisterWaitingListServiceHandlerClient(ctx context.Context, mux *runtime.S
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/CreateWaitingList", runtime.WithHTTPPathPattern("/api/waiting-list"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/CreateWaitingList", runtime.WithHTTPPathPattern("/api/requirement"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -566,7 +566,7 @@ func RegisterWaitingListServiceHandlerClient(ctx context.Context, mux *runtime.S
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/GetWaitingList", runtime.WithHTTPPathPattern("/api/waiting-list/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/GetWaitingList", runtime.WithHTTPPathPattern("/api/requirement/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -588,7 +588,7 @@ func RegisterWaitingListServiceHandlerClient(ctx context.Context, mux *runtime.S
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/UpdateWaitingList", runtime.WithHTTPPathPattern("/api/waiting-list/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/UpdateWaitingList", runtime.WithHTTPPathPattern("/api/requirement/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -610,7 +610,7 @@ func RegisterWaitingListServiceHandlerClient(ctx context.Context, mux *runtime.S
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/DeleteWaitingList", runtime.WithHTTPPathPattern("/api/waiting-list/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/DeleteWaitingList", runtime.WithHTTPPathPattern("/api/requirement/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -632,7 +632,7 @@ func RegisterWaitingListServiceHandlerClient(ctx context.Context, mux *runtime.S
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/GetWaitingListsOfClassroom", runtime.WithHTTPPathPattern("/api/classroom/{classroomID}/waiting-list"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/GetWaitingListsOfClassroom", runtime.WithHTTPPathPattern("/api/requirement/class/{classroomID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -654,7 +654,7 @@ func RegisterWaitingListServiceHandlerClient(ctx context.Context, mux *runtime.S
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/CheckUserInWaitingListOfClassroom", runtime.WithHTTPPathPattern("/api/user/{userID}/waiting-list"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.waitingList.v1.WaitingListService/CheckUserInWaitingListOfClassroom", runtime.WithHTTPPathPattern("/api/user/{userID}/requirement"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -674,17 +674,17 @@ func RegisterWaitingListServiceHandlerClient(ctx context.Context, mux *runtime.S
 }
 
 var (
-	pattern_WaitingListService_CreateWaitingList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "waiting-list"}, ""))
+	pattern_WaitingListService_CreateWaitingList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "requirement"}, ""))
 
-	pattern_WaitingListService_GetWaitingList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "waiting-list", "id"}, ""))
+	pattern_WaitingListService_GetWaitingList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "requirement", "id"}, ""))
 
-	pattern_WaitingListService_UpdateWaitingList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "waiting-list", "id"}, ""))
+	pattern_WaitingListService_UpdateWaitingList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "requirement", "id"}, ""))
 
-	pattern_WaitingListService_DeleteWaitingList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "waiting-list", "id"}, ""))
+	pattern_WaitingListService_DeleteWaitingList_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "requirement", "id"}, ""))
 
-	pattern_WaitingListService_GetWaitingListsOfClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "classroom", "classroomID", "waiting-list"}, ""))
+	pattern_WaitingListService_GetWaitingListsOfClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "requirement", "class", "classroomID"}, ""))
 
-	pattern_WaitingListService_CheckUserInWaitingListOfClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "user", "userID", "waiting-list"}, ""))
+	pattern_WaitingListService_CheckUserInWaitingListOfClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "user", "userID", "requirement"}, ""))
 )
 
 var (

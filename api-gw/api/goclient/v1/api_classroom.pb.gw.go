@@ -339,7 +339,7 @@ func RegisterClassroomServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/CreateClassroom", runtime.WithHTTPPathPattern("/api/classroom"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/CreateClassroom", runtime.WithHTTPPathPattern("/api/class"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -364,7 +364,7 @@ func RegisterClassroomServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/GetClassroom", runtime.WithHTTPPathPattern("/api/classroom/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/GetClassroom", runtime.WithHTTPPathPattern("/api/class/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -389,7 +389,7 @@ func RegisterClassroomServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/UpdateClassroom", runtime.WithHTTPPathPattern("/api/classroom/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/UpdateClassroom", runtime.WithHTTPPathPattern("/api/class/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -414,7 +414,7 @@ func RegisterClassroomServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/DeleteClassroom", runtime.WithHTTPPathPattern("/api/classroom/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/DeleteClassroom", runtime.WithHTTPPathPattern("/api/class/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -439,7 +439,7 @@ func RegisterClassroomServiceHandlerServer(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/GetClassrooms", runtime.WithHTTPPathPattern("/api/classroom"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/GetClassrooms", runtime.WithHTTPPathPattern("/api/class"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -528,7 +528,7 @@ func RegisterClassroomServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/CreateClassroom", runtime.WithHTTPPathPattern("/api/classroom"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/CreateClassroom", runtime.WithHTTPPathPattern("/api/class"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -550,7 +550,7 @@ func RegisterClassroomServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/GetClassroom", runtime.WithHTTPPathPattern("/api/classroom/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/GetClassroom", runtime.WithHTTPPathPattern("/api/class/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -572,7 +572,7 @@ func RegisterClassroomServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/UpdateClassroom", runtime.WithHTTPPathPattern("/api/classroom/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/UpdateClassroom", runtime.WithHTTPPathPattern("/api/class/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -594,7 +594,7 @@ func RegisterClassroomServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/DeleteClassroom", runtime.WithHTTPPathPattern("/api/classroom/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/DeleteClassroom", runtime.WithHTTPPathPattern("/api/class/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -616,7 +616,7 @@ func RegisterClassroomServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/GetClassrooms", runtime.WithHTTPPathPattern("/api/classroom"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.classroom.v1.ClassroomService/GetClassrooms", runtime.WithHTTPPathPattern("/api/class"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -658,15 +658,15 @@ func RegisterClassroomServiceHandlerClient(ctx context.Context, mux *runtime.Ser
 }
 
 var (
-	pattern_ClassroomService_CreateClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "classroom"}, ""))
+	pattern_ClassroomService_CreateClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "class"}, ""))
 
-	pattern_ClassroomService_GetClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "classroom", "id"}, ""))
+	pattern_ClassroomService_GetClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "class", "id"}, ""))
 
-	pattern_ClassroomService_UpdateClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "classroom", "id"}, ""))
+	pattern_ClassroomService_UpdateClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "class", "id"}, ""))
 
-	pattern_ClassroomService_DeleteClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "classroom", "id"}, ""))
+	pattern_ClassroomService_DeleteClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "class", "id"}, ""))
 
-	pattern_ClassroomService_GetClassrooms_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "classroom"}, ""))
+	pattern_ClassroomService_GetClassrooms_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "class"}, ""))
 
 	pattern_ClassroomService_CheckClassroomExists_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api.classroom.v1.ClassroomService", "CheckClassroomExists"}, ""))
 )

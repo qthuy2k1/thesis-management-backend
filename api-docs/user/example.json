@@ -1,7 +1,7 @@
 {
     "Create a user": {
         // Method: POST
-        // URL: localhost:8080/api/user
+        // URL: localhost:8080/api/auth
         "success": {
             "input": {
                 "user": {
@@ -44,7 +44,7 @@
     },
     "Get a user": {
         // Method: GET
-        // URL: localhost:8080/api/user/1
+        // URL: localhost:8080/api/auth/1
         "success": {
             "output": {
                 "response": {
@@ -59,8 +59,7 @@
                     "photoSrc": "testurl.vn",
                     "role": "student",
                     "name": "Full Name",
-                    "email": "name@example.com",
-                    "classroomID": "0"
+                    "email": "name@example.com"
                 }
             }
         },
@@ -74,7 +73,7 @@
     },
     "Delete a user": {
         // Method: DELETE 
-        // URL: localhost:8080/api/user/1
+        // URL: localhost:8080/api/auth/1
         "success": {
             "output": {
                 "response": {
@@ -93,7 +92,7 @@
     },
     "Update a user": {
         // Method: PUT
-        // URL: localhost:8080/api/user/1
+        // URL: localhost:8080/api/auth/1
         "success": {
             "input": {
                 "user": {
@@ -103,8 +102,7 @@
                     "photoSrc": "testurl.vn",
                     "role": "student",
                     "name": "Full Name",
-                    "email": "name@example.com",
-                    "classroomID": "1" // update here
+                    "email": "name@example.com"
                 }
             },
             "output": {
@@ -123,20 +121,19 @@
                     "photoSrc": "testurl.vn",
                     "role": "student",
                     "name": "Full Name",
-                    "email": "name@example.com",
-                    "classroomID": "1" // update here
+                    "email": "name@example.com"
+                },
+                "output": {
+                    "code": 6,
+                    "message": "err: user already exists",
+                    "details": []
                 }
-            },
-            "output": {
-                "code": 6,
-                "message": "err: user already exists",
-                "details": []
             }
         }
     },
     "Get all users": {
         // Method: GET
-        // URL: localhost:8080/api/user
+        // URL: localhost:8080/api/auth
         "success": {
             "output": {
                 "response": {
@@ -153,8 +150,7 @@
                         "photoSrc": "testurl.vn",
                         "role": "student",
                         "name": "Full Name",
-                        "email": "name@example.com",
-                        "classroomID": "1" // update here
+                        "email": "name@example.com"
                     },
                     {
                         "id": 2,
@@ -164,8 +160,7 @@
                         "photoSrc": "testurl.vn",
                         "role": "student",
                         "name": "Full Name 2",
-                        "email": "name@example.com",
-                        "classroomID": "2" // update here
+                        "email": "name@example.com"
                     }
                 ]
             }
@@ -173,42 +168,56 @@
     },
     "Get all users of a classroom": {
         // Method: GET
-        // URL: localhost:8080/api/classroom/1/user
+        // URL: localhost:8080/api/member/class/1
         "success": {
             "output": {
                 "response": {
-                    "statusCode": 200,
+                    "statusCode": "200",
                     "message": "Success"
                 },
-                "totalCount": 2,
-                "users": [
+                "totalCount": "1",
+                "members": [
                     {
-                        "id": 1,
-                        "class": "Class 1",
-                        "major": "CNTT",
-                        "phone": "1231231231",
-                        "photoSrc": "testurl.vn",
-                        "role": "student",
-                        "name": "Full Name",
-                        "email": "name@example.com",
-                        "classroomID": "1" // update here
-                    },
-                    {
-                        "id": 2,
-                        "class": "Class 2",
-                        "major": "CNTT",
-                        "phone": "1231231231",
-                        "photoSrc": "testurl.vn",
-                        "role": "student",
-                        "name": "Full Name 2",
-                        "email": "name@example.com",
-                        "classroomID": "2" // update here
+                        "id": "2",
+                        "classroom": {
+                            "id": "3",
+                            "title": "Classroom 261",
+                            "description": "Classroom 6",
+                            "status": "Available",
+                            "lecturer": {
+                                "id": "asdyhaiyaass891",
+                                "class": "Class 2",
+                                "major": "CNTT",
+                                "phone": "0355457556",
+                                "photoSrc": "urltest.vn",
+                                "role": "lecturer",
+                                "name": "Quanasdasdg Tyhuayyyy",
+                                "email": "thuyasayady@gmyaail.com"
+                            },
+                            "classCourse": "HK2",
+                            "topicTags": "Web",
+                            "quantityStudentStudent": "15",
+                            "createdAt": "2023-10-08T11:14:39Z",
+                            "updatedAt": "2023-10-08T11:23:27.418993Z"
+                        },
+                        "member": {
+                            "id": "123123",
+                            "class": "Class 2",
+                            "major": "CNTT",
+                            "phone": "0355457556",
+                            "photoSrc": "urltest.vn",
+                            "role": "student",
+                            "name": "Quanasdasdg Tyhuayyyy",
+                            "email": "thuyasayady@gmyaail.com"
+                        },
+                        "status": "asAs",
+                        "createdAt": "2023-10-08T11:52:45Z"
                     }
                 ]
             }
         }
     },
-    "approve user to join a classroom": {
+    "Approve user to join a classroom": {
         // Method: PUT
         // localhost:8080/api/{classroomID}/aprrove/{userID}
         "success": {
@@ -220,11 +229,11 @@
             }
         }
     },
-    "check status of user whether joinning a classroom": {
+    "Check status of user whether joinning a classroom": {
         // Method: GET
-        // localhost:8080/api/user/{userID}/classroom-status
+        // localhost:8080/api/auth/check-subscribe/{userID}
         "user not joinning a classroom yet": {
-            "status": "NOT REGISTERED"
+            "status": "NOT SUBSCRIBED"
         },
         "user is requesting to join a classroom": {
             "status": "WAITING",
@@ -233,28 +242,71 @@
                 "title": "Classroom 6",
                 "description": "Classroom 6",
                 "status": "Available",
-                "lecturerId": 2,
-                "codeClassroom": "HK2",
+                "lecturerID": 2,
+                "classCourse": "HK2",
                 "topicTags": "Web",
-                "quantity": 15,
+                "quantityStudent": 15,
                 "createdAt": "2023-09-01T15:01:00Z",
                 "updatedAt": "2023-09-01T15:01:00Z"
             }
         },
         "user joined a classroom": {
-            "status": "ADDED",
+            "status": "JOINED",
             "classroom": {
                 "id": 7,
                 "title": "Classroom 6",
                 "description": "Classroom 6",
                 "status": "Available",
-                "lecturerId": 2,
-                "codeClassroom": "HK2",
+                "lecturerID": 2,
+                "classCourse": "HK2",
                 "topicTags": "Web",
-                "quantity": 15,
+                "quantityStudent": 15,
                 "createdAt": "2023-09-01T15:01:00Z",
                 "updatedAt": "2023-09-01T15:01:00Z"
             }
+        }
+    },
+    "Unscribe": {
+        // Method: DELETE
+        // localhost:8080/api/auth/{userID}/unsubscribe/{classroomID}
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "Success"
+                }
+            }
+        },
+        "classroom not exist": {
+            "output": {
+                "response": {
+                    "statusCode": 404,
+                    "message": "classroom not found"
+                }
+            }
+        }
+    },
+    "Get all lecturers": {
+        // Method: GET
+        // URL: localhost:8080/api/auth/lecturer
+        "success": {
+            "response": {
+                "statusCode": "200",
+                "message": "Success"
+            },
+            "totalCount": "1",
+            "lecturers": [
+                {
+                    "id": "asdyhaiyaass891",
+                    "class": "Class 2",
+                    "major": "CNTT",
+                    "phone": "0355457556",
+                    "photoSrc": "urltest.vn",
+                    "role": "lecturer",
+                    "name": "Quanasdasdg Tyhuayyyy",
+                    "email": "thuyasayady@gmyaail.com"
+                }
+            ]
         }
     }
 }

@@ -11,39 +11,33 @@ option go_package="github.com/qthuy2k1/thesis_management_backend/user/api/v1";
 service UserService {
     rpc CreateUser(CreateUserRequest) returns (CreateUserResponse){
         option (google.api.http) = {
-            post: "/api/user"
+            post: "/api/auth"
             body: "*"
         };
     }
     
     rpc GetUser(GetUserRequest) returns (GetUserResponse){
         option (google.api.http) = {
-            get: "/api/user/{id}"
+            get: "/api/auth/{id}"
         };
     }
 
     rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse){
         option (google.api.http) = {
-            put: "/api/user/{id}"
+            put: "/api/auth/{id}"
             body: "*"
         };
     }
 
     rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse){
         option (google.api.http) = {
-            delete: "/api/user/{id}"
+            delete: "/api/auth/{id}"
         };
     }
 
     rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {
         option (google.api.http) = {
-            get: "/api/user"
-        };
-    }
-
-    rpc GetAllUsersOfClassroom(GetAllUsersOfClassroomRequest) returns (GetAllUsersOfClassroomResponse) {
-        option (google.api.http) = {
-            get: "/api/classroom/{classroomID}/user"
+            get: "/api/auth"
         };
     }
 
@@ -55,13 +49,25 @@ service UserService {
 
     rpc CheckStatusUserJoinClassroom(CheckStatusUserJoinClassroomRequest) returns (CheckStatusUserJoinClassroomResponse) {
         option (google.api.http) = {
-            get: "/api/user/{id}/classroom-status"
+            get: "/api/auth/check-subscribe/{userID}"
         };
     }
+
+    rpc UnsubscribeClassroom(UnsubscribeClassroomRequest) returns (UnsubscribeClassroomResponse) {
+        option (google.api.http) = {
+            delete: "/api/auth/{memberID}/unsubscribe/{classroomID}"
+        };
+    };
 
     rpc UpdateBasicUser(UpdateBasicUserRequest) returns (UpdateBasicUserResponse) {
         option (google.api.http) = {
             put: "/api/user/{id}/update-info"
+        };
+    }
+
+    rpc GetAllLecturers(GetAllLecturerRequest) returns (GetAllLecturerResponse) {
+        option (google.api.http) = {
+            get: "/api/auth/lecturer"
         };
     }
 }
@@ -79,10 +85,9 @@ message UserInput {
     optional string major = 3 [(validate.rules).string = {min_len: 2}];
     optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
     string photoSrc = 5;
-    string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
+    string role = 6 [(validate.rules).string = {in: ["lecturer", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    optional int64 classroomID = 9;
 }
 
 message UserResponse {
@@ -91,10 +96,9 @@ message UserResponse {
     optional string major = 3 [(validate.rules).string = {min_len: 2}];
     optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
     string photoSrc = 5;
-    string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
+    string role = 6 [(validate.rules).string = {in: ["lecturer", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    optional int64 classroomID = 9;
 }
 
 message CreateUserRequest {
@@ -145,17 +149,6 @@ message GetUsersResponse {
     repeated UserResponse users = 3;
 }
 
-// ====== GET ALL OF CLASSROOM ======
-message GetAllUsersOfClassroomRequest {
-    int64 classroomID = 1 [(validate.rules).int64.gte = 1];
-}
-
-message GetAllUsersOfClassroomResponse {
-    CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
-    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
-    repeated UserResponse users = 3;
-}
-
 // ====== APPROVE USER JOIN CLASSROOM ======
 message ApproveUserJoinClassroomRequest {
     int64 classroomID = 1 [(validate.rules).int64.gte = 1];
@@ -179,10 +172,10 @@ message ClassroomUserResponse {
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string description = 3 [(validate.rules).string = {min_len: 2}];
     string status = 4 [(validate.rules).string = {min_len: 2}];
-    string lecturerId = 5;
-    string codeClassroom = 6 [(validate.rules).string = {min_len: 2}];
+    string lecturerID = 5;
+    string classCourse = 6 [(validate.rules).string = {min_len: 2}];
     string topicTags = 7 [(validate.rules).string = {min_len: 2}];
-    int64 quantity = 8 [(validate.rules).int64.gte = 0];
+    int64 quantityStudent = 8 [(validate.rules).int64.gte = 0];
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
 }
@@ -191,12 +184,13 @@ message ClassroomUserResponse {
 
 // ====== CHECK USER JOIN CLASSROOM ======
 message CheckStatusUserJoinClassroomRequest{
-    string id = 1;
+    string userID = 1;
 }
 
 message CheckStatusUserJoinClassroomResponse{
-    string status = 1;
-    ClassroomUserResponse classroom = 2;
+    CommonUserResponse response = 1;
+    string status = 2;
+    ClassroomUserResponse classroom = 3;
 }
 
 
@@ -218,4 +212,26 @@ message UpdateBasicUserRequest {
 
 message UpdateBasicUserResponse {
     CommonUserResponse response = 1;
+}
+
+
+
+message UnsubscribeClassroomRequest {
+    string memberID = 1 [(validate.rules).string = {min_len: 2}];
+    int64 classroomID = 2 [(validate.rules).int64.gte = 1];
+}
+
+message UnsubscribeClassroomResponse {
+    CommonUserResponse response = 1;
+}
+
+
+message GetAllLecturerRequest {
+
+}
+
+message GetAllLecturerResponse {
+    CommonUserResponse response = 1;
+    int64 totalCount = 2;
+    repeated UserResponse lecturers = 3;
 }

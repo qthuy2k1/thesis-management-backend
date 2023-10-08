@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/reporting-stage": {
+    "/api/report-stage": {
       "get": {
         "operationId": "ReportingStageService_GetReportingStages",
         "responses": {
@@ -68,7 +68,7 @@
         ]
       }
     },
-    "/api/reporting-stage/{id}": {
+    "/api/report-stage/{id}": {
       "get": {
         "operationId": "ReportingStageService_GetReportingStage",
         "responses": {
@@ -158,7 +158,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "reportingStage": {
+                "category": {
                   "$ref": "#/definitions/v1ReportingStageInput"
                 }
               },
@@ -216,7 +216,7 @@
     "v1CreateReportingStageRequest": {
       "type": "object",
       "properties": {
-        "reportingStage": {
+        "category": {
           "$ref": "#/definitions/v1ReportingStageInput"
         }
       }
@@ -243,7 +243,7 @@
         "response": {
           "$ref": "#/definitions/v1CommonReportingStageResponse"
         },
-        "reportingStage": {
+        "category": {
           "$ref": "#/definitions/v1ReportingStageResponse"
         }
       }
@@ -254,7 +254,7 @@
         "response": {
           "$ref": "#/definitions/v1CommonReportingStageResponse"
         },
-        "reportingStages": {
+        "categorys": {
           "type": "array",
           "items": {
             "type": "object",
@@ -266,14 +266,17 @@
     "v1ReportingStageInput": {
       "type": "object",
       "properties": {
-        "name": {
+        "label": {
           "type": "string"
         },
         "description": {
           "type": "string"
+        },
+        "value": {
+          "type": "string"
         }
       },
-      "title": "====== reportingStage ======"
+      "title": "====== category ======"
     },
     "v1ReportingStageResponse": {
       "type": "object",
@@ -282,10 +285,13 @@
           "type": "string",
           "format": "int64"
         },
-        "name": {
+        "label": {
           "type": "string"
         },
         "description": {
+          "type": "string"
+        },
+        "value": {
           "type": "string"
         }
       }

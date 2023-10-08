@@ -1084,6 +1084,8 @@ func (m *GetSubmissionRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	// no validation rules for StudentID
+
 	if len(errors) > 0 {
 		return GetSubmissionRequestMultiError(errors)
 	}

@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/classroom/{classroomID}/post": {
+    "/api/class/{classroomID}/post": {
       "get": {
         "operationId": "PostService_GetAllPostsOfClassroom",
         "responses": {
@@ -72,6 +72,44 @@
             "in": "query",
             "required": false,
             "type": "boolean"
+          }
+        ],
+        "tags": [
+          "PostService"
+        ]
+      }
+    },
+    "/api/class/{classroomID}/post/stage/{categoryID}": {
+      "get": {
+        "operationId": "PostService_GetAllPostsInReportingStage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllPostsInReportingStageResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "classroomID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "categoryID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -324,10 +362,6 @@
         },
         "email": {
           "type": "string"
-        },
-        "classroomID": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -387,6 +421,25 @@
       "properties": {
         "response": {
           "$ref": "#/definitions/v1CommonPostResponse"
+        }
+      }
+    },
+    "v1GetAllPostsInReportingStageResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonPostResponse"
+        },
+        "totalCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "posts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostResponse"
+          }
         }
       }
     },
@@ -452,14 +505,14 @@
         "title": {
           "type": "string"
         },
-        "content": {
+        "description": {
           "type": "string"
         },
         "classroomID": {
           "type": "string",
           "format": "int64"
         },
-        "reportingStageID": {
+        "categoryID": {
           "type": "string",
           "format": "int64"
         },
@@ -479,14 +532,14 @@
         "title": {
           "type": "string"
         },
-        "content": {
+        "description": {
           "type": "string"
         },
         "classroomID": {
           "type": "string",
           "format": "int64"
         },
-        "reportingStage": {
+        "category": {
           "$ref": "#/definitions/v1ReportingStagePostResponse"
         },
         "author": {
@@ -509,10 +562,13 @@
           "type": "string",
           "format": "int64"
         },
-        "name": {
+        "label": {
           "type": "string"
         },
         "description": {
+          "type": "string"
+        },
+        "value": {
           "type": "string"
         }
       }

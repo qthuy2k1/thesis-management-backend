@@ -21,6 +21,8 @@ type IExerciseRepo interface {
 	GetExercises(ctx context.Context, filter ExerciseFilterRepo) ([]ExerciseOutputRepo, int, error)
 	// GetAllExercisesOfClassroom returns all posts of the specified classroom given by classroom id
 	GetAllExercisesOfClassroom(ctx context.Context, filter ExerciseFilterRepo, classromID int) ([]ExerciseOutputRepo, int, error)
+	// GetAllExercisesInReportingStage returns all posts of the specified reporting stage given by reporting stage id
+	GetAllExercisesInReportingStage(ctx context.Context, reportingStageID, classroomID int) ([]ExerciseOutputRepo, int, error)
 }
 
 type ExerciseRepo struct {

@@ -1,12 +1,13 @@
 {
     "Create a reporting stage": {
-    // Method: POST
-    // URL: localhost:8080/api/reporting-stage
+        // Method: POST
+        // URL: localhost:8080/api/report-stage
         "success": {
             "input": {
-                "reportingStage": {
-                    "name": "Stage 1",
-                    "description": "Description of stage 1"
+                "category": {
+                    "label": "Stage 1",
+                    "description": "Description of stage 1",
+                    "value": "Stage 1 value"
                 }
             },
             "output": {
@@ -18,9 +19,10 @@
         },
         "create a existed reporing stage": {
             "input": {
-                "reportingStage": {
-                    "name": "Stage 1",
-                    "description": "Description of stage 1"
+                "category": {
+                    "label": "Stage 1",
+                    "description": "Description of stage 1",
+                    "value": "Stage 1 value"
                 }
             },
             "output": {
@@ -31,14 +33,15 @@
         }
     },
     "Get a reporting stage": {
-    // Method: GET
-    // URL: localhost:8080/api/reporting-stage/1
+        // Method: GET
+        // URL: localhost:8080/api/report-stage/1
         "success": {
             "output": {
-                "reportingStage": {
+                "category": {
                     "id": 1,
-                    "name": "Stage 1",
-                    "description": "Description of stage 1"
+                    "label": "Stage 1",
+                    "description": "Description of stage 1",
+                    "value": "Stage 1 value"
                 }
             }
         },
@@ -51,8 +54,8 @@
         }
     },
     "Delete a reporting stage": {
-    // Method: DELETE 
-    // URL: localhost:8080/api/reporting-stage/1
+        // Method: DELETE 
+        // URL: localhost:8080/api/report-stage/1
         "success": {
             "output": {
                 "response": {
@@ -70,13 +73,14 @@
         }
     },
     "Update a reporting stage": {
-    // Method: PUT
-    // URL: localhost:8080/api/reporting-stage/1
+        // Method: PUT
+        // URL: localhost:8080/api/report-stage/1
         "success": {
             "input": {
-                "reportingStage": {
-                    "name": "Stage 1",
-                    "description": "Description of stage 1"
+                "category": {
+                    "label": "Stage 1",
+                    "description": "Description of stage 1",
+                    "value": "Stage 1 value"
                 }
             },
             "output": {
@@ -88,9 +92,10 @@
         },
         "update with a existed reporing stage nam": {
             "input": {
-                "reportingStage": {
-                    "name": "Stage 1",
-                    "description": "Description of stage 1"
+                "category": {
+                    "label": "Stage 1",
+                    "description": "Description of stage 1",
+                    "value": "Stage 1 value"
                 }
             },
             "output": {
@@ -107,21 +112,24 @@
                     "statusCode": 200,
                     "message": "Success"
                 },
-                "reportingStages": [
+                "categorys": [
                     {
                         "id": 1,
-                        "name": "Test",
-                        "description": "Testtt"
+                        "label": "Test",
+                        "description": "Testtt",
+                        "value": "Stage 1 value"
                     },
                     {
                         "id": 2,
-                        "name": "Test 2",
-                        "description": "test"
+                        "label": "Test 2",
+                        "description": "test",
+                        "value": "Stage 1 value"
                     },
                     {
                         "id": 4,
-                        "name": "Test 3",
-                        "description": "test 3"
+                        "label": "Test 3",
+                        "description": "test 3",
+                        "value": "Stage 1 value"
                     }
                 ]
             }

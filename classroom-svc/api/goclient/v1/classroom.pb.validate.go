@@ -169,13 +169,13 @@ func (m *ClassroomInput) validate(all bool) error {
 
 	// no validation rules for Status
 
-	// no validation rules for LecturerId
+	// no validation rules for LecturerID
 
-	// no validation rules for CodeClassroom
+	// no validation rules for ClassCourse
 
 	// no validation rules for TopicTags
 
-	// no validation rules for Quantity
+	// no validation rules for QuantityStudent
 
 	if len(errors) > 0 {
 		return ClassroomInputMultiError(errors)
@@ -285,13 +285,13 @@ func (m *ClassroomResponse) validate(all bool) error {
 
 	// no validation rules for Status
 
-	// no validation rules for LecturerId
+	// no validation rules for LecturerID
 
-	// no validation rules for CodeClassroom
+	// no validation rules for ClassCourse
 
 	// no validation rules for TopicTags
 
-	// no validation rules for Quantity
+	// no validation rules for QuantityStudent
 
 	if all {
 		switch v := interface{}(m.GetCreatedAt()).(type) {

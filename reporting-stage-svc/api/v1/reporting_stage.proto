@@ -34,14 +34,16 @@ message CommonReportingStageResponse {
 
 // ====== reportingStage ======
 message ReportingStageInput {
-    string name = 1;
+    string label = 1;
     string description = 2;
+    string value = 3;
 }
 
 message ReportingStageResponse {
     int64 id = 1;
-    string name = 2;
+    string label = 2;
     string description = 3;
+    string value = 4;
 }
 
 message CreateReportingStageRequest {

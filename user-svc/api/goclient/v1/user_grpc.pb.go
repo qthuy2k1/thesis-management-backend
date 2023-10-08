@@ -19,12 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserService_CreateUser_FullMethodName             = "/user.v1.UserService/CreateUser"
-	UserService_GetUser_FullMethodName                = "/user.v1.UserService/GetUser"
-	UserService_UpdateUser_FullMethodName             = "/user.v1.UserService/UpdateUser"
-	UserService_DeleteUser_FullMethodName             = "/user.v1.UserService/DeleteUser"
-	UserService_GetUsers_FullMethodName               = "/user.v1.UserService/GetUsers"
-	UserService_GetAllUsersOfClassroom_FullMethodName = "/user.v1.UserService/GetAllUsersOfClassroom"
+	UserService_CreateUser_FullMethodName               = "/user.v1.UserService/CreateUser"
+	UserService_GetUser_FullMethodName                  = "/user.v1.UserService/GetUser"
+	UserService_UpdateUser_FullMethodName               = "/user.v1.UserService/UpdateUser"
+	UserService_DeleteUser_FullMethodName               = "/user.v1.UserService/DeleteUser"
+	UserService_GetUsers_FullMethodName                 = "/user.v1.UserService/GetUsers"
+	UserService_GetAllLecturers_FullMethodName          = "/user.v1.UserService/GetAllLecturers"
+	UserService_UnsubscribeClassroom_FullMethodName     = "/user.v1.UserService/UnsubscribeClassroom"
+	UserService_CreateMember_FullMethodName             = "/user.v1.UserService/CreateMember"
+	UserService_GetMember_FullMethodName                = "/user.v1.UserService/GetMember"
+	UserService_UpdateMember_FullMethodName             = "/user.v1.UserService/UpdateMember"
+	UserService_DeleteMember_FullMethodName             = "/user.v1.UserService/DeleteMember"
+	UserService_GetMembers_FullMethodName               = "/user.v1.UserService/GetMembers"
+	UserService_GetAllMembersOfClassroom_FullMethodName = "/user.v1.UserService/GetAllMembersOfClassroom"
+	UserService_IsUserJoinedClassroom_FullMethodName    = "/user.v1.UserService/IsUserJoinedClassroom"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -36,7 +44,15 @@ type UserServiceClient interface {
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
-	GetAllUsersOfClassroom(ctx context.Context, in *GetAllUsersOfClassroomRequest, opts ...grpc.CallOption) (*GetAllUsersOfClassroomResponse, error)
+	GetAllLecturers(ctx context.Context, in *GetAllLecturersRequest, opts ...grpc.CallOption) (*GetAllLecturersResponse, error)
+	UnsubscribeClassroom(ctx context.Context, in *UnsubscribeClassroomRequest, opts ...grpc.CallOption) (*UnsubscribeClassroomResponse, error)
+	CreateMember(ctx context.Context, in *CreateMemberRequest, opts ...grpc.CallOption) (*CreateMemberResponse, error)
+	GetMember(ctx context.Context, in *GetMemberRequest, opts ...grpc.CallOption) (*GetMemberResponse, error)
+	UpdateMember(ctx context.Context, in *UpdateMemberRequest, opts ...grpc.CallOption) (*UpdateMemberResponse, error)
+	DeleteMember(ctx context.Context, in *DeleteMemberRequest, opts ...grpc.CallOption) (*DeleteMemberResponse, error)
+	GetMembers(ctx context.Context, in *GetMembersRequest, opts ...grpc.CallOption) (*GetMembersResponse, error)
+	GetAllMembersOfClassroom(ctx context.Context, in *GetAllMembersOfClassroomRequest, opts ...grpc.CallOption) (*GetAllMembersOfClassroomResponse, error)
+	IsUserJoinedClassroom(ctx context.Context, in *IsUserJoinedClassroomRequest, opts ...grpc.CallOption) (*IsUserJoinedClassroomResponse, error)
 }
 
 type userServiceClient struct {
@@ -92,9 +108,81 @@ func (c *userServiceClient) GetUsers(ctx context.Context, in *GetUsersRequest, o
 	return out, nil
 }
 
-func (c *userServiceClient) GetAllUsersOfClassroom(ctx context.Context, in *GetAllUsersOfClassroomRequest, opts ...grpc.CallOption) (*GetAllUsersOfClassroomResponse, error) {
-	out := new(GetAllUsersOfClassroomResponse)
-	err := c.cc.Invoke(ctx, UserService_GetAllUsersOfClassroom_FullMethodName, in, out, opts...)
+func (c *userServiceClient) GetAllLecturers(ctx context.Context, in *GetAllLecturersRequest, opts ...grpc.CallOption) (*GetAllLecturersResponse, error) {
+	out := new(GetAllLecturersResponse)
+	err := c.cc.Invoke(ctx, UserService_GetAllLecturers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UnsubscribeClassroom(ctx context.Context, in *UnsubscribeClassroomRequest, opts ...grpc.CallOption) (*UnsubscribeClassroomResponse, error) {
+	out := new(UnsubscribeClassroomResponse)
+	err := c.cc.Invoke(ctx, UserService_UnsubscribeClassroom_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateMember(ctx context.Context, in *CreateMemberRequest, opts ...grpc.CallOption) (*CreateMemberResponse, error) {
+	out := new(CreateMemberResponse)
+	err := c.cc.Invoke(ctx, UserService_CreateMember_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetMember(ctx context.Context, in *GetMemberRequest, opts ...grpc.CallOption) (*GetMemberResponse, error) {
+	out := new(GetMemberResponse)
+	err := c.cc.Invoke(ctx, UserService_GetMember_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateMember(ctx context.Context, in *UpdateMemberRequest, opts ...grpc.CallOption) (*UpdateMemberResponse, error) {
+	out := new(UpdateMemberResponse)
+	err := c.cc.Invoke(ctx, UserService_UpdateMember_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) DeleteMember(ctx context.Context, in *DeleteMemberRequest, opts ...grpc.CallOption) (*DeleteMemberResponse, error) {
+	out := new(DeleteMemberResponse)
+	err := c.cc.Invoke(ctx, UserService_DeleteMember_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetMembers(ctx context.Context, in *GetMembersRequest, opts ...grpc.CallOption) (*GetMembersResponse, error) {
+	out := new(GetMembersResponse)
+	err := c.cc.Invoke(ctx, UserService_GetMembers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetAllMembersOfClassroom(ctx context.Context, in *GetAllMembersOfClassroomRequest, opts ...grpc.CallOption) (*GetAllMembersOfClassroomResponse, error) {
+	out := new(GetAllMembersOfClassroomResponse)
+	err := c.cc.Invoke(ctx, UserService_GetAllMembersOfClassroom_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) IsUserJoinedClassroom(ctx context.Context, in *IsUserJoinedClassroomRequest, opts ...grpc.CallOption) (*IsUserJoinedClassroomResponse, error) {
+	out := new(IsUserJoinedClassroomResponse)
+	err := c.cc.Invoke(ctx, UserService_IsUserJoinedClassroom_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +198,15 @@ type UserServiceServer interface {
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
-	GetAllUsersOfClassroom(context.Context, *GetAllUsersOfClassroomRequest) (*GetAllUsersOfClassroomResponse, error)
+	GetAllLecturers(context.Context, *GetAllLecturersRequest) (*GetAllLecturersResponse, error)
+	UnsubscribeClassroom(context.Context, *UnsubscribeClassroomRequest) (*UnsubscribeClassroomResponse, error)
+	CreateMember(context.Context, *CreateMemberRequest) (*CreateMemberResponse, error)
+	GetMember(context.Context, *GetMemberRequest) (*GetMemberResponse, error)
+	UpdateMember(context.Context, *UpdateMemberRequest) (*UpdateMemberResponse, error)
+	DeleteMember(context.Context, *DeleteMemberRequest) (*DeleteMemberResponse, error)
+	GetMembers(context.Context, *GetMembersRequest) (*GetMembersResponse, error)
+	GetAllMembersOfClassroom(context.Context, *GetAllMembersOfClassroomRequest) (*GetAllMembersOfClassroomResponse, error)
+	IsUserJoinedClassroom(context.Context, *IsUserJoinedClassroomRequest) (*IsUserJoinedClassroomResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -133,8 +229,32 @@ func (UnimplementedUserServiceServer) DeleteUser(context.Context, *DeleteUserReq
 func (UnimplementedUserServiceServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
 }
-func (UnimplementedUserServiceServer) GetAllUsersOfClassroom(context.Context, *GetAllUsersOfClassroomRequest) (*GetAllUsersOfClassroomResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllUsersOfClassroom not implemented")
+func (UnimplementedUserServiceServer) GetAllLecturers(context.Context, *GetAllLecturersRequest) (*GetAllLecturersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllLecturers not implemented")
+}
+func (UnimplementedUserServiceServer) UnsubscribeClassroom(context.Context, *UnsubscribeClassroomRequest) (*UnsubscribeClassroomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnsubscribeClassroom not implemented")
+}
+func (UnimplementedUserServiceServer) CreateMember(context.Context, *CreateMemberRequest) (*CreateMemberResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMember not implemented")
+}
+func (UnimplementedUserServiceServer) GetMember(context.Context, *GetMemberRequest) (*GetMemberResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMember not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateMember(context.Context, *UpdateMemberRequest) (*UpdateMemberResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMember not implemented")
+}
+func (UnimplementedUserServiceServer) DeleteMember(context.Context, *DeleteMemberRequest) (*DeleteMemberResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMember not implemented")
+}
+func (UnimplementedUserServiceServer) GetMembers(context.Context, *GetMembersRequest) (*GetMembersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMembers not implemented")
+}
+func (UnimplementedUserServiceServer) GetAllMembersOfClassroom(context.Context, *GetAllMembersOfClassroomRequest) (*GetAllMembersOfClassroomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllMembersOfClassroom not implemented")
+}
+func (UnimplementedUserServiceServer) IsUserJoinedClassroom(context.Context, *IsUserJoinedClassroomRequest) (*IsUserJoinedClassroomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IsUserJoinedClassroom not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -239,20 +359,164 @@ func _UserService_GetUsers_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_GetAllUsersOfClassroom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllUsersOfClassroomRequest)
+func _UserService_GetAllLecturers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllLecturersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).GetAllUsersOfClassroom(ctx, in)
+		return srv.(UserServiceServer).GetAllLecturers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_GetAllUsersOfClassroom_FullMethodName,
+		FullMethod: UserService_GetAllLecturers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetAllUsersOfClassroom(ctx, req.(*GetAllUsersOfClassroomRequest))
+		return srv.(UserServiceServer).GetAllLecturers(ctx, req.(*GetAllLecturersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UnsubscribeClassroom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnsubscribeClassroomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UnsubscribeClassroom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UnsubscribeClassroom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UnsubscribeClassroom(ctx, req.(*UnsubscribeClassroomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreateMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateMember(ctx, req.(*CreateMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetMember(ctx, req.(*GetMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdateMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateMember(ctx, req.(*UpdateMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_DeleteMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).DeleteMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_DeleteMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).DeleteMember(ctx, req.(*DeleteMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMembersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetMembers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetMembers(ctx, req.(*GetMembersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetAllMembersOfClassroom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllMembersOfClassroomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetAllMembersOfClassroom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetAllMembersOfClassroom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetAllMembersOfClassroom(ctx, req.(*GetAllMembersOfClassroomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_IsUserJoinedClassroom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IsUserJoinedClassroomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).IsUserJoinedClassroom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_IsUserJoinedClassroom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).IsUserJoinedClassroom(ctx, req.(*IsUserJoinedClassroomRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -285,8 +549,40 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_GetUsers_Handler,
 		},
 		{
-			MethodName: "GetAllUsersOfClassroom",
-			Handler:    _UserService_GetAllUsersOfClassroom_Handler,
+			MethodName: "GetAllLecturers",
+			Handler:    _UserService_GetAllLecturers_Handler,
+		},
+		{
+			MethodName: "UnsubscribeClassroom",
+			Handler:    _UserService_UnsubscribeClassroom_Handler,
+		},
+		{
+			MethodName: "CreateMember",
+			Handler:    _UserService_CreateMember_Handler,
+		},
+		{
+			MethodName: "GetMember",
+			Handler:    _UserService_GetMember_Handler,
+		},
+		{
+			MethodName: "UpdateMember",
+			Handler:    _UserService_UpdateMember_Handler,
+		},
+		{
+			MethodName: "DeleteMember",
+			Handler:    _UserService_DeleteMember_Handler,
+		},
+		{
+			MethodName: "GetMembers",
+			Handler:    _UserService_GetMembers_Handler,
+		},
+		{
+			MethodName: "GetAllMembersOfClassroom",
+			Handler:    _UserService_GetAllMembersOfClassroom_Handler,
+		},
+		{
+			MethodName: "IsUserJoinedClassroom",
+			Handler:    _UserService_IsUserJoinedClassroom_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

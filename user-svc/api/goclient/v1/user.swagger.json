@@ -57,7 +57,23 @@
         }
       }
     },
+    "v1CreateMemberResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
     "v1CreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
+    "v1DeleteMemberResponse": {
       "type": "object",
       "properties": {
         "response": {
@@ -73,7 +89,7 @@
         }
       }
     },
-    "v1GetAllUsersOfClassroomResponse": {
+    "v1GetAllLecturersResponse": {
       "type": "object",
       "properties": {
         "response": {
@@ -83,11 +99,60 @@
           "type": "string",
           "format": "int64"
         },
-        "users": {
+        "lecturers": {
           "type": "array",
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1UserResponse"
+          }
+        }
+      }
+    },
+    "v1GetAllMembersOfClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "totalCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MemberResponse"
+          }
+        }
+      }
+    },
+    "v1GetMemberResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "member": {
+          "$ref": "#/definitions/v1MemberResponse"
+        }
+      }
+    },
+    "v1GetMembersResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "totalCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MemberResponse"
           }
         }
       }
@@ -119,6 +184,72 @@
             "type": "object",
             "$ref": "#/definitions/v1UserResponse"
           }
+        }
+      }
+    },
+    "v1IsUserJoinedClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "member": {
+          "$ref": "#/definitions/v1MemberResponse"
+        }
+      }
+    },
+    "v1MemberInput": {
+      "type": "object",
+      "properties": {
+        "classroomID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "memberID": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "title": "====== member ======"
+    },
+    "v1MemberResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "classroomID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "memberID": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1UnsubscribeClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
+    "v1UpdateMemberResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
         }
       }
     },
@@ -156,10 +287,6 @@
         },
         "email": {
           "type": "string"
-        },
-        "classroomID": {
-          "type": "string",
-          "format": "int64"
         }
       },
       "title": "====== user ======"
@@ -190,10 +317,6 @@
         },
         "email": {
           "type": "string"
-        },
-        "classroomID": {
-          "type": "string",
-          "format": "int64"
         }
       }
     }

@@ -65,6 +65,10 @@ func local_request_SubmissionService_CreateSubmission_0(ctx context.Context, mar
 
 }
 
+var (
+	filter_SubmissionService_GetSubmission_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
+)
+
 func request_SubmissionService_GetSubmission_0(ctx context.Context, marshaler runtime.Marshaler, client SubmissionServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetSubmissionRequest
 	var metadata runtime.ServerMetadata
@@ -84,6 +88,13 @@ func request_SubmissionService_GetSubmission_0(ctx context.Context, marshaler ru
 	protoReq.Id, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_SubmissionService_GetSubmission_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.GetSubmission(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -110,6 +121,13 @@ func local_request_SubmissionService_GetSubmission_0(ctx context.Context, marsha
 	protoReq.Id, err = runtime.Int64(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_SubmissionService_GetSubmission_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := server.GetSubmission(ctx, &protoReq)
@@ -303,7 +321,7 @@ func RegisterSubmissionServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.submission.v1.SubmissionService/CreateSubmission", runtime.WithHTTPPathPattern("/api/submission"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.submission.v1.SubmissionService/CreateSubmission", runtime.WithHTTPPathPattern("/api/submit"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -328,7 +346,7 @@ func RegisterSubmissionServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.submission.v1.SubmissionService/GetSubmission", runtime.WithHTTPPathPattern("/api/submission/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.submission.v1.SubmissionService/GetSubmission", runtime.WithHTTPPathPattern("/api/submit/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -353,7 +371,7 @@ func RegisterSubmissionServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.submission.v1.SubmissionService/UpdateSubmission", runtime.WithHTTPPathPattern("/api/submission/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.submission.v1.SubmissionService/UpdateSubmission", runtime.WithHTTPPathPattern("/api/submit/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -378,7 +396,7 @@ func RegisterSubmissionServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.submission.v1.SubmissionService/DeleteSubmission", runtime.WithHTTPPathPattern("/api/submission/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.submission.v1.SubmissionService/DeleteSubmission", runtime.WithHTTPPathPattern("/api/submit/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -403,7 +421,7 @@ func RegisterSubmissionServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.submission.v1.SubmissionService/GetAllSubmissionsOfExercise", runtime.WithHTTPPathPattern("/api/exercise/{exerciseID}/submission"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.submission.v1.SubmissionService/GetAllSubmissionsOfExercise", runtime.WithHTTPPathPattern("/api/submit/ex/{exerciseID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -467,7 +485,7 @@ func RegisterSubmissionServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.submission.v1.SubmissionService/CreateSubmission", runtime.WithHTTPPathPattern("/api/submission"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.submission.v1.SubmissionService/CreateSubmission", runtime.WithHTTPPathPattern("/api/submit"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -489,7 +507,7 @@ func RegisterSubmissionServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.submission.v1.SubmissionService/GetSubmission", runtime.WithHTTPPathPattern("/api/submission/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.submission.v1.SubmissionService/GetSubmission", runtime.WithHTTPPathPattern("/api/submit/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -511,7 +529,7 @@ func RegisterSubmissionServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.submission.v1.SubmissionService/UpdateSubmission", runtime.WithHTTPPathPattern("/api/submission/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.submission.v1.SubmissionService/UpdateSubmission", runtime.WithHTTPPathPattern("/api/submit/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -533,7 +551,7 @@ func RegisterSubmissionServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.submission.v1.SubmissionService/DeleteSubmission", runtime.WithHTTPPathPattern("/api/submission/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.submission.v1.SubmissionService/DeleteSubmission", runtime.WithHTTPPathPattern("/api/submit/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -555,7 +573,7 @@ func RegisterSubmissionServiceHandlerClient(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.submission.v1.SubmissionService/GetAllSubmissionsOfExercise", runtime.WithHTTPPathPattern("/api/exercise/{exerciseID}/submission"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.submission.v1.SubmissionService/GetAllSubmissionsOfExercise", runtime.WithHTTPPathPattern("/api/submit/ex/{exerciseID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -575,15 +593,15 @@ func RegisterSubmissionServiceHandlerClient(ctx context.Context, mux *runtime.Se
 }
 
 var (
-	pattern_SubmissionService_CreateSubmission_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "submission"}, ""))
+	pattern_SubmissionService_CreateSubmission_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "submit"}, ""))
 
-	pattern_SubmissionService_GetSubmission_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "submission", "id"}, ""))
+	pattern_SubmissionService_GetSubmission_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "submit", "id"}, ""))
 
-	pattern_SubmissionService_UpdateSubmission_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "submission", "id"}, ""))
+	pattern_SubmissionService_UpdateSubmission_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "submit", "id"}, ""))
 
-	pattern_SubmissionService_DeleteSubmission_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "submission", "id"}, ""))
+	pattern_SubmissionService_DeleteSubmission_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "submit", "id"}, ""))
 
-	pattern_SubmissionService_GetAllSubmissionsOfExercise_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "exercise", "exerciseID", "submission"}, ""))
+	pattern_SubmissionService_GetAllSubmissionsOfExercise_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "submit", "ex", "exerciseID"}, ""))
 )
 
 var (

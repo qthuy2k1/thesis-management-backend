@@ -8,29 +8,27 @@ import (
 )
 
 type UserInputSvc struct {
-	ID          string
-	Email       string
-	Class       string
-	Major       *string
-	Phone       *string
-	PhotoSrc    string
-	Role        string
-	Name        string
-	ClassroomID *int
+	ID       string
+	Email    string
+	Class    string
+	Major    *string
+	Phone    *string
+	PhotoSrc string
+	Role     string
+	Name     string
 }
 
 // CreateUser creates a new user in db given by user model
 func (s *UserSvc) CreateUser(ctx context.Context, u UserInputSvc) error {
 	pRepo := repository.UserInputRepo{
-		ID:          u.ID,
-		Class:       u.Class,
-		Major:       u.Major,
-		Phone:       u.Phone,
-		PhotoSrc:    u.PhotoSrc,
-		Role:        u.Role,
-		Name:        u.Name,
-		Email:       u.Email,
-		ClassroomID: u.ClassroomID,
+		ID:       u.ID,
+		Class:    u.Class,
+		Major:    u.Major,
+		Phone:    u.Phone,
+		PhotoSrc: u.PhotoSrc,
+		Role:     u.Role,
+		Name:     u.Name,
+		Email:    u.Email,
 	}
 
 	if err := s.Repository.CreateUser(ctx, pRepo); err != nil {
@@ -54,29 +52,27 @@ func (s *UserSvc) GetUser(ctx context.Context, id string) (UserOutputSvc, error)
 	}
 
 	return UserOutputSvc{
-		ID:          u.ID,
-		Class:       u.Class,
-		Major:       u.Major,
-		Phone:       u.Phone,
-		PhotoSrc:    u.PhotoSrc,
-		Role:        u.Role,
-		Name:        u.Name,
-		Email:       u.Email,
-		ClassroomID: u.ClassroomID,
+		ID:       u.ID,
+		Class:    u.Class,
+		Major:    u.Major,
+		Phone:    u.Phone,
+		PhotoSrc: u.PhotoSrc,
+		Role:     u.Role,
+		Name:     u.Name,
+		Email:    u.Email,
 	}, nil
 }
 
 // UpdateUser updates the specified user by id
 func (s *UserSvc) UpdateUser(ctx context.Context, id string, user UserInputSvc) error {
 	if err := s.Repository.UpdateUser(ctx, id, repository.UserInputRepo{
-		Class:       user.Class,
-		Major:       user.Major,
-		Phone:       user.Phone,
-		PhotoSrc:    user.PhotoSrc,
-		Role:        user.Role,
-		Name:        user.Name,
-		Email:       user.Email,
-		ClassroomID: user.ClassroomID,
+		Class:    user.Class,
+		Major:    user.Major,
+		Phone:    user.Phone,
+		PhotoSrc: user.PhotoSrc,
+		Role:     user.Role,
+		Name:     user.Name,
+		Email:    user.Email,
 	}); err != nil {
 		if errors.Is(err, repository.ErrUserNotFound) {
 			return ErrUserNotFound
@@ -100,15 +96,14 @@ func (s *UserSvc) DeleteUser(ctx context.Context, id string) error {
 }
 
 type UserOutputSvc struct {
-	ID          string
-	Email       string
-	Class       string
-	Major       *string
-	Phone       *string
-	PhotoSrc    string
-	Role        string
-	Name        string
-	ClassroomID *int
+	ID       string
+	Email    string
+	Class    string
+	Major    *string
+	Phone    *string
+	PhotoSrc string
+	Role     string
+	Name     string
 }
 
 // GetUsers returns a list of users in db
@@ -121,42 +116,52 @@ func (s *UserSvc) GetUsers(ctx context.Context) ([]UserOutputSvc, int, error) {
 	var psSvc []UserOutputSvc
 	for _, u := range psRepo {
 		psSvc = append(psSvc, UserOutputSvc{
-			ID:          u.ID,
-			Class:       u.Class,
-			Major:       u.Major,
-			Phone:       u.Phone,
-			PhotoSrc:    u.PhotoSrc,
-			Role:        u.Role,
-			Name:        u.Name,
-			Email:       u.Email,
-			ClassroomID: u.ClassroomID,
+			ID:       u.ID,
+			Class:    u.Class,
+			Major:    u.Major,
+			Phone:    u.Phone,
+			PhotoSrc: u.PhotoSrc,
+			Role:     u.Role,
+			Name:     u.Name,
+			Email:    u.Email,
 		})
 	}
 
 	return psSvc, count, nil
 }
 
-// GetAllUsersOfClassroom returns a list of users in a classroom in db with filter
-func (s *UserSvc) GetAllUsersOfClassroom(ctx context.Context, classroomID int) ([]UserOutputSvc, int, error) {
-	usRepo, count, err := s.Repository.GetAllUsersOfClassroom(ctx, classroomID)
+// GetAllLecturers returns all members who has the role named "lecturer"
+func (s *UserSvc) GetAllLecturers(ctx context.Context) ([]UserOutputSvc, int, error) {
+	psRepo, count, err := s.Repository.GetAllLecturers(ctx)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	var usSvc []UserOutputSvc
-	for _, u := range usRepo {
-		usSvc = append(usSvc, UserOutputSvc{
-			ID:          u.ID,
-			Class:       u.Class,
-			Major:       u.Major,
-			Phone:       u.Phone,
-			PhotoSrc:    u.PhotoSrc,
-			Role:        u.Role,
-			Name:        u.Name,
-			Email:       u.Email,
-			ClassroomID: u.ClassroomID,
+	var psSvc []UserOutputSvc
+	for _, u := range psRepo {
+		psSvc = append(psSvc, UserOutputSvc{
+			ID:       u.ID,
+			Class:    u.Class,
+			Major:    u.Major,
+			Phone:    u.Phone,
+			PhotoSrc: u.PhotoSrc,
+			Role:     u.Role,
+			Name:     u.Name,
+			Email:    u.Email,
 		})
 	}
 
-	return usSvc, count, nil
+	return psSvc, count, nil
+}
+
+// UnsubscribeClassroom returns an error if delete occurs any errors
+func (s *UserSvc) UnsubscribeClassroom(ctx context.Context, userID string, classroomID int) error {
+	if err := s.Repository.UnsubscribeClassroom(ctx, userID, classroomID); err != nil {
+		if errors.Is(err, repository.ErrUserNotFound) {
+			return ErrUserNotFound
+		}
+		return err
+	}
+
+	return nil
 }

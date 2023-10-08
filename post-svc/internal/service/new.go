@@ -19,6 +19,8 @@ type IPostSvc interface {
 	GetPosts(ctx context.Context, filter PostFilterSvc) ([]PostOutputSvc, int, error)
 	// GetAllPostsOfClassroom returns a list of posts in classroom with filte
 	GetAllPostsOfClassroom(ctx context.Context, filter PostFilterSvc, classroomID int) ([]PostOutputSvc, int, error)
+	// GetAllPostsInReportingStage returns all posts of the specified reporting stage given by reporting stage id
+	GetAllPostsInReportingStage(ctx context.Context, reportingStageID, classroomID int) ([]PostOutputSvc, int, error)
 }
 
 type PostSvc struct {

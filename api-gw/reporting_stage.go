@@ -19,10 +19,15 @@ func NewReportingStagesService(reportingStageClient reportingStageSvcV1.Reportin
 }
 
 func (u *reportingStageServiceGW) CreateReportingStage(ctx context.Context, req *pb.CreateReportingStageRequest) (*pb.CreateReportingStageResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.reportingStageClient.CreateReportingStage(ctx, &reportingStageSvcV1.CreateReportingStageRequest{
 		ReportingStage: &reportingStageSvcV1.ReportingStageInput{
-			Name:        req.GetReportingStage().Name,
-			Description: req.GetReportingStage().Description,
+			Label:       req.GetCategory().Label,
+			Description: req.GetCategory().Description,
+			Value:       req.GetCategory().Value,
 		},
 	})
 	if err != nil {
@@ -38,6 +43,10 @@ func (u *reportingStageServiceGW) CreateReportingStage(ctx context.Context, req 
 }
 
 func (u *reportingStageServiceGW) GetReportingStage(ctx context.Context, req *pb.GetReportingStageRequest) (*pb.GetReportingStageResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
@@ -48,20 +57,26 @@ func (u *reportingStageServiceGW) GetReportingStage(ctx context.Context, req *pb
 			StatusCode: res.GetResponse().StatusCode,
 			Message:    res.GetResponse().Message,
 		},
-		ReportingStage: &pb.ReportingStageResponse{
+		Category: &pb.ReportingStageResponse{
 			Id:          res.GetReportingStage().Id,
-			Name:        res.GetReportingStage().Name,
+			Label:       res.GetReportingStage().Label,
 			Description: res.GetReportingStage().Description,
+			Value:       res.GetReportingStage().Value,
 		},
 	}, nil
 }
 
 func (u *reportingStageServiceGW) UpdateReportingStage(ctx context.Context, req *pb.UpdateReportingStageRequest) (*pb.UpdateReportingStageResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.reportingStageClient.UpdateReportingStage(ctx, &reportingStageSvcV1.UpdateReportingStageRequest{
 		Id: req.GetId(),
 		ReportingStage: &reportingStageSvcV1.ReportingStageInput{
-			Name:        req.GetReportingStage().Name,
-			Description: req.GetReportingStage().Description,
+			Label:       req.GetCategory().Label,
+			Description: req.GetCategory().Description,
+			Value:       req.GetCategory().Value,
 		},
 	})
 	if err != nil {
@@ -77,6 +92,10 @@ func (u *reportingStageServiceGW) UpdateReportingStage(ctx context.Context, req 
 }
 
 func (u *reportingStageServiceGW) DeleteReportingStage(ctx context.Context, req *pb.DeleteReportingStageRequest) (*pb.DeleteReportingStageResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.reportingStageClient.DeleteReportingStage(ctx, &reportingStageSvcV1.DeleteReportingStageRequest{
 		Id: req.GetId(),
 	})
@@ -93,6 +112,10 @@ func (u *reportingStageServiceGW) DeleteReportingStage(ctx context.Context, req 
 }
 
 func (u *reportingStageServiceGW) GetReportingStages(ctx context.Context, req *pb.GetReportingStagesRequest) (*pb.GetReportingStagesResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.reportingStageClient.GetReportingStages(ctx, &reportingStageSvcV1.GetReportingStagesRequest{})
 	if err != nil {
 		return nil, err
@@ -102,8 +125,9 @@ func (u *reportingStageServiceGW) GetReportingStages(ctx context.Context, req *p
 	for _, p := range res.GetReportingStages() {
 		reportingStages = append(reportingStages, &pb.ReportingStageResponse{
 			Id:          p.Id,
-			Name:        p.Name,
+			Label:       p.Label,
 			Description: p.Description,
+			Value:       p.Value,
 		})
 	}
 
@@ -112,6 +136,6 @@ func (u *reportingStageServiceGW) GetReportingStages(ctx context.Context, req *p
 			StatusCode: res.GetResponse().StatusCode,
 			Message:    res.GetResponse().Message,
 		},
-		ReportingStages: reportingStages,
+		Categorys: reportingStages,
 	}, nil
 }

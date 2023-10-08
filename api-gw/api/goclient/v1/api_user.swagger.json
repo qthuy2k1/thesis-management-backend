@@ -16,75 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/classroom/{classroomID}/approve/{userID}": {
-      "put": {
-        "operationId": "UserService_ApproveUserJoinClassroom",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1ApproveUserJoinClassroomResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "classroomID",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "userID",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "UserService"
-        ]
-      }
-    },
-    "/api/classroom/{classroomID}/user": {
-      "get": {
-        "operationId": "UserService_GetAllUsersOfClassroom",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetAllUsersOfClassroomResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "classroomID",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "int64"
-          }
-        ],
-        "tags": [
-          "UserService"
-        ]
-      }
-    },
-    "/api/user": {
+    "/api/auth": {
       "get": {
         "operationId": "UserService_GetUsers",
         "responses": {
@@ -136,7 +68,59 @@
         ]
       }
     },
-    "/api/user/{id}": {
+    "/api/auth/check-subscribe/{userID}": {
+      "get": {
+        "operationId": "UserService_CheckStatusUserJoinClassroom",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CheckStatusUserJoinClassroomResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/auth/lecturer": {
+      "get": {
+        "operationId": "UserService_GetAllLecturers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllLecturerResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/auth/{id}": {
       "get": {
         "operationId": "UserService_GetUser",
         "responses": {
@@ -236,14 +220,14 @@
         ]
       }
     },
-    "/api/user/{id}/classroom-status": {
-      "get": {
-        "operationId": "UserService_CheckStatusUserJoinClassroom",
+    "/api/auth/{memberID}/unsubscribe/{classroomID}": {
+      "delete": {
+        "operationId": "UserService_UnsubscribeClassroom",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1CheckStatusUserJoinClassroomResponse"
+              "$ref": "#/definitions/v1UnsubscribeClassroomResponse"
             }
           },
           "default": {
@@ -255,7 +239,51 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "memberID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "classroomID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/api/classroom/{classroomID}/approve/{userID}": {
+      "put": {
+        "operationId": "UserService_ApproveUserJoinClassroom",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ApproveUserJoinClassroomResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "classroomID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "userID",
             "in": "path",
             "required": true,
             "type": "string"
@@ -337,13 +365,6 @@
             "in": "query",
             "required": false,
             "type": "string"
-          },
-          {
-            "name": "user.classroomID",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "int64"
           }
         ],
         "tags": [
@@ -392,6 +413,9 @@
     "v1CheckStatusUserJoinClassroomResponse": {
       "type": "object",
       "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
         "status": {
           "type": "string"
         },
@@ -416,16 +440,16 @@
         "status": {
           "type": "string"
         },
-        "lecturerId": {
+        "lecturerID": {
           "type": "string"
         },
-        "codeClassroom": {
+        "classCourse": {
           "type": "string"
         },
         "topicTags": {
           "type": "string"
         },
-        "quantity": {
+        "quantityStudent": {
           "type": "string",
           "format": "int64"
         },
@@ -475,7 +499,7 @@
         }
       }
     },
-    "v1GetAllUsersOfClassroomResponse": {
+    "v1GetAllLecturerResponse": {
       "type": "object",
       "properties": {
         "response": {
@@ -485,7 +509,7 @@
           "type": "string",
           "format": "int64"
         },
-        "users": {
+        "lecturers": {
           "type": "array",
           "items": {
             "type": "object",
@@ -521,6 +545,14 @@
             "type": "object",
             "$ref": "#/definitions/v1UserResponse"
           }
+        }
+      }
+    },
+    "v1UnsubscribeClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
         }
       }
     },
@@ -566,10 +598,6 @@
         },
         "email": {
           "type": "string"
-        },
-        "classroomID": {
-          "type": "string",
-          "format": "int64"
         }
       },
       "title": "====== user ======"
@@ -600,10 +628,6 @@
         },
         "email": {
           "type": "string"
-        },
-        "classroomID": {
-          "type": "string",
-          "format": "int64"
         }
       }
     }

@@ -20,6 +20,8 @@ type IPostRepo interface {
 	GetPosts(ctx context.Context, filter PostFilterRepo) ([]PostOutputRepo, int, error)
 	// GetAllPostsOfClassroom returns all posts of the specified classroom given by classroom id
 	GetAllPostsOfClassroom(ctx context.Context, filter PostFilterRepo, classromID int) ([]PostOutputRepo, int, error)
+	// GetAllPostsInReportingStage returns all posts of the specified reporting stage given by reporting stage id
+	GetAllPostsInReportingStage(ctx context.Context, reportingStageID, classroomID int) ([]PostOutputRepo, int, error)
 }
 
 type PostRepo struct {

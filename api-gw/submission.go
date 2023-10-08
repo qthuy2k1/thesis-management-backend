@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
@@ -63,8 +62,6 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 			},
 		}, nil
 	}
-
-	log.Println(req.GetSubmission().GetAttachments())
 
 	var attResList []*attachmentSvcV1.AttachmentResponse
 	var attIDList []int64
@@ -133,6 +130,10 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 }
 
 func (u *submissionServiceGW) GetSubmission(ctx context.Context, req *pb.GetSubmissionRequest) (*pb.GetSubmissionResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.submissionClient.GetSubmission(ctx, &submissionSvcV1.GetSubmissionRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
@@ -208,6 +209,10 @@ func (u *submissionServiceGW) GetSubmission(ctx context.Context, req *pb.GetSubm
 // }
 
 func (u *submissionServiceGW) DeleteSubmission(ctx context.Context, req *pb.DeleteSubmissionRequest) (*pb.DeleteSubmissionResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.submissionClient.DeleteSubmission(ctx, &submissionSvcV1.DeleteSubmissionRequest{
 		Id: req.GetId(),
 	})

@@ -192,10 +192,10 @@ func (m *PostInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if l := utf8.RuneCountInString(m.GetContent()); l < 2 || l > 200 {
+	if utf8.RuneCountInString(m.GetDescription()) < 2 {
 		err := PostInputValidationError{
-			field:  "Content",
-			reason: "value length must be between 2 and 200 runes, inclusive",
+			field:  "Description",
+			reason: "value length must be at least 2 runes",
 		}
 		if !all {
 			return err
@@ -214,9 +214,9 @@ func (m *PostInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetReportingStageID() < 1 {
+	if m.GetCategoryID() < 1 {
 		err := PostInputValidationError{
-			field:  "ReportingStageID",
+			field:  "CategoryID",
 			reason: "value must be greater than or equal to 1",
 		}
 		if !all {
@@ -337,10 +337,10 @@ func (m *PostResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if l := utf8.RuneCountInString(m.GetTitle()); l < 2 || l > 200 {
+	if utf8.RuneCountInString(m.GetTitle()) < 2 {
 		err := PostResponseValidationError{
 			field:  "Title",
-			reason: "value length must be between 2 and 200 runes, inclusive",
+			reason: "value length must be at least 2 runes",
 		}
 		if !all {
 			return err
@@ -348,9 +348,9 @@ func (m *PostResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetContent()) < 2 {
+	if utf8.RuneCountInString(m.GetDescription()) < 2 {
 		err := PostResponseValidationError{
-			field:  "Content",
+			field:  "Description",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -371,11 +371,11 @@ func (m *PostResponse) validate(all bool) error {
 	}
 
 	if all {
-		switch v := interface{}(m.GetReportingStage()).(type) {
+		switch v := interface{}(m.GetCategory()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, PostResponseValidationError{
-					field:  "ReportingStage",
+					field:  "Category",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -383,16 +383,16 @@ func (m *PostResponse) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, PostResponseValidationError{
-					field:  "ReportingStage",
+					field:  "Category",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetReportingStage()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetCategory()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return PostResponseValidationError{
-				field:  "ReportingStage",
+				field:  "Category",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -560,9 +560,9 @@ func (m *ReportingStagePostResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetName()) < 2 {
+	if utf8.RuneCountInString(m.GetLabel()) < 2 {
 		err := ReportingStagePostResponseValidationError{
-			field:  "Name",
+			field:  "Label",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -581,6 +581,8 @@ func (m *ReportingStagePostResponse) validate(all bool) error {
 		}
 		errors = append(errors, err)
 	}
+
+	// no validation rules for Value
 
 	if len(errors) > 0 {
 		return ReportingStagePostResponseMultiError(errors)
@@ -761,10 +763,6 @@ func (m *AuthorPostResponse) validate(all bool) error {
 			errors = append(errors, err)
 		}
 
-	}
-
-	if m.ClassroomID != nil {
-		// no validation rules for ClassroomID
 	}
 
 	if len(errors) > 0 {
@@ -2834,3 +2832,282 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetAllPostsOfClassroomResponseValidationError{}
+
+// Validate checks the field values on GetAllPostsInReportingStageRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *GetAllPostsInReportingStageRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetAllPostsInReportingStageRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// GetAllPostsInReportingStageRequestMultiError, or nil if none found.
+func (m *GetAllPostsInReportingStageRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetAllPostsInReportingStageRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ClassroomID
+
+	// no validation rules for CategoryID
+
+	if len(errors) > 0 {
+		return GetAllPostsInReportingStageRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetAllPostsInReportingStageRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// GetAllPostsInReportingStageRequest.ValidateAll() if the designated
+// constraints aren't met.
+type GetAllPostsInReportingStageRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetAllPostsInReportingStageRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetAllPostsInReportingStageRequestMultiError) AllErrors() []error { return m }
+
+// GetAllPostsInReportingStageRequestValidationError is the validation error
+// returned by GetAllPostsInReportingStageRequest.Validate if the designated
+// constraints aren't met.
+type GetAllPostsInReportingStageRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetAllPostsInReportingStageRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetAllPostsInReportingStageRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetAllPostsInReportingStageRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetAllPostsInReportingStageRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetAllPostsInReportingStageRequestValidationError) ErrorName() string {
+	return "GetAllPostsInReportingStageRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetAllPostsInReportingStageRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetAllPostsInReportingStageRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetAllPostsInReportingStageRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetAllPostsInReportingStageRequestValidationError{}
+
+// Validate checks the field values on GetAllPostsInReportingStageResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *GetAllPostsInReportingStageResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetAllPostsInReportingStageResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// GetAllPostsInReportingStageResponseMultiError, or nil if none found.
+func (m *GetAllPostsInReportingStageResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetAllPostsInReportingStageResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetResponse()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetAllPostsInReportingStageResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetAllPostsInReportingStageResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetAllPostsInReportingStageResponseValidationError{
+				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for TotalCount
+
+	for idx, item := range m.GetPosts() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetAllPostsInReportingStageResponseValidationError{
+						field:  fmt.Sprintf("Posts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetAllPostsInReportingStageResponseValidationError{
+						field:  fmt.Sprintf("Posts[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetAllPostsInReportingStageResponseValidationError{
+					field:  fmt.Sprintf("Posts[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetAllPostsInReportingStageResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetAllPostsInReportingStageResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// GetAllPostsInReportingStageResponse.ValidateAll() if the designated
+// constraints aren't met.
+type GetAllPostsInReportingStageResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetAllPostsInReportingStageResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetAllPostsInReportingStageResponseMultiError) AllErrors() []error { return m }
+
+// GetAllPostsInReportingStageResponseValidationError is the validation error
+// returned by GetAllPostsInReportingStageResponse.Validate if the designated
+// constraints aren't met.
+type GetAllPostsInReportingStageResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetAllPostsInReportingStageResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetAllPostsInReportingStageResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetAllPostsInReportingStageResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetAllPostsInReportingStageResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetAllPostsInReportingStageResponseValidationError) ErrorName() string {
+	return "GetAllPostsInReportingStageResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetAllPostsInReportingStageResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetAllPostsInReportingStageResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetAllPostsInReportingStageResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetAllPostsInReportingStageResponseValidationError{}

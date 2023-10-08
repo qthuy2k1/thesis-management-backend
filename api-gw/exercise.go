@@ -55,7 +55,7 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 		}, nil
 	}
 
-	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetExercise().GetReportingStageID()})
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetExercise().GetCategoryID()})
 	if err != nil {
 		return nil, err
 	}
@@ -72,11 +72,11 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 	res, err := u.exerciseClient.CreateExercise(ctx, &exerciseSvcV1.CreateExerciseRequest{
 		Exercise: &exerciseSvcV1.ExerciseInput{
 			Title:            req.GetExercise().Title,
-			Content:          req.GetExercise().Content,
+			Content:          req.GetExercise().Description,
 			ClassroomID:      req.GetExercise().ClassroomID,
 			Deadline:         req.GetExercise().Deadline,
 			Score:            req.GetExercise().Score,
-			ReportingStageID: req.GetExercise().ReportingStageID,
+			ReportingStageID: req.GetExercise().CategoryID,
 			AuthorID:         req.GetExercise().AuthorID,
 		},
 	})
@@ -93,6 +93,10 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 }
 
 func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExerciseRequest) (*pb.GetExerciseResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.exerciseClient.GetExercise(ctx, &exerciseSvcV1.GetExerciseRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
@@ -117,15 +121,14 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 		comments = append(comments, &pb.CommentExerciseResponse{
 			Id: c.Id,
 			User: &pb.AuthorExerciseResponse{
-				Id:          userRes.User.Id,
-				Class:       userRes.User.Class,
-				Major:       userRes.User.Major,
-				Phone:       userRes.User.Phone,
-				PhotoSrc:    userRes.User.PhotoSrc,
-				Role:        userRes.User.Role,
-				Name:        userRes.User.Name,
-				Email:       userRes.User.Email,
-				ClassroomID: &userRes.User.ClassroomID,
+				Id:       userRes.User.Id,
+				Class:    userRes.User.Class,
+				Major:    userRes.User.Major,
+				Phone:    userRes.User.Phone,
+				PhotoSrc: userRes.User.PhotoSrc,
+				Role:     userRes.User.Role,
+				Name:     userRes.User.Name,
+				Email:    userRes.User.Email,
 			},
 			ExerciseID: *c.ExerciseID,
 			Content:    c.Content,
@@ -148,32 +151,28 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 	}
 
 	return &pb.GetExerciseResponse{
-		Response: &pb.CommonExerciseResponse{
-			StatusCode: res.GetResponse().StatusCode,
-			Message:    res.GetResponse().Message,
-		},
 		Exercise: &pb.ExerciseResponse{
 			Id:          res.GetExercise().Id,
 			Title:       res.GetExercise().Title,
-			Content:     res.GetExercise().Content,
+			Description: res.GetExercise().Content,
 			ClassroomID: res.GetExercise().ClassroomID,
 			Deadline:    res.GetExercise().Deadline,
 			Score:       res.GetExercise().Score,
-			ReportingStage: &pb.ReportingStageExerciseResponse{
+			Category: &pb.ReportingStageExerciseResponse{
 				Id:          reportingStageRes.ReportingStage.Id,
-				Name:        reportingStageRes.ReportingStage.Name,
+				Label:       reportingStageRes.ReportingStage.Label,
 				Description: reportingStageRes.ReportingStage.Description,
+				Value:       reportingStageRes.ReportingStage.Value,
 			},
 			Author: &pb.AuthorExerciseResponse{
-				Id:          authorRes.User.Id,
-				Class:       authorRes.User.Class,
-				Major:       authorRes.User.Major,
-				Phone:       authorRes.User.Phone,
-				PhotoSrc:    authorRes.User.PhotoSrc,
-				Role:        authorRes.User.Role,
-				Name:        authorRes.User.Name,
-				Email:       authorRes.User.Email,
-				ClassroomID: &authorRes.User.ClassroomID,
+				Id:       authorRes.User.Id,
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Phone,
+				PhotoSrc: authorRes.User.PhotoSrc,
+				Role:     authorRes.User.Role,
+				Name:     authorRes.User.Name,
+				Email:    authorRes.User.Email,
 			},
 			CreatedAt: res.GetExercise().CreatedAt,
 			UpdatedAt: res.GetExercise().UpdatedAt,
@@ -183,7 +182,11 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 }
 
 func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateExerciseRequest) (*pb.UpdateExerciseResponse, error) {
-	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetExercise().GetReportingStageID()})
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetExercise().GetCategoryID()})
 	if err != nil {
 		return nil, err
 	}
@@ -215,11 +218,11 @@ func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateEx
 		Id: req.GetId(),
 		Exercise: &exerciseSvcV1.ExerciseInput{
 			Title:            req.GetExercise().Title,
-			Content:          req.GetExercise().Content,
+			Content:          req.GetExercise().Description,
 			ClassroomID:      req.GetExercise().ClassroomID,
 			Deadline:         req.GetExercise().Deadline,
 			Score:            req.GetExercise().Score,
-			ReportingStageID: req.GetExercise().ReportingStageID,
+			ReportingStageID: req.GetExercise().CategoryID,
 			AuthorID:         req.GetExercise().AuthorID,
 		},
 	})
@@ -236,6 +239,10 @@ func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateEx
 }
 
 func (u *exerciseServiceGW) DeleteExercise(ctx context.Context, req *pb.DeleteExerciseRequest) (*pb.DeleteExerciseResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.exerciseClient.DeleteExercise(ctx, &exerciseSvcV1.DeleteExerciseRequest{
 		Id: req.GetId(),
 	})
@@ -328,25 +335,25 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 		exercises = append(exercises, &pb.ExerciseResponse{
 			Id:          e.Id,
 			Title:       e.Title,
-			Content:     e.Content,
+			Description: e.Content,
 			ClassroomID: e.ClassroomID,
 			Deadline:    e.Deadline,
 			Score:       e.Score,
-			ReportingStage: &pb.ReportingStageExerciseResponse{
+			Category: &pb.ReportingStageExerciseResponse{
 				Id:          reportingStageRes.ReportingStage.Id,
-				Name:        reportingStageRes.ReportingStage.Name,
+				Label:       reportingStageRes.ReportingStage.Label,
 				Description: reportingStageRes.ReportingStage.Description,
+				Value:       reportingStageRes.ReportingStage.Value,
 			},
 			Author: &pb.AuthorExerciseResponse{
-				Id:          authorRes.User.Id,
-				Class:       authorRes.User.Class,
-				Major:       authorRes.User.Major,
-				Phone:       authorRes.User.Phone,
-				PhotoSrc:    authorRes.User.PhotoSrc,
-				Role:        authorRes.User.Role,
-				Name:        authorRes.User.Name,
-				Email:       authorRes.User.Email,
-				ClassroomID: &authorRes.User.ClassroomID,
+				Id:       authorRes.User.Id,
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Phone,
+				PhotoSrc: authorRes.User.PhotoSrc,
+				Role:     authorRes.User.Role,
+				Name:     authorRes.User.Name,
+				Email:    authorRes.User.Email,
 			},
 			CreatedAt: e.CreatedAt,
 			UpdatedAt: e.UpdatedAt,
@@ -354,10 +361,6 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 	}
 
 	return &pb.GetExercisesResponse{
-		Response: &pb.CommonExerciseResponse{
-			StatusCode: res.GetResponse().StatusCode,
-			Message:    res.GetResponse().Message,
-		},
 		TotalCount: res.GetTotalCount(),
 		Exercises:  exercises,
 	}, nil
@@ -446,25 +449,25 @@ func (u *exerciseServiceGW) GetAllExercisesOfClassroom(ctx context.Context, req 
 		exercises = append(exercises, &pb.ExerciseResponse{
 			Id:          p.Id,
 			Title:       p.Title,
-			Content:     p.Content,
+			Description: p.Content,
 			ClassroomID: p.ClassroomID,
 			Deadline:    p.Deadline,
 			Score:       p.Score,
-			ReportingStage: &pb.ReportingStageExerciseResponse{
+			Category: &pb.ReportingStageExerciseResponse{
 				Id:          reportingStageRes.ReportingStage.Id,
-				Name:        reportingStageRes.ReportingStage.Name,
+				Label:       reportingStageRes.ReportingStage.Label,
 				Description: reportingStageRes.ReportingStage.Description,
+				Value:       reportingStageRes.ReportingStage.Value,
 			},
 			Author: &pb.AuthorExerciseResponse{
-				Id:          authorRes.User.Id,
-				Class:       authorRes.User.Class,
-				Major:       authorRes.User.Major,
-				Phone:       authorRes.User.Phone,
-				PhotoSrc:    authorRes.User.PhotoSrc,
-				Role:        authorRes.User.Role,
-				Name:        authorRes.User.Name,
-				Email:       authorRes.User.Email,
-				ClassroomID: &authorRes.User.ClassroomID,
+				Id:       authorRes.User.Id,
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Phone,
+				PhotoSrc: authorRes.User.PhotoSrc,
+				Role:     authorRes.User.Role,
+				Name:     authorRes.User.Name,
+				Email:    authorRes.User.Email,
 			},
 			CreatedAt: p.CreatedAt,
 			UpdatedAt: p.UpdatedAt,
@@ -472,10 +475,94 @@ func (u *exerciseServiceGW) GetAllExercisesOfClassroom(ctx context.Context, req 
 	}
 
 	return &pb.GetAllExercisesOfClassroomResponse{
-		Response: &pb.CommonExerciseResponse{
-			StatusCode: res.GetResponse().StatusCode,
-			Message:    res.GetResponse().Message,
-		},
+		TotalCount: res.GetTotalCount(),
+		Exercises:  exercises,
+	}, nil
+}
+
+func (u *exerciseServiceGW) GetAllExercisesInReportingStage(ctx context.Context, req *pb.GetAllExercisesInReportingStageRequest) (*pb.GetAllExercisesInReportingStageResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	classRes, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{
+		ClassroomID: req.GetClassroomID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if !classRes.GetExists() {
+		return &pb.GetAllExercisesInReportingStageResponse{
+			Response: &pb.CommonExerciseResponse{
+				StatusCode: 404,
+				Message:    "classroom does not exist",
+			},
+		}, nil
+	}
+
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
+		Id: req.GetCategoryID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if rpsRes.GetResponse().StatusCode == 404 {
+		return &pb.GetAllExercisesInReportingStageResponse{
+			Response: &pb.CommonExerciseResponse{
+				StatusCode: rpsRes.Response.StatusCode,
+				Message:    rpsRes.Response.Message,
+			},
+		}, nil
+	}
+
+	res, err := u.exerciseClient.GetAllExercisesInReportingStage(ctx, &exerciseSvcV1.GetAllExercisesInReportingStageRequest{
+		ClassroomID:      req.GetClassroomID(),
+		ReportingStageID: req.GetCategoryID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var exercises []*pb.ExerciseResponse
+	for _, p := range res.GetExercises() {
+		authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: p.AuthorID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		exercises = append(exercises, &pb.ExerciseResponse{
+			Id:          p.Id,
+			Title:       p.Title,
+			Description: p.Content,
+			ClassroomID: p.ClassroomID,
+			Deadline:    p.Deadline,
+			Score:       p.Score,
+			Category: &pb.ReportingStageExerciseResponse{
+				Id:          rpsRes.ReportingStage.Id,
+				Label:       rpsRes.ReportingStage.Label,
+				Description: rpsRes.ReportingStage.Description,
+				Value:       rpsRes.ReportingStage.Value,
+			},
+			Author: &pb.AuthorExerciseResponse{
+				Id:       authorRes.User.Id,
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Phone,
+				PhotoSrc: authorRes.User.PhotoSrc,
+				Role:     authorRes.User.Role,
+				Name:     authorRes.User.Name,
+				Email:    authorRes.User.Email,
+			},
+			CreatedAt: p.CreatedAt,
+			UpdatedAt: p.UpdatedAt,
+		})
+	}
+
+	return &pb.GetAllExercisesInReportingStageResponse{
 		TotalCount: res.GetTotalCount(),
 		Exercises:  exercises,
 	}, nil

@@ -6,7 +6,7 @@
         "classroomID": "<integer>",
         "deadline": "<dateTime>",
         "score": "<integer>",
-        "reportingStageID": "<integer>",
+        "categoryID": "<integer>",
         "authorID": "<integer>",
         "createdAt": "<dateTime>",
         "updatedAt": "<dateTime>"

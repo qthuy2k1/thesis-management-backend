@@ -102,10 +102,13 @@
     "v1ReportingStageInput": {
       "type": "object",
       "properties": {
-        "name": {
+        "label": {
           "type": "string"
         },
         "description": {
+          "type": "string"
+        },
+        "value": {
           "type": "string"
         }
       },
@@ -118,10 +121,13 @@
           "type": "string",
           "format": "int64"
         },
-        "name": {
+        "label": {
           "type": "string"
         },
         "description": {
+          "type": "string"
+        },
+        "value": {
           "type": "string"
         }
       }

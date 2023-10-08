@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package api.reportingStage.v1;
+package api.category.v1;
 
 import "google/api/annotations.proto";
 import "validate/validate.proto";
@@ -10,33 +10,33 @@ option go_package="github.com/qthuy2k1/thesis-management-backend/reporting-stage
 service ReportingStageService {
     rpc CreateReportingStage(CreateReportingStageRequest) returns (CreateReportingStageResponse){
         option (google.api.http) = {
-            post: "/api/reporting-stage"
+            post: "/api/report-stage"
             body: "*"
         };
     }
     
     rpc GetReportingStage(GetReportingStageRequest) returns (GetReportingStageResponse){
         option (google.api.http) = {
-            get: "/api/reporting-stage/{id}"
+            get: "/api/report-stage/{id}"
         };
     }
 
     rpc UpdateReportingStage(UpdateReportingStageRequest) returns (UpdateReportingStageResponse){
         option (google.api.http) = {
-            put: "/api/reporting-stage/{id}"
+            put: "/api/report-stage/{id}"
             body: "*"
         };
     }
 
     rpc DeleteReportingStage(DeleteReportingStageRequest) returns (DeleteReportingStageResponse){
         option (google.api.http) = {
-            delete: "/api/reporting-stage/{id}"
+            delete: "/api/report-stage/{id}"
         };
     }
 
     rpc GetReportingStages(GetReportingStagesRequest) returns (GetReportingStagesResponse) {
         option (google.api.http) = {
-            get: "/api/reporting-stage"
+            get: "/api/report-stage"
         };
     }
 }
@@ -47,20 +47,22 @@ message CommonReportingStageResponse {
 }
 
 
-// ====== reportingStage ======
+// ====== category ======
 message ReportingStageInput {
-    string name = 1 [(validate.rules).string = {min_len: 2}];
+    string label = 1 [(validate.rules).string = {min_len: 2}];
     string description = 2 [(validate.rules).string = {min_len: 2}];
+    string value = 3;
 }
 
 message ReportingStageResponse {
     int64 id = 1 [(validate.rules).int64.gte = 1];
-    string name = 2 [(validate.rules).string = {min_len: 2}];
+    string label = 2 [(validate.rules).string = {min_len: 2}];
     string description = 3 [(validate.rules).string = {min_len: 2}];
+    string value = 4;
 }
 
 message CreateReportingStageRequest {
-   ReportingStageInput reportingStage = 1 [(validate.rules).message = {required: true}];
+   ReportingStageInput category = 1 [(validate.rules).message = {required: true}];
 }
 
 message CreateReportingStageResponse {
@@ -75,13 +77,13 @@ message GetReportingStageRequest {
 
 message GetReportingStageResponse {
     CommonReportingStageResponse response = 1 [(validate.rules).message = {required: true}];
-    ReportingStageResponse reportingStage = 2 [(validate.rules).message = {required: true}];
+    ReportingStageResponse category = 2 [(validate.rules).message = {required: true}];
 }
 
 // ====== PUT ======
 message UpdateReportingStageRequest {
     int64 id = 1 [(validate.rules).int64.gte = 1];
-    ReportingStageInput reportingStage = 2 [(validate.rules).message = {required: true}];
+    ReportingStageInput category = 2 [(validate.rules).message = {required: true}];
 }
 
 message UpdateReportingStageResponse {
@@ -102,5 +104,5 @@ message GetReportingStagesRequest {}
 
 message GetReportingStagesResponse {
     CommonReportingStageResponse response = 1 [(validate.rules).message = {required: true}]; 
-    repeated ReportingStageResponse reportingStages = 3;
+    repeated ReportingStageResponse categorys = 2;
 }

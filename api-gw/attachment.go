@@ -25,6 +25,10 @@ func NewAttachmentsService(attachmentClient attachmentSvcV1.AttachmentServiceCli
 }
 
 func (u *attachmentServiceGW) CreateAttachment(ctx context.Context, req *pb.CreateAttachmentRequest) (*pb.CreateAttachmentResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
 		Attachment: &attachmentSvcV1.AttachmentInput{
 			FileURL:      req.GetAttachment().GetFileURL(),
@@ -47,6 +51,10 @@ func (u *attachmentServiceGW) CreateAttachment(ctx context.Context, req *pb.Crea
 }
 
 func (u *attachmentServiceGW) GetAttachment(ctx context.Context, req *pb.GetAttachmentRequest) (*pb.GetAttachmentResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.attachmentClient.GetAttachment(ctx, &attachmentSvcV1.GetAttachmentRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
@@ -67,10 +75,6 @@ func (u *attachmentServiceGW) GetAttachment(ctx context.Context, req *pb.GetAtta
 	}
 
 	return &pb.GetAttachmentResponse{
-		Response: &pb.CommonAttachmentResponse{
-			StatusCode: res.GetResponse().GetStatusCode(),
-			Message:    res.GetResponse().GetMessage(),
-		},
 		Attachment: &pb.AttachmentResponse{
 			Id:      res.GetAttachment().GetId(),
 			FileURL: res.GetAttachment().GetFileURL(),
@@ -81,15 +85,14 @@ func (u *attachmentServiceGW) GetAttachment(ctx context.Context, req *pb.GetAtta
 				Status:         submissionRes.GetSubmission().GetStatus(),
 			},
 			Author: &pb.AuthorAttachmentResponse{
-				Id:          authorRes.User.Id,
-				Class:       authorRes.User.Class,
-				Major:       authorRes.User.Major,
-				Phone:       authorRes.User.Phone,
-				PhotoSrc:    authorRes.User.PhotoSrc,
-				Role:        authorRes.User.Role,
-				Name:        authorRes.User.Name,
-				Email:       authorRes.User.Email,
-				ClassroomID: authorRes.User.ClassroomID,
+				Id:       authorRes.User.Id,
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Phone,
+				PhotoSrc: authorRes.User.PhotoSrc,
+				Role:     authorRes.User.Role,
+				Name:     authorRes.User.Name,
+				Email:    authorRes.User.Email,
 			},
 			CreatedAt: res.GetAttachment().GetCreatedAt(),
 		},
@@ -97,6 +100,10 @@ func (u *attachmentServiceGW) GetAttachment(ctx context.Context, req *pb.GetAtta
 }
 
 func (u *attachmentServiceGW) DeleteAttachment(ctx context.Context, req *pb.DeleteAttachmentRequest) (*pb.DeleteAttachmentResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
 		Id: req.GetId(),
 	})
@@ -135,10 +142,6 @@ func (u *attachmentServiceGW) GetAttachmentsOfExercise(ctx context.Context, req 
 	}
 
 	return &pb.GetAttachmentsOfExerciseResponse{
-		Response: &pb.CommonAttachmentResponse{
-			StatusCode: res.GetResponse().GetStatusCode(),
-			Message:    res.GetResponse().GetMessage(),
-		},
 		Attachments: attachments,
 	}, nil
 }

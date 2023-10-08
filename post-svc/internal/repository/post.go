@@ -277,6 +277,46 @@ func (r *PostRepo) GetAllPostsOfClassroom(ctx context.Context, filter PostFilter
 	return posts, count, nil
 }
 
+// GetAllPostsInReportingStage returns all posts of the specified reporting stage given by reporting stage id
+func (r *PostRepo) GetAllPostsInReportingStage(ctx context.Context, reportingStageID, classroomID int) ([]PostOutputRepo, int, error) {
+	rows, err := QuerySQL(ctx, r.Database, "GetAllPostsInReportingStage", fmt.Sprintf("SELECT id, title, content, classroom_id, reporting_stage_id, author_id, created_at, updated_at FROM posts WHERE reporting_stage_id = %d AND classroom_id = %d", reportingStageID, classroomID))
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	// Iterate over the result rows and populate the posts slice
+	var posts []PostOutputRepo
+	for rows.Next() {
+		post := PostOutputRepo{}
+		err := rows.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Content,
+			&post.ClassroomID,
+			&post.ReportingStageID,
+			&post.AuthorID,
+			&post.CreatedAt,
+			&post.UpdatedAt,
+		)
+		if err != nil {
+			return nil, 0, err
+		}
+		posts = append(posts, post)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+
+	count, err := r.getCountInReportingStage(ctx, reportingStageID, classroomID)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return posts, count, nil
+}
+
 func (r *PostRepo) getCount(ctx context.Context, titleSearch string) (int, error) {
 	var count int
 
@@ -308,6 +348,21 @@ func (r *PostRepo) getCountInClassroom(ctx context.Context, titleSearch string, 
 	}
 
 	rows, err := QueryRowSQL(ctx, r.Database, "getCountIntClassroom", strings.Join(query, " "))
+	if err != nil {
+		return 0, err
+	}
+
+	if err := rows.Scan(&count); err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func (r *PostRepo) getCountInReportingStage(ctx context.Context, reportingStageID, classroomID int) (int, error) {
+	var count int
+
+	rows, err := QueryRowSQL(ctx, r.Database, "getCountIntClassroom", fmt.Sprintf("SELECT COUNT(*) FROM posts WHERE reporting_stage_id = %d AND classroom_id = %d", reportingStageID, classroomID))
 	if err != nil {
 		return 0, err
 	}

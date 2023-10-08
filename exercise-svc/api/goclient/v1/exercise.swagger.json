@@ -211,6 +211,25 @@
         }
       }
     },
+    "v1GetAllExercisesInReportingStageResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonExerciseResponse"
+        },
+        "totalCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "exercises": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ExerciseResponse"
+          }
+        }
+      }
+    },
     "v1GetAllExercisesOfClassroomResponse": {
       "type": "object",
       "properties": {

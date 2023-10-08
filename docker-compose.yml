@@ -350,6 +350,16 @@ services:
       - topic-db
     volumes:
       - .:/usr/src/app
+
+  authorization:
+    build:
+      dockerfile: ./authorization-svc/Dockerfile
+      context: .
+    image: qthuy2k1/thesis-management-backend-authorization
+    networks:
+      mynet:
+    volumes:
+      - .:/usr/src/app
     
   apigw-client:
     build:
@@ -375,6 +385,7 @@ services:
       - comment
       - attachment
       - topic
+      - authorization
     extra_hosts:
       - "host.docker.internal:host-gateway"
 

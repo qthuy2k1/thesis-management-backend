@@ -86,7 +86,6 @@ message AuthorAttachmentResponse {
     string role = 6;
     string name = 7;
     string email = 8;
-    int64 classroomID = 9;
 }
 
 message CreateAttachmentRequest {
@@ -106,8 +105,7 @@ message GetAttachmentRequest {
 }
 
 message GetAttachmentResponse {
-    CommonAttachmentResponse response = 1 [(validate.rules).message = {required: true}];
-    AttachmentResponse attachment = 2 [(validate.rules).message = {required: true}];
+    AttachmentResponse attachment = 1 [(validate.rules).message = {required: true}];
 } 
 
 message CheckAttachmentExistsRequest {
@@ -145,6 +143,5 @@ message GetAttachmentsOfExerciseRequest {
 }
 
 message GetAttachmentsOfExerciseResponse {
-    CommonAttachmentResponse response = 1 [(validate.rules).message = {required: true}];
-    repeated AttachmentResponse attachments = 3;
+    repeated AttachmentResponse attachments = 1;
 }

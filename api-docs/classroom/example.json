@@ -1,7 +1,7 @@
 {
     "Create a classroom": {
         // Method: POST
-        // URL: localhost:8080/api/classroom
+        // URL: localhost:8080/api/class
         "success": {
             "input":{
                 "classroom": {
@@ -9,10 +9,10 @@
                         "title": "Classroom 6",
                         "description": "Classroom 6",
                         "status": "Available",
-                        "lecturerId": 2,
-                        "codeClassroom": "HK2",
+                        "lecturerID": 2,
+                        "classCourse": "HK2",
                         "topicTags": "Web, Mobile", // separated by commas
-                        "quantity": 15
+                        "quantityStudent": 15
                     } 
                 }
             },
@@ -29,10 +29,10 @@
                     "title": "Classroom 6",
                     "description": "Classroom 6",
                     "status": "Available",
-                    "lecturerId": 2,
-                    "codeClassroom": "HK2",
+                    "lecturerID": 2,
+                    "classCourse": "HK2",
                     "topicTags": "Web, Mobile", // separated by commas
-                    "quantity": 15
+                    "quantityStudent": 15
                 } 
             },
             "output": {
@@ -44,7 +44,7 @@
     },
     "Get a classroom": {
     // Method: GET
-    // URL: localhost:8080/api/classroom/1
+    // URL: localhost:8080/api/class/1
         "success": {
             "output": {
                 "response": {
@@ -56,10 +56,10 @@
                     "title": "Classroom 6",
                     "description": "Classroom 6",
                     "status": "Available",
-                    "lecturerId": 2,
-                    "codeClassroom": "HK2",
+                    "lecturerID": 2,
+                    "classCourse": "HK2",
                     "topicTags": "Web",
-                    "quantity": 15,
+                    "quantityStudent": 15,
                     "createdAt": "2023-09-01T15:01:00Z",
                     "updatedAt": "2023-09-01T15:01:00Z",
                     "postsAndExercises": [
@@ -163,7 +163,7 @@
     },
     "Delete a classroom": {
     // Method: DELETE 
-    // URL: localhost:8080/api/classroom/1
+    // URL: localhost:8080/api/class/1
         "success": {
             "output": {
                 "response": {
@@ -182,17 +182,17 @@
     },
     "Update a classroom": {
     // Method: PUT
-    // URL: localhost:8080/api/classroom/1
+    // URL: localhost:8080/api/class/1
         "success": {
             "input": {
                 "classroom": {
                     "title": "Classroom 6",
                     "description": "Classroom 6",
                     "status": "Available",
-                    "lecturerId": 2,
-                    "codeClassroom": "HK2",
+                    "lecturerID": 2,
+                    "classCourse": "HK2",
                     "topicTags": "Web, Mobile", // separated by commas
-                    "quantity": 15
+                    "quantityStudent": 15
                 } 
             },
             "output": {
@@ -208,10 +208,10 @@
                     "title": "Classroom 6",
                     "description": "Classroom 6",
                     "status": "Available",
-                    "lecturerId": 2,
-                    "codeClassroom": "HK2",
+                    "lecturerID": 2,
+                    "classCourse": "HK2",
                     "topicTags": "Web, Mobile", // separated by commas
-                    "quantity": 15
+                    "quantityStudent": 15
                 } 
             },
             "output": {
@@ -223,7 +223,7 @@
     },
     "Get all classrooms": {
         // Method: GET
-        // URL: localhost:8080/api/classroom
+        // URL: localhost:8080/api/class
         "success": {
             "output": {
                 "response": {
@@ -237,13 +237,202 @@
                         "title": "Classroom 6",
                         "description": "Classroom 6",
                         "status": "Available",
-                        "lecturerId": 2,
-                        "codeClassroom": "HK2",
+                        "lecturerID": 2,
+                        "classCourse": "HK2",
                         "topicTags": "Web",
-                        "quantity": 15,
+                        "quantityStudent": 15,
                         "createdAt": "2023-09-01T15:01:00Z",
                         "updatedAt": "2023-09-01T15:01:00Z",
-                        "postsAndExercises": []
+                        "postsAndExercises": [
+                            {
+                                "id": "1",
+                                "title": "Classroom 6",
+                                "description": "Classroom 6",
+                                "status": "Available",
+                                "lecturer": {
+                                    "id": "asdyhaiyaass891",
+                                    "class": "Class 2",
+                                    "major": "CNTT",
+                                    "phone": "0355457556",
+                                    "photoSrc": "urltest.vn",
+                                    "role": "lecturer",
+                                    "name": "Quanasdasdg Tyhuayyyy",
+                                    "email": "thuyasayady@gmyaail.com"
+                                },
+                                "classCourse": "HK2",
+                                "topicTags": "Web",
+                                "quantityStudent": "15",
+                                "createdAt": "2023-09-22T16:15:05Z",
+                                "updatedAt": "2023-09-22T16:15:05Z",
+                                "postsAndExercises": [
+                                    {
+                                        "id": "1",
+                                        "title": "Post 3",
+                                        "description": "AAAAA Post 4",
+                                        "classroomID": "1",
+                                        "category": {
+                                            "id": "1",
+                                            "label": "Test 3",
+                                            "description": "test 3",
+                                            "value": "asdasd"
+                                        },
+                                        "author": {
+                                            "id": "asdyhaiyaass891",
+                                            "class": "Class 2",
+                                            "major": "CNTT",
+                                            "phone": "0355457556",
+                                            "photoSrc": "urltest.vn",
+                                            "role": "lecturer",
+                                            "name": "Quanasdasdg Tyhuayyyy",
+                                            "email": "thuyasayady@gmyaail.com"
+                                        },
+                                        "createdAt": "2023-09-22T16:15:46Z",
+                                        "updatedAt": "2023-09-22T16:15:46Z",
+                                        "type": "post"
+                                    },
+                                    {
+                                        "id": "4",
+                                        "title": "Bai 2ww22",
+                                        "description": "Bai 1a",
+                                        "classroomID": "1",
+                                        "deadline": {
+                                            "year": 2023,
+                                            "month": 8,
+                                            "day": 26,
+                                            "hours": 12,
+                                            "minutes": 1,
+                                            "seconds": 1,
+                                            "nanos": 0
+                                        },
+                                        "score": "100",
+                                        "category": {
+                                            "id": "1",
+                                            "label": "Test 3",
+                                            "description": "test 3",
+                                            "value": "asdasd"
+                                        },
+                                        "author": {
+                                            "id": "asdyhaiyaass891",
+                                            "class": "Class 2",
+                                            "major": "CNTT",
+                                            "phone": "0355457556",
+                                            "photoSrc": "urltest.vn",
+                                            "role": "lecturer",
+                                            "name": "Quanasdasdg Tyhuayyyy",
+                                            "email": "thuyasayady@gmyaail.com"
+                                        },
+                                        "createdAt": "2023-09-24T15:05:49Z",
+                                        "updatedAt": "2023-09-24T15:05:49Z",
+                                        "type": "exercise"
+                                    },
+                                    {
+                                        "id": "5",
+                                        "title": "Bai 2ww2a2",
+                                        "description": "Bai 1a",
+                                        "classroomID": "1",
+                                        "deadline": {
+                                            "year": 2023,
+                                            "month": 8,
+                                            "day": 26,
+                                            "hours": 12,
+                                            "minutes": 1,
+                                            "seconds": 1,
+                                            "nanos": 0
+                                        },
+                                        "score": "100",
+                                        "category": {
+                                            "id": "1",
+                                            "label": "Test 3",
+                                            "description": "test 3",
+                                            "value": "asdasd"
+                                        },
+                                        "author": {
+                                            "id": "asdyhaiyaass891",
+                                            "class": "Class 2",
+                                            "major": "CNTT",
+                                            "phone": "0355457556",
+                                            "photoSrc": "urltest.vn",
+                                            "role": "lecturer",
+                                            "name": "Quanasdasdg Tyhuayyyy",
+                                            "email": "thuyasayady@gmyaail.com"
+                                        },
+                                        "createdAt": "2023-09-24T15:12:22Z",
+                                        "updatedAt": "2023-09-24T15:12:22Z",
+                                        "type": "exercise"
+                                    },
+                                    {
+                                        "id": "6",
+                                        "title": "Bai 2sww2a2",
+                                        "description": "Bai 1a",
+                                        "classroomID": "1",
+                                        "deadline": {
+                                            "year": 2023,
+                                            "month": 8,
+                                            "day": 26,
+                                            "hours": 12,
+                                            "minutes": 1,
+                                            "seconds": 1,
+                                            "nanos": 0
+                                        },
+                                        "score": "100",
+                                        "category": {
+                                            "id": "1",
+                                            "label": "Test 3",
+                                            "description": "test 3",
+                                            "value": "asdasd"
+                                        },
+                                        "author": {
+                                            "id": "asdyhaiyaass891",
+                                            "class": "Class 2",
+                                            "major": "CNTT",
+                                            "phone": "0355457556",
+                                            "photoSrc": "urltest.vn",
+                                            "role": "lecturer",
+                                            "name": "Quanasdasdg Tyhuayyyy",
+                                            "email": "thuyasayady@gmyaail.com"
+                                        },
+                                        "createdAt": "2023-09-24T15:16:32Z",
+                                        "updatedAt": "2023-09-24T15:16:32Z",
+                                        "type": "exercise"
+                                    },
+                                    {
+                                        "id": "14",
+                                        "title": "Bai 2swsw2a2",
+                                        "description": "Bai 1a",
+                                        "classroomID": "1",
+                                        "deadline": {
+                                            "year": 2023,
+                                            "month": 8,
+                                            "day": 26,
+                                            "hours": 12,
+                                            "minutes": 1,
+                                            "seconds": 1,
+                                            "nanos": 0
+                                        },
+                                        "score": "100",
+                                        "category": {
+                                            "id": "1",
+                                            "label": "Test 3",
+                                            "description": "test 3",
+                                            "value": "asdasd"
+                                        },
+                                        "author": {
+                                            "id": "asdyhaiyaass891",
+                                            "class": "Class 2",
+                                            "major": "CNTT",
+                                            "phone": "0355457556",
+                                            "photoSrc": "urltest.vn",
+                                            "role": "lecturer",
+                                            "name": "Quanasdasdg Tyhuayyyy",
+                                            "email": "thuyasayady@gmyaail.com"
+                                        },
+                                        "createdAt": "2023-09-24T16:45:56Z",
+                                        "updatedAt": "2023-09-24T16:45:56Z",
+                                        "type": "exercise"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }

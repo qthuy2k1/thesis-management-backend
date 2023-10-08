@@ -361,10 +361,6 @@
         },
         "email": {
           "type": "string"
-        },
-        "classroomID": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -407,9 +403,6 @@
     "v1GetAttachmentResponse": {
       "type": "object",
       "properties": {
-        "response": {
-          "$ref": "#/definitions/v1CommonAttachmentResponse"
-        },
         "attachment": {
           "$ref": "#/definitions/v1AttachmentResponse"
         }
@@ -418,9 +411,6 @@
     "v1GetAttachmentsOfExerciseResponse": {
       "type": "object",
       "properties": {
-        "response": {
-          "$ref": "#/definitions/v1CommonAttachmentResponse"
-        },
         "attachments": {
           "type": "array",
           "items": {

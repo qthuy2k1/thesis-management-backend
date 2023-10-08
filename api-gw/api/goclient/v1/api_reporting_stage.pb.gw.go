@@ -269,7 +269,7 @@ func RegisterReportingStageServiceHandlerServer(ctx context.Context, mux *runtim
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.reportingStage.v1.ReportingStageService/CreateReportingStage", runtime.WithHTTPPathPattern("/api/reporting-stage"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.category.v1.ReportingStageService/CreateReportingStage", runtime.WithHTTPPathPattern("/api/report-stage"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -294,7 +294,7 @@ func RegisterReportingStageServiceHandlerServer(ctx context.Context, mux *runtim
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.reportingStage.v1.ReportingStageService/GetReportingStage", runtime.WithHTTPPathPattern("/api/reporting-stage/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.category.v1.ReportingStageService/GetReportingStage", runtime.WithHTTPPathPattern("/api/report-stage/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -319,7 +319,7 @@ func RegisterReportingStageServiceHandlerServer(ctx context.Context, mux *runtim
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.reportingStage.v1.ReportingStageService/UpdateReportingStage", runtime.WithHTTPPathPattern("/api/reporting-stage/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.category.v1.ReportingStageService/UpdateReportingStage", runtime.WithHTTPPathPattern("/api/report-stage/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -344,7 +344,7 @@ func RegisterReportingStageServiceHandlerServer(ctx context.Context, mux *runtim
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.reportingStage.v1.ReportingStageService/DeleteReportingStage", runtime.WithHTTPPathPattern("/api/reporting-stage/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.category.v1.ReportingStageService/DeleteReportingStage", runtime.WithHTTPPathPattern("/api/report-stage/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -369,7 +369,7 @@ func RegisterReportingStageServiceHandlerServer(ctx context.Context, mux *runtim
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.reportingStage.v1.ReportingStageService/GetReportingStages", runtime.WithHTTPPathPattern("/api/reporting-stage"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.category.v1.ReportingStageService/GetReportingStages", runtime.WithHTTPPathPattern("/api/report-stage"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -433,7 +433,7 @@ func RegisterReportingStageServiceHandlerClient(ctx context.Context, mux *runtim
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.reportingStage.v1.ReportingStageService/CreateReportingStage", runtime.WithHTTPPathPattern("/api/reporting-stage"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.category.v1.ReportingStageService/CreateReportingStage", runtime.WithHTTPPathPattern("/api/report-stage"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -455,7 +455,7 @@ func RegisterReportingStageServiceHandlerClient(ctx context.Context, mux *runtim
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.reportingStage.v1.ReportingStageService/GetReportingStage", runtime.WithHTTPPathPattern("/api/reporting-stage/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.category.v1.ReportingStageService/GetReportingStage", runtime.WithHTTPPathPattern("/api/report-stage/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -477,7 +477,7 @@ func RegisterReportingStageServiceHandlerClient(ctx context.Context, mux *runtim
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.reportingStage.v1.ReportingStageService/UpdateReportingStage", runtime.WithHTTPPathPattern("/api/reporting-stage/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.category.v1.ReportingStageService/UpdateReportingStage", runtime.WithHTTPPathPattern("/api/report-stage/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -499,7 +499,7 @@ func RegisterReportingStageServiceHandlerClient(ctx context.Context, mux *runtim
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.reportingStage.v1.ReportingStageService/DeleteReportingStage", runtime.WithHTTPPathPattern("/api/reporting-stage/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.category.v1.ReportingStageService/DeleteReportingStage", runtime.WithHTTPPathPattern("/api/report-stage/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -521,7 +521,7 @@ func RegisterReportingStageServiceHandlerClient(ctx context.Context, mux *runtim
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.reportingStage.v1.ReportingStageService/GetReportingStages", runtime.WithHTTPPathPattern("/api/reporting-stage"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.category.v1.ReportingStageService/GetReportingStages", runtime.WithHTTPPathPattern("/api/report-stage"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -541,15 +541,15 @@ func RegisterReportingStageServiceHandlerClient(ctx context.Context, mux *runtim
 }
 
 var (
-	pattern_ReportingStageService_CreateReportingStage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "reporting-stage"}, ""))
+	pattern_ReportingStageService_CreateReportingStage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "report-stage"}, ""))
 
-	pattern_ReportingStageService_GetReportingStage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "reporting-stage", "id"}, ""))
+	pattern_ReportingStageService_GetReportingStage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "report-stage", "id"}, ""))
 
-	pattern_ReportingStageService_UpdateReportingStage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "reporting-stage", "id"}, ""))
+	pattern_ReportingStageService_UpdateReportingStage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "report-stage", "id"}, ""))
 
-	pattern_ReportingStageService_DeleteReportingStage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "reporting-stage", "id"}, ""))
+	pattern_ReportingStageService_DeleteReportingStage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "report-stage", "id"}, ""))
 
-	pattern_ReportingStageService_GetReportingStages_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "reporting-stage"}, ""))
+	pattern_ReportingStageService_GetReportingStages_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "report-stage"}, ""))
 )
 
 var (

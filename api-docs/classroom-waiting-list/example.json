@@ -1,12 +1,12 @@
 {
     "Create a waiting list": {
         // Method: POST
-        // URL: localhost:8080/api/waiting-list
+        // URL: localhost:8080/api/requirement
         "success": {
             "input": {
                 "waitingList": {
-                    "user_id": "1adadaa",
-                    "classroom_id": 1
+                    "memberID": "1adadaa",
+                    "classroomID": 1
                 }
             },
             "output": {
@@ -19,8 +19,8 @@
         "create a existed waiting list": {
             "input": {
                 "waitingList": {
-                    "user_id": "1adadaa",
-                    "classroom_id": 1
+                    "memberID": "1adadaa",
+                    "classroomID": 1
                 }
             },
             "output": {
@@ -32,14 +32,43 @@
     },
     "Get a waiting list": {
         // Method: GET
-        // URL: localhost:8080/api/waiting-list/1
+        // URL: localhost:8080/api/requirement/1
         "success": {
             "output": {
                 "waitingList": {
-                    "id": 1,
-                    "user_id": "1adadaa",
-                    "classroom_id": 1,
-                    "created_at": "2023-19-09T20:19:19"
+                    "id": "1",
+                    "classroom": {
+                        "id": "3",
+                        "title": "Classroom 261",
+                        "description": "Classroom 6",
+                        "status": "Available",
+                        "lecturer": {
+                            "id": "asdyhaiyaass891",
+                            "class": "Class 2",
+                            "major": "CNTT",
+                            "phone": "0355457556",
+                            "photoSrc": "urltest.vn",
+                            "role": "lecturer",
+                            "name": "Quanasdasdg Tyhuayyyy",
+                            "email": "thuyasayady@gmyaail.com"
+                        },
+                        "classCourse": "HK2",
+                        "topicTags": "Web",
+                        "quantityStudentStudent": "15",
+                        "createdAt": "2023-10-08T11:14:39Z",
+                        "updatedAt": "2023-10-08T11:23:27.418993Z"
+                    },
+                    "member": {
+                        "id": "123123",
+                        "class": "Class 2",
+                        "major": "CNTT",
+                        "phone": "0355457556",
+                        "photoSrc": "urltest.vn",
+                        "role": "student",
+                        "name": "Quanasdasdg Tyhuayyyy",
+                        "email": "thuyasayady@gmyaail.com"
+                    },
+                    "createdAt": "2023-10-08T14:09:26Z"
                 }
             }
         },
@@ -53,7 +82,7 @@
     },
     "Delete a waiting list": {
         // Method: DELETE 
-        // URL: localhost:8080/api/waiting-list/1
+        // URL: localhost:8080/api/requirement/1
         "success": {
             "output": {
                 "response": {
@@ -72,12 +101,12 @@
     },
     "Update a waiting list": {
         // Method: PUT
-        // URL: localhost:8080/api/waiting-list/1
+        // URL: localhost:8080/api/requirement/1
         "success": {
             "input": {
                 "waitingList": {
-                    "user_id": "1adadaa",
-                    "classroom_id": 1
+                    "memberID": "1adadaa",
+                    "classroomID": 1
                 }
             },
             "output": {
@@ -90,8 +119,8 @@
         "update with a existed waiting list nam": {
             "input": {
                 "waitingList": {
-                    "user_id": "1adadaa",
-                    "classroom_id": 1
+                    "memberID": "1adadaa",
+                    "classroomID": 1
                 }
             },
             "output": {
@@ -103,7 +132,7 @@
     },
     "Get all waiting lists of a classroom": {
         // Method: GET
-        // URL: localhost:8080/api/classroom/1(classroom id)/waiting-list
+        // URL: localhost:8080/api/requirement/class/{classroom id}/requirement
         "success": {
             "output": {
                 "response": {
@@ -112,22 +141,109 @@
                 },
                 "waitingLists": [
                     {
-                        "id": 1,
-                        "user_id": "1adadaa",
-                        "classroom_id": 1,
-                        "created_at": "2023-19-09T20:19:19"
+                        "id": "1",
+                        "classroom": {
+                            "id": "3",
+                            "title": "Classroom 261",
+                            "description": "Classroom 6",
+                            "status": "Available",
+                            "lecturer": {
+                                "id": "asdyhaiyaass891",
+                                "class": "Class 2",
+                                "major": "CNTT",
+                                "phone": "0355457556",
+                                "photoSrc": "urltest.vn",
+                                "role": "lecturer",
+                                "name": "Quanasdasdg Tyhuayyyy",
+                                "email": "thuyasayady@gmyaail.com"
+                            },
+                            "classCourse": "HK2",
+                            "topicTags": "Web",
+                            "quantityStudentStudent": "15",
+                            "createdAt": "2023-10-08T11:14:39Z",
+                            "updatedAt": "2023-10-08T11:23:27.418993Z"
+                        },
+                        "member": {
+                            "id": "123123",
+                            "class": "Class 2",
+                            "major": "CNTT",
+                            "phone": "0355457556",
+                            "photoSrc": "urltest.vn",
+                            "role": "student",
+                            "name": "Quanasdasdg Tyhuayyyy",
+                            "email": "thuyasayady@gmyaail.com"
+                        },
+                        "createdAt": "2023-10-08T14:09:26Z"
                     },
                     {
-                        "id": 2,
-                        "user_id": "1adadaa",
-                        "classroom_id": 2,
-                        "created_at": "2023-19-09T20:19:19"
+                        "id": "2",
+                        "classroom": {
+                            "id": "3",
+                            "title": "Classroom 261",
+                            "description": "Classroom 6",
+                            "status": "Available",
+                            "lecturer": {
+                                "id": "asdyhaiyaass891",
+                                "class": "Class 2",
+                                "major": "CNTT",
+                                "phone": "0355457556",
+                                "photoSrc": "urltest.vn",
+                                "role": "lecturer",
+                                "name": "Quanasdasdg Tyhuayyyy",
+                                "email": "thuyasayady@gmyaail.com"
+                            },
+                            "classCourse": "HK2",
+                            "topicTags": "Web",
+                            "quantityStudentStudent": "15",
+                            "createdAt": "2023-10-08T11:14:39Z",
+                            "updatedAt": "2023-10-08T11:23:27.418993Z"
+                        },
+                        "member": {
+                            "id": "123123",
+                            "class": "Class 2",
+                            "major": "CNTT",
+                            "phone": "0355457556",
+                            "photoSrc": "urltest.vn",
+                            "role": "student",
+                            "name": "Quanasdasdg Tyhuayyyy",
+                            "email": "thuyasayady@gmyaail.com"
+                        },
+                        "createdAt": "2023-10-08T14:09:26Z"
                     },
                     {
-                        "id": 4,
-                        "user_id": "1adadaa",
-                        "classroom_id": 3,
-                        "created_at": "2023-19-09T20:19:19"
+                        "id": "3",
+                        "classroom": {
+                            "id": "3",
+                            "title": "Classroom 261",
+                            "description": "Classroom 6",
+                            "status": "Available",
+                            "lecturer": {
+                                "id": "asdyhaiyaass891",
+                                "class": "Class 2",
+                                "major": "CNTT",
+                                "phone": "0355457556",
+                                "photoSrc": "urltest.vn",
+                                "role": "lecturer",
+                                "name": "Quanasdasdg Tyhuayyyy",
+                                "email": "thuyasayady@gmyaail.com"
+                            },
+                            "classCourse": "HK2",
+                            "topicTags": "Web",
+                            "quantityStudentStudent": "15",
+                            "createdAt": "2023-10-08T11:14:39Z",
+                            "updatedAt": "2023-10-08T11:23:27.418993Z"
+                        },
+                        "member": {
+                            "id": "123123",
+                            "class": "Class 2",
+                            "major": "CNTT",
+                            "phone": "0355457556",
+                            "photoSrc": "urltest.vn",
+                            "role": "student",
+                            "name": "Quanasdasdg Tyhuayyyy",
+                            "email": "thuyasayady@gmyaail.com"
+                        },
+                        "createdAt": "2023-10-08T14:09:26Z"
                     }
                 ]
             }
@@ -135,7 +251,7 @@
     },
     "Check user in waiting list of a classroom": {
         // Method: GET
-        // URL: localhost:8080/api/user/{userID}/waiting-list
+        // URL: localhost:8080/api/auth/check-subscribe/{userID}
         "user in a waiting list": {
             "output": {
                 "status": "WAITING",
@@ -145,9 +261,9 @@
                     "description": "Classroom 6",
                     "status": "Available",
                     "lecturerId": 2,
-                    "codeClassroom": "HK2",
+                    "classCourse": "HK2",
                     "topicTags": "Web",
-                    "quantity": 15,
+                    "quantityStudent": 15,
                     "createdAt": "2023-09-01T15:01:00Z",
                     "updatedAt": "2023-09-01T15:01:00Z",
                     "postsAndExercises": []

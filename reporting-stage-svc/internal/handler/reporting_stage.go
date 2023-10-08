@@ -48,8 +48,9 @@ func (h *ReportingStageHdl) GetReportingStage(ctx context.Context, req *reportin
 
 	pResp := reportingStagepb.ReportingStageResponse{
 		Id:          int64(p.ID),
-		Name:        p.Name,
+		Label:       p.Label,
 		Description: p.Description,
+		Value:       p.Value,
 	}
 
 	resp := &reportingStagepb.GetReportingStageResponse{
@@ -76,8 +77,9 @@ func (c *ReportingStageHdl) UpdateReportingStage(ctx context.Context, req *repor
 	}
 
 	if err := c.Service.UpdateReportingStage(ctx, int(req.GetId()), service.ReportingStageInputSvc{
-		Name:        p.Name,
+		Label:       p.Label,
 		Description: p.Description,
+		Value:       p.Value,
 	}); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -128,8 +130,9 @@ func (h *ReportingStageHdl) GetReportingStages(ctx context.Context, req *reporti
 	for _, p := range ps {
 		psResp = append(psResp, &reportingStagepb.ReportingStageResponse{
 			Id:          int64(p.ID),
-			Name:        p.Name,
+			Label:       p.Label,
 			Description: p.Description,
+			Value:       p.Value,
 		})
 	}
 
@@ -148,7 +151,8 @@ func validateAndConvertReportingStage(pbReportingStage *reportingStagepb.Reporti
 	}
 
 	return service.ReportingStageInputSvc{
-		Name:        pbReportingStage.Name,
+		Label:       pbReportingStage.Label,
 		Description: pbReportingStage.Description,
+		Value:       pbReportingStage.Value,
 	}, nil
 }

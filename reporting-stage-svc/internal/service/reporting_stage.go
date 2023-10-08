@@ -8,15 +8,17 @@ import (
 )
 
 type ReportingStageInputSvc struct {
-	Name        string
+	Label       string
 	Description string
+	Value       string
 }
 
 // CreateReportingStage creates a new reporting stage in db given by reporting stage model
 func (s *ReportingStageSvc) CreateReportingStage(ctx context.Context, p ReportingStageInputSvc) error {
 	pRepo := repository.ReportingStageInputRepo{
-		Name:        p.Name,
+		Label:       p.Label,
 		Description: p.Description,
+		Value:       p.Value,
 	}
 
 	if err := s.Repository.CreateReportingStage(ctx, pRepo); err != nil {
@@ -41,16 +43,18 @@ func (s *ReportingStageSvc) GetReportingStage(ctx context.Context, id int) (Repo
 
 	return ReportingStageOutputSvc{
 		ID:          p.ID,
-		Name:        p.Name,
+		Label:       p.Label,
 		Description: p.Description,
+		Value:       p.Value,
 	}, nil
 }
 
 // UpdateReportingStage updates the specified reporting stage by id
 func (s *ReportingStageSvc) UpdateReportingStage(ctx context.Context, id int, reportingStage ReportingStageInputSvc) error {
 	if err := s.Repository.UpdateReportingStage(ctx, id, repository.ReportingStageInputRepo{
-		Name:        reportingStage.Name,
+		Label:       reportingStage.Label,
 		Description: reportingStage.Description,
+		Value:       reportingStage.Value,
 	}); err != nil {
 		if errors.Is(err, repository.ErrReportingStageNotFound) {
 			return ErrReportingStageNotFound
@@ -75,8 +79,9 @@ func (s *ReportingStageSvc) DeleteReportingStage(ctx context.Context, id int) er
 
 type ReportingStageOutputSvc struct {
 	ID          int
-	Name        string
+	Label       string
 	Description string
+	Value       string
 }
 
 // GetReportingStages returns a list of reporting stages in db with filter
@@ -90,8 +95,9 @@ func (s *ReportingStageSvc) GetReportingStages(ctx context.Context) ([]Reporting
 	for _, p := range psRepo {
 		psSvc = append(psSvc, ReportingStageOutputSvc{
 			ID:          p.ID,
-			Name:        p.Name,
+			Label:       p.Label,
 			Description: p.Description,
+			Value:       p.Value,
 		})
 	}
 

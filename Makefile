@@ -8,10 +8,10 @@ migrate_up:
 	docker run --rm -v $(PWD)/$(service)-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(service)-db:5432/thesis_management_$(db)s?sslmode=disable" up 
 
 migrate_down:
-	docker run --rm -v $(PWD)/$(db)-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(db)-db:5432/thesis_management_$(db)s?sslmode=disable" down $(ver)
+	docker run --rm -v $(PWD)/$(service)-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(service)-db:5432/thesis_management_$(db)s?sslmode=disable" down $(ver)
 	
 migrate_force:
-	docker run --rm -v $(PWD)/$(db)-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(db)-db:5432/thesis_management_$(db)s?sslmode=disable" force $(ver) 
+	docker run --rm -v $(PWD)/$(service)-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(service)-db:5432/thesis_management_$(db)s?sslmode=disable" force $(ver) 
 
 docker_volume_down:
 	docker-compose down --volumes
@@ -30,7 +30,7 @@ proto-api:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./api-gw/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto api_comment.proto api_authorization.proto api_attachment.proto api_topic.proto
+		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto api_comment.proto api_attachment.proto api_topic.proto api_authorization.proto api_member.proto
 	@echo "Done"
 
 proto-classroom:
@@ -193,6 +193,22 @@ proto-attachment:
 		 attachment.proto
 	@echo "Done"
 
+proto-authorization:
+	@echo "--> Generating gRPC clients for authorization API"
+	@protoc -I ./authorization-svc/api/v1 \
+		--go_out ./authorization-svc/api/goclient/v1 --go_opt paths=source_relative \
+	  	--go-grpc_out ./authorization-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+		--grpc-gateway_out ./authorization-svc/api/goclient/v1 \
+		--grpc-gateway_opt logtostderr=true \
+		--grpc-gateway_opt paths=source_relative \
+		--grpc-gateway_opt generate_unbound_methods=true \
+  		--openapiv2_out ./authorization-svc/api/goclient/v1 \
+    	--openapiv2_opt logtostderr=true \
+		--validate_out="lang=go,paths=source_relative:./authorization-svc/api/goclient/v1" \
+		--experimental_allow_proto3_optional \
+		 authorization.proto
+	@echo "Done"
+
 proto-topic:
 	@echo "--> Generating gRPC clients for topic API"
 	@protoc -I ./topic-svc/api/v1 \
@@ -212,7 +228,7 @@ proto-topic:
 
 
 
-proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-redis proto-comment proto-attachment proto-topic
+proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-redis proto-comment proto-attachment proto-topic proto-authorization
 
 clean:
 	rm -rf ./out
@@ -231,6 +247,7 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/comment ./comment-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/attachment ./attachment-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/topic ./topic-svc
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/authorization ./authorization-svc
 
 build_and_run: clean build
 	@echo "--> Starting servers"
@@ -253,6 +270,9 @@ docker-tag:
 	docker tag qthuy2k1/thesis-management-backend-submission:$(tag) qthuy2k1/thesis-management-backend-submisson:$(tag)
 	docker tag qthuy2k1/thesis-management-backend-classroom-waiting-list:$(tag) qthuy2k1/thesis-management-backend-classroom-waiting-list:$(tag)
 	docker tag qthuy2k1/thesis-management-backend-comment:$(tag) qthuy2k1/thesis-management-backend-comment:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-attachment:$(tag) qthuy2k1/thesis-management-backend-attachment:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-topic:$(tag) qthuy2k1/thesis-management-backend-topic:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-authorization:$(tag) qthuy2k1/thesis-management-backend-authorization:$(tag)
 	
 	# DB
 	docker tag postgres qthuy2k1/thesis-management-backend-classroom-db:$(tag)
@@ -264,6 +284,7 @@ docker-tag:
 	docker tag postgres qthuy2k1/thesis-management-backend-classroom-waiting-list-db:$(tag)
 	docker tag postgres qthuy2k1/thesis-management-backend-comment-db:$(tag)
 	docker tag postgres qthuy2k1/thesis-management-backend-attachment-db:$(tag)
+	docker tag postgres qthuy2k1/thesis-management-backend-topic-db:$(tag)
 
 docker-push:
 	# APP
@@ -278,6 +299,8 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-classroom-waiting-list:latest
 	docker push qthuy2k1/thesis-management-backend-comment:latest
 	docker push qthuy2k1/thesis-management-backend-attachment:latest
+	docker push qthuy2k1/thesis-management-backend-topic:latest
+	docker push qthuy2k1/thesis-management-backend-authorization:latest
 
 	# DB
 	docker push qthuy2k1/thesis-management-backend-classroom-db:latest
@@ -289,6 +312,7 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-classroom-waiting-list-db:latest
 	docker push qthuy2k1/thesis-management-backend-comment-db:latest
 	docker push qthuy2k1/thesis-management-backend-attachment-db:latest
+	docker push qthuy2k1/thesis-management-backend-topic-db:latest
 
 migrate_all_up:
 	docker run --rm -v $(PWD)/classroom-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@classroom-db:5432/thesis_management_classrooms?sslmode=disable" up

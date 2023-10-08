@@ -12,33 +12,33 @@ option go_package="github.com/qthuy2k1/thesis_management_backend/classroom/api/v
 service ClassroomService {
     rpc CreateClassroom(CreateClassroomRequest) returns (CreateClassroomResponse){
         option (google.api.http) = {
-            post: "/api/classroom"
+            post: "/api/class"
             body: "*"
         };
     }
     
     rpc GetClassroom(GetClassroomRequest) returns (GetClassroomResponse){
         option (google.api.http) = {
-            get: "/api/classroom/{id}"
+            get: "/api/class/{id}"
         };
     }
 
     rpc UpdateClassroom(UpdateClassroomRequest) returns (UpdateClassroomResponse){
         option (google.api.http) = {
-            put: "/api/classroom/{id}"
+            put: "/api/class/{id}"
             body: "*"
         };
     }
 
     rpc DeleteClassroom(DeleteClassroomRequest) returns (DeleteClassroomResponse){
         option (google.api.http) = {
-            delete: "/api/classroom/{id}"
+            delete: "/api/class/{id}"
         };
     }
 
     rpc GetClassrooms(GetClassroomsRequest) returns (GetClassroomsResponse) {
         option (google.api.http) = {
-            get: "/api/classroom"
+            get: "/api/class"
         };
     }
 
@@ -56,16 +56,17 @@ message ClassroomInput {
     string title = 1 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string description = 2 [(validate.rules).string = {min_len: 2}];
     string status = 3 [(validate.rules).string = {min_len: 2}];
-    string lecturerId = 4;
-    string codeClassroom = 5 [(validate.rules).string = {min_len: 2}];
+    string lecturerID = 4 [(validate.rules).string = {min_len: 2}];
+    string classCourse = 5 [(validate.rules).string = {min_len: 2}];
     string topicTags = 6 [(validate.rules).string = {min_len: 2}];
-    int64 quantity = 7 [(validate.rules).int64.gte = 0];
+    int64 quantityStudent = 7 [(validate.rules).int64.gte = 0];
 }
 
 message ReportingStageClassroomResponse {
     int64 id = 1 [(validate.rules).int64.gte = 1];
-    string name = 2 [(validate.rules).string = {min_len: 2}];
+    string label = 2 [(validate.rules).string = {min_len: 2}];
     string description = 3 [(validate.rules).string = {min_len: 2}];   
+    string value = 4;
 }
 
 message AuthorClassroomResponse {
@@ -77,7 +78,6 @@ message AuthorClassroomResponse {
     string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    optional int64 classroomID = 9;
 }
 
 message ClassroomResponse {
@@ -86,9 +86,9 @@ message ClassroomResponse {
     string description = 3 [(validate.rules).string = {min_len: 2}];
     string status = 4 [(validate.rules).string = {min_len: 2}];
     AuthorClassroomResponse lecturer = 5;
-    string codeClassroom = 6 [(validate.rules).string = {min_len: 2}];
+    string classCourse = 6 [(validate.rules).string = {min_len: 2}];
     string topicTags = 7 [(validate.rules).string = {min_len: 2}];
-    int64 quantity = 8 [(validate.rules).int64.gte = 0];
+    int64 quantityStudent = 8 [(validate.rules).int64.gte = 0];
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
     repeated PostsAndExercisesOfClassroom postsAndExercises = 11;
@@ -98,11 +98,11 @@ message ClassroomResponse {
 message PostsAndExercisesOfClassroom {
     int64 id = 1 [(validate.rules).int64.gte = 1];
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
-    string content = 3 [(validate.rules).string = {min_len: 2}];
+    string description = 3 [(validate.rules).string = {min_len: 2}];
     int64 classroomID = 4 [(validate.rules).int64.gte = 1];
     optional google.type.DateTime deadline = 5;
     optional int64 score = 6 [(validate.rules).int64.gte = 0];
-    ReportingStageClassroomResponse reportingStage = 7;
+    ReportingStageClassroomResponse category = 7;
     AuthorClassroomResponse author = 8;
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
@@ -127,8 +127,7 @@ message GetClassroomRequest {
 }
 
 message GetClassroomResponse {
-    CommonClassroomResponse response = 1 [(validate.rules).message = {required: true}];
-    ClassroomResponse classroom = 2 [(validate.rules).message = {required: true}];
+    ClassroomResponse classroom = 1 [(validate.rules).message = {required: true}];
 } 
 
 message CheckClassroomExistsRequest {
@@ -170,7 +169,6 @@ message GetClassroomsRequest {
 }
 
 message GetClassroomsResponse {
-    CommonClassroomResponse response = 1 [(validate.rules).message = {required: true}];
-    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
-    repeated ClassroomResponse classrooms = 3;
+    int64 totalCount = 1 [(validate.rules).int64.gte = 0];
+    repeated ClassroomResponse classrooms = 2;
 }

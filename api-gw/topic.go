@@ -22,6 +22,10 @@ func NewTopicsService(topicClient topicSvcV1.TopicServiceClient, userClient user
 }
 
 func (u *topicServiceGW) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (*pb.CreateTopicResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.topicClient.CreateTopic(ctx, &topicSvcV1.CreateTopicRequest{
 		Topic: &topicSvcV1.TopicInput{
 			Title:         req.GetTopic().GetTitle(),
@@ -45,6 +49,10 @@ func (u *topicServiceGW) CreateTopic(ctx context.Context, req *pb.CreateTopicReq
 }
 
 func (u *topicServiceGW) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.GetTopicResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.topicClient.GetTopic(ctx, &topicSvcV1.GetTopicRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
@@ -59,7 +67,6 @@ func (u *topicServiceGW) GetTopic(ctx context.Context, req *pb.GetTopicRequest) 
 
 	major := studentRes.GetUser().GetMajor()
 	phone := studentRes.GetUser().GetPhone()
-	classroomID := studentRes.GetUser().GetClassroomID()
 
 	return &pb.GetTopicResponse{
 		Response: &pb.CommonTopicResponse{
@@ -72,15 +79,14 @@ func (u *topicServiceGW) GetTopic(ctx context.Context, req *pb.GetTopicRequest) 
 			TypeTopic:     res.GetTopic().GetTypeTopic(),
 			MemberQuanity: res.GetTopic().GetMemberQuanity(),
 			StudentId: &pb.UserTopicResponse{
-				Id:          studentRes.GetUser().GetId(),
-				Class:       studentRes.GetUser().GetClass(),
-				Major:       &major,
-				Phone:       &phone,
-				PhotoSrc:    studentRes.GetUser().GetPhotoSrc(),
-				Role:        studentRes.GetUser().GetRole(),
-				Name:        studentRes.GetUser().GetName(),
-				Email:       studentRes.GetUser().GetEmail(),
-				ClassroomID: &classroomID,
+				Id:       studentRes.GetUser().GetId(),
+				Class:    studentRes.GetUser().GetClass(),
+				Major:    &major,
+				Phone:    &phone,
+				PhotoSrc: studentRes.GetUser().GetPhotoSrc(),
+				Role:     studentRes.GetUser().GetRole(),
+				Name:     studentRes.GetUser().GetName(),
+				Email:    studentRes.GetUser().GetEmail(),
 			},
 			MemberEmail: res.GetTopic().GetMemberEmail(),
 			Description: res.GetTopic().GetDescription(),
@@ -89,6 +95,10 @@ func (u *topicServiceGW) GetTopic(ctx context.Context, req *pb.GetTopicRequest) 
 }
 
 func (u *topicServiceGW) UpdateTopic(ctx context.Context, req *pb.UpdateTopicRequest) (*pb.UpdateTopicResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.topicClient.UpdateTopic(ctx, &topicSvcV1.UpdateTopicRequest{
 		Id: req.GetId(),
 		Topic: &topicSvcV1.TopicInput{
@@ -113,6 +123,10 @@ func (u *topicServiceGW) UpdateTopic(ctx context.Context, req *pb.UpdateTopicReq
 }
 
 func (u *topicServiceGW) DeleteTopic(ctx context.Context, req *pb.DeleteTopicRequest) (*pb.DeleteTopicResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.topicClient.DeleteTopic(ctx, &topicSvcV1.DeleteTopicRequest{
 		Id: req.GetId(),
 	})

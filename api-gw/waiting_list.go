@@ -25,6 +25,10 @@ func NewWaitingListsService(waitingListClient waitingListSvcV1.WaitingListServic
 }
 
 func (u *waitingListServiceGW) CreateWaitingList(ctx context.Context, req *pb.CreateWaitingListRequest) (*pb.CreateWaitingListResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	clrExists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{
 		ClassroomID: req.GetWaitingList().GetClassroomID(),
 	})
@@ -41,7 +45,7 @@ func (u *waitingListServiceGW) CreateWaitingList(ctx context.Context, req *pb.Cr
 		}, nil
 	}
 
-	userExists, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.GetWaitingList().GetUserID()})
+	userExists, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.GetWaitingList().GetMemberID()})
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +60,7 @@ func (u *waitingListServiceGW) CreateWaitingList(ctx context.Context, req *pb.Cr
 	}
 
 	wtlExistRes, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
-		UserID: req.GetWaitingList().GetUserID(),
+		UserID: req.GetWaitingList().GetMemberID(),
 	})
 	if err != nil {
 		return nil, err
@@ -74,7 +78,7 @@ func (u *waitingListServiceGW) CreateWaitingList(ctx context.Context, req *pb.Cr
 	res, err := u.waitingListClient.CreateWaitingList(ctx, &waitingListSvcV1.CreateWaitingListRequest{
 		WaitingList: &waitingListSvcV1.WaitingListInput{
 			ClassroomID: req.GetWaitingList().GetClassroomID(),
-			UserID:      req.GetWaitingList().GetUserID(),
+			UserID:      req.GetWaitingList().GetMemberID(),
 		},
 	})
 	if err != nil {
@@ -90,6 +94,10 @@ func (u *waitingListServiceGW) CreateWaitingList(ctx context.Context, req *pb.Cr
 }
 
 func (u *waitingListServiceGW) GetWaitingList(ctx context.Context, req *pb.GetWaitingListRequest) (*pb.GetWaitingListResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.waitingListClient.GetWaitingList(ctx, &waitingListSvcV1.GetWaitingListRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
@@ -110,7 +118,7 @@ func (u *waitingListServiceGW) GetWaitingList(ctx context.Context, req *pb.GetWa
 	}
 
 	lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-		Id: clrRes.Classroom.LecturerId,
+		Id: clrRes.Classroom.LecturerID,
 	})
 	if err != nil {
 		return nil, err
@@ -129,32 +137,30 @@ func (u *waitingListServiceGW) GetWaitingList(ctx context.Context, req *pb.GetWa
 				Description: clrRes.Classroom.Description,
 				Status:      clrRes.Classroom.Status,
 				Lecturer: &pb.LecturerWaitingListResponse{
-					Id:          lecturerRes.User.Id,
-					Class:       lecturerRes.User.Class,
-					Major:       lecturerRes.User.Major,
-					Phone:       lecturerRes.User.Phone,
-					PhotoSrc:    lecturerRes.User.PhotoSrc,
-					Role:        lecturerRes.User.Role,
-					Name:        lecturerRes.User.Name,
-					Email:       lecturerRes.User.Email,
-					ClassroomID: &lecturerRes.User.ClassroomID,
+					Id:       lecturerRes.User.Id,
+					Class:    lecturerRes.User.Class,
+					Major:    lecturerRes.User.Major,
+					Phone:    lecturerRes.User.Phone,
+					PhotoSrc: lecturerRes.User.PhotoSrc,
+					Role:     lecturerRes.User.Role,
+					Name:     lecturerRes.User.Name,
+					Email:    lecturerRes.User.Email,
 				},
-				CodeClassroom: clrRes.Classroom.CodeClassroom,
-				TopicTags:     clrRes.Classroom.TopicTags,
-				Quantity:      clrRes.Classroom.Quantity,
-				CreatedAt:     clrRes.Classroom.CreatedAt,
-				UpdatedAt:     clrRes.Classroom.UpdatedAt,
+				ClassCourse:     clrRes.Classroom.ClassCourse,
+				TopicTags:       clrRes.Classroom.TopicTags,
+				QuantityStudent: clrRes.Classroom.QuantityStudent,
+				CreatedAt:       clrRes.Classroom.CreatedAt,
+				UpdatedAt:       clrRes.Classroom.UpdatedAt,
 			},
-			User: &pb.UserWaitingListResponse{
-				Id:          userRes.User.Id,
-				Class:       userRes.User.Class,
-				Major:       userRes.User.Major,
-				Phone:       userRes.User.Phone,
-				PhotoSrc:    userRes.User.PhotoSrc,
-				Role:        userRes.User.Role,
-				Name:        userRes.User.Name,
-				Email:       userRes.User.Email,
-				ClassroomID: &userRes.User.ClassroomID,
+			Member: &pb.UserWaitingListResponse{
+				Id:       userRes.User.Id,
+				Class:    userRes.User.Class,
+				Major:    userRes.User.Major,
+				Phone:    userRes.User.Phone,
+				PhotoSrc: userRes.User.PhotoSrc,
+				Role:     userRes.User.Role,
+				Name:     userRes.User.Name,
+				Email:    userRes.User.Email,
 			},
 			CreatedAt: res.GetWaitingList().GetCreatedAt(),
 		},
@@ -162,6 +168,10 @@ func (u *waitingListServiceGW) GetWaitingList(ctx context.Context, req *pb.GetWa
 }
 
 func (u *waitingListServiceGW) UpdateWaitingList(ctx context.Context, req *pb.UpdateWaitingListRequest) (*pb.UpdateWaitingListResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	clrExists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{
 		ClassroomID: req.GetWaitingList().GetClassroomID(),
 	})
@@ -178,7 +188,7 @@ func (u *waitingListServiceGW) UpdateWaitingList(ctx context.Context, req *pb.Up
 		}, nil
 	}
 
-	userExists, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.GetWaitingList().GetUserID()})
+	userExists, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.GetWaitingList().GetMemberID()})
 	if err != nil {
 		return nil, err
 	}
@@ -193,7 +203,7 @@ func (u *waitingListServiceGW) UpdateWaitingList(ctx context.Context, req *pb.Up
 	}
 
 	wtlExistRes, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
-		UserID: req.GetWaitingList().GetUserID(),
+		UserID: req.GetWaitingList().GetMemberID(),
 	})
 	if err != nil {
 		return nil, err
@@ -211,7 +221,7 @@ func (u *waitingListServiceGW) UpdateWaitingList(ctx context.Context, req *pb.Up
 		Id: req.GetId(),
 		WaitingList: &waitingListSvcV1.WaitingListInput{
 			ClassroomID: req.GetWaitingList().GetClassroomID(),
-			UserID:      req.GetWaitingList().GetUserID(),
+			UserID:      req.GetWaitingList().GetMemberID(),
 		},
 	})
 	if err != nil {
@@ -227,6 +237,10 @@ func (u *waitingListServiceGW) UpdateWaitingList(ctx context.Context, req *pb.Up
 }
 
 func (u *waitingListServiceGW) DeleteWaitingList(ctx context.Context, req *pb.DeleteWaitingListRequest) (*pb.DeleteWaitingListResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	wtl, err := u.waitingListClient.GetWaitingList(ctx, &waitingListSvcV1.GetWaitingListRequest{
 		Id: req.GetId(),
 	})
@@ -257,18 +271,16 @@ func (u *waitingListServiceGW) DeleteWaitingList(ctx context.Context, req *pb.De
 		return nil, err
 	}
 
-	classroomID := int64(0)
 	userUpdateRes, err := u.userClient.UpdateUser(ctx, &userSvcV1.UpdateUserRequest{
 		Id: userRes.User.Id,
 		User: &userSvcV1.UserInput{
-			Class:       userRes.User.Class,
-			Major:       userRes.User.Major,
-			Phone:       userRes.User.Phone,
-			PhotoSrc:    userRes.User.PhotoSrc,
-			Role:        userRes.User.Role,
-			Email:       userRes.User.Email,
-			Name:        userRes.User.Name,
-			ClassroomID: &classroomID,
+			Class:    userRes.User.Class,
+			Major:    userRes.User.Major,
+			Phone:    userRes.User.Phone,
+			PhotoSrc: userRes.User.PhotoSrc,
+			Role:     userRes.User.Role,
+			Email:    userRes.User.Email,
+			Name:     userRes.User.Name,
 		},
 	})
 	if err != nil {
@@ -293,6 +305,10 @@ func (u *waitingListServiceGW) DeleteWaitingList(ctx context.Context, req *pb.De
 }
 
 func (u *waitingListServiceGW) GetWaitingListsOfClassroom(ctx context.Context, req *pb.GetWaitingListsRequest) (*pb.GetWaitingListsResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.waitingListClient.GetWaitingListsOfClassroom(ctx, &waitingListSvcV1.GetWaitingListsRequest{
 		ClassroomID: req.GetClassroomID(),
 	})
@@ -317,7 +333,7 @@ func (u *waitingListServiceGW) GetWaitingListsOfClassroom(ctx context.Context, r
 		}
 
 		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: clrRes.Classroom.LecturerId,
+			Id: clrRes.Classroom.LecturerID,
 		})
 		if err != nil {
 			return nil, err
@@ -331,32 +347,30 @@ func (u *waitingListServiceGW) GetWaitingListsOfClassroom(ctx context.Context, r
 				Description: clrRes.Classroom.Description,
 				Status:      clrRes.Classroom.Status,
 				Lecturer: &pb.LecturerWaitingListResponse{
-					Id:          lecturerRes.User.Id,
-					Class:       lecturerRes.User.Class,
-					Major:       lecturerRes.User.Major,
-					Phone:       lecturerRes.User.Phone,
-					PhotoSrc:    lecturerRes.User.PhotoSrc,
-					Role:        lecturerRes.User.Role,
-					Name:        lecturerRes.User.Name,
-					Email:       lecturerRes.User.Email,
-					ClassroomID: &lecturerRes.User.ClassroomID,
+					Id:       lecturerRes.User.Id,
+					Class:    lecturerRes.User.Class,
+					Major:    lecturerRes.User.Major,
+					Phone:    lecturerRes.User.Phone,
+					PhotoSrc: lecturerRes.User.PhotoSrc,
+					Role:     lecturerRes.User.Role,
+					Name:     lecturerRes.User.Name,
+					Email:    lecturerRes.User.Email,
 				},
-				CodeClassroom: clrRes.Classroom.CodeClassroom,
-				TopicTags:     clrRes.Classroom.TopicTags,
-				Quantity:      clrRes.Classroom.Quantity,
-				CreatedAt:     clrRes.Classroom.CreatedAt,
-				UpdatedAt:     clrRes.Classroom.UpdatedAt,
+				ClassCourse:     clrRes.Classroom.ClassCourse,
+				TopicTags:       clrRes.Classroom.TopicTags,
+				QuantityStudent: clrRes.Classroom.QuantityStudent,
+				CreatedAt:       clrRes.Classroom.CreatedAt,
+				UpdatedAt:       clrRes.Classroom.UpdatedAt,
 			},
-			User: &pb.UserWaitingListResponse{
-				Id:          userRes.User.Id,
-				Class:       userRes.User.Class,
-				Major:       userRes.User.Major,
-				Phone:       userRes.User.Phone,
-				PhotoSrc:    userRes.User.PhotoSrc,
-				Role:        userRes.User.Role,
-				Name:        userRes.User.Name,
-				Email:       userRes.User.Email,
-				ClassroomID: &userRes.User.ClassroomID,
+			Member: &pb.UserWaitingListResponse{
+				Id:       userRes.User.Id,
+				Class:    userRes.User.Class,
+				Major:    userRes.User.Major,
+				Phone:    userRes.User.Phone,
+				PhotoSrc: userRes.User.PhotoSrc,
+				Role:     userRes.User.Role,
+				Name:     userRes.User.Name,
+				Email:    userRes.User.Email,
 			},
 			CreatedAt: p.GetCreatedAt(),
 		})
@@ -372,6 +386,10 @@ func (u *waitingListServiceGW) GetWaitingListsOfClassroom(ctx context.Context, r
 }
 
 func (u *waitingListServiceGW) CheckUserInWaitingListClassroom(ctx context.Context, req *pb.CheckUserInWaitingListClassroomRequest) (*pb.CheckUserInWaitingListClassroomResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
 		UserID: req.GetUserID(),
 	})
@@ -388,7 +406,7 @@ func (u *waitingListServiceGW) CheckUserInWaitingListClassroom(ctx context.Conte
 		}
 
 		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: clrRes.Classroom.LecturerId,
+			Id: clrRes.Classroom.LecturerID,
 		})
 		if err != nil {
 			return nil, err
@@ -402,21 +420,20 @@ func (u *waitingListServiceGW) CheckUserInWaitingListClassroom(ctx context.Conte
 				Description: clrRes.GetClassroom().GetDescription(),
 				Status:      clrRes.GetClassroom().GetStatus(),
 				Lecturer: &pb.LecturerWaitingListResponse{
-					Id:          lecturerRes.User.Id,
-					Class:       lecturerRes.User.Class,
-					Major:       lecturerRes.User.Major,
-					Phone:       lecturerRes.User.Phone,
-					PhotoSrc:    lecturerRes.User.PhotoSrc,
-					Role:        lecturerRes.User.Role,
-					Name:        lecturerRes.User.Name,
-					Email:       lecturerRes.User.Email,
-					ClassroomID: &lecturerRes.User.ClassroomID,
+					Id:       lecturerRes.User.Id,
+					Class:    lecturerRes.User.Class,
+					Major:    lecturerRes.User.Major,
+					Phone:    lecturerRes.User.Phone,
+					PhotoSrc: lecturerRes.User.PhotoSrc,
+					Role:     lecturerRes.User.Role,
+					Name:     lecturerRes.User.Name,
+					Email:    lecturerRes.User.Email,
 				},
-				CodeClassroom: clrRes.GetClassroom().GetCodeClassroom(),
-				TopicTags:     clrRes.GetClassroom().GetTopicTags(),
-				Quantity:      clrRes.GetClassroom().GetQuantity(),
-				CreatedAt:     clrRes.GetClassroom().GetCreatedAt(),
-				UpdatedAt:     clrRes.GetClassroom().GetUpdatedAt(),
+				ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
+				TopicTags:       clrRes.GetClassroom().GetTopicTags(),
+				QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
+				CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
+				UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
 			},
 		}, nil
 	}
