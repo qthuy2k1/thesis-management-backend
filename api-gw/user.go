@@ -22,45 +22,27 @@ func NewUsersService(userClient userSvcV1.UserServiceClient, classroomClient cla
 		userClient:        userClient,
 		classroomClient:   classroomClient,
 		waitingListClient: waitingListClient,
-		// jwtManager:      jwtManager,
-		// accessibleRoles: accessibleRoles,
 	}
 }
 
 func (u *userServiceGW) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	if req.GetUser().GetClassroomID() != 0 {
-		classroomID := req.GetUser().GetClassroomID()
-
-		exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: int64(classroomID)})
-		if err != nil {
-			return nil, err
-		}
-
-		if !exists.GetExists() {
-			return &pb.CreateUserResponse{
-				Response: &pb.CommonUserResponse{
-					StatusCode: 404,
-					Message:    "Classroom does not exist",
-				},
-			}, nil
-		}
+	if err := req.Validate(); err != nil {
+		return nil, err
 	}
 
 	major := req.GetUser().GetMajor()
 	phone := req.GetUser().GetPhone()
-	classroomID := req.GetUser().GetClassroomID()
 
 	res, err := u.userClient.CreateUser(ctx, &userSvcV1.CreateUserRequest{
 		User: &userSvcV1.UserInput{
-			Id:          req.GetUser().GetId(),
-			Class:       req.GetUser().GetClass(),
-			Major:       &major,
-			Phone:       &phone,
-			PhotoSrc:    req.GetUser().GetPhotoSrc(),
-			Role:        req.GetUser().GetRole(),
-			Name:        req.GetUser().GetName(),
-			Email:       req.GetUser().GetEmail(),
-			ClassroomID: &classroomID,
+			Id:       req.GetUser().GetId(),
+			Class:    req.GetUser().GetClass(),
+			Major:    &major,
+			Phone:    &phone,
+			PhotoSrc: req.GetUser().GetPhotoSrc(),
+			Role:     req.GetUser().GetRole(),
+			Name:     req.GetUser().GetName(),
+			Email:    req.GetUser().GetEmail(),
 		},
 	})
 	if err != nil {
@@ -76,6 +58,10 @@ func (u *userServiceGW) CreateUser(ctx context.Context, req *pb.CreateUserReques
 }
 
 func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
@@ -83,7 +69,6 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 
 	major := res.GetUser().GetMajor()
 	phone := res.GetUser().GetPhone()
-	classroomID := res.GetUser().GetClassroomID()
 
 	return &pb.GetUserResponse{
 		Response: &pb.CommonUserResponse{
@@ -91,53 +76,36 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 			Message:    res.GetResponse().Message,
 		},
 		User: &pb.UserResponse{
-			Id:          res.GetUser().Id,
-			Class:       res.GetUser().GetClass(),
-			Major:       &major,
-			Phone:       &phone,
-			PhotoSrc:    res.GetUser().GetPhotoSrc(),
-			Role:        res.GetUser().GetRole(),
-			Name:        res.GetUser().GetName(),
-			Email:       res.GetUser().GetEmail(),
-			ClassroomID: &classroomID,
+			Id:       res.GetUser().Id,
+			Class:    res.GetUser().GetClass(),
+			Major:    &major,
+			Phone:    &phone,
+			PhotoSrc: res.GetUser().GetPhotoSrc(),
+			Role:     res.GetUser().GetRole(),
+			Name:     res.GetUser().GetName(),
+			Email:    res.GetUser().GetEmail(),
 		},
 	}, nil
 }
 
 func (u *userServiceGW) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
-	if req.GetUser().GetClassroomID() != 0 {
-		classroomID := req.GetUser().GetClassroomID()
-
-		exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: int64(classroomID)})
-		if err != nil {
-			return nil, err
-		}
-
-		if !exists.GetExists() {
-			return &pb.UpdateUserResponse{
-				Response: &pb.CommonUserResponse{
-					StatusCode: 404,
-					Message:    "Classroom does not exist",
-				},
-			}, nil
-		}
+	if err := req.Validate(); err != nil {
+		return nil, err
 	}
 
 	major := req.GetUser().GetMajor()
 	phone := req.GetUser().GetPhone()
-	classroomID := req.GetUser().GetClassroomID()
 
 	res, err := u.userClient.UpdateUser(ctx, &userSvcV1.UpdateUserRequest{
 		Id: req.GetId(),
 		User: &userSvcV1.UserInput{
-			Class:       req.GetUser().GetClass(),
-			Major:       &major,
-			Phone:       &phone,
-			PhotoSrc:    req.GetUser().GetPhotoSrc(),
-			Role:        req.GetUser().GetRole(),
-			Name:        req.GetUser().GetName(),
-			Email:       req.GetUser().GetEmail(),
-			ClassroomID: &classroomID,
+			Class:    req.GetUser().GetClass(),
+			Major:    &major,
+			Phone:    &phone,
+			PhotoSrc: req.GetUser().GetPhotoSrc(),
+			Role:     req.GetUser().GetRole(),
+			Name:     req.GetUser().GetName(),
+			Email:    req.GetUser().GetEmail(),
 		},
 	})
 	if err != nil {
@@ -153,6 +121,10 @@ func (u *userServiceGW) UpdateUser(ctx context.Context, req *pb.UpdateUserReques
 }
 
 func (u *userServiceGW) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.userClient.DeleteUser(ctx, &userSvcV1.DeleteUserRequest{
 		Id: req.GetId(),
 	})
@@ -181,62 +153,18 @@ func (u *userServiceGW) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (
 	var users []*pb.UserResponse
 	for _, u := range res.GetUsers() {
 		users = append(users, &pb.UserResponse{
-			Id:          u.Id,
-			Class:       u.Class,
-			Major:       u.Major,
-			Phone:       u.Phone,
-			PhotoSrc:    u.PhotoSrc,
-			Role:        u.Role,
-			Name:        u.Name,
-			Email:       u.Email,
-			ClassroomID: &u.ClassroomID,
+			Id:       u.Id,
+			Class:    u.Class,
+			Major:    u.Major,
+			Phone:    u.Phone,
+			PhotoSrc: u.PhotoSrc,
+			Role:     u.Role,
+			Name:     u.Name,
+			Email:    u.Email,
 		})
 	}
 
 	return &pb.GetUsersResponse{
-		Response: &pb.CommonUserResponse{
-			StatusCode: res.GetResponse().StatusCode,
-			Message:    res.GetResponse().Message,
-		},
-		TotalCount: res.GetTotalCount(),
-		Users:      users,
-	}, nil
-}
-
-func (u *userServiceGW) GetAllUsersOfClassroom(ctx context.Context, req *pb.GetAllUsersOfClassroomRequest) (*pb.GetAllUsersOfClassroomResponse, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
-
-	var classroomID int64
-
-	if req.GetClassroomID() > 0 {
-		classroomID = req.GetClassroomID()
-	}
-
-	res, err := u.userClient.GetAllUsersOfClassroom(ctx, &userSvcV1.GetAllUsersOfClassroomRequest{
-		ClassroomID: classroomID,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	var users []*pb.UserResponse
-	for _, u := range res.GetUsers() {
-		users = append(users, &pb.UserResponse{
-			Id:          u.Id,
-			Class:       u.Class,
-			Major:       u.Major,
-			Phone:       u.Phone,
-			PhotoSrc:    u.PhotoSrc,
-			Role:        u.Role,
-			Name:        u.Name,
-			Email:       u.Email,
-			ClassroomID: &u.ClassroomID,
-		})
-	}
-
-	return &pb.GetAllUsersOfClassroomResponse{
 		Response: &pb.CommonUserResponse{
 			StatusCode: res.GetResponse().StatusCode,
 			Message:    res.GetResponse().Message,
@@ -283,18 +211,16 @@ func (u *userServiceGW) ApproveUserJoinClassroom(ctx context.Context, req *pb.Ap
 		}, nil
 	}
 
-	classroomID := req.GetClassroomID()
 	res, err := u.userClient.UpdateUser(ctx, &userSvcV1.UpdateUserRequest{
 		Id: req.GetUserID(),
 		User: &userSvcV1.UserInput{
-			Class:       userRes.User.Class,
-			Major:       userRes.User.Major,
-			Phone:       userRes.User.Phone,
-			PhotoSrc:    userRes.User.PhotoSrc,
-			Role:        userRes.User.Role,
-			Name:        userRes.User.Name,
-			Email:       userRes.User.Email,
-			ClassroomID: &classroomID,
+			Class:    userRes.User.Class,
+			Major:    userRes.User.Major,
+			Phone:    userRes.User.Phone,
+			PhotoSrc: userRes.User.PhotoSrc,
+			Role:     userRes.User.Role,
+			Name:     userRes.User.Name,
+			Email:    userRes.User.Email,
 		},
 	})
 	if err != nil {
@@ -318,54 +244,37 @@ func (u *userServiceGW) ApproveUserJoinClassroom(ctx context.Context, req *pb.Ap
 	}, nil
 }
 
-// func (u *userServiceGW) Authorize(ctx context.Context, method string) error {
-// 	accessibleRoles, ok := u.accessibleRoles[method]
-// 	if !ok {
-// 		// everyone can access
-// 		return nil
-// 	}
-
-// 	md, ok := metadata.FromIncomingContext(ctx)
-// 	if !ok {
-// 		return status.Errorf(codes.Unauthenticated, "metadata is not provided")
-// 	}
-
-// 	values := md["authorization"]
-// 	if len(values) == 0 {
-// 		return status.Errorf(codes.Unauthenticated, "authorization token is not provided")
-// 	}
-
-// 	accessToken := values[0]
-// 	claims, err := u.jwtManager.Verify(accessToken)
-// 	if err != nil {
-// 		return status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
-// 	}
-
-// 	for _, role := range accessibleRoles {
-// 		if role == claims.Role {
-// 			return nil
-// 		}
-// 	}
-
-// 	return status.Error(codes.PermissionDenied, "no permission to access this RPC")
-// }
-
 func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *pb.CheckStatusUserJoinClassroomRequest) (*pb.CheckStatusUserJoinClassroomResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-		Id: req.GetId(),
+		Id: req.GetUserID(),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	classroomID := userRes.GetUser().GetClassroomID()
+	if userRes.GetResponse().StatusCode == 404 {
+		return &pb.CheckStatusUserJoinClassroomResponse{
+			Response: &pb.CommonUserResponse{
+				StatusCode: userRes.GetResponse().StatusCode,
+				Message:    userRes.GetResponse().Message,
+			},
+		}, nil
+	}
+
+	memberRes, err := u.userClient.IsUserJoinedClassroom(ctx, &userSvcV1.IsUserJoinedClassroomRequest{
+		UserID: req.GetUserID(),
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	if classroomID == 0 {
+	if memberRes.Response.StatusCode != 200 {
 		wtlRes, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
-			UserID: req.GetId(),
+			UserID: req.GetUserID(),
 		})
 		if err != nil {
 			return nil, err
@@ -382,49 +291,58 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 			return &pb.CheckStatusUserJoinClassroomResponse{
 				Status: "WAITING",
 				Classroom: &pb.ClassroomUserResponse{
-					Id:            clrRes.GetClassroom().GetId(),
-					Title:         clrRes.GetClassroom().GetTitle(),
-					Description:   clrRes.GetClassroom().GetDescription(),
-					Status:        clrRes.GetClassroom().GetStatus(),
-					LecturerId:    clrRes.GetClassroom().GetLecturerId(),
-					CodeClassroom: clrRes.GetClassroom().GetCodeClassroom(),
-					TopicTags:     clrRes.GetClassroom().GetTopicTags(),
-					Quantity:      clrRes.GetClassroom().GetQuantity(),
-					CreatedAt:     clrRes.GetClassroom().GetCreatedAt(),
-					UpdatedAt:     clrRes.GetClassroom().GetUpdatedAt(),
+					Id:              clrRes.GetClassroom().GetId(),
+					Title:           clrRes.GetClassroom().GetTitle(),
+					Description:     clrRes.GetClassroom().GetDescription(),
+					Status:          clrRes.GetClassroom().GetStatus(),
+					LecturerID:      clrRes.GetClassroom().GetLecturerID(),
+					ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
+					TopicTags:       clrRes.GetClassroom().GetTopicTags(),
+					QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
+					CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
+					UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
 				},
 			}, nil
 		} else {
 			return &pb.CheckStatusUserJoinClassroomResponse{
 				Status:    "NOT REGISTERED",
-				Classroom: &pb.ClassroomUserResponse{},
+				Classroom: nil,
 			}, nil
 		}
 	}
 
-	// classroomID != 0
 	clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
-		Id: int64(classroomID),
+		Id: memberRes.GetMember().ClassroomID,
 	})
 	if err != nil {
 		return nil, err
 	}
 
+	if clrRes.GetResponse().StatusCode == 404 {
+		return &pb.CheckStatusUserJoinClassroomResponse{
+			Response: &pb.CommonUserResponse{
+				StatusCode: clrRes.GetResponse().StatusCode,
+				Message:    clrRes.GetResponse().Message,
+			},
+		}, nil
+	}
+
 	return &pb.CheckStatusUserJoinClassroomResponse{
-		Status: "ADDED",
+		Status: "JOINED",
 		Classroom: &pb.ClassroomUserResponse{
-			Id:            clrRes.GetClassroom().GetId(),
-			Title:         clrRes.GetClassroom().GetTitle(),
-			Description:   clrRes.GetClassroom().GetDescription(),
-			Status:        clrRes.GetClassroom().GetStatus(),
-			LecturerId:    clrRes.GetClassroom().GetLecturerId(),
-			CodeClassroom: clrRes.GetClassroom().GetCodeClassroom(),
-			TopicTags:     clrRes.GetClassroom().GetTopicTags(),
-			Quantity:      clrRes.GetClassroom().GetQuantity(),
-			CreatedAt:     clrRes.GetClassroom().GetCreatedAt(),
-			UpdatedAt:     clrRes.GetClassroom().GetUpdatedAt(),
+			Id:              clrRes.GetClassroom().GetId(),
+			Title:           clrRes.GetClassroom().GetTitle(),
+			Description:     clrRes.GetClassroom().GetDescription(),
+			Status:          clrRes.GetClassroom().GetStatus(),
+			LecturerID:      clrRes.GetClassroom().GetLecturerID(),
+			ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
+			TopicTags:       clrRes.GetClassroom().GetTopicTags(),
+			QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
+			CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
+			UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
 		},
 	}, nil
+
 }
 
 func (u *userServiceGW) UpdateBasicUser(ctx context.Context, req *pb.UpdateBasicUserRequest) (*pb.UpdateBasicUserResponse, error) {
@@ -451,19 +369,17 @@ func (u *userServiceGW) UpdateBasicUser(ctx context.Context, req *pb.UpdateBasic
 
 	major := req.GetUser().GetMajor()
 	phone := req.GetUser().GetPhone()
-	classroomID := userGetRes.GetUser().GetClassroomID()
 
 	res, err := u.userClient.UpdateUser(ctx, &userSvcV1.UpdateUserRequest{
 		Id: req.GetId(),
 		User: &userSvcV1.UserInput{
-			Class:       req.GetUser().GetClass(),
-			Major:       &major,
-			Phone:       &phone,
-			PhotoSrc:    req.GetUser().GetPhotoSrc(),
-			Name:        req.GetUser().GetName(),
-			Email:       req.GetUser().GetEmail(),
-			Role:        userGetRes.GetUser().GetRole(),
-			ClassroomID: &classroomID,
+			Class:    req.GetUser().GetClass(),
+			Major:    &major,
+			Phone:    &phone,
+			PhotoSrc: req.GetUser().GetPhotoSrc(),
+			Name:     req.GetUser().GetName(),
+			Email:    req.GetUser().GetEmail(),
+			Role:     userGetRes.GetUser().GetRole(),
 		},
 	})
 	if err != nil {
@@ -471,6 +387,60 @@ func (u *userServiceGW) UpdateBasicUser(ctx context.Context, req *pb.UpdateBasic
 	}
 
 	return &pb.UpdateBasicUserResponse{
+		Response: &pb.CommonUserResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+	}, nil
+}
+
+func (u *userServiceGW) GetAllLecturers(ctx context.Context, req *pb.GetAllLecturerRequest) (*pb.GetAllLecturerResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	res, err := u.userClient.GetAllLecturers(ctx, &userSvcV1.GetAllLecturersRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	var lecturers []*pb.UserResponse
+	for _, l := range res.GetLecturers() {
+		lecturers = append(lecturers, &pb.UserResponse{
+			Id:       l.Id,
+			Class:    l.Class,
+			Major:    l.Major,
+			Phone:    l.Phone,
+			PhotoSrc: l.PhotoSrc,
+			Role:     l.Role,
+			Name:     l.Name,
+			Email:    l.Email,
+		})
+	}
+
+	return &pb.GetAllLecturerResponse{
+		Response: &pb.CommonUserResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+		TotalCount: res.GetTotalCount(),
+		Lecturers:  lecturers,
+	}, nil
+}
+
+func (u *userServiceGW) UnsubscribeClassroom(ctx context.Context, req *pb.UnsubscribeClassroomRequest) (*pb.UnsubscribeClassroomResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	res, err := u.userClient.UnsubscribeClassroom(ctx, &userSvcV1.UnsubscribeClassroomRequest{
+		MemberID: req.GetMemberID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UnsubscribeClassroomResponse{
 		Response: &pb.CommonUserResponse{
 			StatusCode: res.GetResponse().StatusCode,
 			Message:    res.GetResponse().Message,

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package user.v1;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package="github.com/qthuy2k1/thesis-management-backend/user/api/v1";
 
 service UserService {
@@ -15,7 +17,24 @@ service UserService {
 
     rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {}
 
-    rpc GetAllUsersOfClassroom(GetAllUsersOfClassroomRequest) returns (GetAllUsersOfClassroomResponse) {}
+    rpc GetAllLecturers(GetAllLecturersRequest) returns (GetAllLecturersResponse) {}
+
+    rpc UnsubscribeClassroom(UnsubscribeClassroomRequest) returns (UnsubscribeClassroomResponse) {}
+
+
+    rpc CreateMember(CreateMemberRequest) returns (CreateMemberResponse){}
+    
+    rpc GetMember(GetMemberRequest) returns (GetMemberResponse){}
+
+    rpc UpdateMember(UpdateMemberRequest) returns (UpdateMemberResponse){}
+
+    rpc DeleteMember(DeleteMemberRequest) returns (DeleteMemberResponse){}
+
+    rpc GetMembers(GetMembersRequest) returns (GetMembersResponse) {}
+
+    rpc GetAllMembersOfClassroom(GetAllMembersOfClassroomRequest) returns (GetAllMembersOfClassroomResponse) {}
+
+    rpc IsUserJoinedClassroom(IsUserJoinedClassroomRequest) returns (IsUserJoinedClassroomResponse) {}
 }
 
 message CommonUserResponse {
@@ -34,7 +53,6 @@ message UserInput {
     string role = 6;
     string name = 7;
     string email = 8;
-    optional int64 classroomID = 9;
 }
 
 message UserResponse {
@@ -46,7 +64,6 @@ message UserResponse {
     string role = 6;
     string name = 7;
     string email = 8;
-    int64 classroomID = 9;
 }
 
 message CreateUserRequest {
@@ -109,4 +126,111 @@ message GetAllUsersOfClassroomResponse {
     CommonUserResponse response = 1;
     int64 totalCount = 2;
     repeated UserResponse users = 3;
+}
+
+
+
+
+
+
+
+// ====== member ======
+message MemberInput {
+    int64 classroomID = 1;
+    string memberID = 2;
+    string status = 3;
+}
+
+message MemberResponse {
+    int64 id = 1;
+    int64 classroomID = 2;
+    string memberID = 3;
+    string status = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
+
+message CreateMemberRequest {
+   MemberInput member = 1;
+}
+
+message CreateMemberResponse {
+    CommonUserResponse response = 1;
+}
+
+
+// ====== GET ======
+message GetMemberRequest {
+    int64 id = 1;
+}
+
+message GetMemberResponse {
+    CommonUserResponse response = 1;
+    MemberResponse member = 2;
+}
+
+// ====== PUT ======
+message UpdateMemberRequest {
+    int64 id = 1;
+    MemberInput member = 2;
+}
+
+message UpdateMemberResponse {
+    CommonUserResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteMemberRequest {
+    int64 id = 1;
+}
+
+message DeleteMemberResponse {
+    CommonUserResponse response = 1;
+}
+
+// ====== GET ALL ======
+message GetMembersRequest {}
+
+message GetMembersResponse {
+    CommonUserResponse response = 1; 
+    int64 totalCount = 2;
+    repeated MemberResponse members = 3;
+}
+// ====== GET ALL OF CLASSROOM ======
+message GetAllMembersOfClassroomRequest {
+    int64 classroomID = 1;
+}
+
+message GetAllMembersOfClassroomResponse {
+    CommonUserResponse response = 1;
+    int64 totalCount = 2;
+    repeated MemberResponse members = 3;
+}
+
+
+// ====== GET ALL LECTURERS ======
+message GetAllLecturersRequest {
+}
+
+message GetAllLecturersResponse {
+    CommonUserResponse response = 1;
+    int64 totalCount = 2;
+    repeated UserResponse lecturers = 3;
+}
+
+
+message IsUserJoinedClassroomRequest {
+    string userID = 1;
+}
+
+message IsUserJoinedClassroomResponse {
+    CommonUserResponse response = 1;
+    MemberResponse member = 2;
+}
+
+message UnsubscribeClassroomRequest {
+    int64 memberID = 1;
+}
+
+message UnsubscribeClassroomResponse {
+    CommonUserResponse response = 1;
 }

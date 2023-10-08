@@ -210,6 +210,41 @@ func (h *PostHdl) GetAllPostsOfClassroom(ctx context.Context, req *postpb.GetAll
 	}, nil
 }
 
+func (h *PostHdl) GetAllPostsInReportingStage(ctx context.Context, req *postpb.GetAllPostsInReportingStageRequest) (*postpb.GetAllPostsInReportingStageResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	ps, count, err := h.Service.GetAllPostsInReportingStage(ctx, int(req.GetReportingStageID()), int(req.GetClassroomID()))
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var psResp []*postpb.PostResponse
+	for _, p := range ps {
+		psResp = append(psResp, &postpb.PostResponse{
+			Id:               int64(p.ID),
+			Title:            p.Title,
+			Content:          p.Content,
+			ClassroomID:      int64(p.ClassroomID),
+			ReportingStageID: int64(p.ReportingStageID),
+			AuthorID:         p.AuthorID,
+			CreatedAt:        timestamppb.New(p.CreatedAt),
+			UpdatedAt:        timestamppb.New(p.UpdatedAt),
+		})
+	}
+
+	return &postpb.GetAllPostsInReportingStageResponse{
+		Response: &postpb.CommonPostResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Posts:      psResp,
+		TotalCount: int64(count),
+	}, nil
+}
+
 func validateAndConvertPost(pbPost *postpb.PostInput) (service.PostInputSvc, error) {
 	if err := pbPost.Validate(); err != nil {
 		return service.PostInputSvc{}, err

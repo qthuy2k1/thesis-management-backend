@@ -164,9 +164,11 @@ func (m *ReportingStageInput) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Name
+	// no validation rules for Label
 
 	// no validation rules for Description
+
+	// no validation rules for Value
 
 	if len(errors) > 0 {
 		return ReportingStageInputMultiError(errors)
@@ -272,9 +274,11 @@ func (m *ReportingStageResponse) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for Name
+	// no validation rules for Label
 
 	// no validation rules for Description
+
+	// no validation rules for Value
 
 	if len(errors) > 0 {
 		return ReportingStageResponseMultiError(errors)

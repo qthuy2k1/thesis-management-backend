@@ -32,6 +32,10 @@ func NewPostsService(postClient postSvcV1.PostServiceClient, classroomClient cla
 }
 
 func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostRequest) (*pb.CreatePostResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: req.GetPost().ClassroomID})
 	if err != nil {
 		return nil, err
@@ -46,7 +50,7 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 		}, nil
 	}
 
-	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetPost().GetReportingStageID()})
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetPost().GetCategoryID()})
 	if err != nil {
 		return nil, err
 	}
@@ -63,9 +67,9 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 	res, err := u.postClient.CreatePost(ctx, &postSvcV1.CreatePostRequest{
 		Post: &postSvcV1.PostInput{
 			Title:            req.GetPost().Title,
-			Content:          req.GetPost().Content,
+			Content:          req.GetPost().Description,
 			ClassroomID:      req.GetPost().ClassroomID,
-			ReportingStageID: req.GetPost().ReportingStageID,
+			ReportingStageID: req.GetPost().CategoryID,
 			AuthorID:         req.GetPost().AuthorID,
 		},
 	})
@@ -82,6 +86,10 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 }
 
 func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.GetPostResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.postClient.GetPost(ctx, &postSvcV1.GetPostRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
@@ -106,15 +114,14 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 		comments = append(comments, &pb.CommentPostResponse{
 			Id: c.Id,
 			User: &pb.AuthorPostResponse{
-				Id:          userRes.User.Id,
-				Class:       userRes.User.Class,
-				Major:       userRes.User.Major,
-				Phone:       userRes.User.Phone,
-				PhotoSrc:    userRes.User.PhotoSrc,
-				Role:        userRes.User.Role,
-				Name:        userRes.User.Name,
-				Email:       userRes.User.Email,
-				ClassroomID: &userRes.User.ClassroomID,
+				Id:       userRes.User.Id,
+				Class:    userRes.User.Class,
+				Major:    userRes.User.Major,
+				Phone:    userRes.User.Phone,
+				PhotoSrc: userRes.User.PhotoSrc,
+				Role:     userRes.User.Role,
+				Name:     userRes.User.Name,
+				Email:    userRes.User.Email,
 			},
 			PostID:    *c.PostID,
 			Content:   c.Content,
@@ -144,23 +151,23 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 		Post: &pb.PostResponse{
 			Id:          res.GetPost().Id,
 			Title:       res.GetPost().Title,
-			Content:     res.GetPost().Content,
+			Description: res.GetPost().Content,
 			ClassroomID: res.GetPost().ClassroomID,
-			ReportingStage: &pb.ReportingStagePostResponse{
+			Category: &pb.ReportingStagePostResponse{
 				Id:          reportingStageRes.ReportingStage.Id,
-				Name:        reportingStageRes.ReportingStage.Name,
+				Label:       reportingStageRes.ReportingStage.Label,
 				Description: reportingStageRes.ReportingStage.Description,
+				Value:       reportingStageRes.ReportingStage.Value,
 			},
 			Author: &pb.AuthorPostResponse{
-				Id:          authorRes.User.Id,
-				Class:       authorRes.User.Class,
-				Major:       authorRes.User.Major,
-				Phone:       authorRes.User.Phone,
-				PhotoSrc:    authorRes.User.PhotoSrc,
-				Role:        authorRes.User.Role,
-				Name:        authorRes.User.Name,
-				Email:       authorRes.User.Email,
-				ClassroomID: &authorRes.User.ClassroomID,
+				Id:       authorRes.User.Id,
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Phone,
+				PhotoSrc: authorRes.User.PhotoSrc,
+				Role:     authorRes.User.Role,
+				Name:     authorRes.User.Name,
+				Email:    authorRes.User.Email,
 			},
 			CreatedAt: res.GetPost().CreatedAt,
 			UpdatedAt: res.GetPost().UpdatedAt,
@@ -170,7 +177,11 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 }
 
 func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostRequest) (*pb.UpdatePostResponse, error) {
-	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetPost().GetReportingStageID()})
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetPost().GetCategoryID()})
 	if err != nil {
 		return nil, err
 	}
@@ -202,9 +213,9 @@ func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostReques
 		Id: req.GetId(),
 		Post: &postSvcV1.PostInput{
 			Title:            req.GetPost().Title,
-			Content:          req.GetPost().Content,
+			Content:          req.GetPost().Description,
 			ClassroomID:      req.GetPost().ClassroomID,
-			ReportingStageID: req.GetPost().ReportingStageID,
+			ReportingStageID: req.GetPost().CategoryID,
 			AuthorID:         req.GetPost().AuthorID,
 		},
 	})
@@ -221,6 +232,10 @@ func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostReques
 }
 
 func (u *postServiceGW) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*pb.DeletePostResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.postClient.DeletePost(ctx, &postSvcV1.DeletePostRequest{
 		Id: req.GetId(),
 	})
@@ -311,23 +326,23 @@ func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (
 		posts = append(posts, &pb.PostResponse{
 			Id:          p.Id,
 			Title:       p.Title,
-			Content:     p.Content,
+			Description: p.Content,
 			ClassroomID: p.ClassroomID,
-			ReportingStage: &pb.ReportingStagePostResponse{
+			Category: &pb.ReportingStagePostResponse{
 				Id:          reportingStageRes.ReportingStage.Id,
-				Name:        reportingStageRes.ReportingStage.Name,
+				Label:       reportingStageRes.ReportingStage.Label,
 				Description: reportingStageRes.ReportingStage.Description,
+				Value:       reportingStageRes.ReportingStage.Value,
 			},
 			Author: &pb.AuthorPostResponse{
-				Id:          authorRes.User.Id,
-				Class:       authorRes.User.Class,
-				Major:       authorRes.User.Major,
-				Phone:       authorRes.User.Phone,
-				PhotoSrc:    authorRes.User.PhotoSrc,
-				Role:        authorRes.User.Role,
-				Name:        authorRes.User.Name,
-				Email:       authorRes.User.Email,
-				ClassroomID: &authorRes.User.ClassroomID,
+				Id:       authorRes.User.Id,
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Phone,
+				PhotoSrc: authorRes.User.PhotoSrc,
+				Role:     authorRes.User.Role,
+				Name:     authorRes.User.Name,
+				Email:    authorRes.User.Email,
 			},
 			CreatedAt: p.CreatedAt,
 			UpdatedAt: p.UpdatedAt,
@@ -425,23 +440,23 @@ func (u *postServiceGW) GetAllPostsOfClassroom(ctx context.Context, req *pb.GetA
 		posts = append(posts, &pb.PostResponse{
 			Id:          p.Id,
 			Title:       p.Title,
-			Content:     p.Content,
+			Description: p.Content,
 			ClassroomID: p.ClassroomID,
-			ReportingStage: &pb.ReportingStagePostResponse{
+			Category: &pb.ReportingStagePostResponse{
 				Id:          reportingStageRes.ReportingStage.Id,
-				Name:        reportingStageRes.ReportingStage.Name,
+				Label:       reportingStageRes.ReportingStage.Label,
 				Description: reportingStageRes.ReportingStage.Description,
+				Value:       reportingStageRes.ReportingStage.Value,
 			},
 			Author: &pb.AuthorPostResponse{
-				Id:          authorRes.User.Id,
-				Class:       authorRes.User.Class,
-				Major:       authorRes.User.Major,
-				Phone:       authorRes.User.Phone,
-				PhotoSrc:    authorRes.User.PhotoSrc,
-				Role:        authorRes.User.Role,
-				Name:        authorRes.User.Name,
-				Email:       authorRes.User.Email,
-				ClassroomID: &authorRes.User.ClassroomID,
+				Id:       authorRes.User.Id,
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Phone,
+				PhotoSrc: authorRes.User.PhotoSrc,
+				Role:     authorRes.User.Role,
+				Name:     authorRes.User.Name,
+				Email:    authorRes.User.Email,
 			},
 			CreatedAt: p.CreatedAt,
 			UpdatedAt: p.UpdatedAt,
@@ -449,6 +464,96 @@ func (u *postServiceGW) GetAllPostsOfClassroom(ctx context.Context, req *pb.GetA
 	}
 
 	return &pb.GetAllPostsOfClassroomResponse{
+		Response: &pb.CommonPostResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+		TotalCount: res.GetTotalCount(),
+		Posts:      posts,
+	}, nil
+}
+
+func (u *postServiceGW) GetAllPostsInReportingStage(ctx context.Context, req *pb.GetAllPostsInReportingStageRequest) (*pb.GetAllPostsInReportingStageResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	classRes, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{
+		ClassroomID: req.GetClassroomID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if !classRes.GetExists() {
+		return &pb.GetAllPostsInReportingStageResponse{
+			Response: &pb.CommonPostResponse{
+				StatusCode: 404,
+				Message:    "classroom does not exist",
+			},
+		}, nil
+	}
+
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
+		Id: req.GetCategoryID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if rpsRes.GetResponse().StatusCode == 404 {
+		return &pb.GetAllPostsInReportingStageResponse{
+			Response: &pb.CommonPostResponse{
+				StatusCode: rpsRes.Response.StatusCode,
+				Message:    rpsRes.Response.Message,
+			},
+		}, nil
+	}
+
+	res, err := u.postClient.GetAllPostsInReportingStage(ctx, &postSvcV1.GetAllPostsInReportingStageRequest{
+		ClassroomID:      req.GetClassroomID(),
+		ReportingStageID: req.GetCategoryID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var posts []*pb.PostResponse
+	for _, p := range res.GetPosts() {
+		authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: p.AuthorID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		posts = append(posts, &pb.PostResponse{
+			Id:          p.Id,
+			Title:       p.Title,
+			Description: p.Content,
+			ClassroomID: p.ClassroomID,
+			Category: &pb.ReportingStagePostResponse{
+				Id:          rpsRes.ReportingStage.Id,
+				Label:       rpsRes.ReportingStage.Label,
+				Description: rpsRes.ReportingStage.Description,
+				Value:       rpsRes.ReportingStage.Value,
+			},
+			Author: &pb.AuthorPostResponse{
+				Id:       authorRes.User.Id,
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Phone,
+				PhotoSrc: authorRes.User.PhotoSrc,
+				Role:     authorRes.User.Role,
+				Name:     authorRes.User.Name,
+				Email:    authorRes.User.Email,
+			},
+			CreatedAt: p.CreatedAt,
+			UpdatedAt: p.UpdatedAt,
+		})
+	}
+
+	return &pb.GetAllPostsInReportingStageResponse{
 		Response: &pb.CommonPostResponse{
 			StatusCode: res.GetResponse().StatusCode,
 			Message:    res.GetResponse().Message,

@@ -182,9 +182,9 @@ func (m *ReportingStageInput) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetName()) < 2 {
+	if utf8.RuneCountInString(m.GetLabel()) < 2 {
 		err := ReportingStageInputValidationError{
-			field:  "Name",
+			field:  "Label",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -203,6 +203,8 @@ func (m *ReportingStageInput) validate(all bool) error {
 		}
 		errors = append(errors, err)
 	}
+
+	// no validation rules for Value
 
 	if len(errors) > 0 {
 		return ReportingStageInputMultiError(errors)
@@ -317,9 +319,9 @@ func (m *ReportingStageResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetName()) < 2 {
+	if utf8.RuneCountInString(m.GetLabel()) < 2 {
 		err := ReportingStageResponseValidationError{
-			field:  "Name",
+			field:  "Label",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -338,6 +340,8 @@ func (m *ReportingStageResponse) validate(all bool) error {
 		}
 		errors = append(errors, err)
 	}
+
+	// no validation rules for Value
 
 	if len(errors) > 0 {
 		return ReportingStageResponseMultiError(errors)
@@ -441,9 +445,9 @@ func (m *CreateReportingStageRequest) validate(all bool) error {
 
 	var errors []error
 
-	if m.GetReportingStage() == nil {
+	if m.GetCategory() == nil {
 		err := CreateReportingStageRequestValidationError{
-			field:  "ReportingStage",
+			field:  "Category",
 			reason: "value is required",
 		}
 		if !all {
@@ -453,11 +457,11 @@ func (m *CreateReportingStageRequest) validate(all bool) error {
 	}
 
 	if all {
-		switch v := interface{}(m.GetReportingStage()).(type) {
+		switch v := interface{}(m.GetCategory()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, CreateReportingStageRequestValidationError{
-					field:  "ReportingStage",
+					field:  "Category",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -465,16 +469,16 @@ func (m *CreateReportingStageRequest) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, CreateReportingStageRequestValidationError{
-					field:  "ReportingStage",
+					field:  "Category",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetReportingStage()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetCategory()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return CreateReportingStageRequestValidationError{
-				field:  "ReportingStage",
+				field:  "Category",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -880,9 +884,9 @@ func (m *GetReportingStageResponse) validate(all bool) error {
 		}
 	}
 
-	if m.GetReportingStage() == nil {
+	if m.GetCategory() == nil {
 		err := GetReportingStageResponseValidationError{
-			field:  "ReportingStage",
+			field:  "Category",
 			reason: "value is required",
 		}
 		if !all {
@@ -892,11 +896,11 @@ func (m *GetReportingStageResponse) validate(all bool) error {
 	}
 
 	if all {
-		switch v := interface{}(m.GetReportingStage()).(type) {
+		switch v := interface{}(m.GetCategory()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, GetReportingStageResponseValidationError{
-					field:  "ReportingStage",
+					field:  "Category",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -904,16 +908,16 @@ func (m *GetReportingStageResponse) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, GetReportingStageResponseValidationError{
-					field:  "ReportingStage",
+					field:  "Category",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetReportingStage()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetCategory()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return GetReportingStageResponseValidationError{
-				field:  "ReportingStage",
+				field:  "Category",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -1033,9 +1037,9 @@ func (m *UpdateReportingStageRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetReportingStage() == nil {
+	if m.GetCategory() == nil {
 		err := UpdateReportingStageRequestValidationError{
-			field:  "ReportingStage",
+			field:  "Category",
 			reason: "value is required",
 		}
 		if !all {
@@ -1045,11 +1049,11 @@ func (m *UpdateReportingStageRequest) validate(all bool) error {
 	}
 
 	if all {
-		switch v := interface{}(m.GetReportingStage()).(type) {
+		switch v := interface{}(m.GetCategory()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, UpdateReportingStageRequestValidationError{
-					field:  "ReportingStage",
+					field:  "Category",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -1057,16 +1061,16 @@ func (m *UpdateReportingStageRequest) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, UpdateReportingStageRequestValidationError{
-					field:  "ReportingStage",
+					field:  "Category",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetReportingStage()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetCategory()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return UpdateReportingStageRequestValidationError{
-				field:  "ReportingStage",
+				field:  "Category",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -1718,7 +1722,7 @@ func (m *GetReportingStagesResponse) validate(all bool) error {
 		}
 	}
 
-	for idx, item := range m.GetReportingStages() {
+	for idx, item := range m.GetCategorys() {
 		_, _ = idx, item
 
 		if all {
@@ -1726,7 +1730,7 @@ func (m *GetReportingStagesResponse) validate(all bool) error {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
 					errors = append(errors, GetReportingStagesResponseValidationError{
-						field:  fmt.Sprintf("ReportingStages[%v]", idx),
+						field:  fmt.Sprintf("Categorys[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -1734,7 +1738,7 @@ func (m *GetReportingStagesResponse) validate(all bool) error {
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
 					errors = append(errors, GetReportingStagesResponseValidationError{
-						field:  fmt.Sprintf("ReportingStages[%v]", idx),
+						field:  fmt.Sprintf("Categorys[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -1743,7 +1747,7 @@ func (m *GetReportingStagesResponse) validate(all bool) error {
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return GetReportingStagesResponseValidationError{
-					field:  fmt.Sprintf("ReportingStages[%v]", idx),
+					field:  fmt.Sprintf("Categorys[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}

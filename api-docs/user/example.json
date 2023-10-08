@@ -1,7 +1,7 @@
 {
     "Create a user": {
         // Method: POST
-        // URL: localhost:8080/api/user
+        // URL: localhost:8080/api/auth
         "success": {
             "input": {
                 "user": {
@@ -44,7 +44,7 @@
     },
     "Get a user": {
         // Method: GET
-        // URL: localhost:8080/api/user/1
+        // URL: localhost:8080/api/auth/1
         "success": {
             "output": {
                 "response": {
@@ -74,7 +74,7 @@
     },
     "Delete a user": {
         // Method: DELETE 
-        // URL: localhost:8080/api/user/1
+        // URL: localhost:8080/api/auth/1
         "success": {
             "output": {
                 "response": {
@@ -93,7 +93,7 @@
     },
     "Update a user": {
         // Method: PUT
-        // URL: localhost:8080/api/user/1
+        // URL: localhost:8080/api/auth/1
         "success": {
             "input": {
                 "user": {
@@ -136,7 +136,7 @@
     },
     "Get all users": {
         // Method: GET
-        // URL: localhost:8080/api/user
+        // URL: localhost:8080/api/auth
         "success": {
             "output": {
                 "response": {
@@ -208,7 +208,7 @@
             }
         }
     },
-    "approve user to join a classroom": {
+    "Approve user to join a classroom": {
         // Method: PUT
         // localhost:8080/api/{classroomID}/aprrove/{userID}
         "success": {
@@ -220,11 +220,11 @@
             }
         }
     },
-    "check status of user whether joinning a classroom": {
+    "Check status of user whether joinning a classroom": {
         // Method: GET
-        // localhost:8080/api/user/{userID}/classroom-status
+        // localhost:8080/api/auth/check-subscribe/{userID}
         "user not joinning a classroom yet": {
-            "status": "NOT REGISTERED"
+            "status": "NOT SUBSCRIBED"
         },
         "user is requesting to join a classroom": {
             "status": "WAITING",
@@ -242,7 +242,7 @@
             }
         },
         "user joined a classroom": {
-            "status": "ADDED",
+            "status": "SUBSCRIBED",
             "classroom": {
                 "id": 7,
                 "title": "Classroom 6",
@@ -255,6 +255,61 @@
                 "createdAt": "2023-09-01T15:01:00Z",
                 "updatedAt": "2023-09-01T15:01:00Z"
             }
+        }
+    },
+    "Unscribe": {
+        // Method: DELETE
+        // localhost:8080/api/auth/{userID}/un-subscribe/{classroomID}
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": 200,
+                    "message": "Success"
+                }
+            }
+        },
+        "classroom not exist": {
+            "output": {
+                "response": {
+                    "statusCode": 404,
+                    "message": "classroom not found"
+                }
+            }
+        }
+    },
+    "Get all lecturers": {
+        // Method: GET
+        // URL: localhost:8080/api/auth/lecturer
+        "success": {
+            "response": {
+                "statusCode": 200,
+                "message": "Success"
+            },
+            "totalCount": 2,
+            "users": [
+                {
+                    "id": 1,
+                    "class": "Class 1",
+                    "major": "CNTT",
+                    "phone": "1231231231",
+                    "photoSrc": "testurl.vn",
+                    "role": "lecturer",
+                    "name": "Full Name",
+                    "email": "name@example.com",
+                    "classroomID": "1" // update here
+                },
+                {
+                    "id": 2,
+                    "class": "Class 2",
+                    "major": "CNTT",
+                    "phone": "1231231231",
+                    "photoSrc": "testurl.vn",
+                    "role": "lecturer",
+                    "name": "Full Name 2",
+                    "email": "name@example.com",
+                    "classroomID": "2" // update here
+                }
+            ] 
         }
     }
 }

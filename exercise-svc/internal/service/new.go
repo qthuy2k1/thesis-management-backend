@@ -19,6 +19,8 @@ type IExerciseSvc interface {
 	GetExercises(ctx context.Context, filter ExerciseFilterSvc) ([]ExerciseOutputSvc, int, error)
 	// GetAllExercisesOfClassroom returns a list of posts in db with filter
 	GetAllExercisesOfClassroom(ctx context.Context, filter ExerciseFilterSvc, classroomID int) ([]ExerciseOutputSvc, int, error)
+	// GetAllExercisesInReportingStage returns all posts of the specified reporting stage given by reporting stage id
+	GetAllExercisesInReportingStage(ctx context.Context, reportingStageID, classroomID int) ([]ExerciseOutputSvc, int, error)
 }
 
 type ExerciseSvc struct {

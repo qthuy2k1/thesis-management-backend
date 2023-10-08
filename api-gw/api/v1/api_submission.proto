@@ -11,33 +11,33 @@ option go_package="github.com/qthuy2k1/thesis_management_backend/submission/api/
 service SubmissionService {
     rpc CreateSubmission(CreateSubmissionRequest) returns (CreateSubmissionResponse){
         option (google.api.http) = {
-            post: "/api/submission"
+            post: "/api/submit"
             body: "*"
         };
     }
 
     rpc GetSubmission(GetSubmissionRequest) returns (GetSubmissionResponse){
         option (google.api.http) = {
-            get: "/api/submission/{id}"
+            get: "/api/submit/{id}"
         };
     }
 
     rpc UpdateSubmission(UpdateSubmissionRequest) returns (UpdateSubmissionResponse){
         option (google.api.http) = {
-            put: "/api/submission/{id}"
+            put: "/api/submit/{id}"
             body: "*"
         };
     }
 
     rpc DeleteSubmission(DeleteSubmissionRequest) returns (DeleteSubmissionResponse){
         option (google.api.http) = {
-            delete: "/api/submission/{id}"
+            delete: "/api/submit/{id}"
         };
     }
 
     rpc GetAllSubmissionsOfExercise(GetAllSubmissionsOfExerciseRequest) returns (GetAllSubmissionsOfExerciseResponse) {
         option (google.api.http) = {
-            get: "/api/exercise/{exerciseID}/submission"
+            get: "/api/submit/ex/{exerciseID}"
         };
     }
 }
@@ -93,6 +93,7 @@ message CreateSubmissionResponse {
 // ====== GET ======
 message GetSubmissionRequest {
     int64 id = 1 [(validate.rules).int64.gte = 1];
+    string studentID = 2;
 }
 
 message GetSubmissionResponse {

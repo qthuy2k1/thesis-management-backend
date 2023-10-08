@@ -181,3 +181,29 @@ func (s *ExerciseSvc) GetAllExercisesOfClassroom(ctx context.Context, filter Exe
 
 	return esSvc, count, nil
 }
+
+// GetAllExercisesInReportingStage returns all posts of the specified reporting stage given by reporting stage id
+func (s *ExerciseSvc) GetAllExercisesInReportingStage(ctx context.Context, reportingStageID, classroomID int) ([]ExerciseOutputSvc, int, error) {
+	psRepo, count, err := s.Repository.GetAllExercisesInReportingStage(ctx, reportingStageID, classroomID)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var esSvc []ExerciseOutputSvc
+	for _, e := range psRepo {
+		esSvc = append(esSvc, ExerciseOutputSvc{
+			ID:               e.ID,
+			Title:            e.Title,
+			Content:          e.Content,
+			ClassroomID:      e.ClassroomID,
+			Deadline:         e.Deadline,
+			Score:            e.Score,
+			ReportingStageID: e.ReportingStageID,
+			AuthorID:         e.AuthorID,
+			CreatedAt:        e.CreatedAt,
+			UpdatedAt:        e.UpdatedAt,
+		})
+	}
+
+	return esSvc, count, nil
+}

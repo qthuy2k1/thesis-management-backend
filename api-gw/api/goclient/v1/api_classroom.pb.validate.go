@@ -214,11 +214,20 @@ func (m *ClassroomInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for LecturerId
-
-	if utf8.RuneCountInString(m.GetCodeClassroom()) < 2 {
+	if utf8.RuneCountInString(m.GetLecturerID()) < 2 {
 		err := ClassroomInputValidationError{
-			field:  "CodeClassroom",
+			field:  "LecturerID",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetClassCourse()) < 2 {
+		err := ClassroomInputValidationError{
+			field:  "ClassCourse",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -238,9 +247,9 @@ func (m *ClassroomInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetQuantity() < 0 {
+	if m.GetQuantityStudent() < 0 {
 		err := ClassroomInputValidationError{
-			field:  "Quantity",
+			field:  "QuantityStudent",
 			reason: "value must be greater than or equal to 0",
 		}
 		if !all {
@@ -360,9 +369,9 @@ func (m *ReportingStageClassroomResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetName()) < 2 {
+	if utf8.RuneCountInString(m.GetLabel()) < 2 {
 		err := ReportingStageClassroomResponseValidationError{
-			field:  "Name",
+			field:  "Label",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -381,6 +390,8 @@ func (m *ReportingStageClassroomResponse) validate(all bool) error {
 		}
 		errors = append(errors, err)
 	}
+
+	// no validation rules for Value
 
 	if len(errors) > 0 {
 		return ReportingStageClassroomResponseMultiError(errors)
@@ -562,10 +573,6 @@ func (m *AuthorClassroomResponse) validate(all bool) error {
 			errors = append(errors, err)
 		}
 
-	}
-
-	if m.ClassroomID != nil {
-		// no validation rules for ClassroomID
 	}
 
 	if len(errors) > 0 {
@@ -799,9 +806,9 @@ func (m *ClassroomResponse) validate(all bool) error {
 		}
 	}
 
-	if utf8.RuneCountInString(m.GetCodeClassroom()) < 2 {
+	if utf8.RuneCountInString(m.GetClassCourse()) < 2 {
 		err := ClassroomResponseValidationError{
-			field:  "CodeClassroom",
+			field:  "ClassCourse",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -821,9 +828,9 @@ func (m *ClassroomResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetQuantity() < 0 {
+	if m.GetQuantityStudent() < 0 {
 		err := ClassroomResponseValidationError{
-			field:  "Quantity",
+			field:  "QuantityStudent",
 			reason: "value must be greater than or equal to 0",
 		}
 		if !all {
@@ -1012,9 +1019,9 @@ func (m *PostsAndExercisesOfClassroom) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetContent()) < 2 {
+	if utf8.RuneCountInString(m.GetDescription()) < 2 {
 		err := PostsAndExercisesOfClassroomValidationError{
-			field:  "Content",
+			field:  "Description",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -1035,11 +1042,11 @@ func (m *PostsAndExercisesOfClassroom) validate(all bool) error {
 	}
 
 	if all {
-		switch v := interface{}(m.GetReportingStage()).(type) {
+		switch v := interface{}(m.GetCategory()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, PostsAndExercisesOfClassroomValidationError{
-					field:  "ReportingStage",
+					field:  "Category",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -1047,16 +1054,16 @@ func (m *PostsAndExercisesOfClassroom) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, PostsAndExercisesOfClassroomValidationError{
-					field:  "ReportingStage",
+					field:  "Category",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetReportingStage()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetCategory()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return PostsAndExercisesOfClassroomValidationError{
-				field:  "ReportingStage",
+				field:  "Category",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -1681,46 +1688,6 @@ func (m *GetClassroomResponse) validate(all bool) error {
 	}
 
 	var errors []error
-
-	if m.GetResponse() == nil {
-		err := GetClassroomResponseValidationError{
-			field:  "Response",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if all {
-		switch v := interface{}(m.GetResponse()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, GetClassroomResponseValidationError{
-					field:  "Response",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, GetClassroomResponseValidationError{
-					field:  "Response",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return GetClassroomResponseValidationError{
-				field:  "Response",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
 
 	if m.GetClassroom() == nil {
 		err := GetClassroomResponseValidationError{
@@ -2744,46 +2711,6 @@ func (m *GetClassroomsResponse) validate(all bool) error {
 	}
 
 	var errors []error
-
-	if m.GetResponse() == nil {
-		err := GetClassroomsResponseValidationError{
-			field:  "Response",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if all {
-		switch v := interface{}(m.GetResponse()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, GetClassroomsResponseValidationError{
-					field:  "Response",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, GetClassroomsResponseValidationError{
-					field:  "Response",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return GetClassroomsResponseValidationError{
-				field:  "Response",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
 
 	if m.GetTotalCount() < 0 {
 		err := GetClassroomsResponseValidationError{

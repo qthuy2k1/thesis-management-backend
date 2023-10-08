@@ -3,9 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
-	"strings"
 )
 
 func logger(err error, describe string, functionName string) {
@@ -74,15 +72,14 @@ func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, arg
 }
 
 type UserInputRepo struct {
-	ID          string
-	Email       string
-	Class       string
-	Major       *string
-	Phone       *string
-	PhotoSrc    string
-	Role        string
-	Name        string
-	ClassroomID *int
+	ID       string
+	Email    string
+	Class    string
+	Major    *string
+	Phone    *string
+	PhotoSrc string
+	Role     string
+	Name     string
 }
 
 // CreateUser creates a new user in db given by user model
@@ -97,7 +94,7 @@ func (r *UserRepo) CreateUser(ctx context.Context, u UserInputRepo) error {
 		return ErrUserExisted
 	}
 
-	if _, err := ExecSQL(ctx, r.Database, "CreateUser", "INSERT INTO users (id, class, major, phone, photo_src, role, name, email, classroom_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id", u.ID, u.Class, u.Major, u.Phone, u.PhotoSrc, u.Role, u.Name, u.Email, u.ClassroomID); err != nil {
+	if _, err := ExecSQL(ctx, r.Database, "CreateUser", "INSERT INTO users (id, class, major, phone, photo_src, role, name, email) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id", u.ID, u.Class, u.Major, u.Phone, u.PhotoSrc, u.Role, u.Name, u.Email); err != nil {
 		logger(err, "execute SQL statement", "CreateUser")
 		return err
 	}
@@ -106,20 +103,19 @@ func (r *UserRepo) CreateUser(ctx context.Context, u UserInputRepo) error {
 }
 
 type UserOutputRepo struct {
-	ID          string
-	Email       string
-	Class       string
-	Major       *string
-	Phone       *string
-	PhotoSrc    string
-	Role        string
-	Name        string
-	ClassroomID *int
+	ID       string
+	Email    string
+	Class    string
+	Major    *string
+	Phone    *string
+	PhotoSrc string
+	Role     string
+	Name     string
 }
 
 // GetUser returns a user in db given by id
 func (r *UserRepo) GetUser(ctx context.Context, id string) (UserOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetUser", "SELECT id, class, major, phone, photo_src, role, name, email, classroom_id FROM users WHERE id=$1", id)
+	row, err := QueryRowSQL(ctx, r.Database, "GetUser", "SELECT id, class, major, phone, photo_src, role, name, email FROM users WHERE id=$1", id)
 	if err != nil {
 		logger(err, "query row sql", "GetUser")
 		return UserOutputRepo{}, err
@@ -127,7 +123,7 @@ func (r *UserRepo) GetUser(ctx context.Context, id string) (UserOutputRepo, erro
 
 	user := UserOutputRepo{}
 
-	if err = row.Scan(&user.ID, &user.Class, &user.Major, &user.Phone, &user.PhotoSrc, &user.Role, &user.Name, &user.Email, &user.ClassroomID); err != nil {
+	if err = row.Scan(&user.ID, &user.Class, &user.Major, &user.Phone, &user.PhotoSrc, &user.Role, &user.Name, &user.Email); err != nil {
 		if err == sql.ErrNoRows {
 			logger(err, "user not found", "GetUser")
 			return UserOutputRepo{}, ErrUserNotFound
@@ -156,7 +152,7 @@ func (r *UserRepo) IsUserExists(ctx context.Context, email, id string) (bool, er
 
 // UpdateUser updates the specified user by id
 func (r *UserRepo) UpdateUser(ctx context.Context, id string, user UserInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdateUser", "UPDATE users SET class=$2, major=$3, phone=$4, photo_src=$5, role=$6, name=$7, email=$8, classroom_id=$9 WHERE id=$1", id, user.Class, user.Major, user.Phone, user.PhotoSrc, user.Role, user.Name, user.Email, user.ClassroomID)
+	result, err := ExecSQL(ctx, r.Database, "UpdateUser", "UPDATE users SET class=$2, major=$3, phone=$4, photo_src=$5, role=$6, name=$7, email=$8 WHERE id=$1", id, user.Class, user.Major, user.Phone, user.PhotoSrc, user.Role, user.Name, user.Email)
 	if err != nil {
 		logger(err, "Exec SQL", "UpdateUser")
 		return err
@@ -188,9 +184,7 @@ func (r *UserRepo) DeleteUser(ctx context.Context, id string) error {
 
 // GetUser returns a list of users in db with filter
 func (r *UserRepo) GetUsers(ctx context.Context) ([]UserOutputRepo, int, error) {
-	query := []string{"SELECT id, class, major, phone, photo_src, role, name, email, classroom_id FROM users"}
-
-	rows, err := QuerySQL(ctx, r.Database, "GetUsers", strings.Join(query, " "))
+	rows, err := QuerySQL(ctx, r.Database, "GetUsers", "SELECT id, class, major, phone, photo_src, role, name, email FROM users")
 	if err != nil {
 		logger(err, "Query SQL", "GetUsers")
 		return nil, 0, err
@@ -210,7 +204,6 @@ func (r *UserRepo) GetUsers(ctx context.Context) ([]UserOutputRepo, int, error) 
 			&user.Role,
 			&user.Name,
 			&user.Email,
-			&user.ClassroomID,
 		)
 		if err != nil {
 			logger(err, "rows scan", "GetUsers")
@@ -224,7 +217,7 @@ func (r *UserRepo) GetUsers(ctx context.Context) ([]UserOutputRepo, int, error) 
 		return nil, 0, err
 	}
 
-	count, err := r.getCount(ctx)
+	count, err := r.getUserCount(ctx)
 	if err != nil {
 		logger(err, "rows count", "GetUsers")
 		return nil, 0, err
@@ -233,13 +226,10 @@ func (r *UserRepo) GetUsers(ctx context.Context) ([]UserOutputRepo, int, error) 
 	return users, count, nil
 }
 
-// GetAllUsersOfClassroom returns all users of the specified classroom given by classroom id
-func (r *UserRepo) GetAllUsersOfClassroom(ctx context.Context, classromID int) ([]UserOutputRepo, int, error) {
-	query := []string{"SELECT id, class, major, phone, photo_src, role, name, email, classroom_id FROM users", fmt.Sprintf("WHERE classroom_id=%d", classromID)}
-
-	rows, err := QuerySQL(ctx, r.Database, "GetAllUsersOfClassroom", strings.Join(query, " "))
+// GetAllLecturers returns all members who has the role named "lecturer"
+func (r *UserRepo) GetAllLecturers(ctx context.Context) ([]UserOutputRepo, int, error) {
+	rows, err := QuerySQL(ctx, r.Database, "GetAllLecturers", "SELECT id, class, major, phone, photo_src, role, name, email FROM users WHERE role = 'lecturer'")
 	if err != nil {
-		logger(err, "query SQL", "GetAllUsersOfClassroom")
 		return nil, 0, err
 	}
 	defer rows.Close()
@@ -257,34 +247,34 @@ func (r *UserRepo) GetAllUsersOfClassroom(ctx context.Context, classromID int) (
 			&user.Role,
 			&user.Name,
 			&user.Email,
-			&user.ClassroomID,
 		)
 		if err != nil {
-			logger(err, "rows scan", "GetAllUsersOfClassroom")
 			return nil, 0, err
 		}
 		users = append(users, user)
 	}
 
 	if err := rows.Err(); err != nil {
-		logger(err, "rows err", "GetAllUsersOfClassroo")
 		return nil, 0, err
 	}
 
-	count, err := r.getCountInClassroom(ctx, classromID)
+	var count int
+	lecturerRows, err := QueryRowSQL(ctx, r.Database, "GetAllLecturers", "SELECT COUNT(*) FROM users WHERE role = 'lecturer'")
 	if err != nil {
-		logger(err, "rows count", "GetAllUsersOfClassroom")
+		return nil, 0, err
+	}
+
+	if err := lecturerRows.Scan(&count); err != nil {
 		return nil, 0, err
 	}
 
 	return users, count, nil
 }
 
-func (r *UserRepo) getCount(ctx context.Context) (int, error) {
+func (r *UserRepo) getUserCount(ctx context.Context) (int, error) {
 	var count int
 
-	query := []string{"SELECT COUNT(*) FROM users"}
-	rows, err := QueryRowSQL(ctx, r.Database, "getCount", strings.Join(query, " "))
+	rows, err := QueryRowSQL(ctx, r.Database, "getUserCount", "SELECT COUNT(*) FROM users")
 	if err != nil {
 		logger(err, "Query sql", "getCount")
 		return 0, err
@@ -292,25 +282,6 @@ func (r *UserRepo) getCount(ctx context.Context) (int, error) {
 
 	if err := rows.Scan(&count); err != nil {
 		logger(err, "rows scan", "getCount")
-		return 0, err
-	}
-
-	return count, nil
-}
-
-func (r *UserRepo) getCountInClassroom(ctx context.Context, classroomID int) (int, error) {
-	var count int
-
-	query := []string{"SELECT COUNT(*) FROM users", fmt.Sprintf("WHERE classroom_id=%d", classroomID)}
-
-	rows, err := QueryRowSQL(ctx, r.Database, "getCountIntClassroom", strings.Join(query, " "))
-	if err != nil {
-		logger(err, "Query SQL", "getCountInClassroom")
-		return 0, err
-	}
-
-	if err := rows.Scan(&count); err != nil {
-		logger(err, "rows scan", "getCountInClassroom")
 		return 0, err
 	}
 

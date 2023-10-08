@@ -102,6 +102,10 @@ func run() error {
 		return err
 	}
 
+	if err := gw.RegisterMemberServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts); err != nil {
+		return err
+	}
+
 	fmt.Println("The APIGW-Client starting on 0.0.0.0:8080")
 	go func() {
 		<-ctx.Done()

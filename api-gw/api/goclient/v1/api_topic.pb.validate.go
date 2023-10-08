@@ -1723,10 +1723,6 @@ func (m *UserTopicResponse) validate(all bool) error {
 
 	}
 
-	if m.ClassroomID != nil {
-		// no validation rules for ClassroomID
-	}
-
 	if len(errors) > 0 {
 		return UserTopicResponseMultiError(errors)
 	}

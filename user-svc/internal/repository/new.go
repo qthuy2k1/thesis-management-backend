@@ -18,8 +18,27 @@ type IUserRepo interface {
 	DeleteUser(ctx context.Context, id string) error
 	// GetUsers returns a list of users in db with filter
 	GetUsers(ctx context.Context) ([]UserOutputRepo, int, error)
-	// GetAllUsersOfClassroom returns all users of the specified classroom given by classroom id
-	GetAllUsersOfClassroom(ctx context.Context, classromID int) ([]UserOutputRepo, int, error)
+	// GetAllLecturers returns all members who has the role named "lecturer"
+	GetAllLecturers(ctx context.Context) ([]UserOutputRepo, int, error)
+	// UnsubscribeClassroom returns an error if delete occurs any errors
+	UnsubscribeClassroom(ctx context.Context, id int) error
+
+	// CreateMember creates a new member in db given by member model
+	CreateMember(ctx context.Context, u MemberInputRepo) error
+	// GetMember returns a member in db given by id
+	GetMember(ctx context.Context, id int) (MemberOutputRepo, error)
+	// CheckMemberExists checks whether the specified member exists by name
+	IsMemberExists(ctx context.Context, memberID string) (bool, error)
+	// UpdateMember updates the specified member by id
+	UpdateMember(ctx context.Context, id int, member MemberInputRepo) error
+	// DeleteMember deletes a classroom in db given by id
+	DeleteMember(ctx context.Context, id int) error
+	// GetMembers returns a list of members in db with filter
+	GetMembers(ctx context.Context) ([]MemberOutputRepo, int, error)
+	// GetAllMembersOfClassroom returns all users of the specified classroom given by classroom id
+	GetAllMembersOfClassroom(ctx context.Context, classroomID int) ([]MemberOutputRepo, int, error)
+	// IsUserJoinedClassroom returns a member if exists
+	IsUserJoinedClassroom(ctx context.Context, userID string) (MemberOutputRepo, error)
 }
 
 type UserRepo struct {

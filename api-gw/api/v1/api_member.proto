@@ -1,0 +1,154 @@
+syntax = "proto3";
+
+package api.user.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/user/api/v1";
+
+service MemberService {
+    rpc CreateMember(CreateMemberRequest) returns (CreateMemberResponse){
+        option (google.api.http) = {
+            post: "/api/member"
+            body: "*"
+        };
+    }
+    
+    rpc GetMember(GetMemberRequest) returns (GetMemberResponse){
+        option (google.api.http) = {
+            get: "/api/member/{id}"
+        };
+    }
+
+    rpc UpdateMember(UpdateMemberRequest) returns (UpdateMemberResponse){
+        option (google.api.http) = {
+            put: "/api/member/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteMember(DeleteMemberRequest) returns (DeleteMemberResponse){
+        option (google.api.http) = {
+            delete: "/api/member/{id}"
+        };
+    }
+
+    rpc GetMembers(GetMembersRequest) returns (GetMembersResponse) {
+        option (google.api.http) = {
+            get: "/api/member"
+        };
+    }
+
+    rpc GetAllMembersOfClassroom(GetAllMembersOfClassroomRequest) returns (GetAllMembersOfClassroomResponse) {
+        option (google.api.http) = {
+            get: "/api/member/class/{classroomID}"
+        };
+    }
+}
+
+message CommonMemberResponse {
+    int64 statusCode = 1 [(validate.rules).int64.gte = 1];
+    string message = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+
+// ====== member ======
+message MemberInput {
+    int64 classroomID = 1 [(validate.rules).int64.gte = 1];
+    string memberID = 2 [(validate.rules).string = {min_len: 1}];
+    string status = 3;
+}
+
+message MemberResponse {
+    int64 id = 1;
+    ClassroomMemberResponse classroom = 2;
+    UserMemberResponse member = 3;
+    string status = 4;
+    google.protobuf.Timestamp created_at = 5;
+}
+
+message CreateMemberRequest {
+   MemberInput member = 1 [(validate.rules).message = {required: true}];
+}
+
+message CreateMemberResponse {
+    CommonMemberResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ======
+message GetMemberRequest {
+    int64 id = 1;
+}
+
+message GetMemberResponse {
+    CommonMemberResponse response = 1 [(validate.rules).message = {required: true}];
+    MemberResponse member = 2 [(validate.rules).message = {required: true}];
+}
+
+// ====== PUT ======
+message UpdateMemberRequest {
+    int64 id = 1;
+    MemberInput member = 2 [(validate.rules).message = {required: true}];
+}
+
+message UpdateMemberResponse {
+    CommonMemberResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== DELETE ======
+message DeleteMemberRequest {
+    int64 id = 1;
+}
+
+message DeleteMemberResponse {
+    CommonMemberResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ALL ======
+message GetMembersRequest {}
+
+message GetMembersResponse {
+    CommonMemberResponse response = 1 [(validate.rules).message = {required: true}];
+    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
+    repeated MemberResponse members = 3;
+}
+
+// ====== GET ALL OF CLASSROOM ======
+message GetAllMembersOfClassroomRequest {
+    int64 classroomID = 1 [(validate.rules).int64.gte = 1];
+}
+
+message GetAllMembersOfClassroomResponse {
+    CommonMemberResponse response = 1 [(validate.rules).message = {required: true}];
+    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
+    repeated MemberResponse members = 3;
+}
+
+message ClassroomMemberResponse {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+    string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string description = 3 [(validate.rules).string = {min_len: 2}];
+    string status = 4 [(validate.rules).string = {min_len: 2}];
+    UserMemberResponse lecturer = 5;
+    string classCourse = 6 [(validate.rules).string = {min_len: 2}];
+    string topicTags = 7 [(validate.rules).string = {min_len: 2}];
+    int64 quantityStudent = 8 [(validate.rules).int64.gte = 0];
+    google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
+}
+
+
+message UserMemberResponse {
+    string id = 1;
+    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["lecturer", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
+}

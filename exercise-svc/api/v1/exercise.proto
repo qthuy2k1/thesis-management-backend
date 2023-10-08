@@ -19,6 +19,8 @@ service ExerciseService {
     rpc GetExercises(GetExercisesRequest) returns (GetExercisesResponse) {}
 
     rpc GetAllExercisesOfClassroom(GetAllExercisesOfClassroomRequest) returns (GetAllExercisesOfClassroomResponse) {}
+
+    rpc GetAllExercisesInReportingStage(GetAllExercisesInReportingStageRequest) returns (GetAllExercisesInReportingStageResponse) {}
 }
 
 message CommonExerciseResponse {
@@ -116,6 +118,18 @@ message GetAllExercisesOfClassroomRequest {
 }
 
 message GetAllExercisesOfClassroomResponse {
+    CommonExerciseResponse response = 1;
+    int64 totalCount = 2;
+    repeated ExerciseResponse exercises = 3;
+}
+
+
+message GetAllExercisesInReportingStageRequest {
+    int64 classroomID = 1; 
+    int64 reportingStageID = 2;
+}
+
+message GetAllExercisesInReportingStageResponse {
     CommonExerciseResponse response = 1;
     int64 totalCount = 2;
     repeated ExerciseResponse exercises = 3;

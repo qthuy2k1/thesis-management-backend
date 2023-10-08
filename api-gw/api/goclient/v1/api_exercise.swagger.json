@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/classroom/{classroomID}/exercise": {
+    "/api/class/{classroomID}/exercise": {
       "get": {
         "operationId": "ExerciseService_GetAllExercisesOfClassroom",
         "responses": {
@@ -158,6 +158,44 @@
             "schema": {
               "$ref": "#/definitions/v1CreateExerciseRequest"
             }
+          }
+        ],
+        "tags": [
+          "ExerciseService"
+        ]
+      }
+    },
+    "/api/exercise/{classroomID}/stage/{categoryID}": {
+      "get": {
+        "operationId": "ExerciseService_GetAllExercisesInReportingStage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllExercisesInReportingStageResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "classroomID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "categoryID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -387,10 +425,6 @@
         },
         "email": {
           "type": "string"
-        },
-        "classroomID": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -459,7 +493,7 @@
         "title": {
           "type": "string"
         },
-        "content": {
+        "description": {
           "type": "string"
         },
         "classroomID": {
@@ -473,7 +507,7 @@
           "type": "string",
           "format": "int64"
         },
-        "reportingStageID": {
+        "categoryID": {
           "type": "string",
           "format": "int64"
         },
@@ -493,7 +527,7 @@
         "title": {
           "type": "string"
         },
-        "content": {
+        "description": {
           "type": "string"
         },
         "classroomID": {
@@ -507,7 +541,7 @@
           "type": "string",
           "format": "int64"
         },
-        "reportingStage": {
+        "category": {
           "$ref": "#/definitions/v1ReportingStageExerciseResponse"
         },
         "author": {
@@ -523,7 +557,7 @@
         }
       }
     },
-    "v1GetAllExercisesOfClassroomResponse": {
+    "v1GetAllExercisesInReportingStageResponse": {
       "type": "object",
       "properties": {
         "response": {
@@ -542,12 +576,25 @@
         }
       }
     },
+    "v1GetAllExercisesOfClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "totalCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "exercises": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ExerciseResponse"
+          }
+        }
+      }
+    },
     "v1GetExerciseResponse": {
       "type": "object",
       "properties": {
-        "response": {
-          "$ref": "#/definitions/v1CommonExerciseResponse"
-        },
         "exercise": {
           "$ref": "#/definitions/v1ExerciseResponse"
         },
@@ -563,9 +610,6 @@
     "v1GetExercisesResponse": {
       "type": "object",
       "properties": {
-        "response": {
-          "$ref": "#/definitions/v1CommonExerciseResponse"
-        },
         "totalCount": {
           "type": "string",
           "format": "int64"
@@ -586,10 +630,13 @@
           "type": "string",
           "format": "int64"
         },
-        "name": {
+        "label": {
           "type": "string"
         },
         "description": {
+          "type": "string"
+        },
+        "value": {
           "type": "string"
         }
       }

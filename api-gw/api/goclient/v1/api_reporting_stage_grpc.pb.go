@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ReportingStageService_CreateReportingStage_FullMethodName = "/api.reportingStage.v1.ReportingStageService/CreateReportingStage"
-	ReportingStageService_GetReportingStage_FullMethodName    = "/api.reportingStage.v1.ReportingStageService/GetReportingStage"
-	ReportingStageService_UpdateReportingStage_FullMethodName = "/api.reportingStage.v1.ReportingStageService/UpdateReportingStage"
-	ReportingStageService_DeleteReportingStage_FullMethodName = "/api.reportingStage.v1.ReportingStageService/DeleteReportingStage"
-	ReportingStageService_GetReportingStages_FullMethodName   = "/api.reportingStage.v1.ReportingStageService/GetReportingStages"
+	ReportingStageService_CreateReportingStage_FullMethodName = "/api.category.v1.ReportingStageService/CreateReportingStage"
+	ReportingStageService_GetReportingStage_FullMethodName    = "/api.category.v1.ReportingStageService/GetReportingStage"
+	ReportingStageService_UpdateReportingStage_FullMethodName = "/api.category.v1.ReportingStageService/UpdateReportingStage"
+	ReportingStageService_DeleteReportingStage_FullMethodName = "/api.category.v1.ReportingStageService/DeleteReportingStage"
+	ReportingStageService_GetReportingStages_FullMethodName   = "/api.category.v1.ReportingStageService/GetReportingStages"
 )
 
 // ReportingStageServiceClient is the client API for ReportingStageService service.
@@ -228,7 +228,7 @@ func _ReportingStageService_GetReportingStages_Handler(srv interface{}, ctx cont
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ReportingStageService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "api.reportingStage.v1.ReportingStageService",
+	ServiceName: "api.category.v1.ReportingStageService",
 	HandlerType: (*ReportingStageServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

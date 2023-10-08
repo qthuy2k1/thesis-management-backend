@@ -44,7 +44,13 @@ service ExerciseService {
 
     rpc GetAllExercisesOfClassroom(GetAllExercisesOfClassroomRequest) returns (GetAllExercisesOfClassroomResponse) {
         option (google.api.http) = {
-            get: "/api/classroom/{classroomID}/exercise"
+            get: "/api/class/{classroomID}/exercise"
+        };
+    }
+
+    rpc GetAllExercisesInReportingStage(GetAllExercisesInReportingStageRequest) returns (GetAllExercisesInReportingStageResponse) {
+        option (google.api.http) = {
+            get: "/api/exercise/{classroomID}/stage/{categoryID}"
         };
     }
 }
@@ -58,11 +64,11 @@ message CommonExerciseResponse {
 // ====== exercise ======
 message ExerciseInput {
     string title = 1 [(validate.rules).string = {min_len: 2, max_len: 200}];
-    string content = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string description = 2 [(validate.rules).string = {min_len: 2}];
     int64 classroomID = 3 [(validate.rules).int64.gte = 1];
     google.type.DateTime deadline = 4;
     int64 score = 5 [(validate.rules).int64.gte = 0];
-    int64 reportingStageID = 6 [(validate.rules).int64.gte = 1];
+    int64 categoryID = 6 [(validate.rules).int64.gte = 1];
     string authorID = 7;
 }
 
@@ -78,12 +84,12 @@ message AttachmentExerciseInput {
 
 message ExerciseResponse {
     int64 id = 1 [(validate.rules).int64.gte = 1];
-    string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
-    string content = 3 [(validate.rules).string = {min_len: 2}];
+    string title = 2 [(validate.rules).string = {min_len: 2}];
+    string description = 3 [(validate.rules).string = {min_len: 2}];
     int64 classroomID = 4 [(validate.rules).int64.gte = 1];
     google.type.DateTime deadline = 5;
     int64 score = 6 [(validate.rules).int64.gte = 0];
-    ReportingStageExerciseResponse reportingStage = 7;
+    ReportingStageExerciseResponse category = 7;
     AuthorExerciseResponse author = 8;
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
@@ -92,8 +98,9 @@ message ExerciseResponse {
 
 message ReportingStageExerciseResponse {
     int64 id = 1 [(validate.rules).int64.gte = 1];
-    string name = 2 [(validate.rules).string = {min_len: 2}];
+    string label = 2 [(validate.rules).string = {min_len: 2}];
     string description = 3 [(validate.rules).string = {min_len: 2}];   
+    string value = 4;
 }
 
 message AuthorExerciseResponse {
@@ -105,7 +112,6 @@ message AuthorExerciseResponse {
     string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    optional int64 classroomID = 9;
 }
 
 message CreateExerciseRequest {
@@ -130,9 +136,8 @@ message GetExerciseRequest {
 }
 
 message GetExerciseResponse {
-    CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
-    ExerciseResponse exercise = 2 [(validate.rules).message = {required: true}];
-    repeated CommentExerciseResponse comments = 3;
+    ExerciseResponse exercise = 1 [(validate.rules).message = {required: true}];
+    repeated CommentExerciseResponse comments = 2;
 }
 
 // ====== PUT ======
@@ -165,9 +170,8 @@ message GetExercisesRequest {
 }
 
 message GetExercisesResponse {
-    CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
-    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
-    repeated ExerciseResponse exercises = 3;
+    int64 totalCount = 1 [(validate.rules).int64.gte = 0];
+    repeated ExerciseResponse exercises = 2;
 }
 
 // ====== GET ALL OF CLASSROOM ======
@@ -181,7 +185,19 @@ message GetAllExercisesOfClassroomRequest {
 }
 
 message GetAllExercisesOfClassroomResponse {
-    CommonExerciseResponse response = 1 [(validate.rules).message = {required: true}];
-    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
+    int64 totalCount = 1 [(validate.rules).int64.gte = 0];
+    repeated ExerciseResponse exercises = 2;
+}
+
+
+
+message GetAllExercisesInReportingStageRequest {
+    int64 classroomID = 1; 
+    int64 categoryID = 2;
+}
+
+message GetAllExercisesInReportingStageResponse {
+    CommonExerciseResponse response = 1;
+    int64 totalCount = 2;
     repeated ExerciseResponse exercises = 3;
 }

@@ -119,5 +119,4 @@ message UserTopicResponse {
     string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    optional int64 classroomID = 9;
 }

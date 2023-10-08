@@ -192,7 +192,7 @@ func (m *WaitingListInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for UserID
+	// no validation rules for MemberID
 
 	if len(errors) > 0 {
 		return WaitingListInputMultiError(errors)
@@ -335,11 +335,11 @@ func (m *WaitingListResponse) validate(all bool) error {
 	}
 
 	if all {
-		switch v := interface{}(m.GetUser()).(type) {
+		switch v := interface{}(m.GetMember()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, WaitingListResponseValidationError{
-					field:  "User",
+					field:  "Member",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -347,16 +347,16 @@ func (m *WaitingListResponse) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, WaitingListResponseValidationError{
-					field:  "User",
+					field:  "Member",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetMember()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return WaitingListResponseValidationError{
-				field:  "User",
+				field:  "Member",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -553,10 +553,6 @@ func (m *UserWaitingListResponse) validate(all bool) error {
 			errors = append(errors, err)
 		}
 
-	}
-
-	if m.ClassroomID != nil {
-		// no validation rules for ClassroomID
 	}
 
 	if len(errors) > 0 {
@@ -2208,9 +2204,9 @@ func (m *ClassroomWTLResponse) validate(all bool) error {
 		}
 	}
 
-	if utf8.RuneCountInString(m.GetCodeClassroom()) < 2 {
+	if utf8.RuneCountInString(m.GetClassCourse()) < 2 {
 		err := ClassroomWTLResponseValidationError{
-			field:  "CodeClassroom",
+			field:  "ClassCourse",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -2230,9 +2226,9 @@ func (m *ClassroomWTLResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if m.GetQuantity() < 0 {
+	if m.GetQuantityStudent() < 0 {
 		err := ClassroomWTLResponseValidationError{
-			field:  "Quantity",
+			field:  "QuantityStudent",
 			reason: "value must be greater than or equal to 0",
 		}
 		if !all {

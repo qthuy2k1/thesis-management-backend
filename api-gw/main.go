@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 
 	"google.golang.org/grpc"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
+	authorizationSvcV1 "github.com/qthuy2k1/thesis-management-backend/authorization-svc/api/goclient/v1"
+	authorizeSvcV1 "github.com/qthuy2k1/thesis-management-backend/authorization-svc/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
 	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
@@ -33,6 +36,7 @@ const (
 	commentAddress        = "comment:9091"
 	attachmentAddress     = "attachment:9091"
 	topicAddress          = "topic:9091"
+	authorizationAddress  = "authorization:9091"
 )
 
 func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
@@ -125,8 +129,43 @@ func newTopicSvcClient() (topicSvcV1.TopicServiceClient, error) {
 	return topicSvcV1.NewTopicServiceClient(conn), nil
 }
 
+func newAuthorizationSvcClient() (authorizationSvcV1.AuthorizationServiceClient, error) {
+	conn, err := grpc.DialContext(context.TODO(), authorizationAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, fmt.Errorf("topic client: %w", err)
+	}
+
+	return authorizationSvcV1.NewAuthorizationServiceClient(conn), nil
+}
+
 func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	log.Printf("APIGW service: method %q called\n", info.FullMethod)
+	resp, err := handler(ctx, req)
+	if err != nil {
+		log.Printf("APIGW serivce: method %q failed: %s\n", info.FullMethod, err)
+	}
+	return resp, err
+}
+
+func authorize(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	token, err := GetToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	authorizationClient, err := newAuthorizationSvcClient()
+	if err != nil {
+		return nil, err
+	}
+
+	methodArr := strings.Split(info.FullMethod, "/")
+	if _, err := authorizationClient.Authorize(ctx, &authorizeSvcV1.AuthorizeRequest{
+		Token:  token,
+		Method: methodArr[2],
+	}); err != nil {
+		return nil, err
+	}
+
 	resp, err := handler(ctx, req)
 	if err != nil {
 		log.Printf("APIGW serivce: method %q failed: %s\n", info.FullMethod, err)
@@ -191,8 +230,14 @@ func main() {
 		panic(err)
 	}
 
-	// connect to attachment svc
+	// connect to topic svc
 	topicClient, err := newTopicSvcClient()
+	if err != nil {
+		panic(err)
+	}
+
+	// connect to authorization svc
+	authorizationClient, err := newAuthorizationSvcClient()
 	if err != nil {
 		panic(err)
 	}
@@ -211,9 +256,10 @@ func main() {
 	pb.RegisterUserServiceServer(s, NewUsersService(userClient, classroomClient, waitingListClient))
 	pb.RegisterWaitingListServiceServer(s, NewWaitingListsService(waitingListClient, classroomClient, userClient))
 	pb.RegisterCommentServiceServer(s, NewCommentsService(commentClient, postClient, exerciseClient, userClient))
-	pb.RegisterAuthorizationServiceServer(s, NewAuthService(userClient))
 	pb.RegisterAttachmentServiceServer(s, NewAttachmentsService(attachmentClient, userClient, submissionClient))
 	pb.RegisterTopicServiceServer(s, NewTopicsService(topicClient, userClient))
+	pb.RegisterAuthorizationServiceServer(s, NewAuthorizationService(userClient, authorizationClient))
+	pb.RegisterMemberServiceServer(s, NewMembersService(userClient, classroomClient, waitingListClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

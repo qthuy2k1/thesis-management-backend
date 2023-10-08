@@ -28,6 +28,10 @@ func NewCommentsService(commentClient commentSvcV1.CommentServiceClient, postCli
 }
 
 func (u *commentServiceGW) CreateComment(ctx context.Context, req *pb.CreateCommentRequest) (*pb.CreateCommentResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	if req.GetComment().PostID == nil && req.GetComment().ExerciseID == nil {
 		return &pb.CreateCommentResponse{
 			Response: &pb.CommonCommentResponse{

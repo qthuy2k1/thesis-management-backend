@@ -19,12 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ExerciseService_CreateExercise_FullMethodName             = "/exercise.v1.ExerciseService/CreateExercise"
-	ExerciseService_GetExercise_FullMethodName                = "/exercise.v1.ExerciseService/GetExercise"
-	ExerciseService_UpdateExercise_FullMethodName             = "/exercise.v1.ExerciseService/UpdateExercise"
-	ExerciseService_DeleteExercise_FullMethodName             = "/exercise.v1.ExerciseService/DeleteExercise"
-	ExerciseService_GetExercises_FullMethodName               = "/exercise.v1.ExerciseService/GetExercises"
-	ExerciseService_GetAllExercisesOfClassroom_FullMethodName = "/exercise.v1.ExerciseService/GetAllExercisesOfClassroom"
+	ExerciseService_CreateExercise_FullMethodName                  = "/exercise.v1.ExerciseService/CreateExercise"
+	ExerciseService_GetExercise_FullMethodName                     = "/exercise.v1.ExerciseService/GetExercise"
+	ExerciseService_UpdateExercise_FullMethodName                  = "/exercise.v1.ExerciseService/UpdateExercise"
+	ExerciseService_DeleteExercise_FullMethodName                  = "/exercise.v1.ExerciseService/DeleteExercise"
+	ExerciseService_GetExercises_FullMethodName                    = "/exercise.v1.ExerciseService/GetExercises"
+	ExerciseService_GetAllExercisesOfClassroom_FullMethodName      = "/exercise.v1.ExerciseService/GetAllExercisesOfClassroom"
+	ExerciseService_GetAllExercisesInReportingStage_FullMethodName = "/exercise.v1.ExerciseService/GetAllExercisesInReportingStage"
 )
 
 // ExerciseServiceClient is the client API for ExerciseService service.
@@ -37,6 +38,7 @@ type ExerciseServiceClient interface {
 	DeleteExercise(ctx context.Context, in *DeleteExerciseRequest, opts ...grpc.CallOption) (*DeleteExerciseResponse, error)
 	GetExercises(ctx context.Context, in *GetExercisesRequest, opts ...grpc.CallOption) (*GetExercisesResponse, error)
 	GetAllExercisesOfClassroom(ctx context.Context, in *GetAllExercisesOfClassroomRequest, opts ...grpc.CallOption) (*GetAllExercisesOfClassroomResponse, error)
+	GetAllExercisesInReportingStage(ctx context.Context, in *GetAllExercisesInReportingStageRequest, opts ...grpc.CallOption) (*GetAllExercisesInReportingStageResponse, error)
 }
 
 type exerciseServiceClient struct {
@@ -101,6 +103,15 @@ func (c *exerciseServiceClient) GetAllExercisesOfClassroom(ctx context.Context, 
 	return out, nil
 }
 
+func (c *exerciseServiceClient) GetAllExercisesInReportingStage(ctx context.Context, in *GetAllExercisesInReportingStageRequest, opts ...grpc.CallOption) (*GetAllExercisesInReportingStageResponse, error) {
+	out := new(GetAllExercisesInReportingStageResponse)
+	err := c.cc.Invoke(ctx, ExerciseService_GetAllExercisesInReportingStage_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ExerciseServiceServer is the server API for ExerciseService service.
 // All implementations must embed UnimplementedExerciseServiceServer
 // for forward compatibility
@@ -111,6 +122,7 @@ type ExerciseServiceServer interface {
 	DeleteExercise(context.Context, *DeleteExerciseRequest) (*DeleteExerciseResponse, error)
 	GetExercises(context.Context, *GetExercisesRequest) (*GetExercisesResponse, error)
 	GetAllExercisesOfClassroom(context.Context, *GetAllExercisesOfClassroomRequest) (*GetAllExercisesOfClassroomResponse, error)
+	GetAllExercisesInReportingStage(context.Context, *GetAllExercisesInReportingStageRequest) (*GetAllExercisesInReportingStageResponse, error)
 	mustEmbedUnimplementedExerciseServiceServer()
 }
 
@@ -135,6 +147,9 @@ func (UnimplementedExerciseServiceServer) GetExercises(context.Context, *GetExer
 }
 func (UnimplementedExerciseServiceServer) GetAllExercisesOfClassroom(context.Context, *GetAllExercisesOfClassroomRequest) (*GetAllExercisesOfClassroomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllExercisesOfClassroom not implemented")
+}
+func (UnimplementedExerciseServiceServer) GetAllExercisesInReportingStage(context.Context, *GetAllExercisesInReportingStageRequest) (*GetAllExercisesInReportingStageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllExercisesInReportingStage not implemented")
 }
 func (UnimplementedExerciseServiceServer) mustEmbedUnimplementedExerciseServiceServer() {}
 
@@ -257,6 +272,24 @@ func _ExerciseService_GetAllExercisesOfClassroom_Handler(srv interface{}, ctx co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ExerciseService_GetAllExercisesInReportingStage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllExercisesInReportingStageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExerciseServiceServer).GetAllExercisesInReportingStage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ExerciseService_GetAllExercisesInReportingStage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExerciseServiceServer).GetAllExercisesInReportingStage(ctx, req.(*GetAllExercisesInReportingStageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ExerciseService_ServiceDesc is the grpc.ServiceDesc for ExerciseService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -287,6 +320,10 @@ var ExerciseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllExercisesOfClassroom",
 			Handler:    _ExerciseService_GetAllExercisesOfClassroom_Handler,
+		},
+		{
+			MethodName: "GetAllExercisesInReportingStage",
+			Handler:    _ExerciseService_GetAllExercisesInReportingStage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

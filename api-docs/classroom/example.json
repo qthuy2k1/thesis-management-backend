@@ -1,7 +1,7 @@
 {
     "Create a classroom": {
         // Method: POST
-        // URL: localhost:8080/api/classroom
+        // URL: localhost:8080/api/class
         "success": {
             "input":{
                 "classroom": {
@@ -9,7 +9,7 @@
                         "title": "Classroom 6",
                         "description": "Classroom 6",
                         "status": "Available",
-                        "lecturerId": 2,
+                        "lecturerID": 2,
                         "codeClassroom": "HK2",
                         "topicTags": "Web, Mobile", // separated by commas
                         "quantity": 15
@@ -29,7 +29,7 @@
                     "title": "Classroom 6",
                     "description": "Classroom 6",
                     "status": "Available",
-                    "lecturerId": 2,
+                    "lecturerID": 2,
                     "codeClassroom": "HK2",
                     "topicTags": "Web, Mobile", // separated by commas
                     "quantity": 15
@@ -44,7 +44,7 @@
     },
     "Get a classroom": {
     // Method: GET
-    // URL: localhost:8080/api/classroom/1
+    // URL: localhost:8080/api/class/1
         "success": {
             "output": {
                 "response": {
@@ -56,7 +56,7 @@
                     "title": "Classroom 6",
                     "description": "Classroom 6",
                     "status": "Available",
-                    "lecturerId": 2,
+                    "lecturerID": 2,
                     "codeClassroom": "HK2",
                     "topicTags": "Web",
                     "quantity": 15,
@@ -163,7 +163,7 @@
     },
     "Delete a classroom": {
     // Method: DELETE 
-    // URL: localhost:8080/api/classroom/1
+    // URL: localhost:8080/api/class/1
         "success": {
             "output": {
                 "response": {
@@ -182,14 +182,14 @@
     },
     "Update a classroom": {
     // Method: PUT
-    // URL: localhost:8080/api/classroom/1
+    // URL: localhost:8080/api/class/1
         "success": {
             "input": {
                 "classroom": {
                     "title": "Classroom 6",
                     "description": "Classroom 6",
                     "status": "Available",
-                    "lecturerId": 2,
+                    "lecturerID": 2,
                     "codeClassroom": "HK2",
                     "topicTags": "Web, Mobile", // separated by commas
                     "quantity": 15
@@ -208,7 +208,7 @@
                     "title": "Classroom 6",
                     "description": "Classroom 6",
                     "status": "Available",
-                    "lecturerId": 2,
+                    "lecturerID": 2,
                     "codeClassroom": "HK2",
                     "topicTags": "Web, Mobile", // separated by commas
                     "quantity": 15
@@ -223,7 +223,7 @@
     },
     "Get all classrooms": {
         // Method: GET
-        // URL: localhost:8080/api/classroom
+        // URL: localhost:8080/api/class
         "success": {
             "output": {
                 "response": {
@@ -237,7 +237,7 @@
                         "title": "Classroom 6",
                         "description": "Classroom 6",
                         "status": "Available",
-                        "lecturerId": 2,
+                        "lecturerID": 2,
                         "codeClassroom": "HK2",
                         "topicTags": "Web",
                         "quantity": 15,

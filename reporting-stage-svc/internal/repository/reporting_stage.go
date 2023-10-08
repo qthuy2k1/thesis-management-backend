@@ -4,12 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"log"
-	"strings"
 )
 
 // QueryRowSQL is a wrapper function that logs the SQL command before executing it.
-func QueryRowSQL(ctx context.Context, db *sql.DB, funcName string, query string, args ...interface{}) (*sql.Row, error) {
-	log.Printf("Function \"%s\" is executing SQL command: %s", funcName, query)
+func QueryRowSQL(ctx context.Context, db *sql.DB, funcLabel string, query string, args ...interface{}) (*sql.Row, error) {
+	log.Printf("Function \"%s\" is executing SQL command: %s", funcLabel, query)
 
 	// Prepare the SQL statement
 	stmt, err := db.PrepareContext(ctx, query)
@@ -26,8 +25,8 @@ func QueryRowSQL(ctx context.Context, db *sql.DB, funcName string, query string,
 }
 
 // QuerySQL is a wrapper function that logs the SQL command before executing it.
-func QuerySQL(ctx context.Context, db *sql.DB, funcName string, query string, args ...interface{}) (*sql.Rows, error) {
-	log.Printf("Function \"%s\" is executing SQL command: %s", funcName, query)
+func QuerySQL(ctx context.Context, db *sql.DB, funcLabel string, query string, args ...interface{}) (*sql.Rows, error) {
+	log.Printf("Function \"%s\" is executing SQL command: %s", funcLabel, query)
 	// Prepare the SQL statement
 	stmt, err := db.PrepareContext(ctx, query)
 	if err != nil {
@@ -47,8 +46,8 @@ func QuerySQL(ctx context.Context, db *sql.DB, funcName string, query string, ar
 }
 
 // ExecSQL is a wrapper function that logs the SQL command before executing it.
-func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, args ...interface{}) (sql.Result, error) {
-	log.Printf("Function \"%s\" is executing SQL command: %s", funcName, query)
+func ExecSQL(ctx context.Context, db *sql.DB, funcLabel string, query string, args ...interface{}) (sql.Result, error) {
+	log.Printf("Function \"%s\" is executing SQL command: %s", funcLabel, query)
 	// Prepare the SQL statement
 	stmt, err := db.PrepareContext(ctx, query)
 	if err != nil {
@@ -68,14 +67,15 @@ func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, arg
 }
 
 type ReportingStageInputRepo struct {
-	Name        string
+	Label       string
 	Description string
+	Value       string
 }
 
 // CreateReportingStage creates a new reporting_stage in db given by reporting_stage model
 func (r *ReportingStageRepo) CreateReportingStage(ctx context.Context, p ReportingStageInputRepo) error {
 	// check reporting_stage exists
-	isExists, err := r.IsReportingStageExists(ctx, p.Name)
+	isExists, err := r.IsReportingStageExists(ctx, p.Label)
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func (r *ReportingStageRepo) CreateReportingStage(ctx context.Context, p Reporti
 		return ErrReportingStageExisted
 	}
 
-	if _, err := ExecSQL(ctx, r.Database, "CreateReportingStage", "INSERT INTO reporting_stages (name, description) VALUES ($1, $2) RETURNING id", p.Name, p.Description); err != nil {
+	if _, err := ExecSQL(ctx, r.Database, "CreateReportingStage", "INSERT INTO reporting_stages (label, description, value) VALUES ($1, $2, $3) RETURNING id", p.Label, p.Description, p.Value); err != nil {
 		return err
 	}
 
@@ -93,19 +93,20 @@ func (r *ReportingStageRepo) CreateReportingStage(ctx context.Context, p Reporti
 
 type ReportingStageOutputRepo struct {
 	ID          int
-	Name        string
+	Label       string
 	Description string
+	Value       string
 }
 
 // GetReportingStage returns a reporting_stage in db given by id
 func (r *ReportingStageRepo) GetReportingStage(ctx context.Context, id int) (ReportingStageOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetReportingStage", "SELECT id, name, description FROM reporting_stages WHERE id=$1", id)
+	row, err := QueryRowSQL(ctx, r.Database, "GetReportingStage", "SELECT id, label, description, value FROM reporting_stages WHERE id=$1", id)
 	if err != nil {
 		return ReportingStageOutputRepo{}, err
 	}
 
 	reporting_stage := ReportingStageOutputRepo{}
-	if err = row.Scan(&reporting_stage.ID, &reporting_stage.Name, &reporting_stage.Description); err != nil {
+	if err = row.Scan(&reporting_stage.ID, &reporting_stage.Label, &reporting_stage.Description, &reporting_stage.Value); err != nil {
 		if err == sql.ErrNoRows {
 			return ReportingStageOutputRepo{}, ErrReportingStageNotFound
 		}
@@ -116,9 +117,9 @@ func (r *ReportingStageRepo) GetReportingStage(ctx context.Context, id int) (Rep
 }
 
 // CheckReportingStageExists checks whether the specified reporting_stage exists by name (true == exist)
-func (r *ReportingStageRepo) IsReportingStageExists(ctx context.Context, name string) (bool, error) {
+func (r *ReportingStageRepo) IsReportingStageExists(ctx context.Context, label string) (bool, error) {
 	var exists bool
-	row, err := QueryRowSQL(ctx, r.Database, "IsReportingStageExists", "SELECT EXISTS(SELECT 1 FROM reporting_stages WHERE name LIKE '%' || $1 || '%')", name)
+	row, err := QueryRowSQL(ctx, r.Database, "IsReportingStageExists", "SELECT EXISTS(SELECT 1 FROM reporting_stages WHERE label LIKE '%' || $1 || '%')", label)
 	if err != nil {
 		return false, err
 	}
@@ -130,7 +131,7 @@ func (r *ReportingStageRepo) IsReportingStageExists(ctx context.Context, name st
 
 // UpdateReportingStage updates the specified reporting_stage by id
 func (r *ReportingStageRepo) UpdateReportingStage(ctx context.Context, id int, reporting_stage ReportingStageInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdateReportingStage", "UPDATE reporting_stages SET name=$2, description=$3 WHERE id=$1", id, reporting_stage.Name, reporting_stage.Description)
+	result, err := ExecSQL(ctx, r.Database, "UpdateReportingStage", "UPDATE reporting_stages SET label=$2, description=$3, value=$4 WHERE id=$1", id, reporting_stage.Label, reporting_stage.Description, reporting_stage.Value)
 	if err != nil {
 		return err
 	}
@@ -158,9 +159,7 @@ func (r *ReportingStageRepo) DeleteReportingStage(ctx context.Context, id int) e
 
 // GetReportingStage returns a list of reporting_stages in db with filter
 func (r *ReportingStageRepo) GetReportingStages(ctx context.Context) ([]ReportingStageOutputRepo, error) {
-	query := []string{"SELECT * FROM reporting_stages"}
-
-	rows, err := QuerySQL(ctx, r.Database, "GetReportingStages", strings.Join(query, " "))
+	rows, err := QuerySQL(ctx, r.Database, "GetReportingStages", "SELECT id, label, description, value FROM reporting_stages")
 	if err != nil {
 		return nil, err
 	}
@@ -172,8 +171,9 @@ func (r *ReportingStageRepo) GetReportingStages(ctx context.Context) ([]Reportin
 		reporting_stage := ReportingStageOutputRepo{}
 		err := rows.Scan(
 			&reporting_stage.ID,
-			&reporting_stage.Name,
+			&reporting_stage.Label,
 			&reporting_stage.Description,
+			&reporting_stage.Value,
 		)
 		if err != nil {
 			return nil, err

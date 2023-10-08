@@ -33,15 +33,19 @@ func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient,
 }
 
 func (u *classroomServiceGW) CreateClassroom(ctx context.Context, req *pb.CreateClassroomRequest) (*pb.CreateClassroomResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.classroomClient.CreateClassroom(ctx, &classroomSvcV1.CreateClassroomRequest{
 		Classroom: &classroomSvcV1.ClassroomInput{
-			Title:         req.GetClassroom().GetTitle(),
-			Description:   req.GetClassroom().GetDescription(),
-			Status:        req.GetClassroom().GetStatus(),
-			LecturerId:    req.GetClassroom().GetLecturerId(),
-			CodeClassroom: req.GetClassroom().GetCodeClassroom(),
-			TopicTags:     req.GetClassroom().GetTopicTags(),
-			Quantity:      req.GetClassroom().GetQuantity(),
+			Title:           req.GetClassroom().GetTitle(),
+			Description:     req.GetClassroom().GetDescription(),
+			Status:          req.GetClassroom().GetStatus(),
+			LecturerID:      req.GetClassroom().GetLecturerID(),
+			ClassCourse:     req.GetClassroom().GetClassCourse(),
+			TopicTags:       req.GetClassroom().GetTopicTags(),
+			QuantityStudent: req.GetClassroom().GetQuantityStudent(),
 		},
 	})
 	if err != nil {
@@ -57,6 +61,10 @@ func (u *classroomServiceGW) CreateClassroom(ctx context.Context, req *pb.Create
 }
 
 func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassroomRequest) (*pb.GetClassroomResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
@@ -112,23 +120,23 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 		postsAndExercises = append(postsAndExercises, &pb.PostsAndExercisesOfClassroom{
 			Id:          p.Id,
 			Title:       p.Title,
-			Content:     p.Content,
+			Description: p.Content,
 			ClassroomID: p.ClassroomID,
-			ReportingStage: &pb.ReportingStageClassroomResponse{
+			Category: &pb.ReportingStageClassroomResponse{
 				Id:          reportingStageRes.ReportingStage.Id,
-				Name:        reportingStageRes.ReportingStage.Name,
+				Label:       reportingStageRes.ReportingStage.Label,
 				Description: reportingStageRes.ReportingStage.Description,
+				Value:       reportingStageRes.ReportingStage.Value,
 			},
 			Author: &pb.AuthorClassroomResponse{
-				Id:          authorRes.User.Id,
-				Class:       authorRes.User.Class,
-				Major:       authorRes.User.Major,
-				Phone:       authorRes.User.Phone,
-				PhotoSrc:    authorRes.User.PhotoSrc,
-				Role:        authorRes.User.Role,
-				Name:        authorRes.User.Name,
-				Email:       authorRes.User.Email,
-				ClassroomID: &authorRes.User.ClassroomID,
+				Id:       authorRes.User.Id,
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Phone,
+				PhotoSrc: authorRes.User.PhotoSrc,
+				Role:     authorRes.User.Role,
+				Name:     authorRes.User.Name,
+				Email:    authorRes.User.Email,
 			},
 			CreatedAt: p.CreatedAt,
 			UpdatedAt: p.UpdatedAt,
@@ -167,25 +175,25 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 		postsAndExercises = append(postsAndExercises, &pb.PostsAndExercisesOfClassroom{
 			Id:          p.Id,
 			Title:       p.Title,
-			Content:     p.Content,
+			Description: p.Content,
 			ClassroomID: p.ClassroomID,
 			Deadline:    p.Deadline,
 			Score:       &p.Score,
-			ReportingStage: &pb.ReportingStageClassroomResponse{
+			Category: &pb.ReportingStageClassroomResponse{
 				Id:          reportingStageRes.ReportingStage.Id,
-				Name:        reportingStageRes.ReportingStage.Name,
+				Label:       reportingStageRes.ReportingStage.Label,
 				Description: reportingStageRes.ReportingStage.Description,
+				Value:       reportingStageRes.ReportingStage.Value,
 			},
 			Author: &pb.AuthorClassroomResponse{
-				Id:          authorRes.User.Id,
-				Class:       authorRes.User.Class,
-				Major:       authorRes.User.Major,
-				Phone:       authorRes.User.Phone,
-				PhotoSrc:    authorRes.User.PhotoSrc,
-				Role:        authorRes.User.Role,
-				Name:        authorRes.User.Name,
-				Email:       authorRes.User.Email,
-				ClassroomID: &authorRes.User.ClassroomID,
+				Id:       authorRes.User.Id,
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Phone,
+				PhotoSrc: authorRes.User.PhotoSrc,
+				Role:     authorRes.User.Role,
+				Name:     authorRes.User.Name,
+				Email:    authorRes.User.Email,
 			},
 			CreatedAt: p.CreatedAt,
 			UpdatedAt: p.UpdatedAt,
@@ -199,36 +207,31 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 	})
 
 	lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-		Id: res.GetClassroom().LecturerId,
+		Id: res.GetClassroom().LecturerID,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.GetClassroomResponse{
-		Response: &pb.CommonClassroomResponse{
-			StatusCode: res.GetResponse().GetStatusCode(),
-			Message:    res.GetResponse().GetMessage(),
-		},
 		Classroom: &pb.ClassroomResponse{
-			Id:            res.GetClassroom().GetId(),
-			Title:         res.GetClassroom().GetTitle(),
-			Description:   res.GetClassroom().GetDescription(),
-			Status:        res.GetClassroom().GetStatus(),
-			CodeClassroom: res.GetClassroom().GetCodeClassroom(),
-			TopicTags:     res.GetClassroom().GetTopicTags(),
+			Id:          res.GetClassroom().GetId(),
+			Title:       res.GetClassroom().GetTitle(),
+			Description: res.GetClassroom().GetDescription(),
+			Status:      res.GetClassroom().GetStatus(),
+			ClassCourse: res.GetClassroom().GetClassCourse(),
+			TopicTags:   res.GetClassroom().GetTopicTags(),
 			Lecturer: &pb.AuthorClassroomResponse{
-				Id:          lecturerRes.User.Id,
-				Class:       lecturerRes.User.Class,
-				Major:       lecturerRes.User.Major,
-				Phone:       lecturerRes.User.Phone,
-				PhotoSrc:    lecturerRes.User.PhotoSrc,
-				Role:        lecturerRes.User.Role,
-				Name:        lecturerRes.User.Name,
-				Email:       lecturerRes.User.Email,
-				ClassroomID: &lecturerRes.User.ClassroomID,
+				Id:       lecturerRes.User.Id,
+				Class:    lecturerRes.User.Class,
+				Major:    lecturerRes.User.Major,
+				Phone:    lecturerRes.User.Phone,
+				PhotoSrc: lecturerRes.User.PhotoSrc,
+				Role:     lecturerRes.User.Role,
+				Name:     lecturerRes.User.Name,
+				Email:    lecturerRes.User.Email,
 			},
-			Quantity:          res.GetClassroom().GetQuantity(),
+			QuantityStudent:   res.GetClassroom().GetQuantityStudent(),
 			CreatedAt:         res.GetClassroom().GetCreatedAt(),
 			UpdatedAt:         res.GetClassroom().GetUpdatedAt(),
 			PostsAndExercises: postsAndExercises,
@@ -237,16 +240,20 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 }
 
 func (u *classroomServiceGW) UpdateClassroom(ctx context.Context, req *pb.UpdateClassroomRequest) (*pb.UpdateClassroomResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.classroomClient.UpdateClassroom(ctx, &classroomSvcV1.UpdateClassroomRequest{
 		Id: req.GetId(),
 		Classroom: &classroomSvcV1.ClassroomInput{
-			Title:         req.GetClassroom().GetTitle(),
-			Description:   req.GetClassroom().GetDescription(),
-			Status:        req.GetClassroom().GetStatus(),
-			LecturerId:    req.GetClassroom().GetLecturerId(),
-			CodeClassroom: req.GetClassroom().GetCodeClassroom(),
-			TopicTags:     req.GetClassroom().GetTopicTags(),
-			Quantity:      req.GetClassroom().GetQuantity(),
+			Title:           req.GetClassroom().GetTitle(),
+			Description:     req.GetClassroom().GetDescription(),
+			Status:          req.GetClassroom().GetStatus(),
+			LecturerID:      req.GetClassroom().GetLecturerID(),
+			ClassCourse:     req.GetClassroom().GetClassCourse(),
+			TopicTags:       req.GetClassroom().GetTopicTags(),
+			QuantityStudent: req.GetClassroom().GetQuantityStudent(),
 		},
 	})
 	if err != nil {
@@ -262,6 +269,10 @@ func (u *classroomServiceGW) UpdateClassroom(ctx context.Context, req *pb.Update
 }
 
 func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.DeleteClassroomRequest) (*pb.DeleteClassroomResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
 	res, err := u.classroomClient.DeleteClassroom(ctx, &classroomSvcV1.DeleteClassroomRequest{
 		Id: req.GetId(),
 	})
@@ -374,23 +385,23 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 			postsAndExercises = append(postsAndExercises, &pb.PostsAndExercisesOfClassroom{
 				Id:          p.Id,
 				Title:       p.Title,
-				Content:     p.Content,
+				Description: p.Content,
 				ClassroomID: p.ClassroomID,
-				ReportingStage: &pb.ReportingStageClassroomResponse{
+				Category: &pb.ReportingStageClassroomResponse{
 					Id:          reportingStageRes.ReportingStage.Id,
-					Name:        reportingStageRes.ReportingStage.Name,
+					Label:       reportingStageRes.ReportingStage.Label,
 					Description: reportingStageRes.ReportingStage.Description,
+					Value:       reportingStageRes.ReportingStage.Value,
 				},
 				Author: &pb.AuthorClassroomResponse{
-					Id:          authorRes.User.Id,
-					Class:       authorRes.User.Class,
-					Major:       authorRes.User.Major,
-					Phone:       authorRes.User.Phone,
-					PhotoSrc:    authorRes.User.PhotoSrc,
-					Role:        authorRes.User.Role,
-					Name:        authorRes.User.Name,
-					Email:       authorRes.User.Email,
-					ClassroomID: &authorRes.User.ClassroomID,
+					Id:       authorRes.User.Id,
+					Class:    authorRes.User.Class,
+					Major:    authorRes.User.Major,
+					Phone:    authorRes.User.Phone,
+					PhotoSrc: authorRes.User.PhotoSrc,
+					Role:     authorRes.User.Role,
+					Name:     authorRes.User.Name,
+					Email:    authorRes.User.Email,
 				},
 				CreatedAt: p.CreatedAt,
 				UpdatedAt: p.UpdatedAt,
@@ -429,25 +440,25 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 			postsAndExercises = append(postsAndExercises, &pb.PostsAndExercisesOfClassroom{
 				Id:          p.Id,
 				Title:       p.Title,
-				Content:     p.Content,
+				Description: p.Content,
 				ClassroomID: p.ClassroomID,
 				Deadline:    p.Deadline,
 				Score:       &p.Score,
-				ReportingStage: &pb.ReportingStageClassroomResponse{
+				Category: &pb.ReportingStageClassroomResponse{
 					Id:          reportingStageRes.ReportingStage.Id,
-					Name:        reportingStageRes.ReportingStage.Name,
+					Label:       reportingStageRes.ReportingStage.Label,
 					Description: reportingStageRes.ReportingStage.Description,
+					Value:       reportingStageRes.ReportingStage.Value,
 				},
 				Author: &pb.AuthorClassroomResponse{
-					Id:          authorRes.User.Id,
-					Class:       authorRes.User.Class,
-					Major:       authorRes.User.Major,
-					Phone:       authorRes.User.Phone,
-					PhotoSrc:    authorRes.User.PhotoSrc,
-					Role:        authorRes.User.Role,
-					Name:        authorRes.User.Name,
-					Email:       authorRes.User.Email,
-					ClassroomID: &authorRes.User.ClassroomID,
+					Id:       authorRes.User.Id,
+					Class:    authorRes.User.Class,
+					Major:    authorRes.User.Major,
+					Phone:    authorRes.User.Phone,
+					PhotoSrc: authorRes.User.PhotoSrc,
+					Role:     authorRes.User.Role,
+					Name:     authorRes.User.Name,
+					Email:    authorRes.User.Email,
 				},
 				CreatedAt: p.CreatedAt,
 				UpdatedAt: p.UpdatedAt,
@@ -461,7 +472,7 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 		})
 
 		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: c.LecturerId,
+			Id: c.LecturerID,
 		})
 		if err != nil {
 			return nil, err
@@ -472,19 +483,18 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 			Description: c.Description,
 			Status:      c.Status,
 			Lecturer: &pb.AuthorClassroomResponse{
-				Id:          lecturerRes.User.Id,
-				Class:       lecturerRes.User.Class,
-				Major:       lecturerRes.User.Major,
-				Phone:       lecturerRes.User.Phone,
-				PhotoSrc:    lecturerRes.User.PhotoSrc,
-				Role:        lecturerRes.User.Role,
-				Name:        lecturerRes.User.Name,
-				Email:       lecturerRes.User.Email,
-				ClassroomID: &lecturerRes.User.ClassroomID,
+				Id:       lecturerRes.User.Id,
+				Class:    lecturerRes.User.Class,
+				Major:    lecturerRes.User.Major,
+				Phone:    lecturerRes.User.Phone,
+				PhotoSrc: lecturerRes.User.PhotoSrc,
+				Role:     lecturerRes.User.Role,
+				Name:     lecturerRes.User.Name,
+				Email:    lecturerRes.User.Email,
 			},
-			CodeClassroom:     c.CodeClassroom,
+			ClassCourse:       c.ClassCourse,
 			TopicTags:         c.TopicTags,
-			Quantity:          c.Quantity,
+			QuantityStudent:   c.QuantityStudent,
 			CreatedAt:         c.CreatedAt,
 			UpdatedAt:         c.UpdatedAt,
 			PostsAndExercises: postsAndExercises,
@@ -492,10 +502,6 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 	}
 
 	return &pb.GetClassroomsResponse{
-		Response: &pb.CommonClassroomResponse{
-			StatusCode: res.GetResponse().GetStatusCode(),
-			Message:    res.GetResponse().GetMessage(),
-		},
 		TotalCount: res.GetTotalCount(),
 		Classrooms: classrooms,
 	}, nil

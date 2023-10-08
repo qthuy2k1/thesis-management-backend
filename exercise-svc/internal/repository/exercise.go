@@ -292,6 +292,48 @@ func (r *ExerciseRepo) GetAllExercisesOfClassroom(ctx context.Context, filter Ex
 	return exercises, count, nil
 }
 
+// GetAllExercisesInReportingStage returns all exercises of the specified reporting stage given by reporting stage id
+func (r *ExerciseRepo) GetAllExercisesInReportingStage(ctx context.Context, reportingStageID, classroomID int) ([]ExerciseOutputRepo, int, error) {
+	rows, err := QuerySQL(ctx, r.Database, "GetAllExercisesInReportingStage", fmt.Sprintf("SELECT id, title, content, classroom_id, deadline, score, reporting_stage_id, author_id, created_at, updated_at FROM exercises WHERE reporting_stage_id = %d AND classroom_id = %d", reportingStageID, classroomID))
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	// Iterate over the result rows and populate the exercises slice
+	var exercises []ExerciseOutputRepo
+	for rows.Next() {
+		exercise := ExerciseOutputRepo{}
+		err := rows.Scan(
+			&exercise.ID,
+			&exercise.Title,
+			&exercise.Content,
+			&exercise.ClassroomID,
+			&exercise.Deadline,
+			&exercise.Score,
+			&exercise.ReportingStageID,
+			&exercise.AuthorID,
+			&exercise.CreatedAt,
+			&exercise.UpdatedAt,
+		)
+		if err != nil {
+			return nil, 0, err
+		}
+		exercises = append(exercises, exercise)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, 0, err
+	}
+
+	count, err := r.getCountInReportingStage(ctx, reportingStageID, classroomID)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return exercises, count, nil
+}
+
 func (r *ExerciseRepo) getCount(ctx context.Context, titleSearch string) (int, error) {
 	var count int
 
@@ -323,6 +365,21 @@ func (r *ExerciseRepo) getCountInClassroom(ctx context.Context, titleSearch stri
 	}
 
 	rows, err := QueryRowSQL(ctx, r.Database, "getCountIntClassroom", strings.Join(query, " "))
+	if err != nil {
+		return 0, err
+	}
+
+	if err := rows.Scan(&count); err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func (r *ExerciseRepo) getCountInReportingStage(ctx context.Context, reportingStageID, classroomID int) (int, error) {
+	var count int
+
+	rows, err := QueryRowSQL(ctx, r.Database, "getCountIntClassroom", fmt.Sprintf("SELECT COUNT(*) FROM exercises WHERE reporting_stage_id = %d AND classroom_id = %d", reportingStageID, classroomID))
 	if err != nil {
 		return 0, err
 	}

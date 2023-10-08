@@ -243,6 +243,52 @@ func (h *ExerciseHdl) GetAllExercisesOfClassroom(ctx context.Context, req *exerc
 	}, nil
 }
 
+func (h *ExerciseHdl) GetAllExercisesInReportingStage(ctx context.Context, req *exercisepb.GetAllExercisesInReportingStageRequest) (*exercisepb.GetAllExercisesInReportingStageResponse, error) {
+	log.Println("calling get all exercises of in reporting stage...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	es, count, err := h.Service.GetAllExercisesInReportingStage(ctx, int(req.GetReportingStageID()), int(req.GetClassroomID()))
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var esResp []*exercisepb.ExerciseResponse
+	for _, e := range es {
+		esResp = append(esResp, &exercisepb.ExerciseResponse{
+			Id:          int64(e.ID),
+			Title:       e.Title,
+			Content:     e.Content,
+			ClassroomID: int64(e.ClassroomID),
+			Deadline: &datetime.DateTime{
+				Day:     int32(e.Deadline.Day()),
+				Month:   int32(e.Deadline.Month()),
+				Year:    int32(e.Deadline.Year()),
+				Hours:   int32(e.Deadline.Hour()),
+				Minutes: int32(e.Deadline.Minute()),
+				Seconds: int32(e.Deadline.Second()),
+			},
+			Score:            int64(e.Score),
+			ReportingStageID: int64(e.ReportingStageID),
+			AuthorID:         e.AuthorID,
+			CreatedAt:        timestamppb.New(e.CreatedAt),
+			UpdatedAt:        timestamppb.New(e.UpdatedAt),
+		})
+	}
+
+	return &exercisepb.GetAllExercisesInReportingStageResponse{
+		Response: &exercisepb.CommonExerciseResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Exercises:  esResp,
+		TotalCount: int64(count),
+	}, nil
+}
+
 func validateAndConvertExercise(pbExercise *exercisepb.ExerciseInput) (service.ExerciseInputSvc, error) {
 	if err := pbExercise.Validate(); err != nil {
 		return service.ExerciseInputSvc{}, err

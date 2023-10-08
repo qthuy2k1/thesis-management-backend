@@ -16,68 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/classroom/{classroomID}/waiting-list": {
-      "get": {
-        "operationId": "WaitingListService_GetWaitingListsOfClassroom",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetWaitingListsResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "classroomID",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "int64"
-          }
-        ],
-        "tags": [
-          "WaitingListService"
-        ]
-      }
-    },
-    "/api/user/{userID}/waiting-list": {
-      "get": {
-        "operationId": "WaitingListService_CheckUserInWaitingListOfClassroom",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1CheckUserInWaitingListClassroomResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "userID",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "WaitingListService"
-        ]
-      }
-    },
-    "/api/waiting-list": {
+    "/api/requirement": {
       "post": {
         "operationId": "WaitingListService_CreateWaitingList",
         "responses": {
@@ -109,7 +48,38 @@
         ]
       }
     },
-    "/api/waiting-list/{id}": {
+    "/api/requirement/class/{classroomID}": {
+      "get": {
+        "operationId": "WaitingListService_GetWaitingListsOfClassroom",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetWaitingListsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "classroomID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "WaitingListService"
+        ]
+      }
+    },
+    "/api/requirement/{id}": {
       "get": {
         "operationId": "WaitingListService_GetWaitingList",
         "responses": {
@@ -211,6 +181,36 @@
           "WaitingListService"
         ]
       }
+    },
+    "/api/user/{userID}/requirement": {
+      "get": {
+        "operationId": "WaitingListService_CheckUserInWaitingListOfClassroom",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CheckUserInWaitingListClassroomResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "WaitingListService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -272,13 +272,13 @@
         "lecturer": {
           "$ref": "#/definitions/v1LecturerWaitingListResponse"
         },
-        "codeClassroom": {
+        "classCourse": {
           "type": "string"
         },
         "topicTags": {
           "type": "string"
         },
-        "quantity": {
+        "quantityStudent": {
           "type": "string",
           "format": "int64"
         },
@@ -421,10 +421,6 @@
         },
         "email": {
           "type": "string"
-        },
-        "classroomID": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -435,7 +431,7 @@
           "type": "string",
           "format": "int64"
         },
-        "userID": {
+        "memberID": {
           "type": "string"
         }
       },
@@ -451,7 +447,7 @@
         "classroom": {
           "$ref": "#/definitions/v1ClassroomWTLResponse"
         },
-        "user": {
+        "member": {
           "$ref": "#/definitions/v1UserWaitingListResponse"
         },
         "createdAt": {

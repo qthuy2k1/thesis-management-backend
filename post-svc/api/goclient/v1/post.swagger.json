@@ -73,6 +73,25 @@
         }
       }
     },
+    "v1GetAllPostsInReportingStageResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonPostResponse"
+        },
+        "totalCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "posts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PostResponse"
+          }
+        }
+      }
+    },
     "v1GetAllPostsOfClassroomResponse": {
       "type": "object",
       "properties": {
