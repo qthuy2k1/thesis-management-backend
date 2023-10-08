@@ -191,7 +191,7 @@ func (h *UserHdl) GetAllLecturers(ctx context.Context, req *userpb.GetAllLecture
 }
 
 func (h *UserHdl) UnsubscribeClassroom(ctx context.Context, req *userpb.UnsubscribeClassroomRequest) (*userpb.UnsubscribeClassroomResponse, error) {
-	if err := h.Service.UnsubscribeClassroom(ctx, int(req.MemberID)); err != nil {
+	if err := h.Service.UnsubscribeClassroom(ctx, req.MemberID, int(req.ClassroomID)); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}

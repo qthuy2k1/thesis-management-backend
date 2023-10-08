@@ -3458,9 +3458,20 @@ func (m *UnsubscribeClassroomRequest) validate(all bool) error {
 
 	var errors []error
 
-	if m.GetMemberID() < 1 {
+	if utf8.RuneCountInString(m.GetMemberID()) < 2 {
 		err := UnsubscribeClassroomRequestValidationError{
 			field:  "MemberID",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetClassroomID() < 1 {
+		err := UnsubscribeClassroomRequestValidationError{
+			field:  "ClassroomID",
 			reason: "value must be greater than or equal to 1",
 		}
 		if !all {

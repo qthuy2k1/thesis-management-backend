@@ -55,7 +55,7 @@ service UserService {
 
     rpc UnsubscribeClassroom(UnsubscribeClassroomRequest) returns (UnsubscribeClassroomResponse) {
         option (google.api.http) = {
-            delete: "/api/auth/unsubscribe/{memberID}"
+            delete: "/api/auth/{memberID}/unsubscribe/{classroomID}"
         };
     };
 
@@ -217,7 +217,8 @@ message UpdateBasicUserResponse {
 
 
 message UnsubscribeClassroomRequest {
-    int64 memberID = 1 [(validate.rules).int64.gte = 1];
+    string memberID = 1 [(validate.rules).string = {min_len: 2}];
+    int64 classroomID = 2 [(validate.rules).int64.gte = 1];
 }
 
 message UnsubscribeClassroomResponse {

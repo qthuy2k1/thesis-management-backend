@@ -155,8 +155,8 @@ func (s *UserSvc) GetAllLecturers(ctx context.Context) ([]UserOutputSvc, int, er
 }
 
 // UnsubscribeClassroom returns an error if delete occurs any errors
-func (s *UserSvc) UnsubscribeClassroom(ctx context.Context, id int) error {
-	if err := s.Repository.UnsubscribeClassroom(ctx, id); err != nil {
+func (s *UserSvc) UnsubscribeClassroom(ctx context.Context, userID string, classroomID int) error {
+	if err := s.Repository.UnsubscribeClassroom(ctx, userID, classroomID); err != nil {
 		if errors.Is(err, repository.ErrUserNotFound) {
 			return ErrUserNotFound
 		}

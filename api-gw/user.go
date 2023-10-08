@@ -434,7 +434,8 @@ func (u *userServiceGW) UnsubscribeClassroom(ctx context.Context, req *pb.Unsubs
 	}
 
 	res, err := u.userClient.UnsubscribeClassroom(ctx, &userSvcV1.UnsubscribeClassroomRequest{
-		MemberID: req.GetMemberID(),
+		MemberID:    req.GetMemberID(),
+		ClassroomID: req.GetClassroomID(),
 	})
 	if err != nil {
 		return nil, err

@@ -1,13 +1,13 @@
 {
     "Create a submission": {
         // Method: POST
-        // URL: localhost:8080/api/submission
+        // URL: localhost:8080/api/submit
         "success": {
             "input": {
                 "submission": {
                     "userID": "asdyhaiyaass891",
                     "exerciseID": 4,
-                    "submission_date": {
+                    "submissionDate": {
                         "year": 2023,
                         "month": "8",
                         "day": "26",
@@ -38,7 +38,7 @@
     },
     "Delete a submission": {
         // Method: DELETE 
-        // URL: localhost:8080/api/submission/1
+        // URL: localhost:8080/api/submit/1
         "success": {
             "output": {
                 "response": {
@@ -57,13 +57,13 @@
     },
     "Update a submission": {
         // Method: PUT
-        // URL: localhost:8080/api/submission/1
+        // URL: localhost:8080/api/submit/1
         "success": {
             "input": {
                 "submission": {
                     "userID": "asdyhaiyaass891",
                     "exerciseID": 4,
-                    "submission_date": {
+                    "submissionDate": {
                         "year": 2023,
                         "month": "8",
                         "day": "26",
@@ -94,7 +94,7 @@
     },
     "Get all submissions of a exercise": {
         // Method: GET
-        // URL: localhost:8080/api/exercise/{exerciseID}/submission
+        // URL: localhost:8080/api/exercise/{exerciseID}/submit
         "success": {
             "output": {
                 "response": {

@@ -395,9 +395,19 @@ func request_UserService_UnsubscribeClassroom_0(ctx context.Context, marshaler r
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "memberID")
 	}
 
-	protoReq.MemberID, err = runtime.Int64(val)
+	protoReq.MemberID, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "memberID", err)
+	}
+
+	val, ok = pathParams["classroomID"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "classroomID")
+	}
+
+	protoReq.ClassroomID, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "classroomID", err)
 	}
 
 	msg, err := client.UnsubscribeClassroom(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -421,9 +431,19 @@ func local_request_UserService_UnsubscribeClassroom_0(ctx context.Context, marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "memberID")
 	}
 
-	protoReq.MemberID, err = runtime.Int64(val)
+	protoReq.MemberID, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "memberID", err)
+	}
+
+	val, ok = pathParams["classroomID"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "classroomID")
+	}
+
+	protoReq.ClassroomID, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "classroomID", err)
 	}
 
 	msg, err := server.UnsubscribeClassroom(ctx, &protoReq)
@@ -708,7 +728,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.user.v1.UserService/UnsubscribeClassroom", runtime.WithHTTPPathPattern("/api/auth/unsubscribe/{memberID}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.user.v1.UserService/UnsubscribeClassroom", runtime.WithHTTPPathPattern("/api/auth/{memberID}/unsubscribe/{classroomID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -976,7 +996,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.user.v1.UserService/UnsubscribeClassroom", runtime.WithHTTPPathPattern("/api/auth/unsubscribe/{memberID}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.user.v1.UserService/UnsubscribeClassroom", runtime.WithHTTPPathPattern("/api/auth/{memberID}/unsubscribe/{classroomID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1054,7 +1074,7 @@ var (
 
 	pattern_UserService_CheckStatusUserJoinClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "auth", "check-subscribe", "userID"}, ""))
 
-	pattern_UserService_UnsubscribeClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "auth", "unsubscribe", "memberID"}, ""))
+	pattern_UserService_UnsubscribeClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "auth", "memberID", "unsubscribe", "classroomID"}, ""))
 
 	pattern_UserService_UpdateBasicUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "user", "id", "update-info"}, ""))
 

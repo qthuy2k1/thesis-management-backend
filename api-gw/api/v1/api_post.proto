@@ -49,7 +49,7 @@ service PostService {
 
     rpc GetAllPostsInReportingStage(GetAllPostsInReportingStageRequest) returns (GetAllPostsInReportingStageResponse) {
         option (google.api.http) = {
-            get: "/api/post/stage/{classroomID}/{categoryID}"
+            get: "/api/class/{classroomID}/post/stage/{categoryID}"
         };
     }
 }

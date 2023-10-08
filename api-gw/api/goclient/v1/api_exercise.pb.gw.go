@@ -579,7 +579,7 @@ func RegisterExerciseServiceHandlerServer(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.exercise.v1.ExerciseService/GetAllExercisesInReportingStage", runtime.WithHTTPPathPattern("/api/exercise/{classroomID}/stage/{categoryID}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.exercise.v1.ExerciseService/GetAllExercisesInReportingStage", runtime.WithHTTPPathPattern("/api/class/{classroomID}/exercise/stage/{categoryID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -775,7 +775,7 @@ func RegisterExerciseServiceHandlerClient(ctx context.Context, mux *runtime.Serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.exercise.v1.ExerciseService/GetAllExercisesInReportingStage", runtime.WithHTTPPathPattern("/api/exercise/{classroomID}/stage/{categoryID}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.exercise.v1.ExerciseService/GetAllExercisesInReportingStage", runtime.WithHTTPPathPattern("/api/class/{classroomID}/exercise/stage/{categoryID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -807,7 +807,7 @@ var (
 
 	pattern_ExerciseService_GetAllExercisesOfClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "class", "classroomID", "exercise"}, ""))
 
-	pattern_ExerciseService_GetAllExercisesInReportingStage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "exercise", "classroomID", "stage", "categoryID"}, ""))
+	pattern_ExerciseService_GetAllExercisesInReportingStage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "class", "classroomID", "exercise", "stage", "categoryID"}, ""))
 )
 
 var (

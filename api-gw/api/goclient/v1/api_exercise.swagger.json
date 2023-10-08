@@ -79,6 +79,44 @@
         ]
       }
     },
+    "/api/class/{classroomID}/exercise/stage/{categoryID}": {
+      "get": {
+        "operationId": "ExerciseService_GetAllExercisesInReportingStage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllExercisesInReportingStageResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "classroomID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "categoryID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "ExerciseService"
+        ]
+      }
+    },
     "/api/exercise": {
       "get": {
         "operationId": "ExerciseService_GetExercises",
@@ -158,44 +196,6 @@
             "schema": {
               "$ref": "#/definitions/v1CreateExerciseRequest"
             }
-          }
-        ],
-        "tags": [
-          "ExerciseService"
-        ]
-      }
-    },
-    "/api/exercise/{classroomID}/stage/{categoryID}": {
-      "get": {
-        "operationId": "ExerciseService_GetAllExercisesInReportingStage",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetAllExercisesInReportingStageResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "classroomID",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "int64"
-          },
-          {
-            "name": "categoryID",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "int64"
           }
         ],
         "tags": [

@@ -228,7 +228,8 @@ message IsUserJoinedClassroomResponse {
 }
 
 message UnsubscribeClassroomRequest {
-    int64 memberID = 1;
+    string memberID = 1;
+    int64 classroomID = 2;
 }
 
 message UnsubscribeClassroomResponse {

@@ -4405,6 +4405,8 @@ func (m *UnsubscribeClassroomRequest) validate(all bool) error {
 
 	// no validation rules for MemberID
 
+	// no validation rules for ClassroomID
+
 	if len(errors) > 0 {
 		return UnsubscribeClassroomRequestMultiError(errors)
 	}

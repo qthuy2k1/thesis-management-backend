@@ -579,7 +579,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.post.v1.PostService/GetAllPostsInReportingStage", runtime.WithHTTPPathPattern("/api/post/stage/{classroomID}/{categoryID}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.post.v1.PostService/GetAllPostsInReportingStage", runtime.WithHTTPPathPattern("/api/class/{classroomID}/post/stage/{categoryID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -775,7 +775,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.post.v1.PostService/GetAllPostsInReportingStage", runtime.WithHTTPPathPattern("/api/post/stage/{classroomID}/{categoryID}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.post.v1.PostService/GetAllPostsInReportingStage", runtime.WithHTTPPathPattern("/api/class/{classroomID}/post/stage/{categoryID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -807,7 +807,7 @@ var (
 
 	pattern_PostService_GetAllPostsOfClassroom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"api", "class", "classroomID", "post"}, ""))
 
-	pattern_PostService_GetAllPostsInReportingStage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "post", "stage", "classroomID", "categoryID"}, ""))
+	pattern_PostService_GetAllPostsInReportingStage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"api", "class", "classroomID", "post", "stage", "categoryID"}, ""))
 )
 
 var (

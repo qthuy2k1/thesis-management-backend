@@ -5,9 +5,8 @@
         "major": "<string>", // optional
         "phone": "<string>", // optional, 10-11 characters
         "photoSrc": "<string>",
-        "role": "<string>", // values in: student, teacher, admin
+        "role": "<string>", // values in: student, lecturer, admin
         "name": "<string>",
-        "email": "<string>",
-        "classroomID": "<string>" // optional
+        "email": "<string>"
     }
 }

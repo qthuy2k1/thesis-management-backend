@@ -4,7 +4,7 @@
         "title": "<string>",
         "content": "<string>",
         "classroomID": "<integer>",
-        "reportingStageID": "<integer>",
+        "categoryID": "<integer>",
         "authorID": "<integer>",
         "createdAt": "<dateTime>",
         "updatedAt": "<dateTime>"

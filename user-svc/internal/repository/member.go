@@ -248,8 +248,8 @@ func (r *UserRepo) IsUserJoinedClassroom(ctx context.Context, userID string) (Me
 }
 
 // UnsubscribeClassroom returns an error if delete occurs any errors
-func (r *UserRepo) UnsubscribeClassroom(ctx context.Context, id int) error {
-	result, err := ExecSQL(ctx, r.Database, "UnsubscribeClassroom", "DELETE FROM members WHERE member_id='$1'", id)
+func (r *UserRepo) UnsubscribeClassroom(ctx context.Context, userID string, classroomID int) error {
+	result, err := ExecSQL(ctx, r.Database, "UnsubscribeClassroom", fmt.Sprintf("DELETE FROM members WHERE member_id='%s' AND classroom_id='%d'", userID, classroomID))
 	if err != nil {
 		logger(err, "Exec SQL", "UnsubscribeClassroom")
 		return err

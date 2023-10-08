@@ -1,8 +1,8 @@
 {
     "waiting_list": {
         "id": "<integer>",
-        "user_id": "<string>",
-        "classroom_id": "<integer>",
+        "memberID": "<string>",
+        "classroomID": "<integer>",
         "created_at": "<timestamp>"
     }
 }

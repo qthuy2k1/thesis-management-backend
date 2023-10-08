@@ -20,7 +20,7 @@ type IUserSvc interface {
 	// GetAllLecturers returns all members who has the role named "lecturer"
 	GetAllLecturers(ctx context.Context) ([]UserOutputSvc, int, error)
 	// UnsubscribeClassroom returns an error if delete occurs any errors
-	UnsubscribeClassroom(ctx context.Context, id int) error
+	UnsubscribeClassroom(ctx context.Context, userID string, classroomID int) error
 
 	// CreateMember creates a new user in db given by user model
 	CreateMember(ctx context.Context, p MemberInputSvc) error
