@@ -1,0 +1,9 @@
+{
+    "member": {
+        "id": "<integer>",
+        "classroomID": "<integer>",
+        "memberID": "<string>",
+        "status": "<string>",
+        "createdAt": "<timestamp>"
+    }
+}
