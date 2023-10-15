@@ -1,18 +1,13 @@
 {
-    "Create a user": {
+    "Create a member": {
         // Method: POST
         // URL: localhost:8080/api/auth
         "success": {
             "input": {
-                "user": {
-                    "id": "120u84",
-                    "class": "Class 1",
-                    "major": "CNTT",
-                    "phone": "1231231231",
-                    "photoSrc": "testurl.vn",
-                    "role": "student",
-                    "name": "Full Name",
-                    "email": "name@example.com"
+                "member": {
+                    "classroomID": "1",
+                    "memberID": "12930120",
+                    "status": "WAITING"
                 }
             },
             "output": {
@@ -22,27 +17,22 @@
                 }
             }
         },
-        "create a existed user": {
+        "create a existed member": {
             "input": {
-                "user": {
-                    "id": "123817238912",
-                    "class": "Class 1",
-                    "major": "CNTT",
-                    "phone": "1231231231",
-                    "photoSrc": "testurl.vn",
-                    "role": "student",
-                    "name": "Full Name",
-                    "email": "name@example.com"
+                "member": {
+                    "classroomID": "1",
+                    "memberID": "12930120",
+                    "status": "WAITING"
                 }
             },
             "output": {
                 "code": 6,
-                "message": "err: user already exists",
+                "message": "err: member already exists",
                 "details": []
             }
         }
     },
-    "Get a user": {
+    "Get a member": {
         // Method: GET
         // URL: localhost:8080/api/auth/1
         "success": {
@@ -51,27 +41,24 @@
                     "statusCode": 200,
                     "message": "OK"
                 },
-                "user": {
-                    "id": "181278iab",
-                    "class": "Class 1",
-                    "major": "CNTT",
-                    "phone": "1231231231",
-                    "photoSrc": "testurl.vn",
-                    "role": "student",
-                    "name": "Full Name",
-                    "email": "name@example.com"
+                "member": {
+                    "id": "120u84",
+                    "classroomID": "1",
+                    "memberID": "12930120",
+                    "status": "WAITING",
+                    "createdAt": "2023-09-01T15:01:00Z"
                 }
             }
         },
-        "failed: user not exists": {
+        "failed: member not exists": {
             "output": {
                 "code": 5,
-                "message": "err: user not found",
+                "message": "err: member not found",
                 "details": []
             }
         }
     },
-    "Delete a user": {
+    "Delete a member": {
         // Method: DELETE 
         // URL: localhost:8080/api/auth/1
         "success": {
@@ -82,27 +69,23 @@
                 }
             }
         },
-        "failed: user not exists": {
+        "failed: member not exists": {
             "output": {
                 "code": 5,
-                "message": "err: user not found",
+                "message": "err: member not found",
                 "details": []
             }
         }
     },
-    "Update a user": {
+    "Update a member": {
         // Method: PUT
         // URL: localhost:8080/api/auth/1
         "success": {
             "input": {
-                "user": {
-                    "class": "Class 1",
-                    "major": "CNTT",
-                    "phone": "1231231231",
-                    "photoSrc": "testurl.vn",
-                    "role": "student",
-                    "name": "Full Name",
-                    "email": "name@example.com"
+                "member": {
+                    "classroomID": "1",
+                    "memberID": "12930120",
+                    "status": "WAITING"
                 }
             },
             "output": {
@@ -112,26 +95,22 @@
                 }
             }
         },
-        "update with a existed user title": {
+        "update with a existed member title": {
             "input": {
-                "user": {
-                    "class": "Class 1",
-                    "major": "CNTT",
-                    "phone": "1231231231",
-                    "photoSrc": "testurl.vn",
-                    "role": "student",
-                    "name": "Full Name",
-                    "email": "name@example.com"
+                "member": {
+                    "classroomID": "1",
+                    "memberID": "12930120",
+                    "status": "WAITING"
                 },
                 "output": {
                     "code": 6,
-                    "message": "err: user already exists",
+                    "message": "err: member already exists",
                     "details": []
                 }
             }
         }
     },
-    "Get all users": {
+    "Get all members": {
         // Method: GET
         // URL: localhost:8080/api/auth
         "success": {
@@ -141,34 +120,79 @@
                     "message": "Success"
                 },
                 "totalCount": 2,
-                "users": [
+                "members": [
                     {
-                        "id": 1,
-                        "class": "Class 1",
-                        "major": "CNTT",
-                        "phone": "1231231231",
-                        "photoSrc": "testurl.vn",
-                        "role": "student",
-                        "name": "Full Name",
-                        "email": "name@example.com"
+                        "id": "120u84",
+                        "classroomID": "1",
+                        "memberID": "12930120",
+                        "status": "WAITING",
+                        "createdAt": "2023-09-01T15:01:00Z"
                     },
                     {
-                        "id": 2,
-                        "class": "Class 2",
-                        "major": "CNTT",
-                        "phone": "1231231231",
-                        "photoSrc": "testurl.vn",
-                        "role": "student",
-                        "name": "Full Name 2",
-                        "email": "name@example.com"
+                        "id": "120u84",
+                        "classroomID": "1",
+                        "memberID": "12930120",
+                        "status": "WAITING",
+                        "createdAt": "2023-09-01T15:01:00Z"
                     }
                 ]
             }
         }
     },
-    "Approve user to join a classroom": {
+    "Get all members of a classroom": {
+        // Method: GET
+        // URL: localhost:8080/api/member/class/{classroomID}
+        "success": {
+            "output": {
+                "response": {
+                    "statusCode": "200",
+                    "message": "Success"
+                },
+                "totalCount": "1",
+                "members": [
+                    {
+                        "id": "2",
+                        "classroom": {
+                            "id": "3",
+                            "title": "Classroom 261",
+                            "description": "Classroom 6",
+                            "status": "Available",
+                            "lecturer": {
+                                "id": "asdyhaiyaass891",
+                                "class": "Class 2",
+                                "major": "CNTT",
+                                "phone": "0355457556",
+                                "photoSrc": "urltest.vn",
+                                "role": "lecturer",
+                                "name": "Quanasdasdg Tyhuayyyy",
+                                "email": "thuyasayady@gmyaail.com"
+                            },
+                            "classCourse": "HK2",
+                            "topicTags": "Web",
+                            "quantityStudentStudent": "15",
+                            "createdAt": "2023-10-08T11:14:39Z",
+                            "updatedAt": "2023-10-08T11:23:27.418993Z"
+                        },
+                        "member": {
+                            "id": "123123",
+                            "class": "Class 2",
+                            "major": "CNTT",
+                            "phone": "0355457556",
+                            "photoSrc": "urltest.vn",
+                            "role": "student",
+                            "name": "Quanasdasdg Tyhuayyyy",
+                            "email": "thuyasayady@gmyaail.com"
+                        },
+                        "status": "asAs",
+                        "createdAt": "2023-10-08T11:52:45Z"
+                    }
+                ]
+            }
+        }
+    },
+    "Approve member to join a classroom": {
         // Method: PUT
-        // localhost:8080/api/{classroomID}/aprrove/{userID}
+        // localhost:8080/api/{classroomID}/aprrove/{memberID}
         "success": {
             "output": {
                 "response": {
@@ -178,13 +202,13 @@
             }
         }
     },
-    "Check status of user whether joinning a classroom": {
+    "Check status of member whether joinning a classroom": {
         // Method: GET
-        // localhost:8080/api/auth/check-subscribe/{userID}
-        "user not joinning a classroom yet": {
+        // localhost:8080/api/auth/check-subscribe/{memberID}
+        "member not joinning a classroom yet": {
             "status": "NOT SUBSCRIBED"
         },
-        "user is requesting to join a classroom": {
+        "member is requesting to join a classroom": {
             "status": "WAITING",
             "classroom": {
                 "id": 7,
@@ -199,7 +223,7 @@
                 "updatedAt": "2023-09-01T15:01:00Z"
             }
         },
-        "user joined a classroom": {
+        "member joined a classroom": {
             "status": "JOINED",
             "classroom": {
                 "id": 7,
@@ -217,7 +241,7 @@
     },
     "Unscribe": {
         // Method: DELETE
-        // localhost:8080/api/auth/{userID}/unsubscribe/{classroomID}
+        // localhost:8080/api/auth/{memberID}/unsubscribe/{classroomID}
         "success": {
             "output": {
                 "response": {
