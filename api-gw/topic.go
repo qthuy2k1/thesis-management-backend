@@ -28,12 +28,12 @@ func (u *topicServiceGW) CreateTopic(ctx context.Context, req *pb.CreateTopicReq
 
 	res, err := u.topicClient.CreateTopic(ctx, &topicSvcV1.CreateTopicRequest{
 		Topic: &topicSvcV1.TopicInput{
-			Title:         req.GetTopic().GetTitle(),
-			TypeTopic:     req.GetTopic().GetTypeTopic(),
-			MemberQuanity: req.GetTopic().GetMemberQuanity(),
-			StudentId:     req.GetTopic().GetStudentId(),
-			MemberEmail:   req.GetTopic().GetMemberEmail(),
-			Description:   req.GetTopic().GetDescription(),
+			Title:          req.GetTopic().GetTitle(),
+			TypeTopic:      req.GetTopic().GetTypeTopic(),
+			MemberQuantity: req.GetTopic().GetMemberQuantity(),
+			StudentID:      req.GetTopic().GetStudentID(),
+			MemberEmail:    req.GetTopic().GetMemberEmail(),
+			Description:    req.GetTopic().GetDescription(),
 		},
 	})
 	if err != nil {
@@ -59,7 +59,7 @@ func (u *topicServiceGW) GetTopic(ctx context.Context, req *pb.GetTopicRequest) 
 	}
 
 	studentRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-		Id: res.GetTopic().StudentId,
+		Id: res.GetTopic().StudentID,
 	})
 	if err != nil {
 		return nil, err
@@ -74,11 +74,11 @@ func (u *topicServiceGW) GetTopic(ctx context.Context, req *pb.GetTopicRequest) 
 			Message:    res.GetResponse().GetMessage(),
 		},
 		Topic: &pb.TopicResponse{
-			Id:            res.GetTopic().GetId(),
-			Title:         res.GetTopic().GetTitle(),
-			TypeTopic:     res.GetTopic().GetTypeTopic(),
-			MemberQuanity: res.GetTopic().GetMemberQuanity(),
-			StudentId: &pb.UserTopicResponse{
+			Id:             res.GetTopic().GetId(),
+			Title:          res.GetTopic().GetTitle(),
+			TypeTopic:      res.GetTopic().GetTypeTopic(),
+			MemberQuantity: res.GetTopic().GetMemberQuantity(),
+			StudentID: &pb.UserTopicResponse{
 				Id:       studentRes.GetUser().GetId(),
 				Class:    studentRes.GetUser().GetClass(),
 				Major:    &major,
@@ -102,12 +102,12 @@ func (u *topicServiceGW) UpdateTopic(ctx context.Context, req *pb.UpdateTopicReq
 	res, err := u.topicClient.UpdateTopic(ctx, &topicSvcV1.UpdateTopicRequest{
 		Id: req.GetId(),
 		Topic: &topicSvcV1.TopicInput{
-			Title:         req.GetTopic().GetTitle(),
-			TypeTopic:     req.GetTopic().GetTypeTopic(),
-			MemberQuanity: req.GetTopic().GetMemberQuanity(),
-			StudentId:     req.GetTopic().GetStudentId(),
-			MemberEmail:   req.GetTopic().GetMemberEmail(),
-			Description:   req.GetTopic().GetDescription(),
+			Title:          req.GetTopic().GetTitle(),
+			TypeTopic:      req.GetTopic().GetTypeTopic(),
+			MemberQuantity: req.GetTopic().GetMemberQuantity(),
+			StudentID:      req.GetTopic().GetStudentID(),
+			MemberEmail:    req.GetTopic().GetMemberEmail(),
+			Description:    req.GetTopic().GetDescription(),
 		},
 	})
 	if err != nil {

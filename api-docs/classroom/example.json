@@ -3,7 +3,7 @@
         // Method: POST
         // URL: localhost:8080/api/class
         "success": {
-            "input":{
+            "input": {
                 "classroom": {
                     "classroom": {
                         "title": "Classroom 6",
@@ -13,7 +13,7 @@
                         "classCourse": "HK2",
                         "topicTags": "Web, Mobile", // separated by commas
                         "quantityStudent": 15
-                    } 
+                    }
                 }
             },
             "output": {
@@ -24,7 +24,7 @@
             }
         },
         "create a existed classroom": {
-            "input":{
+            "input": {
                 "classroom": {
                     "title": "Classroom 6",
                     "description": "Classroom 6",
@@ -33,7 +33,7 @@
                     "classCourse": "HK2",
                     "topicTags": "Web, Mobile", // separated by commas
                     "quantityStudent": 15
-                } 
+                }
             },
             "output": {
                 "code": 6,
@@ -43,8 +43,8 @@
         }
     },
     "Get a classroom": {
-    // Method: GET
-    // URL: localhost:8080/api/class/1
+        // Method: GET
+        // URL: localhost:8080/api/class/1
         "success": {
             "output": {
                 "response": {
@@ -62,6 +62,17 @@
                     "quantityStudent": 15,
                     "createdAt": "2023-09-01T15:01:00Z",
                     "updatedAt": "2023-09-01T15:01:00Z",
+                    "topic": [
+                        {
+                            "id": "3",
+                            "title": "12312qaws",
+                            "typeTopic": "12312qaws",
+                            "memberQuantity": "0",
+                            "studentID": "123123",
+                            "memberEmail": "abc@gmail.com",
+                            "description": "description here"
+                        }
+                    ],
                     "postsAndExercises": [
                         {
                             "id": 8,
@@ -162,8 +173,8 @@
         }
     },
     "Delete a classroom": {
-    // Method: DELETE 
-    // URL: localhost:8080/api/class/1
+        // Method: DELETE 
+        // URL: localhost:8080/api/class/1
         "success": {
             "output": {
                 "response": {
@@ -181,8 +192,8 @@
         }
     },
     "Update a classroom": {
-    // Method: PUT
-    // URL: localhost:8080/api/class/1
+        // Method: PUT
+        // URL: localhost:8080/api/class/1
         "success": {
             "input": {
                 "classroom": {
@@ -193,7 +204,7 @@
                     "classCourse": "HK2",
                     "topicTags": "Web, Mobile", // separated by commas
                     "quantityStudent": 15
-                } 
+                }
             },
             "output": {
                 "response": {
@@ -212,7 +223,7 @@
                     "classCourse": "HK2",
                     "topicTags": "Web, Mobile", // separated by commas
                     "quantityStudent": 15
-                } 
+                }
             },
             "output": {
                 "code": 6,
@@ -243,6 +254,17 @@
                         "quantityStudent": 15,
                         "createdAt": "2023-09-01T15:01:00Z",
                         "updatedAt": "2023-09-01T15:01:00Z",
+                        "topic": [
+                            {
+                                "id": "3",
+                                "title": "12312qaws",
+                                "typeTopic": "12312qaws",
+                                "memberQuantity": "0",
+                                "studentID": "123123",
+                                "memberEmail": "abc@gmail.com",
+                                "description": "description here"
+                            }
+                        ],
                         "postsAndExercises": [
                             {
                                 "id": "1",

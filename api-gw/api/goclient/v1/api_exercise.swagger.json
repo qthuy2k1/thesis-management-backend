@@ -503,10 +503,6 @@
         "deadline": {
           "$ref": "#/definitions/typeDateTime"
         },
-        "score": {
-          "type": "string",
-          "format": "int64"
-        },
         "categoryID": {
           "type": "string",
           "format": "int64"
@@ -536,10 +532,6 @@
         },
         "deadline": {
           "$ref": "#/definitions/typeDateTime"
-        },
-        "score": {
-          "type": "string",
-          "format": "int64"
         },
         "category": {
           "$ref": "#/definitions/v1ReportingStageExerciseResponse"

@@ -44,10 +44,10 @@ message CommonTopicResponse {
 // ====== POST ======
 message TopicInput {
     string title = 1;
-    string type_topic = 2;
-    int64 member_quanity = 3;
-    string student_id = 4;
-    string member_email = 5;
+    string typeTopic = 2;
+    int64 memberQuantity = 3;
+    string studentID = 4;
+    string memberEmail = 5;
     string description = 6;
 }
 
@@ -55,10 +55,10 @@ message TopicInput {
 message TopicResponse {
     int64 id = 1;
     string title = 2;
-    string type_topic = 3;
-    int64 member_quanity = 4;
-    UserTopicResponse student_id = 5;
-    string member_email = 6;
+    string typeTopic = 3;
+    int64 memberQuantity = 4;
+    UserTopicResponse studentID = 5;
+    string memberEmail = 6;
     string description = 7;
 }
 

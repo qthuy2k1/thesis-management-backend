@@ -237,11 +237,11 @@
         "typeTopic": {
           "type": "string"
         },
-        "memberQuanity": {
+        "memberQuantity": {
           "type": "string",
           "format": "int64"
         },
-        "studentId": {
+        "studentID": {
           "type": "string"
         },
         "memberEmail": {
@@ -266,11 +266,11 @@
         "typeTopic": {
           "type": "string"
         },
-        "memberQuanity": {
+        "memberQuantity": {
           "type": "string",
           "format": "int64"
         },
-        "studentId": {
+        "studentID": {
           "$ref": "#/definitions/v1UserTopicResponse"
         },
         "memberEmail": {

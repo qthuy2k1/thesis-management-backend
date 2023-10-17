@@ -2065,6 +2065,8 @@ func (m *MemberInput) validate(all bool) error {
 
 	// no validation rules for Status
 
+	// no validation rules for IsDefense
+
 	if len(errors) > 0 {
 		return MemberInputMultiError(errors)
 	}
@@ -2171,6 +2173,8 @@ func (m *MemberResponse) validate(all bool) error {
 	// no validation rules for MemberID
 
 	// no validation rules for Status
+
+	// no validation rules for IsDefense
 
 	if all {
 		switch v := interface{}(m.GetCreatedAt()).(type) {

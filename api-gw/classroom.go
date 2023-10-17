@@ -10,6 +10,7 @@ import (
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
 	reportingStageSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
+	topicSvcV1 "github.com/qthuy2k1/thesis-management-backend/topic-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
@@ -20,15 +21,17 @@ type classroomServiceGW struct {
 	exerciseClient       exerciseSvcV1.ExerciseServiceClient
 	reportingStageClient reportingStageSvcV1.ReportingStageServiceClient
 	userClient           userSvcV1.UserServiceClient
+	topicClient          topicSvcV1.TopicServiceClient
 }
 
-func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, reportingStageClient reportingStageSvcV1.ReportingStageServiceClient, userClient userSvcV1.UserServiceClient) *classroomServiceGW {
+func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, reportingStageClient reportingStageSvcV1.ReportingStageServiceClient, userClient userSvcV1.UserServiceClient, topicClient topicSvcV1.TopicServiceClient) *classroomServiceGW {
 	return &classroomServiceGW{
 		classroomClient:      classroomClient,
 		postClient:           postClient,
 		exerciseClient:       exerciseClient,
 		reportingStageClient: reportingStageClient,
 		userClient:           userClient,
+		topicClient:          topicClient,
 	}
 }
 
@@ -178,7 +181,6 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 			Description: p.Content,
 			ClassroomID: p.ClassroomID,
 			Deadline:    p.Deadline,
-			Score:       &p.Score,
 			Category: &pb.ReportingStageClassroomResponse{
 				Id:          reportingStageRes.ReportingStage.Id,
 				Label:       reportingStageRes.ReportingStage.Label,
@@ -213,6 +215,38 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 		return nil, err
 	}
 
+	userRes, err := u.userClient.GetAllMembersOfClassroom(ctx, &userSvcV1.GetAllMembersOfClassroomRequest{
+		ClassroomID: res.GetClassroom().GetId(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var userListID []string
+	for _, user := range userRes.Members {
+		userListID = append(userListID, user.MemberID)
+	}
+
+	topicRes, err := u.topicClient.GetAllTopicsOfListUser(ctx, &topicSvcV1.GetAllTopicsOfListUserRequest{
+		UserID: userListID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var topic []*pb.TopicClassroomResponse
+	for _, t := range topicRes.GetTopic() {
+		topic = append(topic, &pb.TopicClassroomResponse{
+			Id:             t.Id,
+			Title:          t.Title,
+			TypeTopic:      t.TypeTopic,
+			MemberQuantity: t.MemberQuantity,
+			StudentID:      t.StudentID,
+			MemberEmail:    t.MemberEmail,
+			Description:    t.Description,
+		})
+	}
+
 	return &pb.GetClassroomResponse{
 		Classroom: &pb.ClassroomResponse{
 			Id:          res.GetClassroom().GetId(),
@@ -234,6 +268,7 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 			QuantityStudent:   res.GetClassroom().GetQuantityStudent(),
 			CreatedAt:         res.GetClassroom().GetCreatedAt(),
 			UpdatedAt:         res.GetClassroom().GetUpdatedAt(),
+			Topic:             topic,
 			PostsAndExercises: postsAndExercises,
 		},
 	}, nil
@@ -443,7 +478,6 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 				Description: p.Content,
 				ClassroomID: p.ClassroomID,
 				Deadline:    p.Deadline,
-				Score:       &p.Score,
 				Category: &pb.ReportingStageClassroomResponse{
 					Id:          reportingStageRes.ReportingStage.Id,
 					Label:       reportingStageRes.ReportingStage.Label,

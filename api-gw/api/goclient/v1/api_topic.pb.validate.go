@@ -167,9 +167,9 @@ func (m *TopicInput) validate(all bool) error {
 
 	// no validation rules for TypeTopic
 
-	// no validation rules for MemberQuanity
+	// no validation rules for MemberQuantity
 
-	// no validation rules for StudentId
+	// no validation rules for StudentID
 
 	// no validation rules for MemberEmail
 
@@ -280,14 +280,14 @@ func (m *TopicResponse) validate(all bool) error {
 
 	// no validation rules for TypeTopic
 
-	// no validation rules for MemberQuanity
+	// no validation rules for MemberQuantity
 
 	if all {
-		switch v := interface{}(m.GetStudentId()).(type) {
+		switch v := interface{}(m.GetStudentID()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, TopicResponseValidationError{
-					field:  "StudentId",
+					field:  "StudentID",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -295,16 +295,16 @@ func (m *TopicResponse) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, TopicResponseValidationError{
-					field:  "StudentId",
+					field:  "StudentID",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetStudentId()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetStudentID()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return TopicResponseValidationError{
-				field:  "StudentId",
+				field:  "StudentID",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}

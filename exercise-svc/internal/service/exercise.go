@@ -13,7 +13,6 @@ type ExerciseInputSvc struct {
 	Content          string
 	ClassroomID      int
 	Deadline         time.Time
-	Score            int
 	ReportingStageID int
 	AuthorID         string
 }
@@ -25,7 +24,6 @@ func (s *ExerciseSvc) CreateExercise(ctx context.Context, e ExerciseInputSvc) (i
 		Content:          e.Content,
 		ClassroomID:      e.ClassroomID,
 		Deadline:         e.Deadline,
-		Score:            e.Score,
 		ReportingStageID: e.ReportingStageID,
 		AuthorID:         e.AuthorID,
 	}
@@ -57,7 +55,6 @@ func (s *ExerciseSvc) GetExercise(ctx context.Context, id int) (ExerciseOutputSv
 		Content:          e.Content,
 		ClassroomID:      e.ClassroomID,
 		Deadline:         e.Deadline,
-		Score:            e.Score,
 		ReportingStageID: e.ReportingStageID,
 		AuthorID:         e.AuthorID,
 		CreatedAt:        e.CreatedAt,
@@ -72,7 +69,6 @@ func (s *ExerciseSvc) UpdateExercise(ctx context.Context, id int, exercise Exerc
 		Content:          exercise.Content,
 		ClassroomID:      exercise.ClassroomID,
 		Deadline:         exercise.Deadline,
-		Score:            exercise.Score,
 		ReportingStageID: exercise.ReportingStageID,
 		AuthorID:         exercise.AuthorID,
 	}); err != nil {
@@ -103,7 +99,6 @@ type ExerciseOutputSvc struct {
 	Content          string
 	ClassroomID      int
 	Deadline         time.Time
-	Score            int
 	ReportingStageID int
 	AuthorID         string
 	CreatedAt        time.Time
@@ -139,7 +134,6 @@ func (s *ExerciseSvc) GetExercises(ctx context.Context, filter ExerciseFilterSvc
 			Content:          e.Content,
 			ClassroomID:      e.ClassroomID,
 			Deadline:         e.Deadline,
-			Score:            e.Score,
 			ReportingStageID: e.ReportingStageID,
 			AuthorID:         e.AuthorID,
 			CreatedAt:        e.CreatedAt,
@@ -171,7 +165,6 @@ func (s *ExerciseSvc) GetAllExercisesOfClassroom(ctx context.Context, filter Exe
 			Content:          e.Content,
 			ClassroomID:      e.ClassroomID,
 			Deadline:         e.Deadline,
-			Score:            e.Score,
 			ReportingStageID: e.ReportingStageID,
 			AuthorID:         e.AuthorID,
 			CreatedAt:        e.CreatedAt,
@@ -197,7 +190,6 @@ func (s *ExerciseSvc) GetAllExercisesInReportingStage(ctx context.Context, repor
 			Content:          e.Content,
 			ClassroomID:      e.ClassroomID,
 			Deadline:         e.Deadline,
-			Score:            e.Score,
 			ReportingStageID: e.ReportingStageID,
 			AuthorID:         e.AuthorID,
 			CreatedAt:        e.CreatedAt,

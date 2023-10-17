@@ -75,7 +75,6 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 			Content:          req.GetExercise().Description,
 			ClassroomID:      req.GetExercise().ClassroomID,
 			Deadline:         req.GetExercise().Deadline,
-			Score:            req.GetExercise().Score,
 			ReportingStageID: req.GetExercise().CategoryID,
 			AuthorID:         req.GetExercise().AuthorID,
 		},
@@ -157,7 +156,6 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 			Description: res.GetExercise().Content,
 			ClassroomID: res.GetExercise().ClassroomID,
 			Deadline:    res.GetExercise().Deadline,
-			Score:       res.GetExercise().Score,
 			Category: &pb.ReportingStageExerciseResponse{
 				Id:          reportingStageRes.ReportingStage.Id,
 				Label:       reportingStageRes.ReportingStage.Label,
@@ -221,7 +219,6 @@ func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateEx
 			Content:          req.GetExercise().Description,
 			ClassroomID:      req.GetExercise().ClassroomID,
 			Deadline:         req.GetExercise().Deadline,
-			Score:            req.GetExercise().Score,
 			ReportingStageID: req.GetExercise().CategoryID,
 			AuthorID:         req.GetExercise().AuthorID,
 		},
@@ -338,7 +335,6 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 			Description: e.Content,
 			ClassroomID: e.ClassroomID,
 			Deadline:    e.Deadline,
-			Score:       e.Score,
 			Category: &pb.ReportingStageExerciseResponse{
 				Id:          reportingStageRes.ReportingStage.Id,
 				Label:       reportingStageRes.ReportingStage.Label,
@@ -452,7 +448,6 @@ func (u *exerciseServiceGW) GetAllExercisesOfClassroom(ctx context.Context, req 
 			Description: p.Content,
 			ClassroomID: p.ClassroomID,
 			Deadline:    p.Deadline,
-			Score:       p.Score,
 			Category: &pb.ReportingStageExerciseResponse{
 				Id:          reportingStageRes.ReportingStage.Id,
 				Label:       reportingStageRes.ReportingStage.Label,
@@ -540,7 +535,6 @@ func (u *exerciseServiceGW) GetAllExercisesInReportingStage(ctx context.Context,
 			Description: p.Content,
 			ClassroomID: p.ClassroomID,
 			Deadline:    p.Deadline,
-			Score:       p.Score,
 			Category: &pb.ReportingStageExerciseResponse{
 				Id:          rpsRes.ReportingStage.Id,
 				Label:       rpsRes.ReportingStage.Label,

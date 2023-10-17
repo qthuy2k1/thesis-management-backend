@@ -1,0 +1,40 @@
+#For creating Kubernetes Deployment in the Minikube cluster
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thesis-management-backend-attachment-db-deployment
+  labels:
+    app: thesis-management-backend-attachment-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thesis-management-backend-attachment-db
+  template:
+    metadata:
+      labels:
+        app: thesis-management-backend-attachment-db 
+    spec:
+      containers:
+      - name: thesis-management-backend-attachment-db
+        image: qthuy2k1/thesis-management-backend-attachment-db
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9091
+      
+        
+
+---
+#For creating a Kubernetes Service in the Minikube cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: thesis-management-backend-attachment-db-service
+spec:
+  selector:
+    app: thesis-management-backend-attachment-db 
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 9091
+    targetPort: 9091

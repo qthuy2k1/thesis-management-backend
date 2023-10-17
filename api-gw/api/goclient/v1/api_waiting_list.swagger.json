@@ -433,6 +433,9 @@
         },
         "memberID": {
           "type": "string"
+        },
+        "isDefense": {
+          "type": "boolean"
         }
       },
       "title": "====== waitingList ======"
@@ -449,6 +452,9 @@
         },
         "member": {
           "$ref": "#/definitions/v1UserWaitingListResponse"
+        },
+        "isDefense": {
+          "type": "boolean"
         },
         "createdAt": {
           "type": "string",

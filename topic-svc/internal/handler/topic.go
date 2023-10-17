@@ -47,13 +47,13 @@ func (h *TopicHdl) GetTopic(ctx context.Context, req *topicpb.GetTopicRequest) (
 	}
 
 	topicResp := topicpb.TopicResponse{
-		Id:            int64(topic.ID),
-		Title:         topic.Title,
-		TypeTopic:     topic.Title,
-		MemberQuanity: int64(topic.MemberQuantity),
-		StudentId:     topic.StudentID,
-		MemberEmail:   topic.MemberEmail,
-		Description:   topic.Description,
+		Id:             int64(topic.ID),
+		Title:          topic.Title,
+		TypeTopic:      topic.Title,
+		MemberQuantity: int64(topic.MemberQuantity),
+		StudentID:      topic.StudentID,
+		MemberEmail:    topic.MemberEmail,
+		Description:    topic.Description,
 	}
 
 	resp := &topicpb.GetTopicResponse{
@@ -119,6 +119,39 @@ func (h *TopicHdl) DeleteTopic(ctx context.Context, req *topicpb.DeleteTopicRequ
 	}, nil
 }
 
+func (h *TopicHdl) GetAllTopicsOfListUser(ctx context.Context, req *topicpb.GetAllTopicsOfListUserRequest) (*topicpb.GetAllTopicsOfListUserResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	ts, err := h.Repository.GetAllTopicOfListUser(ctx, req.GetUserID())
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var tsResp []*topicpb.TopicResponse
+	for _, t := range ts {
+		tsResp = append(tsResp, &topicpb.TopicResponse{
+			Id:             int64(t.ID),
+			Title:          t.Title,
+			TypeTopic:      t.Title,
+			MemberQuantity: int64(t.MemberQuantity),
+			StudentID:      t.StudentID,
+			MemberEmail:    t.MemberEmail,
+			Description:    t.Description,
+		})
+	}
+
+	return &topicpb.GetAllTopicsOfListUserResponse{
+		Response: &topicpb.CommonTopicResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Topic: tsResp,
+	}, nil
+}
+
 func validateAndConvertTopic(pbTopic *topicpb.TopicInput) (repository.TopicInputRepo, error) {
 	if err := pbTopic.Validate(); err != nil {
 		return repository.TopicInputRepo{}, err
@@ -127,8 +160,8 @@ func validateAndConvertTopic(pbTopic *topicpb.TopicInput) (repository.TopicInput
 	return repository.TopicInputRepo{
 		Title:          pbTopic.Title,
 		TypeTopic:      pbTopic.TypeTopic,
-		MemberQuantity: int(pbTopic.MemberQuanity),
-		StudentID:      pbTopic.StudentId,
+		MemberQuantity: int(pbTopic.MemberQuantity),
+		StudentID:      pbTopic.StudentID,
 		MemberEmail:    pbTopic.MemberEmail,
 		Description:    pbTopic.Description,
 	}, nil

@@ -30,7 +30,7 @@ proto-api:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./api-gw/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto api_comment.proto api_attachment.proto api_topic.proto api_authorization.proto api_member.proto
+		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto api_comment.proto api_attachment.proto api_topic.proto api_authorization.proto api_member.proto api_thesis_commitee.proto
 	@echo "Done"
 
 proto-classroom:
@@ -225,10 +225,26 @@ proto-topic:
 		 topic.proto
 	@echo "Done"
 
+proto-commitee:
+	@echo "--> Generating gRPC clients for thesis-commitee API"
+	@protoc -I ./thesis-commitee-svc/api/v1 \
+		--go_out ./thesis-commitee-svc/api/goclient/v1 --go_opt paths=source_relative \
+	  	--go-grpc_out ./thesis-commitee-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+		--grpc-gateway_out ./thesis-commitee-svc/api/goclient/v1 \
+		--grpc-gateway_opt logtostderr=true \
+		--grpc-gateway_opt paths=source_relative \
+		--grpc-gateway_opt generate_unbound_methods=true \
+  		--openapiv2_out ./thesis-commitee-svc/api/goclient/v1 \
+    	--openapiv2_opt logtostderr=true \
+		--validate_out="lang=go,paths=source_relative:./thesis-commitee-svc/api/goclient/v1" \
+		--experimental_allow_proto3_optional \
+		 thesis_commitee.proto
+	@echo "Done"
 
 
 
-proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-redis proto-comment proto-attachment proto-topic proto-authorization
+
+proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-redis proto-comment proto-attachment proto-topic proto-authorization proto-commitee
 
 clean:
 	rm -rf ./out
@@ -248,6 +264,7 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/attachment ./attachment-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/topic ./topic-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/authorization ./authorization-svc
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/thesis-commitee ./thesis-commitee-svc
 
 build_and_run: clean build
 	@echo "--> Starting servers"
@@ -286,6 +303,35 @@ docker-tag:
 	docker tag postgres qthuy2k1/thesis-management-backend-attachment-db:$(tag)
 	docker tag postgres qthuy2k1/thesis-management-backend-topic-db:$(tag)
 
+
+docker-google-cloud-tag:
+	# APP
+	docker tag qthuy2k1/thesis-management-backend:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-apigw-client:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-apigw-client:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-classroom:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-classroom:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-post:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-post:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-exercise:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-exercise:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-reporting-stage:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-reporting-stage:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-submission:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-submission:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-classroom-waiting-list:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-waiting-list:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-comment:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-comment:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-attachment:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-attachment:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-topic:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-topic:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-authorization:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-authorization:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-user:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-user:$(tag)
+	
+	# DB
+	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-classroom-db:$(tag)
+	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-post-db:$(tag)
+	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-exercise-db:$(tag)
+	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-user-db:$(tag)
+	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-reporting-stage-db:$(tag)
+	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-submission-db:$(tag)
+	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-waiting-list-db:$(tag)
+	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-comment-db:$(tag)
+	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-attachment-db:$(tag)
+	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-topic-db:$(tag)
+
 docker-push:
 	# APP
 	docker push qthuy2k1/thesis-management-backend:latest
@@ -313,6 +359,34 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-comment-db:latest
 	docker push qthuy2k1/thesis-management-backend-attachment-db:latest
 	docker push qthuy2k1/thesis-management-backend-topic-db:latest
+
+docker-google-cloud-push:
+	# APP
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-apigw-client:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-classroom:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-post:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-exercise:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-user:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-reporting-stage:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-submission:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-classroom-waiting-list:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-comment:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-attachment:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-topic:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-authorization:latest
+
+	# DB
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-classroom-db:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-post-db:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-exercise-db:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-user-db:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-reporting-stage-db:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-submission-db:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-classroom-waiting-list-db:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-comment-db:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-attachment-db:latest
+	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-topic-db:latest
 
 migrate_all_up:
 	docker run --rm -v $(PWD)/classroom-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@classroom-db:5432/thesis_management_classrooms?sslmode=disable" up

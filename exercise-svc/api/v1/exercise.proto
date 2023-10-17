@@ -35,9 +35,8 @@ message ExerciseInput {
     string content = 2;
     int64 classroomID = 3;
     google.type.DateTime deadline = 4;
-    int64 score = 5;
-    int64 reportingStageID = 6;
-    string authorID = 7;
+    int64 reportingStageID = 5;
+    string authorID = 6;
 }
 
 message ExerciseResponse {
@@ -46,11 +45,10 @@ message ExerciseResponse {
     string content = 3;
     int64 classroomID = 4;
     google.type.DateTime deadline = 5;
-    int64 score = 6;
-    int64 reportingStageID = 7;
-    string authorID = 8;
-    google.protobuf.Timestamp created_at = 9;
-    google.protobuf.Timestamp updated_at = 10;
+    int64 reportingStageID = 6;
+    string authorID = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
 }
 
 message CreateExerciseRequest {

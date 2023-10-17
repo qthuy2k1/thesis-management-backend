@@ -861,6 +861,40 @@ func (m *ClassroomResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	for idx, item := range m.GetTopic() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ClassroomResponseValidationError{
+						field:  fmt.Sprintf("Topic[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ClassroomResponseValidationError{
+						field:  fmt.Sprintf("Topic[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ClassroomResponseValidationError{
+					field:  fmt.Sprintf("Topic[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	for idx, item := range m.GetPostsAndExercises() {
 		_, _ = idx, item
 
@@ -974,6 +1008,122 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ClassroomResponseValidationError{}
+
+// Validate checks the field values on TopicClassroomResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *TopicClassroomResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on TopicClassroomResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// TopicClassroomResponseMultiError, or nil if none found.
+func (m *TopicClassroomResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *TopicClassroomResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Title
+
+	// no validation rules for TypeTopic
+
+	// no validation rules for MemberQuantity
+
+	// no validation rules for StudentID
+
+	// no validation rules for MemberEmail
+
+	// no validation rules for Description
+
+	if len(errors) > 0 {
+		return TopicClassroomResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// TopicClassroomResponseMultiError is an error wrapping multiple validation
+// errors returned by TopicClassroomResponse.ValidateAll() if the designated
+// constraints aren't met.
+type TopicClassroomResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m TopicClassroomResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m TopicClassroomResponseMultiError) AllErrors() []error { return m }
+
+// TopicClassroomResponseValidationError is the validation error returned by
+// TopicClassroomResponse.Validate if the designated constraints aren't met.
+type TopicClassroomResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e TopicClassroomResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e TopicClassroomResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e TopicClassroomResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e TopicClassroomResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e TopicClassroomResponseValidationError) ErrorName() string {
+	return "TopicClassroomResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e TopicClassroomResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sTopicClassroomResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = TopicClassroomResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = TopicClassroomResponseValidationError{}
 
 // Validate checks the field values on PostsAndExercisesOfClassroom with the
 // rules defined in the proto definition for this message. If any rules are

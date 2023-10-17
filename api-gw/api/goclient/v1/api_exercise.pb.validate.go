@@ -243,17 +243,6 @@ func (m *ExerciseInput) validate(all bool) error {
 		}
 	}
 
-	if m.GetScore() < 0 {
-		err := ExerciseInputValidationError{
-			field:  "Score",
-			reason: "value must be greater than or equal to 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if m.GetCategoryID() < 1 {
 		err := ExerciseInputValidationError{
 			field:  "CategoryID",
@@ -686,17 +675,6 @@ func (m *ExerciseResponse) validate(all bool) error {
 				cause:  err,
 			}
 		}
-	}
-
-	if m.GetScore() < 0 {
-		err := ExerciseResponseValidationError{
-			field:  "Score",
-			reason: "value must be greater than or equal to 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
 	}
 
 	if all {

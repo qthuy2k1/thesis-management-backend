@@ -5,7 +5,6 @@
         "content": "<string>",
         "classroomID": "<integer>",
         "deadline": "<dateTime>",
-        "score": "<integer>",
         "categoryID": "<integer>",
         "authorID": "<integer>",
         "createdAt": "<dateTime>",

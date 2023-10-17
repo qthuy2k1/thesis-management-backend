@@ -67,9 +67,8 @@ message ExerciseInput {
     string description = 2 [(validate.rules).string = {min_len: 2}];
     int64 classroomID = 3 [(validate.rules).int64.gte = 1];
     google.type.DateTime deadline = 4;
-    int64 score = 5 [(validate.rules).int64.gte = 0];
-    int64 categoryID = 6 [(validate.rules).int64.gte = 1];
-    string authorID = 7;
+    int64 categoryID = 5 [(validate.rules).int64.gte = 1];
+    string authorID = 6;
 }
 
 message SubmissionExerciseInput {
@@ -88,11 +87,10 @@ message ExerciseResponse {
     string description = 3 [(validate.rules).string = {min_len: 2}];
     int64 classroomID = 4 [(validate.rules).int64.gte = 1];
     google.type.DateTime deadline = 5;
-    int64 score = 6 [(validate.rules).int64.gte = 0];
-    ReportingStageExerciseResponse category = 7;
-    AuthorExerciseResponse author = 8;
-    google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
-    google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
+    ReportingStageExerciseResponse category = 6;
+    AuthorExerciseResponse author = 7;
+    google.protobuf.Timestamp createdAt = 8 [(validate.rules).timestamp.required = true];
+    google.protobuf.Timestamp updatedAt = 9 [(validate.rules).timestamp.required = true];
 
 }
 

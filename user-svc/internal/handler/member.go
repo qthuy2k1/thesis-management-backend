@@ -53,6 +53,7 @@ func (h *UserHdl) GetMember(ctx context.Context, req *memberpb.GetMemberRequest)
 		ClassroomID: int64(u.ClassroomID),
 		MemberID:    u.MemberID,
 		Status:      u.Status,
+		IsDefense:   u.IsDefense,
 		CreatedAt:   timestamppb.New(u.CreatedAt),
 	}
 
@@ -84,6 +85,7 @@ func (c *UserHdl) UpdateMember(ctx context.Context, req *memberpb.UpdateMemberRe
 		ClassroomID: u.ClassroomID,
 		MemberID:    u.MemberID,
 		Status:      u.Status,
+		IsDefense:   u.IsDefense,
 	}); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -137,6 +139,7 @@ func (h *UserHdl) GetMembers(ctx context.Context, req *memberpb.GetMembersReques
 			ClassroomID: int64(u.ClassroomID),
 			MemberID:    u.MemberID,
 			Status:      u.Status,
+			IsDefense:   u.IsDefense,
 			CreatedAt:   timestamppb.New(u.CreatedAt),
 		})
 	}
@@ -171,6 +174,7 @@ func (h *UserHdl) GetAllMembersOfClassroom(ctx context.Context, req *memberpb.Ge
 			ClassroomID: int64(u.ClassroomID),
 			MemberID:    u.MemberID,
 			Status:      u.Status,
+			IsDefense:   u.IsDefense,
 			CreatedAt:   timestamppb.New(u.CreatedAt),
 		})
 	}
@@ -211,6 +215,7 @@ func (h *UserHdl) IsUserJoinedClassroom(ctx context.Context, req *memberpb.IsUse
 			ClassroomID: int64(m.ClassroomID),
 			MemberID:    m.MemberID,
 			Status:      m.Status,
+			IsDefense:   m.IsDefense,
 			CreatedAt:   timestamppb.New(m.CreatedAt),
 		},
 	}, nil
@@ -225,5 +230,6 @@ func validateAndConvertMember(pbMember *memberpb.MemberInput) (service.MemberInp
 		ClassroomID: int(pbMember.ClassroomID),
 		MemberID:    pbMember.MemberID,
 		Status:      pbMember.Status,
+		IsDefense:   pbMember.IsDefense,
 	}, nil
 }

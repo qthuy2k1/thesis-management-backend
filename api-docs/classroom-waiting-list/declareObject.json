@@ -3,6 +3,7 @@
         "id": "<integer>",
         "memberID": "<string>",
         "classroomID": "<integer>",
+        "isDefense": "<boolean>",
         "created_at": "<timestamp>"
     }
 }

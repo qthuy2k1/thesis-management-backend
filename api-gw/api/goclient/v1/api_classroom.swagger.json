@@ -412,6 +412,13 @@
           "type": "string",
           "format": "date-time"
         },
+        "topic": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1TopicClassroomResponse"
+          }
+        },
         "postsAndExercises": {
           "type": "array",
           "items": {
@@ -538,6 +545,34 @@
           "type": "string"
         },
         "value": {
+          "type": "string"
+        }
+      }
+    },
+    "v1TopicClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "typeTopic": {
+          "type": "string"
+        },
+        "memberQuantity": {
+          "type": "string",
+          "format": "int64"
+        },
+        "studentID": {
+          "type": "string"
+        },
+        "memberEmail": {
+          "type": "string"
+        },
+        "description": {
           "type": "string"
         }
       }

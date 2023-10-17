@@ -156,10 +156,6 @@
         "deadline": {
           "$ref": "#/definitions/typeDateTime"
         },
-        "score": {
-          "type": "string",
-          "format": "int64"
-        },
         "reportingStageID": {
           "type": "string",
           "format": "int64"
@@ -189,10 +185,6 @@
         },
         "deadline": {
           "$ref": "#/definitions/typeDateTime"
-        },
-        "score": {
-          "type": "string",
-          "format": "int64"
         },
         "reportingStageID": {
           "type": "string",

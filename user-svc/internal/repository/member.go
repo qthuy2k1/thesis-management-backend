@@ -12,6 +12,7 @@ type MemberInputRepo struct {
 	ClassroomID int
 	MemberID    string
 	Status      string
+	IsDefense   bool
 }
 
 type MemberOutputRepo struct {
@@ -19,6 +20,7 @@ type MemberOutputRepo struct {
 	ClassroomID int
 	MemberID    string
 	Status      string
+	IsDefense   bool
 	CreatedAt   time.Time
 }
 
@@ -34,7 +36,7 @@ func (r *UserRepo) CreateMember(ctx context.Context, u MemberInputRepo) error {
 		return ErrMemberExisted
 	}
 
-	if _, err := ExecSQL(ctx, r.Database, "CreateMember", "INSERT INTO members (classroom_id, member_id, status) VALUES ($1, $2, $3) RETURNING id", u.ClassroomID, u.MemberID, u.Status); err != nil {
+	if _, err := ExecSQL(ctx, r.Database, "CreateMember", "INSERT INTO members (classroom_id, member_id, status, is_defense) VALUES ($1, $2, $3) RETURNING id", u.ClassroomID, u.MemberID, u.Status, u.IsDefense); err != nil {
 		logger(err, "execute SQL statement", "CreateMember")
 		return err
 	}
@@ -44,7 +46,7 @@ func (r *UserRepo) CreateMember(ctx context.Context, u MemberInputRepo) error {
 
 // GetMember returns a member in db given by id
 func (r *UserRepo) GetMember(ctx context.Context, id int) (MemberOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetMember", "SELECT id, classroom_id, member_id, status, created_at FROM members WHERE id=$1", id)
+	row, err := QueryRowSQL(ctx, r.Database, "GetMember", "SELECT id, classroom_id, member_id, status, is_defense, created_at FROM members WHERE id=$1", id)
 	if err != nil {
 		logger(err, "query row sql", "GetMember")
 		return MemberOutputRepo{}, err
@@ -52,7 +54,7 @@ func (r *UserRepo) GetMember(ctx context.Context, id int) (MemberOutputRepo, err
 
 	member := MemberOutputRepo{}
 
-	if err = row.Scan(&member.ID, &member.ClassroomID, &member.MemberID, &member.Status, &member.CreatedAt); err != nil {
+	if err = row.Scan(&member.ID, &member.ClassroomID, &member.MemberID, &member.Status, &member.CreatedAt, &member.IsDefense); err != nil {
 		if err == sql.ErrNoRows {
 			logger(err, "member not found", "GetMember")
 			return MemberOutputRepo{}, ErrMemberNotFound
@@ -81,7 +83,7 @@ func (r *UserRepo) IsMemberExists(ctx context.Context, memberID string) (bool, e
 
 // UpdateMember updates the specified member by id
 func (r *UserRepo) UpdateMember(ctx context.Context, id int, member MemberInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdateMember", "UPDATE members SET classroom_id = $2, member_id = $3, status = $4 WHERE id=$1", id, member.ClassroomID, member.MemberID, member.Status)
+	result, err := ExecSQL(ctx, r.Database, "UpdateMember", "UPDATE members SET classroom_id = $2, member_id = $3, status = $4, is_defense = $5 WHERE id=$1", id, member.ClassroomID, member.MemberID, member.Status, member.IsDefense)
 	if err != nil {
 		logger(err, "Exec SQL", "UpdateMember")
 		return err
@@ -113,7 +115,7 @@ func (r *UserRepo) DeleteMember(ctx context.Context, id int) error {
 
 // GetMember returns a list of members in db with filter
 func (r *UserRepo) GetMembers(ctx context.Context) ([]MemberOutputRepo, int, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetMembers", "SELECT id, classroom_id, member_id, status, created_at FROM members")
+	rows, err := QuerySQL(ctx, r.Database, "GetMembers", "SELECT id, classroom_id, member_id, status, is_defense, created_at FROM members")
 	if err != nil {
 		logger(err, "Query SQL", "GetMembers")
 		return nil, 0, err
@@ -129,6 +131,7 @@ func (r *UserRepo) GetMembers(ctx context.Context) ([]MemberOutputRepo, int, err
 			&member.ClassroomID,
 			&member.MemberID,
 			&member.Status,
+			&member.IsDefense,
 			&member.CreatedAt,
 		)
 		if err != nil {
@@ -154,7 +157,7 @@ func (r *UserRepo) GetMembers(ctx context.Context) ([]MemberOutputRepo, int, err
 
 // GetAllMemberOfClassroom returns all users of the specified classroom given by classroom id
 func (r *UserRepo) GetAllMembersOfClassroom(ctx context.Context, classroomID int) ([]MemberOutputRepo, int, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetAllMembersOfClassroom", fmt.Sprintf("SELECT id, classroom_id, member_id, status, created_at FROM members WHERE classroom_id=%d", classroomID))
+	rows, err := QuerySQL(ctx, r.Database, "GetAllMembersOfClassroom", fmt.Sprintf("SELECT id, classroom_id, member_id, status, is_defense, created_at FROM members WHERE classroom_id=%d", classroomID))
 	if err != nil {
 		logger(err, "query SQL", "GetAllMembersOfClassroom")
 		return nil, 0, err
@@ -170,6 +173,7 @@ func (r *UserRepo) GetAllMembersOfClassroom(ctx context.Context, classroomID int
 			&user.ClassroomID,
 			&user.MemberID,
 			&user.Status,
+			&user.IsDefense,
 			&user.CreatedAt,
 		)
 		if err != nil {
@@ -231,13 +235,13 @@ func (r *UserRepo) getCountInClassroom(ctx context.Context, classroomID int) (in
 
 // IsUserJoinedClassroom returns a member if exists
 func (r *UserRepo) IsUserJoinedClassroom(ctx context.Context, userID string) (MemberOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "IsUserJoinedClassroom", fmt.Sprintf("SELECT id, classroom_id, member_id, status, created_at FROM members WHERE member_id = '%s'", userID))
+	row, err := QueryRowSQL(ctx, r.Database, "IsUserJoinedClassroom", fmt.Sprintf("SELECT id, classroom_id, member_id, status, is_defense, created_at FROM members WHERE member_id = '%s'", userID))
 	if err != nil {
 		return MemberOutputRepo{}, err
 	}
 
 	var member MemberOutputRepo
-	if err = row.Scan(&member.ID, &member.ClassroomID, &member.MemberID, &member.Status, &member.CreatedAt); err != nil {
+	if err = row.Scan(&member.ID, &member.ClassroomID, &member.MemberID, &member.Status, &member.IsDefense, &member.CreatedAt); err != nil {
 		if err == sql.ErrNoRows {
 			return MemberOutputRepo{}, ErrMemberNotFound
 		}

@@ -12,6 +12,10 @@ service TopicService {
     rpc UpdateTopic(UpdateTopicRequest) returns (UpdateTopicResponse){}
 
     rpc DeleteTopic(DeleteTopicRequest) returns (DeleteTopicResponse){}
+    
+    rpc GetTopics(GetTopicsRequest) returns (GetTopicsResponse){}
+
+    rpc GetAllTopicsOfListUser(GetAllTopicsOfListUserRequest) returns (GetAllTopicsOfListUserResponse){}
 }
 
 
@@ -23,10 +27,10 @@ message CommonTopicResponse {
 // ====== POST ======
 message TopicInput {
     string title = 1;
-    string type_topic = 2;
-    int64 member_quanity = 3;
-    string student_id = 4;
-    string member_email = 5;
+    string typeTopic = 2;
+    int64 memberQuantity = 3;
+    string studentID = 4;
+    string memberEmail = 5;
     string description = 6;
 }
 
@@ -34,10 +38,10 @@ message TopicInput {
 message TopicResponse {
     int64 id = 1;
     string title = 2;
-    string type_topic = 3;
-    int64 member_quanity = 4;
-    string student_id = 5;
-    string member_email = 6;
+    string typeTopic = 3;
+    int64 memberQuantity = 4;
+    string studentID = 5;
+    string memberEmail = 6;
     string description = 7;
 }
 
@@ -87,4 +91,24 @@ message DeleteTopicRequest {
 
 message DeleteTopicResponse {
     CommonTopicResponse response = 1;
+}
+
+message GetTopicsRequest {
+
+}
+
+message GetTopicsResponse {
+    CommonTopicResponse response = 1;
+    repeated TopicResponse topic = 2;
+}
+
+
+
+message GetAllTopicsOfListUserRequest {
+    repeated string userID = 1;
+}
+
+message GetAllTopicsOfListUserResponse {
+    CommonTopicResponse response = 1;
+    repeated TopicResponse topic = 2;
 }

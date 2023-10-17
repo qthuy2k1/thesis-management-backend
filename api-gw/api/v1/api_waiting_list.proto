@@ -59,13 +59,15 @@ message CommonWaitingListResponse {
 message WaitingListInput {
     int64 classroomID = 1 [(validate.rules).int64.gte = 1];
     string memberID = 2;
+    bool isDefense = 3;
 }
 
 message WaitingListResponse {
     int64 id = 1 [(validate.rules).int64.gte = 1];
     ClassroomWTLResponse classroom = 2;
     UserWaitingListResponse member = 3;
-    google.protobuf.Timestamp createdAt = 4 [(validate.rules).timestamp.required = true];
+    bool isDefense = 4;
+    google.protobuf.Timestamp createdAt = 5 [(validate.rules).timestamp.required = true];
 }
 
 message UserWaitingListResponse {

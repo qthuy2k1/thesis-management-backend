@@ -198,8 +198,6 @@ func (m *ExerciseInput) validate(all bool) error {
 		}
 	}
 
-	// no validation rules for Score
-
 	// no validation rules for ReportingStageID
 
 	// no validation rules for AuthorID
@@ -340,8 +338,6 @@ func (m *ExerciseResponse) validate(all bool) error {
 			}
 		}
 	}
-
-	// no validation rules for Score
 
 	// no validation rules for ReportingStageID
 

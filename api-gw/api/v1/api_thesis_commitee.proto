@@ -1,0 +1,183 @@
+syntax = "proto3";
+
+package api.commitee.v1;
+
+import "google/api/datetime.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/commitee/api/v1";
+
+service CommiteeService {
+    rpc CreateCommitee(CreateCommiteeRequest) returns (CreateCommiteeResponse){
+        option (google.api.http) = {
+            post: "/api/commitee"
+            body: "*"
+        };
+    }
+    
+    rpc GetCommitee(GetCommiteeRequest) returns (GetCommiteeResponse){
+        option (google.api.http) = {
+            get: "/api/commitee/{id}"
+        };
+    }
+
+    rpc UpdateCommitee(UpdateCommiteeRequest) returns (UpdateCommiteeResponse){
+        option (google.api.http) = {
+            put: "/api/commitee/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteCommitee(DeleteCommiteeRequest) returns (DeleteCommiteeResponse){
+        option (google.api.http) = {
+            delete: "/api/commitee/{id}"
+        };
+    }
+
+    rpc GetCommitees(GetCommiteesRequest) returns (GetCommiteesResponse) {
+        option (google.api.http) = {
+            get: "/api/commitee"
+        };
+    }
+}
+
+message CommonCommiteeResponse {
+    int64 statusCode = 1 [(validate.rules).int64.gte = 1];
+    string message = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+
+// ====== commitee ======
+message CommiteeInput {
+    google.type.DateTime startDate = 1;
+    string period = 2 [(validate.rules).string = {min_len: 2}];
+    int64 commiteeID = 3;
+    repeated string lecturerID = 4;
+    string studentID = 5;
+}
+
+message CommiteeResponse {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+    google.type.DateTime startDate = 2;
+    string period = 3 [(validate.rules).string = {min_len: 2}];
+    repeated UserCommiteeResponse lecturers = 4;
+    UserCommiteeResponse student = 5;
+}
+
+message UserCommiteeResponse {
+    string id = 1;
+    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
+}
+
+message CreateCommiteeRequest {
+   CommiteeInput commitee = 1 [(validate.rules).message = {required: true}];
+}
+
+message CreateCommiteeResponse {
+    CommonCommiteeResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== GET ======
+message GetCommiteeRequest {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+}
+
+message GetCommiteeResponse {
+    CommonCommiteeResponse response = 1 [(validate.rules).message = {required: true}];
+    CommiteeResponse commitee = 2 [(validate.rules).message = {required: true}];
+}
+
+// ====== PUT ======
+message UpdateCommiteeRequest {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+    CommiteeInput commitee = 2 [(validate.rules).message = {required: true}];
+}
+
+message UpdateCommiteeResponse {
+    CommonCommiteeResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== DELETE ======
+message DeleteCommiteeRequest {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+}
+
+message DeleteCommiteeResponse {
+    CommonCommiteeResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ALL ======
+message GetCommiteesRequest {}
+
+message GetCommiteesResponse {
+    CommonCommiteeResponse response = 1 [(validate.rules).message = {required: true}];
+    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
+    repeated CommiteeResponse commitees = 3;
+}
+
+
+
+
+message CommiteeUserDetail {
+    int64 commiteeID = 1 [(validate.rules).int64.gte = 1];
+    string lecturerID = 2 [(validate.rules).string = {min_len: 2}];
+    string studentID = 3 [(validate.rules).string = {min_len: 2}];
+}
+
+message CreateCommiteeUserDetailRequest {
+   CommiteeUserDetail commiteeUserDetail = 1 [(validate.rules).message = {required: true}];
+}
+
+message CreateCommiteeUserDetailResponse {
+    CommonCommiteeResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== GET ======
+message GetCommiteeUserDetailRequest {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+}
+
+message GetCommiteeUserDetailResponse {
+    CommonCommiteeResponse response = 1 [(validate.rules).message = {required: true}];
+    CommiteeUserDetail commiteeUserDetail = 2 [(validate.rules).message = {required: true}];
+}
+
+// ====== PUT ======
+message UpdateCommiteeUserDetailRequest {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+    CommiteeUserDetail commiteeUserDetail = 2 [(validate.rules).message = {required: true}];
+}
+
+message UpdateCommiteeUserDetailResponse {
+    CommonCommiteeResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== DELETE ======
+message DeleteCommiteeUserDetailRequest {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+}
+
+message DeleteCommiteeUserDetailResponse {
+    CommonCommiteeResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ALL ======
+message GetCommiteeUserDetailsRequest {}
+
+message GetCommiteeUserDetailsResponse {
+    CommonCommiteeResponse response = 1 [(validate.rules).message = {required: true}];
+    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
+    repeated CommiteeUserDetail commiteeUserDetails = 3;
+}
+
+
+
