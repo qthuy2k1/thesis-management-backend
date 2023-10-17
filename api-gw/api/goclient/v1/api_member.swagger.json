@@ -368,6 +368,9 @@
         },
         "status": {
           "type": "string"
+        },
+        "isDefense": {
+          "type": "boolean"
         }
       },
       "title": "====== member ======"
@@ -387,6 +390,9 @@
         },
         "status": {
           "type": "string"
+        },
+        "isDefense": {
+          "type": "boolean"
         },
         "createdAt": {
           "type": "string",

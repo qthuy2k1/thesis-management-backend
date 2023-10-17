@@ -64,7 +64,6 @@ func (h *ExerciseHdl) GetExercise(ctx context.Context, req *exercisepb.GetExerci
 			Minutes: int32(e.Deadline.Minute()),
 			Seconds: int32(e.Deadline.Second()),
 		},
-		Score:            int64(e.Score),
 		ReportingStageID: int64(e.ReportingStageID),
 		AuthorID:         e.AuthorID,
 		CreatedAt:        timestamppb.New(e.CreatedAt),
@@ -99,7 +98,6 @@ func (c *ExerciseHdl) UpdateExercise(ctx context.Context, req *exercisepb.Update
 		Content:          e.Content,
 		ClassroomID:      e.ClassroomID,
 		Deadline:         e.Deadline,
-		Score:            e.Score,
 		ReportingStageID: e.ReportingStageID,
 		AuthorID:         e.AuthorID,
 	}); err != nil {
@@ -171,7 +169,6 @@ func (h *ExerciseHdl) GetExercises(ctx context.Context, req *exercisepb.GetExerc
 				Minutes: int32(e.Deadline.Minute()),
 				Seconds: int32(e.Deadline.Second()),
 			},
-			Score:            int64(e.Score),
 			ReportingStageID: int64(e.ReportingStageID),
 			AuthorID:         e.AuthorID,
 			CreatedAt:        timestamppb.New(e.CreatedAt),
@@ -225,7 +222,6 @@ func (h *ExerciseHdl) GetAllExercisesOfClassroom(ctx context.Context, req *exerc
 				Minutes: int32(e.Deadline.Minute()),
 				Seconds: int32(e.Deadline.Second()),
 			},
-			Score:            int64(e.Score),
 			ReportingStageID: int64(e.ReportingStageID),
 			AuthorID:         e.AuthorID,
 			CreatedAt:        timestamppb.New(e.CreatedAt),
@@ -271,7 +267,6 @@ func (h *ExerciseHdl) GetAllExercisesInReportingStage(ctx context.Context, req *
 				Minutes: int32(e.Deadline.Minute()),
 				Seconds: int32(e.Deadline.Second()),
 			},
-			Score:            int64(e.Score),
 			ReportingStageID: int64(e.ReportingStageID),
 			AuthorID:         e.AuthorID,
 			CreatedAt:        timestamppb.New(e.CreatedAt),
@@ -296,7 +291,6 @@ func validateAndConvertExercise(pbExercise *exercisepb.ExerciseInput) (service.E
 
 	deadline, err := time.Parse("year:2006 month:1 day:2 hours:15 minutes:4 seconds:5", pbExercise.Deadline.String())
 
-	log.Println(deadline)
 	if err != nil {
 		return service.ExerciseInputSvc{}, err
 	}
@@ -306,7 +300,6 @@ func validateAndConvertExercise(pbExercise *exercisepb.ExerciseInput) (service.E
 		Content:          pbExercise.Content,
 		ClassroomID:      int(pbExercise.ClassroomID),
 		Deadline:         deadline,
-		Score:            int(pbExercise.Score),
 		ReportingStageID: int(pbExercise.ReportingStageID),
 		AuthorID:         pbExercise.AuthorID,
 	}, nil

@@ -51,6 +51,7 @@ func (h *WaitingListHdl) GetWaitingList(ctx context.Context, req *waitingListpb.
 		Id:          int64(wt.ID),
 		ClassroomID: int64(wt.ClassroomID),
 		UserID:      wt.UserID,
+		IsDefense:   wt.IsDefense,
 		CreatedAt:   timestamppb.New(wt.CreatedAt),
 	}
 
@@ -80,6 +81,7 @@ func (c *WaitingListHdl) UpdateWaitingList(ctx context.Context, req *waitingList
 	if err := c.Service.UpdateWaitingList(ctx, int(req.GetId()), service.WaitingListInputSvc{
 		ClassroomID: wt.ClassroomID,
 		UserID:      wt.UserID,
+		IsDefense:   wt.IsDefense,
 	}); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -132,6 +134,7 @@ func (h *WaitingListHdl) GetWaitingListsOfClassroom(ctx context.Context, req *wa
 			Id:          int64(wt.ID),
 			ClassroomID: int64(wt.ClassroomID),
 			UserID:      wt.UserID,
+			IsDefense:   wt.IsDefense,
 			CreatedAt:   timestamppb.New(wt.CreatedAt),
 		})
 	}
@@ -166,5 +169,6 @@ func validateAndConvertWaitingList(pbWaitingList *waitingListpb.WaitingListInput
 	return service.WaitingListInputSvc{
 		ClassroomID: int(pbWaitingList.GetClassroomID()),
 		UserID:      pbWaitingList.GetUserID(),
+		IsDefense:   pbWaitingList.IsDefense,
 	}, nil
 }

@@ -73,6 +73,21 @@
         }
       }
     },
+    "v1GetAllTopicsOfListUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonTopicResponse"
+        },
+        "topic": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1TopicResponse"
+          }
+        }
+      }
+    },
     "v1GetTopicResponse": {
       "type": "object",
       "properties": {
@@ -81,6 +96,21 @@
         },
         "topic": {
           "$ref": "#/definitions/v1TopicResponse"
+        }
+      }
+    },
+    "v1GetTopicsResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonTopicResponse"
+        },
+        "topic": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1TopicResponse"
+          }
         }
       }
     },
@@ -93,11 +123,11 @@
         "typeTopic": {
           "type": "string"
         },
-        "memberQuanity": {
+        "memberQuantity": {
           "type": "string",
           "format": "int64"
         },
-        "studentId": {
+        "studentID": {
           "type": "string"
         },
         "memberEmail": {
@@ -122,11 +152,11 @@
         "typeTopic": {
           "type": "string"
         },
-        "memberQuanity": {
+        "memberQuantity": {
           "type": "string",
           "format": "int64"
         },
-        "studentId": {
+        "studentID": {
           "type": "string"
         },
         "memberEmail": {

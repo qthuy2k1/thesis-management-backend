@@ -12,6 +12,7 @@ type MemberInputSvc struct {
 	ClassroomID int
 	MemberID    string
 	Status      string
+	IsDefense   bool
 }
 
 type MemberOutputSvc struct {
@@ -19,6 +20,7 @@ type MemberOutputSvc struct {
 	ClassroomID int
 	MemberID    string
 	Status      string
+	IsDefense   bool
 	CreatedAt   time.Time
 }
 
@@ -28,6 +30,7 @@ func (s *UserSvc) CreateMember(ctx context.Context, m MemberInputSvc) error {
 		ClassroomID: m.ClassroomID,
 		MemberID:    m.MemberID,
 		Status:      m.Status,
+		IsDefense:   m.IsDefense,
 	}
 
 	if err := s.Repository.CreateMember(ctx, pRepo); err != nil {
@@ -55,6 +58,7 @@ func (s *UserSvc) GetMember(ctx context.Context, id int) (MemberOutputSvc, error
 		ClassroomID: m.ClassroomID,
 		MemberID:    m.MemberID,
 		Status:      m.Status,
+		IsDefense:   m.IsDefense,
 		CreatedAt:   m.CreatedAt,
 	}, nil
 }
@@ -65,6 +69,7 @@ func (s *UserSvc) UpdateMember(ctx context.Context, id int, member MemberInputSv
 		ClassroomID: member.ClassroomID,
 		MemberID:    member.MemberID,
 		Status:      member.Status,
+		IsDefense:   member.IsDefense,
 	}); err != nil {
 		if errors.Is(err, repository.ErrMemberNotFound) {
 			return ErrMemberNotFound
@@ -101,6 +106,7 @@ func (s *UserSvc) GetMembers(ctx context.Context) ([]MemberOutputSvc, int, error
 			ClassroomID: m.ClassroomID,
 			MemberID:    m.MemberID,
 			Status:      m.Status,
+			IsDefense:   m.IsDefense,
 			CreatedAt:   m.CreatedAt,
 		})
 	}
@@ -122,6 +128,7 @@ func (s *UserSvc) GetAllMembersOfClassroom(ctx context.Context, classroomID int)
 			ClassroomID: m.ClassroomID,
 			MemberID:    m.MemberID,
 			Status:      m.Status,
+			IsDefense:   m.IsDefense,
 			CreatedAt:   m.CreatedAt,
 		})
 	}
@@ -144,6 +151,7 @@ func (s *UserSvc) IsUserJoinedClassroom(ctx context.Context, userID string) (Mem
 		ClassroomID: m.ClassroomID,
 		MemberID:    m.MemberID,
 		Status:      m.Status,
+		IsDefense:   m.IsDefense,
 		CreatedAt:   m.CreatedAt,
 	}, nil
 }

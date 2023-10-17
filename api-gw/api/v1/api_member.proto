@@ -59,6 +59,7 @@ message MemberInput {
     int64 classroomID = 1 [(validate.rules).int64.gte = 1];
     string memberID = 2 [(validate.rules).string = {min_len: 1}];
     string status = 3;
+    bool isDefense = 4;
 }
 
 message MemberResponse {
@@ -66,7 +67,8 @@ message MemberResponse {
     ClassroomMemberResponse classroom = 2;
     UserMemberResponse member = 3;
     string status = 4;
-    google.protobuf.Timestamp created_at = 5;
+    bool isDefense = 5;
+    google.protobuf.Timestamp created_at = 6;
 }
 
 message CreateMemberRequest {

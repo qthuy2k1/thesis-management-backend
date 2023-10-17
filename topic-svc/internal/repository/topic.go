@@ -3,7 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
+	"strings"
 )
 
 // QueryRowSQL is a wrapper function that logs the SQL command before executing it.
@@ -139,4 +141,49 @@ func (r *TopicRepo) DeleteTopic(ctx context.Context, id int) error {
 	}
 
 	return nil
+}
+
+func (r *TopicRepo) GetTopics(ctx context.Context) ([]TopicOutputRepo, error) {
+	rows, err := QuerySQL(ctx, r.Database, "GetTopics", "SELECT id, title, type_topic, member_quantity, student_id, member_email, description FROM topics")
+	if err != nil {
+		return nil, err
+	}
+
+	var topics []TopicOutputRepo
+	for rows.Next() {
+		var topic TopicOutputRepo
+		if err := rows.Scan(&topic.ID, &topic.Title, &topic.TypeTopic, &topic.MemberQuantity, &topic.StudentID, &topic.MemberEmail, &topic.Description); err != nil {
+			return nil, err
+		}
+
+		topics = append(topics, topic)
+	}
+
+	return topics, nil
+}
+
+func (r *TopicRepo) GetAllTopicOfListUser(ctx context.Context, userListID []string) ([]TopicOutputRepo, error) {
+	userListWithComma := make([]string, len(userListID))
+
+	for i, user := range userListID {
+		userListWithComma[i] = fmt.Sprintf("'%s'", user)
+	}
+
+	query := fmt.Sprintf("SELECT id, title, type_topic, member_quantity, student_id, member_email, description FROM topics WHERE student_id IN (%s)", strings.Join(userListWithComma, ","))
+	rows, err := QuerySQL(ctx, r.Database, "GetTopics", query)
+	if err != nil {
+		return nil, err
+	}
+
+	var topics []TopicOutputRepo
+	for rows.Next() {
+		var topic TopicOutputRepo
+		if err := rows.Scan(&topic.ID, &topic.Title, &topic.TypeTopic, &topic.MemberQuantity, &topic.StudentID, &topic.MemberEmail, &topic.Description); err != nil {
+			return nil, err
+		}
+
+		topics = append(topics, topic)
+	}
+
+	return topics, nil
 }

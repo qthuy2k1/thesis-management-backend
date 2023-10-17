@@ -14,7 +14,6 @@ type ExerciseInputRepo struct {
 	Content          string
 	ClassroomID      int
 	Deadline         time.Time
-	Score            int
 	ReportingStageID int
 	AuthorID         string
 }
@@ -92,7 +91,7 @@ func (r *ExerciseRepo) CreateExercise(ctx context.Context, p ExerciseInputRepo) 
 		return 0, ErrExerciseExisted
 	}
 
-	row, err := QueryRowSQL(ctx, r.Database, "CreateExercise", "INSERT INTO exercises (title, content, classroom_id, deadline, score, reporting_stage_id, author_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", p.Title, p.Content, p.ClassroomID, p.Deadline, p.Score, p.ReportingStageID, p.AuthorID)
+	row, err := QueryRowSQL(ctx, r.Database, "CreateExercise", "INSERT INTO exercises (title, content, classroom_id, deadline, reporting_stage_id, author_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", p.Title, p.Content, p.ClassroomID, p.Deadline, p.ReportingStageID, p.AuthorID)
 	if err != nil {
 		return 0, err
 	}
@@ -111,7 +110,6 @@ type ExerciseOutputRepo struct {
 	Content          string
 	ClassroomID      int
 	Deadline         time.Time
-	Score            int
 	ReportingStageID int
 	AuthorID         string
 	CreatedAt        time.Time
@@ -120,14 +118,14 @@ type ExerciseOutputRepo struct {
 
 // GetExercise returns a exercise in db given by id
 func (r *ExerciseRepo) GetExercise(ctx context.Context, id int) (ExerciseOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetExercise", "SELECT id, title, content, classroom_id, deadline, score, reporting_stage_id, author_id, created_at, updated_at FROM exercises WHERE id=$1", id)
+	row, err := QueryRowSQL(ctx, r.Database, "GetExercise", "SELECT id, title, content, classroom_id, deadline, reporting_stage_id, author_id, created_at, updated_at FROM exercises WHERE id=$1", id)
 	if err != nil {
 		return ExerciseOutputRepo{}, err
 	}
 
 	exercise := ExerciseOutputRepo{}
 
-	if err = row.Scan(&exercise.ID, &exercise.Title, &exercise.Content, &exercise.ClassroomID, &exercise.Deadline, &exercise.Score, &exercise.ReportingStageID, &exercise.AuthorID, &exercise.CreatedAt, &exercise.UpdatedAt); err != nil {
+	if err = row.Scan(&exercise.ID, &exercise.Title, &exercise.Content, &exercise.ClassroomID, &exercise.Deadline, &exercise.ReportingStageID, &exercise.AuthorID, &exercise.CreatedAt, &exercise.UpdatedAt); err != nil {
 		if err == sql.ErrNoRows {
 			return ExerciseOutputRepo{}, ErrExerciseNotFound
 		}
@@ -154,7 +152,7 @@ func (r *ExerciseRepo) IsExerciseExists(ctx context.Context, classroomID int, ti
 
 // UpdateExercise updates the specified exercise by id
 func (r *ExerciseRepo) UpdateExercise(ctx context.Context, id int, exercise ExerciseInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdateExercise", "UPDATE exercises SET title=$2, content=$3, classroom_id=$4, deadline=$5, score=$6, reporting_stage_id=$7, author_id=$8, updated_at=$8 WHERE id=$1", id, exercise.Title, exercise.Content, exercise.ClassroomID, exercise.Deadline, exercise.Score, exercise.ReportingStageID, exercise.AuthorID, time.Now())
+	result, err := ExecSQL(ctx, r.Database, "UpdateExercise", "UPDATE exercises SET title=$2, content=$3, classroom_id=$4, deadline=$5, reporting_stage_id=$6, author_id=$7, updated_at=$8 WHERE id=$1", id, exercise.Title, exercise.Content, exercise.ClassroomID, exercise.Deadline, exercise.ReportingStageID, exercise.AuthorID, time.Now())
 	if err != nil {
 		return err
 	}
@@ -190,7 +188,7 @@ type ExerciseFilterRepo struct {
 // GetExercise returns a list of exercises in db with filter
 func (r *ExerciseRepo) GetExercises(ctx context.Context, filter ExerciseFilterRepo) ([]ExerciseOutputRepo, int, error) {
 	log.Println(filter)
-	query := []string{"SELECT id, title, content, classroom_id, deadline, score, reporting_stage_id, author_id, created_at, updated_at FROM exercises"}
+	query := []string{"SELECT id, title, content, classroom_id, deadline, reporting_stage_id, author_id, created_at, updated_at FROM exercises"}
 
 	if filter.TitleSearch != "" {
 		query = append(query, fmt.Sprintf("WHERE UPPER(title) LIKE UPPER('%s')", "%"+filter.TitleSearch+"%"))
@@ -215,7 +213,6 @@ func (r *ExerciseRepo) GetExercises(ctx context.Context, filter ExerciseFilterRe
 			&exercise.Content,
 			&exercise.ClassroomID,
 			&exercise.Deadline,
-			&exercise.Score,
 			&exercise.ReportingStageID,
 			&exercise.AuthorID,
 			&exercise.CreatedAt,
@@ -241,7 +238,7 @@ func (r *ExerciseRepo) GetExercises(ctx context.Context, filter ExerciseFilterRe
 
 // GetAllExercisesOfClassroom returns all exercises of the specified classroom given by classroom id
 func (r *ExerciseRepo) GetAllExercisesOfClassroom(ctx context.Context, filter ExerciseFilterRepo, classromID int) ([]ExerciseOutputRepo, int, error) {
-	query := []string{"SELECT id, title, content, classroom_id, deadline, score, reporting_stage_id, author_id, created_at, updated_at FROM exercises"}
+	query := []string{"SELECT id, title, content, classroom_id, deadline, reporting_stage_id, author_id, created_at, updated_at FROM exercises"}
 
 	if filter.TitleSearch != "" {
 		query = append(query, fmt.Sprintf("WHERE classroom_id=%d AND UPPER(title) LIKE UPPER('%s')", classromID, "%"+filter.TitleSearch+"%"))
@@ -268,7 +265,6 @@ func (r *ExerciseRepo) GetAllExercisesOfClassroom(ctx context.Context, filter Ex
 			&exercise.Content,
 			&exercise.ClassroomID,
 			&exercise.Deadline,
-			&exercise.Score,
 			&exercise.ReportingStageID,
 			&exercise.AuthorID,
 			&exercise.CreatedAt,
@@ -294,7 +290,7 @@ func (r *ExerciseRepo) GetAllExercisesOfClassroom(ctx context.Context, filter Ex
 
 // GetAllExercisesInReportingStage returns all exercises of the specified reporting stage given by reporting stage id
 func (r *ExerciseRepo) GetAllExercisesInReportingStage(ctx context.Context, reportingStageID, classroomID int) ([]ExerciseOutputRepo, int, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetAllExercisesInReportingStage", fmt.Sprintf("SELECT id, title, content, classroom_id, deadline, score, reporting_stage_id, author_id, created_at, updated_at FROM exercises WHERE reporting_stage_id = %d AND classroom_id = %d", reportingStageID, classroomID))
+	rows, err := QuerySQL(ctx, r.Database, "GetAllExercisesInReportingStage", fmt.Sprintf("SELECT id, title, content, classroom_id, deadline, reporting_stage_id, author_id, created_at, updated_at FROM exercises WHERE reporting_stage_id = %d AND classroom_id = %d", reportingStageID, classroomID))
 	if err != nil {
 		return nil, 0, err
 	}
@@ -310,7 +306,6 @@ func (r *ExerciseRepo) GetAllExercisesInReportingStage(ctx context.Context, repo
 			&exercise.Content,
 			&exercise.ClassroomID,
 			&exercise.Deadline,
-			&exercise.Score,
 			&exercise.ReportingStageID,
 			&exercise.AuthorID,
 			&exercise.CreatedAt,

@@ -14,6 +14,10 @@ type ITopicRepo interface {
 	UpdateTopic(ctx context.Context, id int, topic TopicInputRepo) error
 	// DeleteTopic deletes a topic in db given by id
 	DeleteTopic(ctx context.Context, id int) error
+
+	GetTopics(ctx context.Context) ([]TopicOutputRepo, error)
+
+	GetAllTopicOfListUser(ctx context.Context, userListID []string) ([]TopicOutputRepo, error)
 }
 
 type TopicRepo struct {

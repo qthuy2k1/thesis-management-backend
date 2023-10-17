@@ -1,0 +1,165 @@
+syntax = "proto3";
+
+package commitee.v1;
+
+import "google/api/datetime.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/commitee/api/v1";
+
+service CommiteeService {
+    rpc CreateCommitee(CreateCommiteeRequest) returns (CreateCommiteeResponse){}
+    
+    rpc GetCommitee(GetCommiteeRequest) returns (GetCommiteeResponse){}
+
+    rpc UpdateCommitee(UpdateCommiteeRequest) returns (UpdateCommiteeResponse){}
+
+    rpc DeleteCommitee(DeleteCommiteeRequest) returns (DeleteCommiteeResponse){}
+
+    rpc GetCommitees(GetCommiteesRequest) returns (GetCommiteesResponse) {}
+
+    rpc CreateCommiteeUserDetail(CreateCommiteeUserDetailRequest) returns (CreateCommiteeUserDetailResponse){}
+    
+    rpc GetCommiteeUserDetail(GetCommiteeUserDetailRequest) returns (GetCommiteeUserDetailResponse){}
+
+    rpc UpdateCommiteeUserDetail(UpdateCommiteeUserDetailRequest) returns (UpdateCommiteeUserDetailResponse){}
+
+    rpc DeleteCommiteeUserDetail(DeleteCommiteeUserDetailRequest) returns (DeleteCommiteeUserDetailResponse){}
+
+    rpc GetCommiteeUserDetails(GetCommiteeUserDetailsRequest) returns (GetCommiteeUserDetailsResponse) {}
+
+    rpc GetAllCommiteeUserDetailsFromCommitee(GetAllCommiteeUserDetailsFromCommiteeRequest) returns (GetAllCommiteeUserDetailsFromCommiteeResponse) {} //
+}
+
+message CommonCommiteeResponse {
+    int64 statusCode = 1;
+    string message = 2;
+}
+
+
+// ====== commitee ======
+message CommiteeInput {
+    google.type.DateTime startDate = 1;
+    string period = 2;
+}
+
+message CommiteeResponse {
+    int64 id = 1;
+    google.type.DateTime startDate = 2;
+    string period = 3;
+}
+
+message CreateCommiteeRequest {
+   CommiteeInput commitee = 1;
+}
+
+message CreateCommiteeResponse {
+    CommonCommiteeResponse response = 1;
+    CommiteeResponse commitee = 2;
+}
+
+// ====== GET ======
+message GetCommiteeRequest {
+    int64 id = 1;
+}
+
+message GetCommiteeResponse {
+    CommonCommiteeResponse response = 1;
+    CommiteeResponse commitee = 2;
+}
+
+// ====== PUT ======
+message UpdateCommiteeRequest {
+    int64 id = 1;
+    CommiteeInput commitee = 2;
+}
+
+message UpdateCommiteeResponse {
+    CommonCommiteeResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteCommiteeRequest {
+    int64 id = 1;
+}
+
+message DeleteCommiteeResponse {
+    CommonCommiteeResponse response = 1;
+}
+
+
+// ====== GET ALL ======
+message GetCommiteesRequest {}
+
+message GetCommiteesResponse {
+    CommonCommiteeResponse response = 1;
+    int64 totalCount = 2;
+    repeated CommiteeResponse commitees = 3;
+}
+
+
+
+
+message CommiteeUserDetail {
+    int64 commiteeID = 1;
+    string lecturerID = 2;
+    string studentID = 3;
+}
+
+message CreateCommiteeUserDetailRequest {
+   CommiteeUserDetail commiteeUserDetail = 1;
+}
+
+message CreateCommiteeUserDetailResponse {
+    CommonCommiteeResponse response = 1;
+    CommiteeUserDetail commiteeUserDetail = 2;
+}
+
+// ====== GET ======
+message GetCommiteeUserDetailRequest {
+    int64 id = 1;
+}
+
+message GetCommiteeUserDetailResponse {
+    CommonCommiteeResponse response = 1;
+    CommiteeUserDetail commiteeUserDetail = 2;
+}
+
+// ====== PUT ======
+message UpdateCommiteeUserDetailRequest {
+    int64 id = 1;
+    CommiteeUserDetail commiteeUserDetail = 2;
+}
+
+message UpdateCommiteeUserDetailResponse {
+    CommonCommiteeResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteCommiteeUserDetailRequest {
+    int64 commiteeID = 1;
+    string lecturerID = 2;
+    string studentID = 3;
+}
+
+message DeleteCommiteeUserDetailResponse {
+    CommonCommiteeResponse response = 1;
+}
+
+
+// ====== GET ALL ======
+message GetCommiteeUserDetailsRequest {}
+
+message GetCommiteeUserDetailsResponse {
+    CommonCommiteeResponse response = 1;
+    int64 totalCount = 2;
+    repeated CommiteeUserDetail commiteeUserDetails = 3;
+}
+
+message GetAllCommiteeUserDetailsFromCommiteeRequest {
+    int64 commiteeID = 1;
+}
+
+message GetAllCommiteeUserDetailsFromCommiteeResponse {
+    CommonCommiteeResponse response = 1;
+    repeated CommiteeUserDetail commiteeUserDetails = 2;
+}

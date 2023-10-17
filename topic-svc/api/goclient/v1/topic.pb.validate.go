@@ -167,9 +167,9 @@ func (m *TopicInput) validate(all bool) error {
 
 	// no validation rules for TypeTopic
 
-	// no validation rules for MemberQuanity
+	// no validation rules for MemberQuantity
 
-	// no validation rules for StudentId
+	// no validation rules for StudentID
 
 	// no validation rules for MemberEmail
 
@@ -280,9 +280,9 @@ func (m *TopicResponse) validate(all bool) error {
 
 	// no validation rules for TypeTopic
 
-	// no validation rules for MemberQuanity
+	// no validation rules for MemberQuantity
 
-	// no validation rules for StudentId
+	// no validation rules for StudentID
 
 	// no validation rules for MemberEmail
 
@@ -1594,3 +1594,537 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DeleteTopicResponseValidationError{}
+
+// Validate checks the field values on GetTopicsRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetTopicsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetTopicsRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetTopicsRequestMultiError, or nil if none found.
+func (m *GetTopicsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetTopicsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return GetTopicsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetTopicsRequestMultiError is an error wrapping multiple validation errors
+// returned by GetTopicsRequest.ValidateAll() if the designated constraints
+// aren't met.
+type GetTopicsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetTopicsRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetTopicsRequestMultiError) AllErrors() []error { return m }
+
+// GetTopicsRequestValidationError is the validation error returned by
+// GetTopicsRequest.Validate if the designated constraints aren't met.
+type GetTopicsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetTopicsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetTopicsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetTopicsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetTopicsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetTopicsRequestValidationError) ErrorName() string { return "GetTopicsRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e GetTopicsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetTopicsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetTopicsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetTopicsRequestValidationError{}
+
+// Validate checks the field values on GetTopicsResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetTopicsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetTopicsResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetTopicsResponseMultiError, or nil if none found.
+func (m *GetTopicsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetTopicsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetResponse()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetTopicsResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetTopicsResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetTopicsResponseValidationError{
+				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	for idx, item := range m.GetTopic() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetTopicsResponseValidationError{
+						field:  fmt.Sprintf("Topic[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetTopicsResponseValidationError{
+						field:  fmt.Sprintf("Topic[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetTopicsResponseValidationError{
+					field:  fmt.Sprintf("Topic[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetTopicsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetTopicsResponseMultiError is an error wrapping multiple validation errors
+// returned by GetTopicsResponse.ValidateAll() if the designated constraints
+// aren't met.
+type GetTopicsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetTopicsResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetTopicsResponseMultiError) AllErrors() []error { return m }
+
+// GetTopicsResponseValidationError is the validation error returned by
+// GetTopicsResponse.Validate if the designated constraints aren't met.
+type GetTopicsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetTopicsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetTopicsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetTopicsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetTopicsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetTopicsResponseValidationError) ErrorName() string {
+	return "GetTopicsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetTopicsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetTopicsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetTopicsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetTopicsResponseValidationError{}
+
+// Validate checks the field values on GetAllTopicsOfListUserRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetAllTopicsOfListUserRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetAllTopicsOfListUserRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// GetAllTopicsOfListUserRequestMultiError, or nil if none found.
+func (m *GetAllTopicsOfListUserRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetAllTopicsOfListUserRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return GetAllTopicsOfListUserRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetAllTopicsOfListUserRequestMultiError is an error wrapping multiple
+// validation errors returned by GetAllTopicsOfListUserRequest.ValidateAll()
+// if the designated constraints aren't met.
+type GetAllTopicsOfListUserRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetAllTopicsOfListUserRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetAllTopicsOfListUserRequestMultiError) AllErrors() []error { return m }
+
+// GetAllTopicsOfListUserRequestValidationError is the validation error
+// returned by GetAllTopicsOfListUserRequest.Validate if the designated
+// constraints aren't met.
+type GetAllTopicsOfListUserRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetAllTopicsOfListUserRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetAllTopicsOfListUserRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetAllTopicsOfListUserRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetAllTopicsOfListUserRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetAllTopicsOfListUserRequestValidationError) ErrorName() string {
+	return "GetAllTopicsOfListUserRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetAllTopicsOfListUserRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetAllTopicsOfListUserRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetAllTopicsOfListUserRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetAllTopicsOfListUserRequestValidationError{}
+
+// Validate checks the field values on GetAllTopicsOfListUserResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetAllTopicsOfListUserResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetAllTopicsOfListUserResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// GetAllTopicsOfListUserResponseMultiError, or nil if none found.
+func (m *GetAllTopicsOfListUserResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetAllTopicsOfListUserResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetResponse()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetAllTopicsOfListUserResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetAllTopicsOfListUserResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetAllTopicsOfListUserResponseValidationError{
+				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	for idx, item := range m.GetTopic() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetAllTopicsOfListUserResponseValidationError{
+						field:  fmt.Sprintf("Topic[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetAllTopicsOfListUserResponseValidationError{
+						field:  fmt.Sprintf("Topic[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetAllTopicsOfListUserResponseValidationError{
+					field:  fmt.Sprintf("Topic[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetAllTopicsOfListUserResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetAllTopicsOfListUserResponseMultiError is an error wrapping multiple
+// validation errors returned by GetAllTopicsOfListUserResponse.ValidateAll()
+// if the designated constraints aren't met.
+type GetAllTopicsOfListUserResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetAllTopicsOfListUserResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetAllTopicsOfListUserResponseMultiError) AllErrors() []error { return m }
+
+// GetAllTopicsOfListUserResponseValidationError is the validation error
+// returned by GetAllTopicsOfListUserResponse.Validate if the designated
+// constraints aren't met.
+type GetAllTopicsOfListUserResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetAllTopicsOfListUserResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetAllTopicsOfListUserResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetAllTopicsOfListUserResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetAllTopicsOfListUserResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetAllTopicsOfListUserResponseValidationError) ErrorName() string {
+	return "GetAllTopicsOfListUserResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetAllTopicsOfListUserResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetAllTopicsOfListUserResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetAllTopicsOfListUserResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetAllTopicsOfListUserResponseValidationError{}

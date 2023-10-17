@@ -42,13 +42,15 @@ message CommonWaitingListResponse {
 message WaitingListInput {
     int64 classroomID = 1;
     string userID = 2;
+    bool isDefense = 3;
 }
 
 message WaitingListResponse {
     int64 id = 1;
     int64 classroomID = 2;
     string userID = 3;
-    google.protobuf.Timestamp createdAt = 4;
+    bool isDefense = 4;
+    google.protobuf.Timestamp createdAt = 5;
 }
 
 message CreateWaitingListRequest {

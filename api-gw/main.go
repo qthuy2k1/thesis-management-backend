@@ -20,6 +20,7 @@ import (
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
+	commiteeSvcV1 "github.com/qthuy2k1/thesis-management-backend/thesis-commitee-svc/api/goclient/v1"
 	topicSvcV1 "github.com/qthuy2k1/thesis-management-backend/topic-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
@@ -37,6 +38,7 @@ const (
 	attachmentAddress     = "attachment:9091"
 	topicAddress          = "topic:9091"
 	authorizationAddress  = "authorization:9091"
+	commiteeAddress       = "thesis-commitee:9091"
 )
 
 func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
@@ -136,6 +138,15 @@ func newAuthorizationSvcClient() (authorizationSvcV1.AuthorizationServiceClient,
 	}
 
 	return authorizationSvcV1.NewAuthorizationServiceClient(conn), nil
+}
+
+func newCommiteeSvcClient() (commiteeSvcV1.CommiteeServiceClient, error) {
+	conn, err := grpc.DialContext(context.TODO(), commiteeAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, fmt.Errorf("topic client: %w", err)
+	}
+
+	return commiteeSvcV1.NewCommiteeServiceClient(conn), nil
 }
 
 func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
@@ -242,13 +253,19 @@ func main() {
 		panic(err)
 	}
 
+	// connect to commitee svc
+	commiteeClient, err := newCommiteeSvcClient()
+	if err != nil {
+		panic(err)
+	}
+
 	lis, err := net.Listen("tcp", listenAddress)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
 
-	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient, rpsClient, userClient))
+	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient, rpsClient, userClient, topicClient))
 	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient, commentClient, userClient))
 	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient, commentClient, userClient, submissionClient, attachmentClient))
 	pb.RegisterReportingStageServiceServer(s, NewReportingStagesService(rpsClient))
@@ -260,6 +277,7 @@ func main() {
 	pb.RegisterTopicServiceServer(s, NewTopicsService(topicClient, userClient))
 	pb.RegisterAuthorizationServiceServer(s, NewAuthorizationService(userClient, authorizationClient))
 	pb.RegisterMemberServiceServer(s, NewMembersService(userClient, classroomClient, waitingListClient))
+	pb.RegisterCommiteeServiceServer(s, NewCommiteesService(commiteeClient, userClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

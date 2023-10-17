@@ -4,6 +4,7 @@
         "classroomID": "<integer>",
         "memberID": "<string>",
         "status": "<string>",
+        "isDefense": "<boolean>",
         "createdAt": "<timestamp>"
     }
 }

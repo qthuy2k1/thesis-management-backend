@@ -128,6 +128,9 @@
         },
         "userID": {
           "type": "string"
+        },
+        "isDefense": {
+          "type": "boolean"
         }
       },
       "title": "====== waitingList ======"
@@ -145,6 +148,9 @@
         },
         "userID": {
           "type": "string"
+        },
+        "isDefense": {
+          "type": "boolean"
         },
         "createdAt": {
           "type": "string",

@@ -91,8 +91,21 @@ message ClassroomResponse {
     int64 quantityStudent = 8 [(validate.rules).int64.gte = 0];
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
-    repeated PostsAndExercisesOfClassroom postsAndExercises = 11;
+    repeated TopicClassroomResponse topic = 11;
+    repeated PostsAndExercisesOfClassroom postsAndExercises = 12;
 }
+
+
+message TopicClassroomResponse {
+    int64 id = 1;
+    string title = 2;
+    string typeTopic = 3;
+    int64 memberQuantity = 4;
+    string studentID = 5;
+    string memberEmail = 6;
+    string description = 7;
+}
+
 
 
 message PostsAndExercisesOfClassroom {

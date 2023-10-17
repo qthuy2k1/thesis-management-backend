@@ -11,6 +11,7 @@ import (
 type WaitingListInputSvc struct {
 	ClassroomID int
 	UserID      string
+	IsDefense   bool
 }
 
 // CreateWaitingList creates a new waiting list in db given by waiting list model
@@ -18,6 +19,7 @@ func (s *WaitingListSvc) CreateWaitingList(ctx context.Context, wt WaitingListIn
 	pRepo := repository.WaitingListInputRepo{
 		ClassroomID: wt.ClassroomID,
 		UserID:      wt.UserID,
+		IsDefense:   wt.IsDefense,
 	}
 
 	if err := s.Repository.CreateWaitingList(ctx, pRepo); err != nil {
@@ -44,6 +46,7 @@ func (s *WaitingListSvc) GetWaitingList(ctx context.Context, id int) (WaitingLis
 		ID:          wt.ID,
 		ClassroomID: wt.ClassroomID,
 		UserID:      wt.UserID,
+		IsDefense:   wt.IsDefense,
 		CreatedAt:   wt.CreatedAt,
 	}, nil
 }
@@ -53,6 +56,7 @@ func (s *WaitingListSvc) UpdateWaitingList(ctx context.Context, id int, waitingL
 	if err := s.Repository.UpdateWaitingList(ctx, id, repository.WaitingListInputRepo{
 		ClassroomID: waitingList.ClassroomID,
 		UserID:      waitingList.UserID,
+		IsDefense:   waitingList.IsDefense,
 	}); err != nil {
 		if errors.Is(err, repository.ErrWaitingListNotFound) {
 			return ErrWaitingListNotFound
@@ -79,6 +83,7 @@ type WaitingListOutputSvc struct {
 	ID          int
 	ClassroomID int
 	UserID      string
+	IsDefense   bool
 	CreatedAt   time.Time
 }
 
@@ -95,6 +100,7 @@ func (s *WaitingListSvc) GetWaitingListsOfClassroom(ctx context.Context, classro
 			ID:          wt.ID,
 			ClassroomID: wt.ClassroomID,
 			UserID:      wt.UserID,
+			IsDefense:   wt.IsDefense,
 			CreatedAt:   wt.CreatedAt,
 		})
 	}

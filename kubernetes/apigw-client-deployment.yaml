@@ -1,0 +1,40 @@
+#For creating Kubernetes Deployment in the Minikube cluster
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thesis-management-backend-apigw-client-deployment
+  labels:
+    app: thesis-management-backend-apigw-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thesis-management-backend-apigw-client
+  template:
+    metadata:
+      labels:
+        app: thesis-management-backend-apigw-client 
+    spec:
+      containers:
+      - name: thesis-management-backend-apigw-client
+        image: qthuy2k1/thesis-management-backend-apigw-client
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+      
+        
+
+---
+#For creating a Kubernetes Service in the Minikube cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: thesis-management-backend-apigw-client-service
+spec:
+  selector:
+    app: thesis-management-backend-apigw-client 
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080

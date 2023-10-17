@@ -52,6 +52,7 @@ func (u *memberServiceGW) CreateMember(ctx context.Context, req *pb.CreateMember
 			ClassroomID: req.GetMember().ClassroomID,
 			MemberID:    req.GetMember().MemberID,
 			Status:      req.GetMember().Status,
+			IsDefense:   req.GetMember().IsDefense,
 		},
 	})
 	if err != nil {
@@ -163,6 +164,7 @@ func (u *memberServiceGW) GetMember(ctx context.Context, req *pb.GetMemberReques
 				Role:     userRes.GetUser().GetRole(),
 			},
 			Status:    res.GetMember().Status,
+			IsDefense: res.GetMember().IsDefense,
 			CreatedAt: res.GetMember().CreatedAt,
 		},
 	}, nil
@@ -193,6 +195,7 @@ func (u *memberServiceGW) UpdateMember(ctx context.Context, req *pb.UpdateMember
 			ClassroomID: req.GetMember().ClassroomID,
 			MemberID:    req.GetMember().MemberID,
 			Status:      req.GetMember().Status,
+			IsDefense:   req.GetMember().IsDefense,
 		},
 	})
 	if err != nil {
@@ -321,6 +324,7 @@ func (u *memberServiceGW) GetMembers(ctx context.Context, req *pb.GetMembersRequ
 				Role:     userRes.GetUser().GetRole(),
 			},
 			Status:    m.Status,
+			IsDefense: m.IsDefense,
 			CreatedAt: m.CreatedAt,
 		})
 	}
@@ -443,6 +447,7 @@ func (u *memberServiceGW) GetAllMembersOfClassroom(ctx context.Context, req *pb.
 				Role:     userRes.GetUser().GetRole(),
 			},
 			Status:    m.Status,
+			IsDefense: m.IsDefense,
 			CreatedAt: m.CreatedAt,
 		})
 	}
