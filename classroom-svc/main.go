@@ -8,13 +8,12 @@ import (
 
 	"google.golang.org/grpc"
 
+	"github.com/joho/godotenv"
 	classroompb "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	"github.com/qthuy2k1/thesis-management-backend/classroom-svc/internal/handler"
 	"github.com/qthuy2k1/thesis-management-backend/classroom-svc/internal/repository"
 	"github.com/qthuy2k1/thesis-management-backend/classroom-svc/internal/service"
 	"github.com/qthuy2k1/thesis-management-backend/classroom-svc/pkg/db"
-
-	"github.com/joho/godotenv"
 )
 
 const (

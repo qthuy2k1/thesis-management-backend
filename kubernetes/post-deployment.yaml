@@ -1,8 +1,8 @@
-#For creating Kubernetes Deployment in the Minikube cluster
+#For creating Kubernetes StatefulSet in the Minikube cluster
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: thesis-management-backend-post-deployment
+  name: thesis-management-backend-post
   labels:
     app: thesis-management-backend-post
 spec:
@@ -18,7 +18,7 @@ spec:
       containers:
       - name: thesis-management-backend-post
         image: qthuy2k1/thesis-management-backend-post
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 9091
       

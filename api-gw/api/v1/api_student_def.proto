@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+package api.studentDef.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/student-def/api/v1";
+
+service StudentDefService {
+rpc CreateStudentDef(CreateStudentDefRequest) returns (CreateStudentDefResponse){
+        option (google.api.http) = {
+            post: "/api/student-def"
+            body: "*"
+        };
+    }
+    
+    rpc GetStudentDef(GetStudentDefRequest) returns (GetStudentDefResponse){
+        option (google.api.http) = {
+            get: "/api/student-def/{id}"
+        };
+    }
+
+    rpc UpdateStudentDef(UpdateStudentDefRequest) returns (UpdateStudentDefResponse){
+        option (google.api.http) = {
+            put: "/api/student-def/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteStudentDef(DeleteStudentDefRequest) returns (DeleteStudentDefResponse){
+        option (google.api.http) = {
+            delete: "/api/student-def/{id}"
+        };
+    }
+
+    rpc GetStudentDefs(GetStudentDefsRequest) returns (GetStudentDefsResponse) {
+        option (google.api.http) = {
+            get: "/api/student-def"
+        };
+    }
+
+    rpc GetAllStudentDefsOfInstructor(GetAllStudentDefsOfInstructorRequest) returns (GetAllStudentDefsOfInstructorResponse) {
+        option (google.api.http) = {
+            get: "/api/student-def/{instructorID}"
+        };
+    }
+}
+
+message CommonStudentDefResponse {
+    int64 statusCode = 1 [(validate.rules).int64.gte = 1];
+    string message = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+message StudentDefInput {
+    string userID = 1;
+    string instructorID = 2;
+}
+
+message StudentDefResponse {
+    int64 id = 1;
+    StudentDefUserResponse infor = 2;
+    StudentDefUserResponse instructor = 3;
+}
+
+
+message StudentDefUserResponse {
+    string id = 1;
+    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["lecturer", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
+}
+
+
+message CreateStudentDefRequest {
+   StudentDefInput studentDef = 1;
+}
+
+message CreateStudentDefResponse {
+    CommonStudentDefResponse response = 1;
+}
+
+
+// ====== GET ======
+message GetStudentDefRequest {
+    int64 id = 1;
+}
+
+message GetStudentDefResponse {
+    CommonStudentDefResponse response = 1;
+    StudentDefResponse studentDef = 2;
+}
+
+// ====== PUT ======
+message UpdateStudentDefRequest {
+    int64 id = 1;
+    StudentDefInput studentDef = 2;
+}
+
+message UpdateStudentDefResponse {
+    CommonStudentDefResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteStudentDefRequest {
+    int64 id = 1;
+}
+
+message DeleteStudentDefResponse {
+    CommonStudentDefResponse response = 1;
+}
+
+// ====== GET ALL ======
+message GetStudentDefsRequest {}
+
+message GetStudentDefsResponse {
+    CommonStudentDefResponse response = 1; 
+    int64 totalCount = 2;
+    repeated StudentDefResponse studentDefs = 3;
+}
+// ====== GET ALL OF INSTRUCTOR ======
+message GetAllStudentDefsOfInstructorRequest {
+    string instructorID = 1;
+}
+
+message GetAllStudentDefsOfInstructorResponse {
+    CommonStudentDefResponse response = 1;
+    int64 totalCount = 2;
+    repeated StudentDefResponse studentDefs = 3;
+}

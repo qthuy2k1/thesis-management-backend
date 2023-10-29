@@ -35,6 +35,19 @@ service UserService {
     rpc GetAllMembersOfClassroom(GetAllMembersOfClassroomRequest) returns (GetAllMembersOfClassroomResponse) {}
 
     rpc IsUserJoinedClassroom(IsUserJoinedClassroomRequest) returns (IsUserJoinedClassroomResponse) {}
+
+
+    rpc CreateStudentDef(CreateStudentDefRequest) returns (CreateStudentDefResponse){}
+    
+    rpc GetStudentDef(GetStudentDefRequest) returns (GetStudentDefResponse){}
+
+    rpc UpdateStudentDef(UpdateStudentDefRequest) returns (UpdateStudentDefResponse){}
+
+    rpc DeleteStudentDef(DeleteStudentDefRequest) returns (DeleteStudentDefResponse){}
+
+    rpc GetStudentDefs(GetStudentDefsRequest) returns (GetStudentDefsResponse) {}
+
+    rpc GetAllStudentDefsOfInstructor(GetAllStudentDefsOfInstructorRequest) returns (GetAllStudentDefsOfInstructorResponse) {}
 }
 
 message CommonUserResponse {
@@ -236,4 +249,75 @@ message UnsubscribeClassroomRequest {
 
 message UnsubscribeClassroomResponse {
     CommonUserResponse response = 1;
+}
+
+
+
+message StudentDefInput {
+    string userID = 1;
+    string instructorID = 2;
+}
+
+message StudentDefResponse {
+    int64 id = 1;
+    string userID = 2;
+    string instructorID = 3;
+}
+
+
+message CreateStudentDefRequest {
+   StudentDefInput studentDef = 1;
+}
+
+message CreateStudentDefResponse {
+    CommonUserResponse response = 1;
+}
+
+
+// ====== GET ======
+message GetStudentDefRequest {
+    int64 id = 1;
+}
+
+message GetStudentDefResponse {
+    CommonUserResponse response = 1;
+    StudentDefResponse studentDef = 2;
+}
+
+// ====== PUT ======
+message UpdateStudentDefRequest {
+    int64 id = 1;
+    StudentDefInput studentDef = 2;
+}
+
+message UpdateStudentDefResponse {
+    CommonUserResponse response = 1;
+}
+
+// ====== DELETE ======
+message DeleteStudentDefRequest {
+    int64 id = 1;
+}
+
+message DeleteStudentDefResponse {
+    CommonUserResponse response = 1;
+}
+
+// ====== GET ALL ======
+message GetStudentDefsRequest {}
+
+message GetStudentDefsResponse {
+    CommonUserResponse response = 1; 
+    int64 totalCount = 2;
+    repeated StudentDefResponse studentDefs = 3;
+}
+// ====== GET ALL OF INSTRUCTOR ======
+message GetAllStudentDefsOfInstructorRequest {
+    string instructorID = 1;
+}
+
+message GetAllStudentDefsOfInstructorResponse {
+    CommonUserResponse response = 1;
+    int64 totalCount = 2;
+    repeated StudentDefResponse studentDefs = 3;
 }

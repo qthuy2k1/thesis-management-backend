@@ -1,24 +1,24 @@
-#For creating Kubernetes Deployment in the Minikube cluster
+#For creating Kubernetes StatefulSet in the Minikube cluster
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: thesis-management-backend-api-deployment
+  name: thesis-management-backend
   labels:
-    app: thesis-management-backend-api
+    app: thesis-management-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: thesis-management-backend-api
+      app: thesis-management-backend
   template:
     metadata:
       labels:
-        app: thesis-management-backend-api 
+        app: thesis-management-backend 
     spec:
       containers:
-      - name: thesis-management-backend-api
-        image: qthuy2k1/thesis-management-backend-api
-        imagePullPolicy: IfNotPresent
+      - name: thesis-management-backend
+        image: qthuy2k1/thesis-management-backend
+        imagePullPolicy: Always
         ports:
         - containerPort: 9091
       
@@ -29,11 +29,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: thesis-management-backend-api-service
+  name: thesis-management-backend-service
 spec:
-  clusterIP: 
   selector:
-    app: thesis-management-backend-api 
+    app: thesis-management-backend 
   type: ClusterIP
   ports:
   - protocol: TCP

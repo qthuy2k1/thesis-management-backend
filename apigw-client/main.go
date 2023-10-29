@@ -16,9 +16,7 @@ import (
 )
 
 var (
-	// command-line options:
-	// gRPC server endpoint
-	grpcServerEndpoint = flag.String("grpc-server-endpoint", "api:9091", "gRPC server endpoint")
+	grpcServerEndpoint = flag.String("grpc-server-endpoint", "thesis-management-backend-service:9091", "gRPC server endpoint")
 )
 
 // allowCORS allows Cross Origin Resoruce Sharing from any origin.
@@ -110,7 +108,15 @@ func run() error {
 		return err
 	}
 
-	fmt.Println("The APIGW-Client starting on 0.0.0.0:8080")
+	if err := gw.RegisterRoomServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts); err != nil {
+		return err
+	}
+
+	if err := gw.RegisterStudentDefServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts); err != nil {
+		return err
+	}
+
+	fmt.Println("The APIGW-Client starting on 0.0.0.0:8080", "asdasd: ", grpcServerEndpoint)
 	go func() {
 		<-ctx.Done()
 		glog.Infof("Shutting down the http server")

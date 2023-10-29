@@ -29,7 +29,8 @@ func (u *commiteeServiceGW) CreateCommitee(ctx context.Context, req *pb.CreateCo
 	res, err := u.commiteeClient.CreateCommitee(ctx, &commiteeSvcV1.CreateCommiteeRequest{
 		Commitee: &commiteeSvcV1.CommiteeInput{
 			StartDate: req.GetCommitee().StartDate,
-			Period:    req.GetCommitee().Period,
+			Shift:     req.GetCommitee().Shift,
+			RoomID:    req.GetCommitee().RoomID,
 		},
 	})
 	if err != nil {
@@ -124,11 +125,25 @@ func (u *commiteeServiceGW) GetCommitee(ctx context.Context, req *pb.GetCommitee
 		})
 	}
 
-	studentRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-		Id: detailsRes.CommiteeUserDetails[0].StudentID,
-	})
-	if err != nil {
-		return nil, err
+	var studentList []*pb.UserCommiteeResponse
+	for _, userID := range detailsRes.CommiteeUserDetails[0].StudentID {
+		studentRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: userID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		studentList = append(studentList, &pb.UserCommiteeResponse{
+			Id:       studentRes.User.Id,
+			Class:    studentRes.User.Class,
+			Major:    studentRes.User.Major,
+			Phone:    studentRes.User.Phone,
+			PhotoSrc: studentRes.User.PhotoSrc,
+			Role:     studentRes.User.Role,
+			Name:     studentRes.User.Name,
+			Email:    studentRes.User.Email,
+		})
 	}
 
 	return &pb.GetCommiteeResponse{
@@ -139,18 +154,10 @@ func (u *commiteeServiceGW) GetCommitee(ctx context.Context, req *pb.GetCommitee
 		Commitee: &pb.CommiteeResponse{
 			Id:        res.GetCommitee().Id,
 			StartDate: res.GetCommitee().StartDate,
-			Period:    res.GetCommitee().Period,
+			Shift:     res.GetCommitee().Shift,
+			RoomID:    res.GetCommitee().RoomID,
 			Lecturers: lecturers,
-			Student: &pb.UserCommiteeResponse{
-				Id:       studentRes.User.Id,
-				Class:    studentRes.User.Class,
-				Major:    studentRes.User.Major,
-				Phone:    studentRes.User.Phone,
-				PhotoSrc: studentRes.User.PhotoSrc,
-				Role:     studentRes.User.Role,
-				Name:     studentRes.User.Name,
-				Email:    studentRes.User.Email,
-			},
+			Student:   studentList,
 		},
 	}, nil
 }
@@ -164,7 +171,8 @@ func (u *commiteeServiceGW) UpdateCommitee(ctx context.Context, req *pb.UpdateCo
 		Id: req.GetId(),
 		Commitee: &commiteeSvcV1.CommiteeInput{
 			StartDate: req.GetCommitee().StartDate,
-			Period:    req.GetCommitee().Period,
+			Shift:     req.GetCommitee().Shift,
+			RoomID:    req.GetCommitee().RoomID,
 		},
 	})
 	if err != nil {
@@ -239,18 +247,16 @@ func (u *commiteeServiceGW) GetCommitees(ctx context.Context, req *pb.GetCommite
 			})
 		}
 
-		studentRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: detailsRes.CommiteeUserDetails[0].StudentID,
-		})
-		if err != nil {
-			return nil, err
-		}
-		commitees = append(commitees, &pb.CommiteeResponse{
-			Id:        p.Id,
-			StartDate: p.GetStartDate(),
-			Period:    p.GetPeriod(),
-			Lecturers: lecturers,
-			Student: &pb.UserCommiteeResponse{
+		var studentList []*pb.UserCommiteeResponse
+		for _, userID := range detailsRes.CommiteeUserDetails[0].StudentID {
+			studentRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+				Id: userID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			studentList = append(studentList, &pb.UserCommiteeResponse{
 				Id:       studentRes.User.Id,
 				Class:    studentRes.User.Class,
 				Major:    studentRes.User.Major,
@@ -259,7 +265,16 @@ func (u *commiteeServiceGW) GetCommitees(ctx context.Context, req *pb.GetCommite
 				Role:     studentRes.User.Role,
 				Name:     studentRes.User.Name,
 				Email:    studentRes.User.Email,
-			},
+			})
+		}
+
+		commitees = append(commitees, &pb.CommiteeResponse{
+			Id:        p.Id,
+			StartDate: p.GetStartDate(),
+			Shift:     p.GetShift(),
+			RoomID:    p.GetRoomID(),
+			Lecturers: lecturers,
+			Student:   studentList,
 		})
 	}
 

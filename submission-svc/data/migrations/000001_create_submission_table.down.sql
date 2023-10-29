@@ -1,1 +1,1 @@
-DROP TABLE IF NOT EXISTS "submissions";
+DROP TABLE IF EXISTS "submissions";

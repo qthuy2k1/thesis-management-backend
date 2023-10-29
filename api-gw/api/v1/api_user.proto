@@ -187,10 +187,20 @@ message CheckStatusUserJoinClassroomRequest{
     string userID = 1;
 }
 
+
+message MemberUserResponse {
+    int64 id = 1;
+    ClassroomUserResponse classroom = 2;
+    UserResponse member = 3;
+    string status = 4;
+    bool isDefense = 5;
+    google.protobuf.Timestamp created_at = 6;
+}
+
+
 message CheckStatusUserJoinClassroomResponse{
     CommonUserResponse response = 1;
-    string status = 2;
-    ClassroomUserResponse classroom = 3;
+    MemberUserResponse member = 2;
 }
 
 

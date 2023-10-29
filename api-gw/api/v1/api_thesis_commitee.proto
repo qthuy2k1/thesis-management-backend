@@ -51,18 +51,20 @@ message CommonCommiteeResponse {
 // ====== commitee ======
 message CommiteeInput {
     google.type.DateTime startDate = 1;
-    string period = 2 [(validate.rules).string = {min_len: 2}];
-    int64 commiteeID = 3;
-    repeated string lecturerID = 4;
-    string studentID = 5;
+    string shift = 2 [(validate.rules).string = {min_len: 2}];
+    int64 roomID = 3;
+    int64 commiteeID = 4;
+    repeated string lecturerID = 5;
+    repeated string studentID = 6;
 }
 
 message CommiteeResponse {
     int64 id = 1 [(validate.rules).int64.gte = 1];
     google.type.DateTime startDate = 2;
-    string period = 3 [(validate.rules).string = {min_len: 2}];
-    repeated UserCommiteeResponse lecturers = 4;
-    UserCommiteeResponse student = 5;
+    string shift = 3 [(validate.rules).string = {min_len: 2}];
+    int64 roomID = 4;
+    repeated UserCommiteeResponse lecturers = 5;
+    repeated UserCommiteeResponse student = 6;
 }
 
 message UserCommiteeResponse {
@@ -129,7 +131,7 @@ message GetCommiteesResponse {
 message CommiteeUserDetail {
     int64 commiteeID = 1 [(validate.rules).int64.gte = 1];
     string lecturerID = 2 [(validate.rules).string = {min_len: 2}];
-    string studentID = 3 [(validate.rules).string = {min_len: 2}];
+    repeated string studentID = 3;
 }
 
 message CreateCommiteeUserDetailRequest {

@@ -36,7 +36,7 @@ func (r *UserRepo) CreateMember(ctx context.Context, u MemberInputRepo) error {
 		return ErrMemberExisted
 	}
 
-	if _, err := ExecSQL(ctx, r.Database, "CreateMember", "INSERT INTO members (classroom_id, member_id, status, is_defense) VALUES ($1, $2, $3) RETURNING id", u.ClassroomID, u.MemberID, u.Status, u.IsDefense); err != nil {
+	if _, err := ExecSQL(ctx, r.Database, "CreateMember", "INSERT INTO members (classroom_id, member_id, status, is_defense) VALUES ($1, $2, $3, $4) RETURNING id", u.ClassroomID, u.MemberID, u.Status, u.IsDefense); err != nil {
 		logger(err, "execute SQL statement", "CreateMember")
 		return err
 	}

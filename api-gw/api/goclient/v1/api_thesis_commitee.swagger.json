@@ -270,8 +270,12 @@
         "startDate": {
           "$ref": "#/definitions/typeDateTime"
         },
-        "period": {
+        "shift": {
           "type": "string"
+        },
+        "roomID": {
+          "type": "string",
+          "format": "int64"
         },
         "commiteeID": {
           "type": "string",
@@ -284,7 +288,10 @@
           }
         },
         "studentID": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "title": "====== commitee ======"
@@ -299,8 +306,12 @@
         "startDate": {
           "$ref": "#/definitions/typeDateTime"
         },
-        "period": {
+        "shift": {
           "type": "string"
+        },
+        "roomID": {
+          "type": "string",
+          "format": "int64"
         },
         "lecturers": {
           "type": "array",
@@ -310,7 +321,11 @@
           }
         },
         "student": {
-          "$ref": "#/definitions/v1UserCommiteeResponse"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1UserCommiteeResponse"
+          }
         }
       }
     },

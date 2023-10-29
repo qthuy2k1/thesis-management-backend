@@ -30,7 +30,7 @@ proto-api:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./api-gw/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto api_comment.proto api_attachment.proto api_topic.proto api_authorization.proto api_member.proto api_thesis_commitee.proto
+		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto api_comment.proto api_attachment.proto api_topic.proto api_authorization.proto api_member.proto api_thesis_commitee.proto api_room.proto api_student_def.proto
 	@echo "Done"
 
 proto-classroom:
@@ -251,9 +251,9 @@ clean:
 
 build:
 	mkdir -p ./out
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/classroom ./classroom-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/apigw ./api-gw
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/apigw-client ./apigw-client
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/classroom ./classroom-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/post ./post-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/exercise ./exercise-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/user ./user-svc
@@ -265,6 +265,8 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/topic ./topic-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/authorization ./authorization-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/thesis-commitee ./thesis-commitee-svc
+
+
 
 build_and_run: clean build
 	@echo "--> Starting servers"
@@ -290,6 +292,7 @@ docker-tag:
 	docker tag qthuy2k1/thesis-management-backend-attachment:$(tag) qthuy2k1/thesis-management-backend-attachment:$(tag)
 	docker tag qthuy2k1/thesis-management-backend-topic:$(tag) qthuy2k1/thesis-management-backend-topic:$(tag)
 	docker tag qthuy2k1/thesis-management-backend-authorization:$(tag) qthuy2k1/thesis-management-backend-authorization:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-thesis-commitee:$(tag) qthuy2k1/thesis-management-backend-thesis-commitee:$(tag)
 	
 	# DB
 	docker tag postgres qthuy2k1/thesis-management-backend-classroom-db:$(tag)
@@ -302,6 +305,7 @@ docker-tag:
 	docker tag postgres qthuy2k1/thesis-management-backend-comment-db:$(tag)
 	docker tag postgres qthuy2k1/thesis-management-backend-attachment-db:$(tag)
 	docker tag postgres qthuy2k1/thesis-management-backend-topic-db:$(tag)
+	docker tag postgres qthuy2k1/thesis-management-backend-thesis-commitee-db:$(tag)
 
 
 docker-google-cloud-tag:
@@ -347,6 +351,7 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-attachment:latest
 	docker push qthuy2k1/thesis-management-backend-topic:latest
 	docker push qthuy2k1/thesis-management-backend-authorization:latest
+	docker push qthuy2k1/thesis-management-backend-thesis-commitee:latest
 
 	# DB
 	docker push qthuy2k1/thesis-management-backend-classroom-db:latest
@@ -359,6 +364,7 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-comment-db:latest
 	docker push qthuy2k1/thesis-management-backend-attachment-db:latest
 	docker push qthuy2k1/thesis-management-backend-topic-db:latest
+	docker push qthuy2k1/thesis-management-backend-thesis-commitee-db:latest
 
 docker-google-cloud-push:
 	# APP
@@ -405,6 +411,12 @@ migrate_all_up:
 
 	docker run --rm -v $(PWD)/comment-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@comment-db:5432/thesis_management_comments?sslmode=disable" up
 
+	docker run --rm -v $(PWD)/attachment-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@attachment-db:5432/thesis_management_attachments?sslmode=disable" up
+
+	docker run --rm -v $(PWD)/topic-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@topic-db:5432/thesis_management_topics?sslmode=disable" up
+
+	docker run --rm -v $(PWD)/thesis-commitee-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@thesis-commitee-db:5432/thesis_management_thesis_commitees?sslmode=disable" up
+
 partner_migrate_all_up:
 	docker run --rm -v "D:/Web Dev/thesis-management-backend/classroom-svc/data/migrations/:/migrations" --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@classroom-db:5432/thesis_management_classrooms?sslmode=disable" up
 
@@ -438,3 +450,122 @@ build_and_run_image:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/$(name) ./$(folder)
 	docker build -f $(folder)/Dockerfile -t qthuy2k1/thesis-management-backend-$(name)s .
 	docker compose up
+
+docker-pull-db:
+	# DB
+	docker pull qthuy2k1/thesis-management-backend-classroom-db:$(tag)
+	docker pull qthuy2k1/thesis-management-backend-post-db:$(tag)
+	docker pull qthuy2k1/thesis-management-backend-exercise-db:$(tag)
+	docker pull qthuy2k1/thesis-management-backend-user-db:$(tag)
+	docker pull qthuy2k1/thesis-management-backend-reporting-stage-db:$(tag)
+	docker pull qthuy2k1/thesis-management-backend-submission-db:$(tag)
+	docker pull qthuy2k1/thesis-management-backend-classroom-waiting-list-db:$(tag)
+	docker pull qthuy2k1/thesis-management-backend-comment-db:$(tag)
+	docker pull qthuy2k1/thesis-management-backend-attachment-db:$(tag)
+	docker pull qthuy2k1/thesis-management-backend-topic-db:$(tag)
+
+kuber-exec:
+	kubectl exec -it thesis-management-backend$(name) -n thesis-management-backend -- bash
+
+kuber-delete:
+	kubectl delete -f $(file).yaml --cascade=orphan
+
+kuber-all:
+	./classroom-svc/export_env.sh
+	./api-gw/apigw_build.sh
+	./apigw-client/apigw_client_build.sh
+
+	docker build -f classroom-svc/Dockerfile -t qthuy2k1/thesis-management-backend-classroom .
+	docker build -f api-gw/Dockerfile -t qthuy2k1/thesis-management-backend .
+	docker build -f apigw-client/Dockerfile -t qthuy2k1/thesis-management-backend-apigw-client .
+
+	docker push qthuy2k1/thesis-management-backend-classroom:latest
+	docker push qthuy2k1/thesis-management-backend:latest
+	docker push qthuy2k1/thesis-management-backend-apigw-client:latest
+
+	kubectl delete -f kubernetes/classroom-deployment.yaml --cascade=orphan
+	kubectl delete -f kubernetes/api-deployment.yaml --cascade=orphan
+	kubectl delete -f kubernetes/apigw-client-deployment.yaml --cascade=orphan
+	
+	kubectl delete --all pods -n thesis-management-backend
+
+	kubectl apply -f kubernetes/attachment-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/classroom-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/classroom-waiting-list-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/comment-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/exercise-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/post-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/reporting-stage-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/submission-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
+
+	kubectl apply -f kubernetes/attachment-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/classroom-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/classroom-waiting-list-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/comment-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/exercise-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/post-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/reporting-stage-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/submission-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/topic-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/user-db-deployment.yaml --namespace thesis-management-backend
+
+	kubectl apply -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
+
+kuber-serve-gw-client:
+	minikube service thesis-management-backend-apigw-client-service --url -n thesis-management-backend
+
+kuber-apply:
+	kubectl apply -f kubernetes/attachment-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/classroom-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/classroom-waiting-list-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/comment-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/exercise-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/post-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/reporting-stage-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/submission-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/topic-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/user-db-deployment.yaml --namespace thesis-management-backend
+
+	kubectl apply -f kubernetes/attachment-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/classroom-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/classroom-waiting-list-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/comment-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/exercise-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/post-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/reporting-stage-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/submission-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
+
+	kubectl apply -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
+
+
+kuber-del:
+	kubectl delete -f kubernetes/attachment-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/classroom-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/classroom-waiting-list-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/comment-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/exercise-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/post-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/reporting-stage-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/submission-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/topic-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/user-db-deployment.yaml --namespace thesis-management-backend
+
+	kubectl delete -f kubernetes/attachment-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/classroom-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/classroom-waiting-list-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/comment-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/exercise-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/post-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/reporting-stage-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/submission-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
+
+	kubectl delete -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend

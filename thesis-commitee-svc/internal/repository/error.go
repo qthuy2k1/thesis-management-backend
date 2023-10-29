@@ -8,4 +8,7 @@ var (
 
 	ErrCommiteeUserDetailNotFound = errors.New("commitee user detail not found")
 	ErrCommiteeUserDetailExisted  = errors.New("commitee user detail already exists")
+
+	ErrRoomNotFound = errors.New("room not found")
+	ErrRoomExisted  = errors.New("room already exists")
 )

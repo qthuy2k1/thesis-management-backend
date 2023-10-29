@@ -36,6 +36,19 @@ type IUserSvc interface {
 	GetAllMembersOfClassroom(ctx context.Context, classroomID int) ([]MemberOutputSvc, int, error)
 	// IsUserJoinedClassroom returns a member if exists
 	IsUserJoinedClassroom(ctx context.Context, userID string) (MemberOutputSvc, error)
+
+	// CreateStudentDef creates a new student def in db given by student def model
+	CreateStudentDef(ctx context.Context, p StudentDefInputSvc) error
+	// GetStudentDef returns a student def in db given by id
+	GetStudentDef(ctx context.Context, id int) (StudentDefOutputSvc, error)
+	// UpdateStudentDef updates the specified student def by id
+	UpdateStudentDef(ctx context.Context, id int, classroom StudentDefInputSvc) error
+	// DeleteStudentDef deletes a student def in db given by id
+	DeleteStudentDef(ctx context.Context, id int) error
+	// GetStudentDefs returns a list of student defs in db
+	GetStudentDefs(ctx context.Context) ([]StudentDefOutputSvc, int, error)
+	// GetAllStudentDefsOfInstructor returns a list of student defs in a classroom
+	GetAllStudentDefsOfInstructor(ctx context.Context, instructorID string) ([]StudentDefOutputSvc, int, error)
 }
 
 type UserSvc struct {

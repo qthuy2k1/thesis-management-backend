@@ -210,9 +210,9 @@ func (m *CommiteeInput) validate(all bool) error {
 		}
 	}
 
-	if utf8.RuneCountInString(m.GetPeriod()) < 2 {
+	if utf8.RuneCountInString(m.GetShift()) < 2 {
 		err := CommiteeInputValidationError{
-			field:  "Period",
+			field:  "Shift",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -221,9 +221,9 @@ func (m *CommiteeInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for CommiteeID
+	// no validation rules for RoomID
 
-	// no validation rules for StudentID
+	// no validation rules for CommiteeID
 
 	if len(errors) > 0 {
 		return CommiteeInputMultiError(errors)
@@ -365,9 +365,9 @@ func (m *CommiteeResponse) validate(all bool) error {
 		}
 	}
 
-	if utf8.RuneCountInString(m.GetPeriod()) < 2 {
+	if utf8.RuneCountInString(m.GetShift()) < 2 {
 		err := CommiteeResponseValidationError{
-			field:  "Period",
+			field:  "Shift",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -375,6 +375,8 @@ func (m *CommiteeResponse) validate(all bool) error {
 		}
 		errors = append(errors, err)
 	}
+
+	// no validation rules for RoomID
 
 	for idx, item := range m.GetLecturers() {
 		_, _ = idx, item
@@ -410,33 +412,38 @@ func (m *CommiteeResponse) validate(all bool) error {
 
 	}
 
-	if all {
-		switch v := interface{}(m.GetStudent()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, CommiteeResponseValidationError{
-					field:  "Student",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
+	for idx, item := range m.GetStudent() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, CommiteeResponseValidationError{
+						field:  fmt.Sprintf("Student[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, CommiteeResponseValidationError{
+						field:  fmt.Sprintf("Student[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
 			}
-		case interface{ Validate() error }:
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				errors = append(errors, CommiteeResponseValidationError{
-					field:  "Student",
+				return CommiteeResponseValidationError{
+					field:  fmt.Sprintf("Student[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
-				})
+				}
 			}
 		}
-	} else if v, ok := interface{}(m.GetStudent()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return CommiteeResponseValidationError{
-				field:  "Student",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
+
 	}
 
 	if len(errors) > 0 {
@@ -2208,17 +2215,6 @@ func (m *CommiteeUserDetail) validate(all bool) error {
 	if utf8.RuneCountInString(m.GetLecturerID()) < 2 {
 		err := CommiteeUserDetailValidationError{
 			field:  "LecturerID",
-			reason: "value length must be at least 2 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if utf8.RuneCountInString(m.GetStudentID()) < 2 {
-		err := CommiteeUserDetailValidationError{
-			field:  "StudentID",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {

@@ -70,17 +70,19 @@ func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, arg
 type CommiteeInputRepo struct {
 	StartDate time.Time
 	Period    string
+	RoomID    int
 }
 
 type CommiteeOutputRepo struct {
 	ID        int
 	StartDate time.Time
 	Period    string
+	RoomID    int
 }
 
 // CreateCommitee creates a new commitee in db given by commitee model
 func (r *CommiteeRepo) CreateCommitee(ctx context.Context, p CommiteeInputRepo) (CommiteeOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "CreateCommitee", "INSERT INTO thesis_commitees (start_date, period) VALUES ($1, $2) RETURNING id, start_date, period", p.StartDate, p.Period)
+	row, err := QueryRowSQL(ctx, r.Database, "CreateCommitee", "INSERT INTO thesis_commitees (start_date, period, room_id) VALUES ($1, $2, $3) RETURNING id, start_date, period, room", p.StartDate, p.Period, p.RoomID)
 	if err != nil {
 		return CommiteeOutputRepo{}, err
 	}
@@ -95,13 +97,13 @@ func (r *CommiteeRepo) CreateCommitee(ctx context.Context, p CommiteeInputRepo) 
 
 // GetCommitee returns a commitee in db given by id
 func (r *CommiteeRepo) GetCommitee(ctx context.Context, id int) (CommiteeOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetCommitee", "SELECT id, start_date, period FROM thesis_commitees WHERE id=$1", id)
+	row, err := QueryRowSQL(ctx, r.Database, "GetCommitee", "SELECT id, start_date, period, room_id FROM thesis_commitees WHERE id=$1", id)
 	if err != nil {
 		return CommiteeOutputRepo{}, err
 	}
 
 	commitee := CommiteeOutputRepo{}
-	if err = row.Scan(&commitee.ID, &commitee.StartDate, &commitee.Period); err != nil {
+	if err = row.Scan(&commitee.ID, &commitee.StartDate, &commitee.Period, &commitee.RoomID); err != nil {
 		if err == sql.ErrNoRows {
 			return CommiteeOutputRepo{}, ErrCommiteeNotFound
 		}
@@ -126,7 +128,7 @@ func (r *CommiteeRepo) IsCommiteeExists(ctx context.Context, title string, class
 
 // UpdateCommitee updates the specified commitee by id
 func (r *CommiteeRepo) UpdateCommitee(ctx context.Context, id int, commitee CommiteeInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdateCommitee", "UPDATE thesis_commitees SET start_date=$2, period=$3 WHERE id=$1", id, commitee.StartDate, commitee.Period)
+	result, err := ExecSQL(ctx, r.Database, "UpdateCommitee", "UPDATE thesis_commitees SET start_date=$2, period=$3, room_id=$4 WHERE id=$1", id, commitee.StartDate, commitee.Period, commitee.RoomID)
 	if err != nil {
 		return err
 	}
@@ -154,7 +156,7 @@ func (r *CommiteeRepo) DeleteCommitee(ctx context.Context, id int) error {
 
 // GetCommitee returns a list of commitees in db with filter
 func (r *CommiteeRepo) GetCommitees(ctx context.Context) ([]CommiteeOutputRepo, int, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetCommitees", "SELECT id, start_date, period FROM thesis_commitees")
+	rows, err := QuerySQL(ctx, r.Database, "GetCommitees", "SELECT id, start_date, period, room_id FROM thesis_commitees")
 	if err != nil {
 		return nil, 0, err
 	}
@@ -168,6 +170,7 @@ func (r *CommiteeRepo) GetCommitees(ctx context.Context) ([]CommiteeOutputRepo, 
 			&commitee.ID,
 			&commitee.StartDate,
 			&commitee.Period,
+			&commitee.RoomID,
 		)
 		if err != nil {
 			return nil, 0, err

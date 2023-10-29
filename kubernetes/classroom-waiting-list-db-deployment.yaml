@@ -1,8 +1,29 @@
-#For creating Kubernetes Deployment in the Minikube cluster
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: thesis-management-backend-classroom-waiting-list-db-deployment
+  name: classroom-waiting-list-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-database-waiting-list-configmap
+data:
+  init-database-waiting-list.sql: |
+    CREATE DATABASE "thesis_management_waiting_lists" 
+
+---
+#For creating Kubernetes StatefulSet in the Minikube cluster
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: thesis-management-backend-classroom-waiting-list-db
   labels:
     app: thesis-management-backend-classroom-waiting-list-db
 spec:
@@ -18,9 +39,25 @@ spec:
       containers:
       - name: thesis-management-backend-classroom-waiting-list-db
         image: qthuy2k1/thesis-management-backend-classroom-waiting-list-db
-        imagePullPolicy: IfNotPresent
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "root"
+        imagePullPolicy: Always
         ports:
-        - containerPort: 9091
+        - containerPort: 5432
+        volumeMounts:
+          - name: classroom-waiting-list-db
+            mountPath: /var/lib/postgresql/data
+          - name: init-database-script
+            mountPath: /docker-entrypoint-initdb.d/init-database-waiting-list.sql
+            subPath: init-database-waiting-list.sql
+      volumes:
+        - name: classroom-waiting-list-db
+          persistentVolumeClaim:
+            claimName: classroom-waiting-list-db-pvc
+        - name: init-database-script
+          configMap:
+            name: init-database-waiting-list-configmap
       
         
 
@@ -36,5 +73,5 @@ spec:
   type: ClusterIP
   ports:
   - protocol: TCP
-    port: 9091
-    targetPort: 9091
+    port: 5432
+    targetPort: 5432

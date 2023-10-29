@@ -39,7 +39,7 @@ func (h *CommiteeHdl) CreateCommitee(ctx context.Context, req *commiteepb.Create
 				Hours:   int32(cOut.StartDate.Hour()),
 				Minutes: int32(cOut.StartDate.Minute()),
 			},
-			Period: cOut.Period,
+			Shift: cOut.Period,
 		},
 	}
 
@@ -68,7 +68,8 @@ func (h *CommiteeHdl) GetCommitee(ctx context.Context, req *commiteepb.GetCommit
 			Hours:   int32(p.StartDate.Hour()),
 			Minutes: int32(p.StartDate.Minute()),
 		},
-		Period: p.Period,
+		Shift:  p.Period,
+		RoomID: int64(p.RoomID),
 	}
 
 	resp := &commiteepb.GetCommiteeResponse{
@@ -97,6 +98,7 @@ func (c *CommiteeHdl) UpdateCommitee(ctx context.Context, req *commiteepb.Update
 	if err := c.Repository.UpdateCommitee(ctx, int(req.GetId()), repository.CommiteeInputRepo{
 		StartDate: p.StartDate,
 		Period:    p.Period,
+		RoomID:    p.RoomID,
 	}); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -154,7 +156,8 @@ func (h *CommiteeHdl) GetCommitees(ctx context.Context, req *commiteepb.GetCommi
 				Hours:   int32(p.StartDate.Hour()),
 				Minutes: int32(p.StartDate.Minute()),
 			},
-			Period: p.Period,
+			Shift:  p.Period,
+			RoomID: int64(p.RoomID),
 		})
 	}
 
@@ -181,6 +184,7 @@ func validateAndConvertCommitee(pbCommitee *commiteepb.CommiteeInput) (repositor
 
 	return repository.CommiteeInputRepo{
 		StartDate: startDate,
-		Period:    pbCommitee.Period,
+		Period:    pbCommitee.Shift,
+		RoomID:    int(pbCommitee.RoomID),
 	}, nil
 }

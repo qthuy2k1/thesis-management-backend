@@ -114,8 +114,12 @@
         "startDate": {
           "$ref": "#/definitions/typeDateTime"
         },
-        "period": {
+        "shift": {
           "type": "string"
+        },
+        "roomID": {
+          "type": "string",
+          "format": "int64"
         }
       },
       "title": "====== commitee ======"
@@ -130,8 +134,12 @@
         "startDate": {
           "$ref": "#/definitions/typeDateTime"
         },
-        "period": {
+        "shift": {
           "type": "string"
+        },
+        "roomID": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -146,7 +154,10 @@
           "type": "string"
         },
         "studentID": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -184,6 +195,17 @@
         }
       }
     },
+    "v1CreateRoomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonCommiteeResponse"
+        },
+        "room": {
+          "$ref": "#/definitions/v1RoomResponse"
+        }
+      }
+    },
     "v1DeleteCommiteeResponse": {
       "type": "object",
       "properties": {
@@ -193,6 +215,14 @@
       }
     },
     "v1DeleteCommiteeUserDetailResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonCommiteeResponse"
+        }
+      }
+    },
+    "v1DeleteRoomResponse": {
       "type": "object",
       "properties": {
         "response": {
@@ -275,6 +305,74 @@
         }
       }
     },
+    "v1GetRoomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonCommiteeResponse"
+        },
+        "room": {
+          "$ref": "#/definitions/v1RoomResponse"
+        }
+      }
+    },
+    "v1GetRoomsResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonCommiteeResponse"
+        },
+        "totalCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "rooms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1RoomResponse"
+          }
+        }
+      }
+    },
+    "v1RoomInput": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "school": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "v1RoomResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "school": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
     "v1UpdateCommiteeResponse": {
       "type": "object",
       "properties": {
@@ -284,6 +382,14 @@
       }
     },
     "v1UpdateCommiteeUserDetailResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonCommiteeResponse"
+        }
+      }
+    },
+    "v1UpdateRoomResponse": {
       "type": "object",
       "properties": {
         "response": {

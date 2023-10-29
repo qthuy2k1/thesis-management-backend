@@ -272,45 +272,6 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 		return nil, err
 	}
 
-	if memberRes.Response.StatusCode != 200 {
-		wtlRes, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
-			UserID: req.GetUserID(),
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if wtlRes.IsIn {
-			clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
-				Id: wtlRes.GetClassroomID(),
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			return &pb.CheckStatusUserJoinClassroomResponse{
-				Status: "WAITING",
-				Classroom: &pb.ClassroomUserResponse{
-					Id:              clrRes.GetClassroom().GetId(),
-					Title:           clrRes.GetClassroom().GetTitle(),
-					Description:     clrRes.GetClassroom().GetDescription(),
-					Status:          clrRes.GetClassroom().GetStatus(),
-					LecturerID:      clrRes.GetClassroom().GetLecturerID(),
-					ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
-					TopicTags:       clrRes.GetClassroom().GetTopicTags(),
-					QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
-					CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
-					UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
-				},
-			}, nil
-		} else {
-			return &pb.CheckStatusUserJoinClassroomResponse{
-				Status:    "NOT REGISTERED",
-				Classroom: nil,
-			}, nil
-		}
-	}
-
 	clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
 		Id: memberRes.GetMember().ClassroomID,
 	})
@@ -328,18 +289,32 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 	}
 
 	return &pb.CheckStatusUserJoinClassroomResponse{
-		Status: "JOINED",
-		Classroom: &pb.ClassroomUserResponse{
-			Id:              clrRes.GetClassroom().GetId(),
-			Title:           clrRes.GetClassroom().GetTitle(),
-			Description:     clrRes.GetClassroom().GetDescription(),
-			Status:          clrRes.GetClassroom().GetStatus(),
-			LecturerID:      clrRes.GetClassroom().GetLecturerID(),
-			ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
-			TopicTags:       clrRes.GetClassroom().GetTopicTags(),
-			QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
-			CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
-			UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
+		Member: &pb.MemberUserResponse{
+			Id: memberRes.GetMember().Id,
+			Classroom: &pb.ClassroomUserResponse{
+				Id:              clrRes.GetClassroom().GetId(),
+				Title:           clrRes.GetClassroom().GetTitle(),
+				Description:     clrRes.GetClassroom().GetDescription(),
+				Status:          clrRes.GetClassroom().GetStatus(),
+				LecturerID:      clrRes.GetClassroom().GetLecturerID(),
+				ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
+				TopicTags:       clrRes.GetClassroom().GetTopicTags(),
+				QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
+				CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
+				UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
+			},
+			Member: &pb.UserResponse{
+				Class:    userRes.User.Class,
+				Major:    userRes.User.Major,
+				Phone:    userRes.User.Phone,
+				PhotoSrc: userRes.User.PhotoSrc,
+				Role:     userRes.User.Role,
+				Name:     userRes.User.Name,
+				Email:    userRes.User.Email,
+			},
+			Status:    memberRes.GetMember().Status,
+			IsDefense: memberRes.GetMember().IsDefense,
+			CreatedAt: memberRes.GetMember().CreatedAt,
 		},
 	}, nil
 

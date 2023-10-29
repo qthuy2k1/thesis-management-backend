@@ -1,8 +1,8 @@
-#For creating Kubernetes Deployment in the Minikube cluster
+#For creating Kubernetes StatefulSet in the Minikube cluster
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: thesis-management-backend-apigw-client-deployment
+  name: thesis-management-backend-apigw-client
   labels:
     app: thesis-management-backend-apigw-client
 spec:
@@ -18,7 +18,7 @@ spec:
       containers:
       - name: thesis-management-backend-apigw-client
         image: qthuy2k1/thesis-management-backend-apigw-client
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
       
@@ -34,6 +34,7 @@ spec:
   selector:
     app: thesis-management-backend-apigw-client 
   type: LoadBalancer
+  externalTrafficPolicy: Local
   ports:
   - protocol: TCP
     port: 80
