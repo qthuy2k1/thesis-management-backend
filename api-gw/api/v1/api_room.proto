@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package api.room.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/room/api/v1";
+
+service RoomService {
+    rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse){
+        option (google.api.http) = {
+            post: "/api/room"
+            body: "*"
+        };
+    }
+    
+    rpc GetRoom(GetRoomRequest) returns (GetRoomResponse){
+        option (google.api.http) = {
+            get: "/api/room/{id}"
+        };
+    }
+
+    rpc UpdateRoom(UpdateRoomRequest) returns (UpdateRoomResponse){
+        option (google.api.http) = {
+            put: "/api/room/{id}"
+            body: "*"
+        };
+    }
+
+    rpc DeleteRoom(DeleteRoomRequest) returns (DeleteRoomResponse){
+        option (google.api.http) = {
+            delete: "/api/room/{id}"
+        };
+    }
+
+    rpc GetRooms(GetRoomsRequest) returns (GetRoomsResponse) {
+        option (google.api.http) = {
+            get: "/api/room"
+        };
+    }
+}
+
+
+message CommonRoomResponse {
+    int64 statusCode = 1 [(validate.rules).int64.gte = 1];
+    string message = 2 [(validate.rules).string = {min_len: 2}];
+}
+
+
+// ====== room ======
+message RoomInput {
+    string name = 1;
+    string type = 2;
+    string school = 3;
+    string description = 4;
+}
+
+message RoomResponse {
+    int64 id = 1;
+    string name = 2;
+    string type = 3;
+    string school = 4;
+    string description = 5;
+}
+
+message CreateRoomRequest {
+   RoomInput room = 1 [(validate.rules).message = {required: true}];
+}
+
+message CreateRoomResponse {
+    CommonRoomResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== GET ======
+message GetRoomRequest {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+}
+
+message GetRoomResponse {
+    CommonRoomResponse response = 1 [(validate.rules).message = {required: true}];
+    RoomResponse room = 2 [(validate.rules).message = {required: true}];
+}
+
+// ====== PUT ======
+message UpdateRoomRequest {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+    RoomInput room = 2 [(validate.rules).message = {required: true}];
+}
+
+message UpdateRoomResponse {
+    CommonRoomResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+// ====== DELETE ======
+message DeleteRoomRequest {
+    int64 id = 1 [(validate.rules).int64.gte = 1];
+}
+
+message DeleteRoomResponse {
+    CommonRoomResponse response = 1 [(validate.rules).message = {required: true}];
+}
+
+
+// ====== GET ALL ======
+message GetRoomsRequest {
+    optional string name = 1;
+    optional string type = 2;
+    optional string school = 3;
+}
+
+message GetRoomsResponse {
+    CommonRoomResponse response = 1 [(validate.rules).message = {required: true}];
+    int64 totalCount = 2 [(validate.rules).int64.gte = 0];
+    repeated RoomResponse rooms = 3;
+}

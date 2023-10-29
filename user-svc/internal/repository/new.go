@@ -39,6 +39,21 @@ type IUserRepo interface {
 	GetAllMembersOfClassroom(ctx context.Context, classroomID int) ([]MemberOutputRepo, int, error)
 	// IsUserJoinedClassroom returns a member if exists
 	IsUserJoinedClassroom(ctx context.Context, userID string) (MemberOutputRepo, error)
+
+	// CreateStudentDef creates a new member in db given by member model
+	CreateStudentDef(ctx context.Context, u StudentDefInputRepo) error
+	// GetStudentDef returns a member in db given by id
+	GetStudentDef(ctx context.Context, id int) (StudentDefOutputRepo, error)
+	// CheckStudentDefExists checks whether the specified member exists by name
+	IsStudentDefExists(ctx context.Context, userID string) (bool, error)
+	// UpdateStudentDef updates the specified member by id
+	UpdateStudentDef(ctx context.Context, id int, member StudentDefInputRepo) error
+	// DeleteStudentDef deletes a classroom in db given by id
+	DeleteStudentDef(ctx context.Context, id int) error
+	// GetStudentDefs returns a list of members in db with filter
+	GetStudentDefs(ctx context.Context) ([]StudentDefOutputRepo, int, error)
+	// GetStudentDefsOfInstructor returns a list of members in db with filter
+	GetAllStudentDefsOfInstructor(ctx context.Context, instructorID string) ([]StudentDefOutputRepo, int, error)
 }
 
 type UserRepo struct {

@@ -1,8 +1,44 @@
-#For creating Kubernetes Deployment in the Minikube cluster
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: thesis-management-backend-classroom-db-deployment
+  name: classroom-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-database-configmap
+data:
+  init-database-classroom.sql: |
+    CREATE DATABASE "thesis_management_classrooms";     
+
+---
+#For creating a Kubernetes Service in the Minikube cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: thesis-management-backend-classroom-db-service
+spec:
+  selector:
+    app: thesis-management-backend-classroom-db 
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 5432
+    targetPort: 5432
+
+---
+#For creating Kubernetes StatefulSet in the Minikube cluster
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: thesis-management-backend-classroom-db
   labels:
     app: thesis-management-backend-classroom-db
 spec:
@@ -18,23 +54,23 @@ spec:
       containers:
       - name: thesis-management-backend-classroom-db
         image: qthuy2k1/thesis-management-backend-classroom-db
-        imagePullPolicy: IfNotPresent
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "root"
+        imagePullPolicy: Always
         ports:
-        - containerPort: 9091
+        - containerPort: 5432
+        volumeMounts:
+            - name: classroom-db
+              mountPath: /var/lib/postgresql/data
+            - name: init-database-script
+              mountPath: /docker-entrypoint-initdb.d/init-database-classroom.sql
+              subPath: init-database-classroom.sql
+      volumes:
+        - name: classroom-db
+          persistentVolumeClaim:
+            claimName: classroom-db-pvc
+        - name: init-database-script
+          configMap:
+            name: init-database-configmap
       
-        
-
----
-#For creating a Kubernetes Service in the Minikube cluster
-apiVersion: v1
-kind: Service
-metadata:
-  name: thesis-management-backend-classroom-db-service
-spec:
-  selector:
-    app: thesis-management-backend-classroom-db 
-  type: ClusterIP
-  ports:
-  - protocol: TCP
-    port: 9091
-    targetPort: 9091

@@ -1,0 +1,383 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "api_student_def.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "StudentDefService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/student-def": {
+      "get": {
+        "operationId": "StudentDefService_GetStudentDefs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetStudentDefsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "StudentDefService"
+        ]
+      },
+      "post": {
+        "operationId": "StudentDefService_CreateStudentDef",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateStudentDefResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateStudentDefRequest"
+            }
+          }
+        ],
+        "tags": [
+          "StudentDefService"
+        ]
+      }
+    },
+    "/api/student-def/{id}": {
+      "get": {
+        "operationId": "StudentDefService_GetStudentDef",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetStudentDefResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "StudentDefService"
+        ]
+      },
+      "delete": {
+        "operationId": "StudentDefService_DeleteStudentDef",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteStudentDefResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "StudentDefService"
+        ]
+      },
+      "put": {
+        "operationId": "StudentDefService_UpdateStudentDef",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateStudentDefResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "studentDef": {
+                  "$ref": "#/definitions/v1StudentDefInput"
+                }
+              },
+              "title": "====== PUT ======"
+            }
+          }
+        ],
+        "tags": [
+          "StudentDefService"
+        ]
+      }
+    },
+    "/api/student-def/{instructorID}": {
+      "get": {
+        "operationId": "StudentDefService_GetAllStudentDefsOfInstructor",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllStudentDefsOfInstructorResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "instructorID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "StudentDefService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CommonStudentDefResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "string",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateStudentDefRequest": {
+      "type": "object",
+      "properties": {
+        "studentDef": {
+          "$ref": "#/definitions/v1StudentDefInput"
+        }
+      }
+    },
+    "v1CreateStudentDefResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonStudentDefResponse"
+        }
+      }
+    },
+    "v1DeleteStudentDefResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonStudentDefResponse"
+        }
+      }
+    },
+    "v1GetAllStudentDefsOfInstructorResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonStudentDefResponse"
+        },
+        "totalCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "studentDefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1StudentDefResponse"
+          }
+        }
+      }
+    },
+    "v1GetStudentDefResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonStudentDefResponse"
+        },
+        "studentDef": {
+          "$ref": "#/definitions/v1StudentDefResponse"
+        }
+      }
+    },
+    "v1GetStudentDefsResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonStudentDefResponse"
+        },
+        "totalCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "studentDefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1StudentDefResponse"
+          }
+        }
+      }
+    },
+    "v1StudentDefInput": {
+      "type": "object",
+      "properties": {
+        "userID": {
+          "type": "string"
+        },
+        "instructorID": {
+          "type": "string"
+        }
+      }
+    },
+    "v1StudentDefResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "infor": {
+          "$ref": "#/definitions/v1StudentDefUserResponse"
+        },
+        "instructor": {
+          "$ref": "#/definitions/v1StudentDefUserResponse"
+        }
+      }
+    },
+    "v1StudentDefUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "v1UpdateStudentDefResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonStudentDefResponse"
+        }
+      }
+    }
+  }
+}

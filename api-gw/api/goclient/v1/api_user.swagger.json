@@ -416,11 +416,8 @@
         "response": {
           "$ref": "#/definitions/v1CommonUserResponse"
         },
-        "status": {
-          "type": "string"
-        },
-        "classroom": {
-          "$ref": "#/definitions/v1ClassroomUserResponse"
+        "member": {
+          "$ref": "#/definitions/v1MemberUserResponse"
         }
       }
     },
@@ -545,6 +542,31 @@
             "type": "object",
             "$ref": "#/definitions/v1UserResponse"
           }
+        }
+      }
+    },
+    "v1MemberUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "classroom": {
+          "$ref": "#/definitions/v1ClassroomUserResponse"
+        },
+        "member": {
+          "$ref": "#/definitions/v1UserResponse"
+        },
+        "status": {
+          "type": "string"
+        },
+        "isDefense": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

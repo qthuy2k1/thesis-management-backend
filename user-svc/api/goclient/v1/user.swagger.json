@@ -65,6 +65,14 @@
         }
       }
     },
+    "v1CreateStudentDefResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
     "v1CreateUserResponse": {
       "type": "object",
       "properties": {
@@ -74,6 +82,14 @@
       }
     },
     "v1DeleteMemberResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
+    "v1DeleteStudentDefResponse": {
       "type": "object",
       "properties": {
         "response": {
@@ -127,6 +143,25 @@
         }
       }
     },
+    "v1GetAllStudentDefsOfInstructorResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "totalCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "studentDefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1StudentDefResponse"
+          }
+        }
+      }
+    },
     "v1GetMemberResponse": {
       "type": "object",
       "properties": {
@@ -153,6 +188,36 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1MemberResponse"
+          }
+        }
+      }
+    },
+    "v1GetStudentDefResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "studentDef": {
+          "$ref": "#/definitions/v1StudentDefResponse"
+        }
+      }
+    },
+    "v1GetStudentDefsResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "totalCount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "studentDefs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1StudentDefResponse"
           }
         }
       }
@@ -243,6 +308,32 @@
         }
       }
     },
+    "v1StudentDefInput": {
+      "type": "object",
+      "properties": {
+        "userID": {
+          "type": "string"
+        },
+        "instructorID": {
+          "type": "string"
+        }
+      }
+    },
+    "v1StudentDefResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "userID": {
+          "type": "string"
+        },
+        "instructorID": {
+          "type": "string"
+        }
+      }
+    },
     "v1UnsubscribeClassroomResponse": {
       "type": "object",
       "properties": {
@@ -252,6 +343,14 @@
       }
     },
     "v1UpdateMemberResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonUserResponse"
+        }
+      }
+    },
+    "v1UpdateStudentDefResponse": {
       "type": "object",
       "properties": {
         "response": {

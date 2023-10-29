@@ -1,8 +1,29 @@
-#For creating Kubernetes Deployment in the Minikube cluster
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: thesis-management-backend-post-db-deployment
+  name: post-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-database-post-configmap
+data:
+  init-database-post.sql: |
+    CREATE DATABASE "thesis_management_posts" 
+
+---
+#For creating Kubernetes StatefulSet in the Minikube cluster
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: thesis-management-backend-post-db
   labels:
     app: thesis-management-backend-post-db
 spec:
@@ -18,9 +39,25 @@ spec:
       containers:
       - name: thesis-management-backend-post-db
         image: qthuy2k1/thesis-management-backend-post-db
-        imagePullPolicy: IfNotPresent
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "root"
+        imagePullPolicy: Always
         ports:
-        - containerPort: 9091
+        - containerPort: 5432
+        volumeMounts:
+          - name: post-db
+            mountPath: /var/lib/postgresql/data
+          - name: init-database-script
+            mountPath: /docker-entrypoint-initdb.d/init-database-post.sql
+            subPath: init-database-post.sql
+      volumes:
+        - name: post-db
+          persistentVolumeClaim:
+            claimName: post-db-pvc
+        - name: init-database-script
+          configMap:
+            name: init-database-post-configmap
       
         
 
@@ -36,5 +73,5 @@ spec:
   type: ClusterIP
   ports:
   - protocol: TCP
-    port: 9091
-    targetPort: 9091
+    port: 5432
+    targetPort: 5432

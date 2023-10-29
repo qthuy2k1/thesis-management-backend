@@ -30,6 +30,11 @@ const (
 	CommiteeService_DeleteCommiteeUserDetail_FullMethodName              = "/commitee.v1.CommiteeService/DeleteCommiteeUserDetail"
 	CommiteeService_GetCommiteeUserDetails_FullMethodName                = "/commitee.v1.CommiteeService/GetCommiteeUserDetails"
 	CommiteeService_GetAllCommiteeUserDetailsFromCommitee_FullMethodName = "/commitee.v1.CommiteeService/GetAllCommiteeUserDetailsFromCommitee"
+	CommiteeService_CreateRoom_FullMethodName                            = "/commitee.v1.CommiteeService/CreateRoom"
+	CommiteeService_GetRoom_FullMethodName                               = "/commitee.v1.CommiteeService/GetRoom"
+	CommiteeService_UpdateRoom_FullMethodName                            = "/commitee.v1.CommiteeService/UpdateRoom"
+	CommiteeService_DeleteRoom_FullMethodName                            = "/commitee.v1.CommiteeService/DeleteRoom"
+	CommiteeService_GetRooms_FullMethodName                              = "/commitee.v1.CommiteeService/GetRooms"
 )
 
 // CommiteeServiceClient is the client API for CommiteeService service.
@@ -47,6 +52,11 @@ type CommiteeServiceClient interface {
 	DeleteCommiteeUserDetail(ctx context.Context, in *DeleteCommiteeUserDetailRequest, opts ...grpc.CallOption) (*DeleteCommiteeUserDetailResponse, error)
 	GetCommiteeUserDetails(ctx context.Context, in *GetCommiteeUserDetailsRequest, opts ...grpc.CallOption) (*GetCommiteeUserDetailsResponse, error)
 	GetAllCommiteeUserDetailsFromCommitee(ctx context.Context, in *GetAllCommiteeUserDetailsFromCommiteeRequest, opts ...grpc.CallOption) (*GetAllCommiteeUserDetailsFromCommiteeResponse, error)
+	CreateRoom(ctx context.Context, in *CreateRoomRequest, opts ...grpc.CallOption) (*CreateRoomResponse, error)
+	GetRoom(ctx context.Context, in *GetRoomRequest, opts ...grpc.CallOption) (*GetRoomResponse, error)
+	UpdateRoom(ctx context.Context, in *UpdateRoomRequest, opts ...grpc.CallOption) (*UpdateRoomResponse, error)
+	DeleteRoom(ctx context.Context, in *DeleteRoomRequest, opts ...grpc.CallOption) (*DeleteRoomResponse, error)
+	GetRooms(ctx context.Context, in *GetRoomsRequest, opts ...grpc.CallOption) (*GetRoomsResponse, error)
 }
 
 type commiteeServiceClient struct {
@@ -156,6 +166,51 @@ func (c *commiteeServiceClient) GetAllCommiteeUserDetailsFromCommitee(ctx contex
 	return out, nil
 }
 
+func (c *commiteeServiceClient) CreateRoom(ctx context.Context, in *CreateRoomRequest, opts ...grpc.CallOption) (*CreateRoomResponse, error) {
+	out := new(CreateRoomResponse)
+	err := c.cc.Invoke(ctx, CommiteeService_CreateRoom_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commiteeServiceClient) GetRoom(ctx context.Context, in *GetRoomRequest, opts ...grpc.CallOption) (*GetRoomResponse, error) {
+	out := new(GetRoomResponse)
+	err := c.cc.Invoke(ctx, CommiteeService_GetRoom_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commiteeServiceClient) UpdateRoom(ctx context.Context, in *UpdateRoomRequest, opts ...grpc.CallOption) (*UpdateRoomResponse, error) {
+	out := new(UpdateRoomResponse)
+	err := c.cc.Invoke(ctx, CommiteeService_UpdateRoom_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commiteeServiceClient) DeleteRoom(ctx context.Context, in *DeleteRoomRequest, opts ...grpc.CallOption) (*DeleteRoomResponse, error) {
+	out := new(DeleteRoomResponse)
+	err := c.cc.Invoke(ctx, CommiteeService_DeleteRoom_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commiteeServiceClient) GetRooms(ctx context.Context, in *GetRoomsRequest, opts ...grpc.CallOption) (*GetRoomsResponse, error) {
+	out := new(GetRoomsResponse)
+	err := c.cc.Invoke(ctx, CommiteeService_GetRooms_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommiteeServiceServer is the server API for CommiteeService service.
 // All implementations must embed UnimplementedCommiteeServiceServer
 // for forward compatibility
@@ -171,6 +226,11 @@ type CommiteeServiceServer interface {
 	DeleteCommiteeUserDetail(context.Context, *DeleteCommiteeUserDetailRequest) (*DeleteCommiteeUserDetailResponse, error)
 	GetCommiteeUserDetails(context.Context, *GetCommiteeUserDetailsRequest) (*GetCommiteeUserDetailsResponse, error)
 	GetAllCommiteeUserDetailsFromCommitee(context.Context, *GetAllCommiteeUserDetailsFromCommiteeRequest) (*GetAllCommiteeUserDetailsFromCommiteeResponse, error)
+	CreateRoom(context.Context, *CreateRoomRequest) (*CreateRoomResponse, error)
+	GetRoom(context.Context, *GetRoomRequest) (*GetRoomResponse, error)
+	UpdateRoom(context.Context, *UpdateRoomRequest) (*UpdateRoomResponse, error)
+	DeleteRoom(context.Context, *DeleteRoomRequest) (*DeleteRoomResponse, error)
+	GetRooms(context.Context, *GetRoomsRequest) (*GetRoomsResponse, error)
 	mustEmbedUnimplementedCommiteeServiceServer()
 }
 
@@ -210,6 +270,21 @@ func (UnimplementedCommiteeServiceServer) GetCommiteeUserDetails(context.Context
 }
 func (UnimplementedCommiteeServiceServer) GetAllCommiteeUserDetailsFromCommitee(context.Context, *GetAllCommiteeUserDetailsFromCommiteeRequest) (*GetAllCommiteeUserDetailsFromCommiteeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllCommiteeUserDetailsFromCommitee not implemented")
+}
+func (UnimplementedCommiteeServiceServer) CreateRoom(context.Context, *CreateRoomRequest) (*CreateRoomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRoom not implemented")
+}
+func (UnimplementedCommiteeServiceServer) GetRoom(context.Context, *GetRoomRequest) (*GetRoomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRoom not implemented")
+}
+func (UnimplementedCommiteeServiceServer) UpdateRoom(context.Context, *UpdateRoomRequest) (*UpdateRoomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateRoom not implemented")
+}
+func (UnimplementedCommiteeServiceServer) DeleteRoom(context.Context, *DeleteRoomRequest) (*DeleteRoomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRoom not implemented")
+}
+func (UnimplementedCommiteeServiceServer) GetRooms(context.Context, *GetRoomsRequest) (*GetRoomsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRooms not implemented")
 }
 func (UnimplementedCommiteeServiceServer) mustEmbedUnimplementedCommiteeServiceServer() {}
 
@@ -422,6 +497,96 @@ func _CommiteeService_GetAllCommiteeUserDetailsFromCommitee_Handler(srv interfac
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommiteeService_CreateRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRoomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommiteeServiceServer).CreateRoom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommiteeService_CreateRoom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommiteeServiceServer).CreateRoom(ctx, req.(*CreateRoomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommiteeService_GetRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRoomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommiteeServiceServer).GetRoom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommiteeService_GetRoom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommiteeServiceServer).GetRoom(ctx, req.(*GetRoomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommiteeService_UpdateRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRoomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommiteeServiceServer).UpdateRoom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommiteeService_UpdateRoom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommiteeServiceServer).UpdateRoom(ctx, req.(*UpdateRoomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommiteeService_DeleteRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRoomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommiteeServiceServer).DeleteRoom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommiteeService_DeleteRoom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommiteeServiceServer).DeleteRoom(ctx, req.(*DeleteRoomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommiteeService_GetRooms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRoomsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommiteeServiceServer).GetRooms(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommiteeService_GetRooms_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommiteeServiceServer).GetRooms(ctx, req.(*GetRoomsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CommiteeService_ServiceDesc is the grpc.ServiceDesc for CommiteeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -472,6 +637,26 @@ var CommiteeService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllCommiteeUserDetailsFromCommitee",
 			Handler:    _CommiteeService_GetAllCommiteeUserDetailsFromCommitee_Handler,
+		},
+		{
+			MethodName: "CreateRoom",
+			Handler:    _CommiteeService_CreateRoom_Handler,
+		},
+		{
+			MethodName: "GetRoom",
+			Handler:    _CommiteeService_GetRoom_Handler,
+		},
+		{
+			MethodName: "UpdateRoom",
+			Handler:    _CommiteeService_UpdateRoom_Handler,
+		},
+		{
+			MethodName: "DeleteRoom",
+			Handler:    _CommiteeService_DeleteRoom_Handler,
+		},
+		{
+			MethodName: "GetRooms",
+			Handler:    _CommiteeService_GetRooms_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

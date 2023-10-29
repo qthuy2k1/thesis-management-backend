@@ -25,24 +25,24 @@ import (
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
-const (
-	listenAddress         = "0.0.0.0:9091"
-	classroomAddress      = "classroom:9091"
-	postAddress           = "post:9091"
-	exerciseAddress       = "exercise:9091"
-	reportingStageAddress = "reporting-stage:9091"
-	submissionAddress     = "submission:9091"
-	userAddress           = "user:9091"
-	waitingListAddress    = "classroom-waiting-list:9091"
-	commentAddress        = "comment:9091"
-	attachmentAddress     = "attachment:9091"
-	topicAddress          = "topic:9091"
-	authorizationAddress  = "authorization:9091"
-	commiteeAddress       = "thesis-commitee:9091"
-)
+var address = map[string]string{
+	"listenAddress":         "0.0.0.0:9091",
+	"classroomAddress":      "thesis-management-backend-classroom-service:9091",
+	"postAddress":           "thesis-management-backend-post-service:9091",
+	"exerciseAddress":       "thesis-management-backend-exercise-service:9091",
+	"reportingStageAddress": "thesis-management-backend-reporting-stage-service:9091",
+	"submissionAddress":     "thesis-management-backend-submission-service:9091",
+	"userAddress":           "thesis-management-backend-user-service:9091",
+	"waitingListAddress":    "thesis-management-backend-classroom-waiting-list-service:9091",
+	"commentAddress":        "thesis-management-backend-comment-service:9091",
+	"attachmentAddress":     "thesis-management-backend-attachment-service:9091",
+	"topicAddress":          "thesis-management-backend-topic-service:9091",
+	"authorizationAddress":  "thesis-management-backend-authorization-service:9091",
+	"commiteeAddress":       "thesis-management-backend-thesis-commitee-service:9091",
+}
 
 func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), classroomAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.TODO(), address["classroomAddress"], grpc.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("classroom client: %w", err)
 	}
@@ -51,7 +51,7 @@ func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
 }
 
 func newPostSvcClient() (postSvcV1.PostServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), postAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.TODO(), address["postAddress"], grpc.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("post client: %w", err)
 	}
@@ -60,7 +60,7 @@ func newPostSvcClient() (postSvcV1.PostServiceClient, error) {
 }
 
 func newExerciseSvcClient() (exerciseSvcV1.ExerciseServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), exerciseAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.TODO(), address["exerciseAddress"], grpc.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("exercise client: %w", err)
 	}
@@ -69,7 +69,7 @@ func newExerciseSvcClient() (exerciseSvcV1.ExerciseServiceClient, error) {
 }
 
 func newReportingStageSvcClient() (rpsSvcV1.ReportingStageServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), reportingStageAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.TODO(), address["reportingStageAddress"], grpc.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("reporting stage client: %w", err)
 	}
@@ -78,7 +78,7 @@ func newReportingStageSvcClient() (rpsSvcV1.ReportingStageServiceClient, error) 
 }
 
 func newSubmissionSvcClient() (submissionSvcV1.SubmissionServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), submissionAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.TODO(), address["submissionAddress"], grpc.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("submission client: %w", err)
 	}
@@ -87,7 +87,7 @@ func newSubmissionSvcClient() (submissionSvcV1.SubmissionServiceClient, error) {
 }
 
 func newUserSvcClient() (userSvcV1.UserServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), userAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.TODO(), address["userAddress"], grpc.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("user client: %w", err)
 	}
@@ -96,7 +96,7 @@ func newUserSvcClient() (userSvcV1.UserServiceClient, error) {
 }
 
 func newWaitingListSvcClient() (waitingListSvcV1.WaitingListServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), waitingListAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.TODO(), address["waitingListAddress"], grpc.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("clasroom waiting list client: %w", err)
 	}
@@ -105,7 +105,7 @@ func newWaitingListSvcClient() (waitingListSvcV1.WaitingListServiceClient, error
 }
 
 func newCommentSvcClient() (commentSvcV1.CommentServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), commentAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.TODO(), address["commentAddress"], grpc.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("comment client: %w", err)
 	}
@@ -114,7 +114,7 @@ func newCommentSvcClient() (commentSvcV1.CommentServiceClient, error) {
 }
 
 func newAttachmentSvcClient() (attachmentSvcV1.AttachmentServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), attachmentAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.TODO(), address["attachmentAddress"], grpc.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("attachment client: %w", err)
 	}
@@ -123,7 +123,7 @@ func newAttachmentSvcClient() (attachmentSvcV1.AttachmentServiceClient, error) {
 }
 
 func newTopicSvcClient() (topicSvcV1.TopicServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), topicAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.TODO(), address["topicAddress"], grpc.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("topic client: %w", err)
 	}
@@ -132,7 +132,7 @@ func newTopicSvcClient() (topicSvcV1.TopicServiceClient, error) {
 }
 
 func newAuthorizationSvcClient() (authorizationSvcV1.AuthorizationServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), authorizationAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.TODO(), address["authorizationAddress"], grpc.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("topic client: %w", err)
 	}
@@ -141,7 +141,7 @@ func newAuthorizationSvcClient() (authorizationSvcV1.AuthorizationServiceClient,
 }
 
 func newCommiteeSvcClient() (commiteeSvcV1.CommiteeServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), commiteeAddress, grpc.WithInsecure())
+	conn, err := grpc.DialContext(context.TODO(), address["commiteeAddress"], grpc.WithInsecure())
 	if err != nil {
 		return nil, fmt.Errorf("topic client: %w", err)
 	}
@@ -185,7 +185,7 @@ func authorize(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo,
 }
 
 func main() {
-	log.Printf("APIGW service starting on %s", listenAddress)
+	fmt.Printf("APIGW service starting on %s, classroom ip: %s", address["listenAddress"], address["classroomAddress"])
 
 	// connect to classroom svc
 	classroomClient, err := newClassroomSvcClient()
@@ -259,7 +259,7 @@ func main() {
 		panic(err)
 	}
 
-	lis, err := net.Listen("tcp", listenAddress)
+	lis, err := net.Listen("tcp", address["listenAddress"])
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -278,6 +278,8 @@ func main() {
 	pb.RegisterAuthorizationServiceServer(s, NewAuthorizationService(userClient, authorizationClient))
 	pb.RegisterMemberServiceServer(s, NewMembersService(userClient, classroomClient, waitingListClient))
 	pb.RegisterCommiteeServiceServer(s, NewCommiteesService(commiteeClient, userClient))
+	pb.RegisterRoomServiceServer(s, NewRoomsService(commiteeClient))
+	pb.RegisterStudentDefServiceServer(s, NewStudentDefsService(userClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

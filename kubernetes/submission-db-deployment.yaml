@@ -1,8 +1,29 @@
-#For creating Kubernetes Deployment in the Minikube cluster
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: thesis-management-backend-submission-db-deployment
+  name: submission-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-database-submission-configmap
+data:
+  init-database-submission.sql: |
+    CREATE DATABASE "thesis_management_submissions" 
+
+---
+#For creating Kubernetes StatefulSet in the Minikube cluster
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: thesis-management-backend-submission-db
   labels:
     app: thesis-management-backend-submission-db
 spec:
@@ -18,9 +39,25 @@ spec:
       containers:
       - name: thesis-management-backend-submission-db
         image: qthuy2k1/thesis-management-backend-submission-db
-        imagePullPolicy: IfNotPresent
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "root"
+        imagePullPolicy: Always
         ports:
-        - containerPort: 9091
+        - containerPort: 5432
+        volumeMounts:
+          - name: submission-db
+            mountPath: /var/lib/postgresql/data
+          - name: init-database-script
+            mountPath: /docker-entrypoint-initdb.d/init-database-submission.sql
+            subPath: init-database-submission.sql
+      volumes:
+        - name: submission-db
+          persistentVolumeClaim:
+            claimName: submission-db-pvc
+        - name: init-database-script
+          configMap:
+            name: init-database-submission-configmap
       
         
 
@@ -36,5 +73,5 @@ spec:
   type: ClusterIP
   ports:
   - protocol: TCP
-    port: 9091
-    targetPort: 9091
+    port: 5432
+    targetPort: 5432
