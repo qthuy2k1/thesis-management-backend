@@ -35,7 +35,7 @@ spec:
     targetPort: 5432
 
 
-
+---
 #For creating Kubernetes StatefulSet in the Minikube cluster
 apiVersion: apps/v1
 kind: StatefulSet
