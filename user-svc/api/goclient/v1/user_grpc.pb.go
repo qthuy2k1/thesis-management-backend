@@ -39,6 +39,7 @@ const (
 	UserService_DeleteStudentDef_FullMethodName              = "/user.v1.UserService/DeleteStudentDef"
 	UserService_GetStudentDefs_FullMethodName                = "/user.v1.UserService/GetStudentDefs"
 	UserService_GetAllStudentDefsOfInstructor_FullMethodName = "/user.v1.UserService/GetAllStudentDefsOfInstructor"
+	UserService_GetStudentDefByTimeSlotsID_FullMethodName    = "/user.v1.UserService/GetStudentDefByTimeSlotsID"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -65,6 +66,7 @@ type UserServiceClient interface {
 	DeleteStudentDef(ctx context.Context, in *DeleteStudentDefRequest, opts ...grpc.CallOption) (*DeleteStudentDefResponse, error)
 	GetStudentDefs(ctx context.Context, in *GetStudentDefsRequest, opts ...grpc.CallOption) (*GetStudentDefsResponse, error)
 	GetAllStudentDefsOfInstructor(ctx context.Context, in *GetAllStudentDefsOfInstructorRequest, opts ...grpc.CallOption) (*GetAllStudentDefsOfInstructorResponse, error)
+	GetStudentDefByTimeSlotsID(ctx context.Context, in *GetStudentDefByTimeSlotsIDRequest, opts ...grpc.CallOption) (*GetStudentDefByTimeSlotsIDResponse, error)
 }
 
 type userServiceClient struct {
@@ -255,6 +257,15 @@ func (c *userServiceClient) GetAllStudentDefsOfInstructor(ctx context.Context, i
 	return out, nil
 }
 
+func (c *userServiceClient) GetStudentDefByTimeSlotsID(ctx context.Context, in *GetStudentDefByTimeSlotsIDRequest, opts ...grpc.CallOption) (*GetStudentDefByTimeSlotsIDResponse, error) {
+	out := new(GetStudentDefByTimeSlotsIDResponse)
+	err := c.cc.Invoke(ctx, UserService_GetStudentDefByTimeSlotsID_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -279,6 +290,7 @@ type UserServiceServer interface {
 	DeleteStudentDef(context.Context, *DeleteStudentDefRequest) (*DeleteStudentDefResponse, error)
 	GetStudentDefs(context.Context, *GetStudentDefsRequest) (*GetStudentDefsResponse, error)
 	GetAllStudentDefsOfInstructor(context.Context, *GetAllStudentDefsOfInstructorRequest) (*GetAllStudentDefsOfInstructorResponse, error)
+	GetStudentDefByTimeSlotsID(context.Context, *GetStudentDefByTimeSlotsIDRequest) (*GetStudentDefByTimeSlotsIDResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -345,6 +357,9 @@ func (UnimplementedUserServiceServer) GetStudentDefs(context.Context, *GetStuden
 }
 func (UnimplementedUserServiceServer) GetAllStudentDefsOfInstructor(context.Context, *GetAllStudentDefsOfInstructorRequest) (*GetAllStudentDefsOfInstructorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllStudentDefsOfInstructor not implemented")
+}
+func (UnimplementedUserServiceServer) GetStudentDefByTimeSlotsID(context.Context, *GetStudentDefByTimeSlotsIDRequest) (*GetStudentDefByTimeSlotsIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetStudentDefByTimeSlotsID not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -719,6 +734,24 @@ func _UserService_GetAllStudentDefsOfInstructor_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetStudentDefByTimeSlotsID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetStudentDefByTimeSlotsIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetStudentDefByTimeSlotsID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetStudentDefByTimeSlotsID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetStudentDefByTimeSlotsID(ctx, req.(*GetStudentDefByTimeSlotsIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -805,6 +838,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllStudentDefsOfInstructor",
 			Handler:    _UserService_GetAllStudentDefsOfInstructor_Handler,
+		},
+		{
+			MethodName: "GetStudentDefByTimeSlotsID",
+			Handler:    _UserService_GetStudentDefByTimeSlotsID_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -12,6 +12,16 @@ type WaitingListInputSvc struct {
 	ClassroomID int
 	UserID      string
 	IsDefense   bool
+	Status      string
+}
+
+type WaitingListOutputSvc struct {
+	ID          int
+	ClassroomID int
+	UserID      string
+	IsDefense   bool
+	Status      string
+	CreatedAt   time.Time
 }
 
 // CreateWaitingList creates a new waiting list in db given by waiting list model
@@ -20,6 +30,7 @@ func (s *WaitingListSvc) CreateWaitingList(ctx context.Context, wt WaitingListIn
 		ClassroomID: wt.ClassroomID,
 		UserID:      wt.UserID,
 		IsDefense:   wt.IsDefense,
+		Status:      wt.Status,
 	}
 
 	if err := s.Repository.CreateWaitingList(ctx, pRepo); err != nil {
@@ -47,6 +58,7 @@ func (s *WaitingListSvc) GetWaitingList(ctx context.Context, id int) (WaitingLis
 		ClassroomID: wt.ClassroomID,
 		UserID:      wt.UserID,
 		IsDefense:   wt.IsDefense,
+		Status:      wt.Status,
 		CreatedAt:   wt.CreatedAt,
 	}, nil
 }
@@ -57,6 +69,7 @@ func (s *WaitingListSvc) UpdateWaitingList(ctx context.Context, id int, waitingL
 		ClassroomID: waitingList.ClassroomID,
 		UserID:      waitingList.UserID,
 		IsDefense:   waitingList.IsDefense,
+		Status:      waitingList.Status,
 	}); err != nil {
 		if errors.Is(err, repository.ErrWaitingListNotFound) {
 			return ErrWaitingListNotFound
@@ -79,14 +92,6 @@ func (s *WaitingListSvc) DeleteWaitingList(ctx context.Context, id int) error {
 	return nil
 }
 
-type WaitingListOutputSvc struct {
-	ID          int
-	ClassroomID int
-	UserID      string
-	IsDefense   bool
-	CreatedAt   time.Time
-}
-
 // GetWaitingListsOfClassroom returns a list of waiting lists in a classroom
 func (s *WaitingListSvc) GetWaitingListsOfClassroom(ctx context.Context, classroomID int) ([]WaitingListOutputSvc, error) {
 	wtsRepo, err := s.Repository.GetWaitingListsOfClassroom(ctx, classroomID)
@@ -101,6 +106,7 @@ func (s *WaitingListSvc) GetWaitingListsOfClassroom(ctx context.Context, classro
 			ClassroomID: wt.ClassroomID,
 			UserID:      wt.UserID,
 			IsDefense:   wt.IsDefense,
+			Status:      wt.Status,
 			CreatedAt:   wt.CreatedAt,
 		})
 	}

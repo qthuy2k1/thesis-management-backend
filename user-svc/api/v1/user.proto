@@ -48,6 +48,8 @@ service UserService {
     rpc GetStudentDefs(GetStudentDefsRequest) returns (GetStudentDefsResponse) {}
 
     rpc GetAllStudentDefsOfInstructor(GetAllStudentDefsOfInstructorRequest) returns (GetAllStudentDefsOfInstructorResponse) {}
+    
+    rpc GetStudentDefByTimeSlotsID(GetStudentDefByTimeSlotsIDRequest) returns (GetStudentDefByTimeSlotsIDResponse){}
 }
 
 message CommonUserResponse {
@@ -256,12 +258,14 @@ message UnsubscribeClassroomResponse {
 message StudentDefInput {
     string userID = 1;
     string instructorID = 2;
+    int64 timeSlotsID = 3;
 }
 
 message StudentDefResponse {
     int64 id = 1;
-    string userID = 2;
-    string instructorID = 3;
+    UserResponse user = 2;
+    UserResponse instructor = 3;
+    int64 timeSlotsID = 4;
 }
 
 
@@ -320,4 +324,13 @@ message GetAllStudentDefsOfInstructorResponse {
     CommonUserResponse response = 1;
     int64 totalCount = 2;
     repeated StudentDefResponse studentDefs = 3;
+}
+
+
+message GetStudentDefByTimeSlotsIDRequest {
+    int64 timeSlotsID = 1;
+}
+
+message GetStudentDefByTimeSlotsIDResponse {
+    StudentDefResponse studentDef = 1;
 }

@@ -10,12 +10,14 @@ import (
 type StudentDefInputRepo struct {
 	UserID       string
 	InstructorID string
+	TimeSlotsID  int
 }
 
 type StudentDefOutputRepo struct {
 	ID           int
 	UserID       string
 	InstructorID string
+	TimeSlotsID  int
 }
 
 // CreateStudentDef creates a new user in db given by user model
@@ -30,7 +32,7 @@ func (r *UserRepo) CreateStudentDef(ctx context.Context, u StudentDefInputRepo) 
 		return ErrStudentDefExisted
 	}
 
-	if _, err := ExecSQL(ctx, r.Database, "CreateStudentDef", "INSERT INTO student_defs (user_id, instructor_id) VALUES ($1, $2) RETURNING id", u.UserID, u.InstructorID); err != nil {
+	if _, err := ExecSQL(ctx, r.Database, "CreateStudentDef", "INSERT INTO student_defs (user_id, instructor_id, time_slots_id) VALUES ($1, $2, $3) RETURNING id", u.UserID, u.InstructorID, u.TimeSlotsID); err != nil {
 		logger(err, "execute SQL statement", "CreateStudentDef")
 		return err
 	}
@@ -40,7 +42,7 @@ func (r *UserRepo) CreateStudentDef(ctx context.Context, u StudentDefInputRepo) 
 
 // GetStudentDef returns a student_def in db given by id
 func (r *UserRepo) GetStudentDef(ctx context.Context, id int) (StudentDefOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetStudentDef", "SELECT id, user_id, instructor_id FROM student_defs WHERE id=$1", id)
+	row, err := QueryRowSQL(ctx, r.Database, "GetStudentDef", "SELECT id, user_id, instructor_id, time_slots_id FROM student_defs WHERE id=$1", id)
 	if err != nil {
 		logger(err, "query row sql", "GetStudentDef")
 		return StudentDefOutputRepo{}, err
@@ -48,7 +50,7 @@ func (r *UserRepo) GetStudentDef(ctx context.Context, id int) (StudentDefOutputR
 
 	studentDef := StudentDefOutputRepo{}
 
-	if err = row.Scan(&studentDef.ID, &studentDef.UserID, &studentDef.InstructorID); err != nil {
+	if err = row.Scan(&studentDef.ID, &studentDef.UserID, &studentDef.InstructorID, &studentDef.TimeSlotsID); err != nil {
 		if err == sql.ErrNoRows {
 			logger(err, "student def not found", "GetStudentDef")
 			return StudentDefOutputRepo{}, ErrStudentDefNotFound
@@ -77,7 +79,7 @@ func (r *UserRepo) IsStudentDefExists(ctx context.Context, userID string) (bool,
 
 // UpdateStudentDef updates the specified student_def by id
 func (r *UserRepo) UpdateStudentDef(ctx context.Context, id int, studentDef StudentDefInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdateStudentDef", "UPDATE student_defs SET user_id=$2, instructor_id=$3 WHERE id=$1", id, studentDef.UserID, studentDef.InstructorID)
+	result, err := ExecSQL(ctx, r.Database, "UpdateStudentDef", "UPDATE student_defs SET user_id=$2, instructor_id=$3, time_slots_id=$4 WHERE id=$1", id, studentDef.UserID, studentDef.InstructorID, studentDef.TimeSlotsID)
 	if err != nil {
 		logger(err, "Exec SQL", "UpdateStudentDef")
 		return err
@@ -109,7 +111,7 @@ func (r *UserRepo) DeleteStudentDef(ctx context.Context, id int) error {
 
 // GetStudentDef returns a list of student_defs in db with filter
 func (r *UserRepo) GetStudentDefs(ctx context.Context) ([]StudentDefOutputRepo, int, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetStudentDefs", "SELECT id, user_id, instructor_id FROM student_defs")
+	rows, err := QuerySQL(ctx, r.Database, "GetStudentDefs", "SELECT id, user_id, instructor_id, time_slots_id FROM student_defs")
 	if err != nil {
 		logger(err, "Query SQL", "GetStudentDefs")
 		return nil, 0, err
@@ -124,6 +126,7 @@ func (r *UserRepo) GetStudentDefs(ctx context.Context) ([]StudentDefOutputRepo, 
 			&studentDef.ID,
 			&studentDef.UserID,
 			&studentDef.InstructorID,
+			&studentDef.TimeSlotsID,
 		)
 		if err != nil {
 			logger(err, "rows scan", "GetStudentDefs")
@@ -148,7 +151,7 @@ func (r *UserRepo) GetStudentDefs(ctx context.Context) ([]StudentDefOutputRepo, 
 
 // GetAllStudentDefOfClassroom returns all users of the specified classroom given by classroom id
 func (r *UserRepo) GetAllStudentDefsOfInstructor(ctx context.Context, instructorID string) ([]StudentDefOutputRepo, int, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetAllStudentDefsOfClassroom", fmt.Sprintf("SELECT id, user_id, instructor_id FROM student_defs WHERE instructor_id LIKE '%s'", instructorID))
+	rows, err := QuerySQL(ctx, r.Database, "GetAllStudentDefsOfClassroom", fmt.Sprintf("SELECT id, user_id, instructor_id, time_slots_id FROM student_defs WHERE instructor_id LIKE '%s'", instructorID))
 	if err != nil {
 		logger(err, "query SQL", "GetAllStudentDefsOfClassroom")
 		return nil, 0, err
@@ -163,6 +166,7 @@ func (r *UserRepo) GetAllStudentDefsOfInstructor(ctx context.Context, instructor
 			&studentDef.ID,
 			&studentDef.UserID,
 			&studentDef.InstructorID,
+			&studentDef.TimeSlotsID,
 		)
 		if err != nil {
 			logger(err, "rows scan", "GetAllStudentDefsOfClassroom")
@@ -172,7 +176,7 @@ func (r *UserRepo) GetAllStudentDefsOfInstructor(ctx context.Context, instructor
 	}
 
 	if err := rows.Err(); err != nil {
-		logger(err, "rows err", "GetAllStudentDefsOfClassroo")
+		logger(err, "rows err", "GetAllStudentDefsOfClassroom")
 		return nil, 0, err
 	}
 
@@ -219,4 +223,26 @@ func (r *UserRepo) getCountStudentDefOfInstructor(ctx context.Context, instructo
 	}
 
 	return count, nil
+}
+
+// GetStudentDef returns a student_def in db given by id
+func (r *UserRepo) GetStudentDefByTimeSlotsID(ctx context.Context, timeSlotsID int) (StudentDefOutputRepo, error) {
+	row, err := QueryRowSQL(ctx, r.Database, "GetStudentDef", "SELECT id, user_id, instructor_id, time_slots_id FROM student_defs WHERE time_slots_id=$1", timeSlotsID)
+	if err != nil {
+		logger(err, "query row sql", "GetStudentDef")
+		return StudentDefOutputRepo{}, err
+	}
+
+	studentDef := StudentDefOutputRepo{}
+
+	if err = row.Scan(&studentDef.ID, &studentDef.UserID, &studentDef.InstructorID, &studentDef.TimeSlotsID); err != nil {
+		if err == sql.ErrNoRows {
+			logger(err, "student def not found", "GetStudentDef")
+			return StudentDefOutputRepo{}, ErrStudentDefNotFound
+		}
+		logger(err, "row scan err", "GetStudentDef")
+		return StudentDefOutputRepo{}, err
+	}
+
+	return studentDef, nil
 }

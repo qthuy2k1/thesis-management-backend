@@ -19,9 +19,9 @@ data:
     CREATE DATABASE "thesis_management_waiting_lists" 
 
 ---
-#For creating Kubernetes StatefulSet in the Minikube cluster
+#For creating Kubernetes Deployment in the Minikube cluster
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: thesis-management-backend-classroom-waiting-list-db
   labels:

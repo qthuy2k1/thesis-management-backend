@@ -7,27 +7,27 @@ import (
 )
 
 type CommiteeUserDetailInputRepo struct {
-	CommiteeID int
-	LecturerID string
-	StudentID  []string
+	CommiteeID   int
+	InstructorID string
+	StudentID    []string
 }
 
 type CommiteeUserDetailOutputRepo struct {
-	CommiteeID int
-	LecturerID string
-	StudentID  []string
+	CommiteeID   int
+	InstructorID string
+	StudentID    []string
 }
 
 // CreateCommiteeUserDetail creates a new commitee in db given by commitee model
 func (r *CommiteeRepo) CreateCommiteeUserDetail(ctx context.Context, p CommiteeUserDetailInputRepo) (CommiteeUserDetailOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "CreateCommiteeUserDetail", "INSERT INTO thesis_commitee_user_details (commitee_id, lecturer_id, student_id) VALUES ($1, $2, $3) RETURNING commitee_id, lecturer_id, student_id", p.CommiteeID, p.LecturerID, strings.Join(p.StudentID, ","))
+	row, err := QueryRowSQL(ctx, r.Database, "CreateCommiteeUserDetail", "INSERT INTO thesis_commitee_user_details (commitee_id, lecturer_id, student_id) VALUES ($1, $2, $3) RETURNING commitee_id, lecturer_id, student_id", p.CommiteeID, p.InstructorID, strings.Join(p.StudentID, ","))
 	if err != nil {
 		return CommiteeUserDetailOutputRepo{}, err
 	}
 
 	var commiteeUserDetailOutput CommiteeUserDetailOutputRepo
 	var studentListStr string
-	if err := row.Scan(&commiteeUserDetailOutput.CommiteeID, &commiteeUserDetailOutput.LecturerID, &studentListStr); err != nil {
+	if err := row.Scan(&commiteeUserDetailOutput.CommiteeID, &commiteeUserDetailOutput.InstructorID, &studentListStr); err != nil {
 		return CommiteeUserDetailOutputRepo{}, err
 	}
 
@@ -45,7 +45,7 @@ func (r *CommiteeRepo) GetCommiteeUserDetail(ctx context.Context, id int) (Commi
 
 	commitee := CommiteeUserDetailOutputRepo{}
 	var studentListStr string
-	if err = row.Scan(&commitee.CommiteeID, &commitee.LecturerID, &studentListStr); err != nil {
+	if err = row.Scan(&commitee.CommiteeID, &commitee.InstructorID, &studentListStr); err != nil {
 		if err == sql.ErrNoRows {
 			return CommiteeUserDetailOutputRepo{}, ErrCommiteeUserDetailNotFound
 		}
@@ -75,7 +75,7 @@ func (r *CommiteeRepo) UpdateCommiteeUserDetail(ctx context.Context, commitee Co
 		return err
 	}
 
-	result, err := ExecSQL(ctx, r.Database, "UpdateCommiteeUserDetail", "UPDATE thesis_commitee_user_details SET commitee_id=$2, lecturer_id=$3, student_id=$4 WHERE id=$1", commitee.CommiteeID, commitee.LecturerID, strings.Join(commitee.StudentID, ","))
+	result, err := ExecSQL(ctx, r.Database, "UpdateCommiteeUserDetail", "UPDATE thesis_commitee_user_details SET commitee_id=$2, lecturer_id=$3, student_id=$4 WHERE id=$1", commitee.CommiteeID, commitee.InstructorID, strings.Join(commitee.StudentID, ","))
 	if err != nil {
 		return err
 	}
@@ -117,7 +117,7 @@ func (r *CommiteeRepo) GetCommiteeUserDetails(ctx context.Context) ([]CommiteeUs
 		commitee := CommiteeUserDetailOutputRepo{}
 		err := rows.Scan(
 			&commitee.CommiteeID,
-			&commitee.LecturerID,
+			&commitee.InstructorID,
 			&studentListStr,
 		)
 		if err != nil {
@@ -179,7 +179,7 @@ func (r *CommiteeRepo) GetAllCommiteeUserDetailsFromCommitee(ctx context.Context
 		var commiteeUser CommiteeUserDetailOutputRepo
 		err := rows.Scan(
 			&commiteeUser.CommiteeID,
-			&commiteeUser.LecturerID,
+			&commiteeUser.InstructorID,
 			&studentListStr,
 		)
 		if err != nil {

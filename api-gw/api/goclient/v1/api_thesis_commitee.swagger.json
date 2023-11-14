@@ -170,6 +170,89 @@
           "CommiteeService"
         ]
       }
+    },
+    "/api/council": {
+      "get": {
+        "operationId": "CommiteeService_GetCouncils",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetCouncilsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "CommiteeService"
+        ]
+      },
+      "post": {
+        "operationId": "CommiteeService_CreateCouncil",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateCouncilResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateCouncilRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CommiteeService"
+        ]
+      }
+    },
+    "/api/council/{id}": {
+      "get": {
+        "operationId": "CommiteeService_GetCouncil",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetCouncilResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "CommiteeService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -273,25 +356,8 @@
         "shift": {
           "type": "string"
         },
-        "roomID": {
-          "type": "string",
-          "format": "int64"
-        },
-        "commiteeID": {
-          "type": "string",
-          "format": "int64"
-        },
-        "lecturerID": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "studentID": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "time": {
+          "type": "string"
         }
       },
       "title": "====== commitee ======"
@@ -341,6 +407,34 @@
         }
       }
     },
+    "v1CouncilInput": {
+      "type": "object",
+      "properties": {
+        "lecturerID": {
+          "type": "string"
+        },
+        "thesisID": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1CouncilResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lecturerID": {
+          "type": "string"
+        },
+        "thesisID": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "v1CreateCommiteeRequest": {
       "type": "object",
       "properties": {
@@ -350,6 +444,22 @@
       }
     },
     "v1CreateCommiteeResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonCommiteeResponse"
+        }
+      }
+    },
+    "v1CreateCouncilRequest": {
+      "type": "object",
+      "properties": {
+        "council": {
+          "$ref": "#/definitions/v1CouncilInput"
+        }
+      }
+    },
+    "v1CreateCouncilResponse": {
       "type": "object",
       "properties": {
         "response": {
@@ -391,6 +501,26 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1CommiteeResponse"
+          }
+        }
+      }
+    },
+    "v1GetCouncilResponse": {
+      "type": "object",
+      "properties": {
+        "council": {
+          "$ref": "#/definitions/v1CouncilResponse"
+        }
+      }
+    },
+    "v1GetCouncilsResponse": {
+      "type": "object",
+      "properties": {
+        "councils": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1CouncilResponse"
           }
         }
       }

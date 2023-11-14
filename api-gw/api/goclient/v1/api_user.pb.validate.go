@@ -230,6 +230,17 @@ func (m *UserInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if utf8.RuneCountInString(m.GetPassword()) < 2 {
+		err := UserInputValidationError{
+			field:  "Password",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if m.Major != nil {
 
 		if utf8.RuneCountInString(m.GetMajor()) < 2 {
@@ -457,6 +468,17 @@ func (m *UserResponse) validate(all bool) error {
 			field:  "Email",
 			reason: "value must be a valid email address",
 			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetHashedPassword()) < 2 {
+		err := UserResponseValidationError{
+			field:  "HashedPassword",
+			reason: "value length must be at least 2 runes",
 		}
 		if !all {
 			return err
@@ -829,6 +851,17 @@ func (m *CreateUserResponse) validate(all bool) error {
 				cause:  err,
 			}
 		}
+	}
+
+	if utf8.RuneCountInString(m.GetHashedPassword()) < 2 {
+		err := CreateUserResponseValidationError{
+			field:  "HashedPassword",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {

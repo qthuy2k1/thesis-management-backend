@@ -1,0 +1,40 @@
+#For creating Kubernetes Deployment in the Minikube cluster
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thesis-management-backend-schedule
+  labels:
+    app: thesis-management-backend-schedule
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thesis-management-backend-schedule
+  template:
+    metadata:
+      labels:
+        app: thesis-management-backend-schedule 
+    spec:
+      containers:
+      - name: thesis-management-backend-schedule
+        image: qthuy2k1/thesis-management-backend-schedule
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9091
+      
+        
+
+---
+#For creating a Kubernetes Service in the Minikube cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: thesis-management-backend-schedule-service
+spec:
+  selector:
+    app: thesis-management-backend-schedule 
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 9091
+    targetPort: 9091

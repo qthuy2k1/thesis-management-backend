@@ -1,12 +1,12 @@
-#For creating Kubernetes StatefulSet in the Minikube cluster
+#For creating Kubernetes Deployment in the Minikube cluster
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: thesis-management-backend-apigw-client
   labels:
     app: thesis-management-backend-apigw-client
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: thesis-management-backend-apigw-client

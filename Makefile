@@ -1,17 +1,17 @@
 postgres:
-	docker exec -it $(service)-db psql -U postgres -d thesis_management_$(db)s -h $(service)-db -p 5432
+	docker exec -it $(service)-db psql -U postgres -d thesis_management_$(db)s -h thesis-management-backend-$(service)-db -p 5432
 
 create_migration:
 	migrate create -ext sql -dir $(name)-svc/data/migrations/ -seq $(filename)
 
 migrate_up:
-	docker run --rm -v $(PWD)/$(service)-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(service)-db:5432/thesis_management_$(db)s?sslmode=disable" up 
+	docker run --rm -v $(PWD)/$(service)-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@thesis-management-backend-$(service)-db-service:5432/thesis_management_$(db)s?sslmode=disable" up 
 
 migrate_down:
-	docker run --rm -v $(PWD)/$(service)-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(service)-db:5432/thesis_management_$(db)s?sslmode=disable" down $(ver)
+	docker run --rm -v $(PWD)/$(service)-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@thesis-management-backend-$(service)-db-service:5432/thesis_management_$(db)s?sslmode=disable" down $(ver)
 	
 migrate_force:
-	docker run --rm -v $(PWD)/$(service)-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@$(service)-db:5432/thesis_management_$(db)s?sslmode=disable" force $(ver) 
+	docker run --rm -v $(PWD)/$(service)-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@thesis-management-backend-$(service)-db-service:5432/thesis_management_$(db)s?sslmode=disable" force $(ver) 
 
 docker_volume_down:
 	docker-compose down --volumes
@@ -30,7 +30,7 @@ proto-api:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./api-gw/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto api_comment.proto api_attachment.proto api_topic.proto api_authorization.proto api_member.proto api_thesis_commitee.proto api_room.proto api_student_def.proto
+		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto api_comment.proto api_attachment.proto api_topic.proto api_authorization.proto api_member.proto api_thesis_commitee.proto api_room.proto api_student_def.proto api_schedule.proto api_notification.proto api_point.proto
 	@echo "Done"
 
 proto-classroom:
@@ -238,13 +238,31 @@ proto-commitee:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./thesis-commitee-svc/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 thesis_commitee.proto
+		 thesis_commitee.proto schedule_commitee.proto
+	@echo "Done"
+
+
+proto-sche:
+	@echo "--> Generating gRPC clients for schedule API"
+	@protoc -I ./schedule-svc/src/proto \
+		--go_out ./schedule-svc/api/goclient/v1 --go_opt paths=source_relative \
+	  	--go-grpc_out ./schedule-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+		--grpc-gateway_out ./schedule-svc/api/goclient/v1 \
+		--grpc-gateway_opt logtostderr=true \
+		--grpc-gateway_opt paths=source_relative \
+		--grpc-gateway_opt generate_unbound_methods=true \
+  		--openapiv2_out ./schedule-svc/api/goclient/v1 \
+    	--openapiv2_opt logtostderr=true \
+		--validate_out="lang=go,paths=source_relative:./schedule-svc/api/goclient/v1" \
+		--experimental_allow_proto3_optional \
+		 schedule.proto
 	@echo "Done"
 
 
 
 
-proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-redis proto-comment proto-attachment proto-topic proto-authorization proto-commitee
+
+proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-redis proto-comment proto-attachment proto-topic proto-authorization proto-commitee proto-sche
 
 clean:
 	rm -rf ./out
@@ -366,33 +384,6 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-topic-db:latest
 	docker push qthuy2k1/thesis-management-backend-thesis-commitee-db:latest
 
-docker-google-cloud-push:
-	# APP
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-apigw-client:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-classroom:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-post:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-exercise:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-user:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-reporting-stage:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-submission:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-classroom-waiting-list:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-comment:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-attachment:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-topic:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-authorization:latest
-
-	# DB
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-classroom-db:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-post-db:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-exercise-db:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-user-db:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-reporting-stage-db:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-submission-db:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-classroom-waiting-list-db:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-comment-db:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-attachment-db:latest
-	docker push asia-southeast1-docker.pkg.dev/thesis-course-registration/thesis-course-registration/thesis-management-backend-topic-db:latest
 
 migrate_all_up:
 	docker run --rm -v $(PWD)/classroom-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@classroom-db:5432/thesis_management_classrooms?sslmode=disable" up
@@ -470,25 +461,55 @@ kuber-exec:
 kuber-delete:
 	kubectl delete -f $(file).yaml --cascade=orphan
 
-kuber-all:
-	./classroom-svc/export_env.sh
-	./api-gw/apigw_build.sh
-	./apigw-client/apigw_client_build.sh
+kuber-all: clean build
+	docker compose build
 
-	docker build -f classroom-svc/Dockerfile -t qthuy2k1/thesis-management-backend-classroom .
-	docker build -f api-gw/Dockerfile -t qthuy2k1/thesis-management-backend .
-	docker build -f apigw-client/Dockerfile -t qthuy2k1/thesis-management-backend-apigw-client .
-
-	docker push qthuy2k1/thesis-management-backend-classroom:latest
+	# ===================================== PUSHING TO DOCKER =====================================
+	# APP
 	docker push qthuy2k1/thesis-management-backend:latest
 	docker push qthuy2k1/thesis-management-backend-apigw-client:latest
+	docker push qthuy2k1/thesis-management-backend-classroom:latest
+	docker push qthuy2k1/thesis-management-backend-post:latest
+	docker push qthuy2k1/thesis-management-backend-exercise:latest
+	docker push qthuy2k1/thesis-management-backend-user:latest
+	docker push qthuy2k1/thesis-management-backend-reporting-stage:latest
+	docker push qthuy2k1/thesis-management-backend-submission:latest
+	docker push qthuy2k1/thesis-management-backend-classroom-waiting-list:latest
+	docker push qthuy2k1/thesis-management-backend-comment:latest
+	docker push qthuy2k1/thesis-management-backend-attachment:latest
+	docker push qthuy2k1/thesis-management-backend-topic:latest
+	docker push qthuy2k1/thesis-management-backend-authorization:latest
+	docker push qthuy2k1/thesis-management-backend-thesis-commitee:latest
 
-	kubectl delete -f kubernetes/classroom-deployment.yaml --cascade=orphan
-	kubectl delete -f kubernetes/api-deployment.yaml --cascade=orphan
-	kubectl delete -f kubernetes/apigw-client-deployment.yaml --cascade=orphan
-	
-	kubectl delete --all pods -n thesis-management-backend
 
+	# ===================================== DELETING KUBERNETES =================================
+	kubectl delete -f kubernetes/attachment-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/classroom-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/classroom-waiting-list-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/comment-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/exercise-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/post-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/reporting-stage-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/submission-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
+
+	kubectl delete -f kubernetes/attachment-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/classroom-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/classroom-waiting-list-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/comment-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/exercise-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/post-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/reporting-stage-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/submission-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/topic-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/user-db-deployment.yaml --namespace thesis-management-backend
+
+	kubectl delete -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
+
+
+	# ===================================== APPLYING KUBERNETES =================================
 	kubectl apply -f kubernetes/attachment-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/classroom-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/classroom-waiting-list-deployment.yaml --namespace thesis-management-backend
@@ -539,6 +560,7 @@ kuber-apply:
 	kubectl apply -f kubernetes/submission-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/schedule-deployment.yaml --namespace thesis-management-backend
 
 	kubectl apply -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
@@ -569,3 +591,16 @@ kuber-del:
 
 	kubectl delete -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
+
+
+rebuild-kuber:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/$(file-out) ./$(folder-svc)
+	docker build -f $(folder-svc)/Dockerfile -t qthuy2k1/thesis-management-backend$(svc) .
+	docker push qthuy2k1/thesis-management-backend$(svc):latest
+	kubectl delete -f kubernetes/$(kuber-name)-deployment.yaml
+	kubectl apply -f kubernetes/$(kuber-name)-deployment.yaml
+
+build-a-svc:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/$(name) ./$(folder)
+	docker build -f $(folder)/Dockerfile -t qthuy2k1/thesis-management-backend$(svc) .
+	docker compose up

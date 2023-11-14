@@ -365,6 +365,12 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "user.password",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -485,6 +491,9 @@
       "properties": {
         "response": {
           "$ref": "#/definitions/v1CommonUserResponse"
+        },
+        "hashedPassword": {
+          "type": "string"
         }
       }
     },
@@ -620,6 +629,9 @@
         },
         "email": {
           "type": "string"
+        },
+        "password": {
+          "type": "string"
         }
       },
       "title": "====== user ======"
@@ -649,6 +661,9 @@
           "type": "string"
         },
         "email": {
+          "type": "string"
+        },
+        "hashedPassword": {
           "type": "string"
         }
       }

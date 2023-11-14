@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 )
 
@@ -115,7 +116,7 @@ type UserOutputRepo struct {
 
 // GetUser returns a user in db given by id
 func (r *UserRepo) GetUser(ctx context.Context, id string) (UserOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetUser", "SELECT id, class, major, phone, photo_src, role, name, email FROM users WHERE id=$1", id)
+	row, err := QueryRowSQL(ctx, r.Database, "GetUser", fmt.Sprintf("SELECT id, class, major, phone, photo_src, role, name, email FROM users WHERE id='%s'", id))
 	if err != nil {
 		logger(err, "query row sql", "GetUser")
 		return UserOutputRepo{}, err

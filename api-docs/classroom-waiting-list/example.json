@@ -6,7 +6,9 @@
             "input": {
                 "waitingList": {
                     "memberID": "1adadaa",
-                    "classroomID": 1
+                    "classroomID": 1,
+                    "registerDefense": false,
+                    "status": "WAITING"
                 }
             },
             "output": {
@@ -20,7 +22,9 @@
             "input": {
                 "waitingList": {
                     "memberID": "1adadaa",
-                    "classroomID": 1
+                    "classroomID": 1,
+                    "registerDefense": false,
+                    "status": "WAITING"
                 }
             },
             "output": {
@@ -68,7 +72,9 @@
                         "name": "Quanasdasdg Tyhuayyyy",
                         "email": "thuyasayady@gmyaail.com"
                     },
-                    "createdAt": "2023-10-08T14:09:26Z"
+                    "createdAt": "2023-10-08T14:09:26Z",
+                    "registerDefense": false,
+                    "status": "WAITING"
                 }
             }
         },
@@ -120,7 +126,9 @@
             "input": {
                 "waitingList": {
                     "memberID": "1adadaa",
-                    "classroomID": 1
+                    "classroomID": 1,
+                    "registerDefense": false,
+                    "status": "WAITING"
                 }
             },
             "output": {
@@ -173,7 +181,9 @@
                             "name": "Quanasdasdg Tyhuayyyy",
                             "email": "thuyasayady@gmyaail.com"
                         },
-                        "createdAt": "2023-10-08T14:09:26Z"
+                        "createdAt": "2023-10-08T14:09:26Z",
+                        "registerDefense": false,
+                        "status": "WAITING"
                     },
                     {
                         "id": "2",
@@ -208,7 +218,9 @@
                             "name": "Quanasdasdg Tyhuayyyy",
                             "email": "thuyasayady@gmyaail.com"
                         },
-                        "createdAt": "2023-10-08T14:09:26Z"
+                        "createdAt": "2023-10-08T14:09:26Z",
+                        "registerDefense": false,
+                        "status": "WAITING"
                     },
                     {
                         "id": "3",
@@ -243,7 +255,9 @@
                             "name": "Quanasdasdg Tyhuayyyy",
                             "email": "thuyasayady@gmyaail.com"
                         },
-                        "createdAt": "2023-10-08T14:09:26Z"
+                        "createdAt": "2023-10-08T14:09:26Z",
+                        "registerDefense": false,
+                        "status": "WAITING"
                     }
                 ]
             }

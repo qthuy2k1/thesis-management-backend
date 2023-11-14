@@ -192,6 +192,14 @@
         }
       }
     },
+    "v1GetStudentDefByTimeSlotsIDResponse": {
+      "type": "object",
+      "properties": {
+        "studentDef": {
+          "$ref": "#/definitions/v1StudentDefResponse"
+        }
+      }
+    },
     "v1GetStudentDefResponse": {
       "type": "object",
       "properties": {
@@ -316,6 +324,10 @@
         },
         "instructorID": {
           "type": "string"
+        },
+        "timeSlotsID": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -326,11 +338,15 @@
           "type": "string",
           "format": "int64"
         },
-        "userID": {
-          "type": "string"
+        "user": {
+          "$ref": "#/definitions/v1UserResponse"
         },
-        "instructorID": {
-          "type": "string"
+        "instructor": {
+          "$ref": "#/definitions/v1UserResponse"
+        },
+        "timeSlotsID": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

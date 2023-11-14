@@ -1,0 +1,255 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "schedule_commitee.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "ScheduleService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CommonScheduleResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "string",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CouncilInput": {
+      "type": "object",
+      "properties": {
+        "lecturerID": {
+          "type": "string"
+        },
+        "thesisID": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1CouncilResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lecturerID": {
+          "type": "string"
+        },
+        "thesisID": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1CreateCouncilResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonScheduleResponse"
+        }
+      }
+    },
+    "v1CreateScheduleResponse": {
+      "type": "object",
+      "properties": {
+        "schedule": {
+          "$ref": "#/definitions/v1ScheduleResponse"
+        }
+      }
+    },
+    "v1GetCouncilResponse": {
+      "type": "object",
+      "properties": {
+        "council": {
+          "$ref": "#/definitions/v1CouncilResponse"
+        }
+      }
+    },
+    "v1GetCouncilsByThesisIDResponse": {
+      "type": "object",
+      "properties": {
+        "councils": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1CouncilResponse"
+          }
+        }
+      }
+    },
+    "v1GetCouncilsResponse": {
+      "type": "object",
+      "properties": {
+        "councils": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1CouncilResponse"
+          }
+        }
+      }
+    },
+    "v1GetScheduleResponse": {
+      "type": "object",
+      "properties": {
+        "schedule": {
+          "$ref": "#/definitions/v1ScheduleResponse"
+        }
+      }
+    },
+    "v1GetSchedulesResponse": {
+      "type": "object",
+      "properties": {
+        "schedules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1ScheduleResponse"
+          }
+        }
+      }
+    },
+    "v1RoomSchedule": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "school": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ScheduleInput": {
+      "type": "object",
+      "properties": {
+        "roomID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "thesisID": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1ScheduleResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "timeSlots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1TimeSlotsResponse"
+          }
+        },
+        "room": {
+          "$ref": "#/definitions/v1RoomSchedule"
+        },
+        "thesisID": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1TimeSlot": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "shift": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "time": {
+          "type": "string"
+        },
+        "timeSlotsID": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "v1TimeSlotsResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "scheduleID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "timeSlot": {
+          "$ref": "#/definitions/v1TimeSlot"
+        }
+      }
+    }
+  }
+}

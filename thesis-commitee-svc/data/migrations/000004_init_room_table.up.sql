@@ -1,4 +1,4 @@
-CREATE TABLE "rooms" (
+CREATE TABLE IF NOT EXISTS "rooms" (
     "id" SERIAL PRIMARY KEY NOT NULL,
     "name" VARCHAR NOT NULL,
     "type" VARCHAR NOT NULL,

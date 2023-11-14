@@ -85,38 +85,6 @@ func (u *studentDefServiceGW) GetStudentDef(ctx context.Context, req *pb.GetStud
 		return nil, err
 	}
 
-	userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-		Id: res.GetStudentDef().UserID,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	if userRes.GetResponse().StatusCode != 200 {
-		return &pb.GetStudentDefResponse{
-			Response: &pb.CommonStudentDefResponse{
-				StatusCode: userRes.GetResponse().StatusCode,
-				Message:    userRes.GetResponse().Message,
-			},
-		}, nil
-	}
-
-	instructorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-		Id: res.GetStudentDef().InstructorID,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	if userRes.GetResponse().StatusCode != 200 {
-		return &pb.GetStudentDefResponse{
-			Response: &pb.CommonStudentDefResponse{
-				StatusCode: userRes.GetResponse().StatusCode,
-				Message:    userRes.GetResponse().Message,
-			},
-		}, nil
-	}
-
 	return &pb.GetStudentDefResponse{
 		Response: &pb.CommonStudentDefResponse{
 			StatusCode: res.GetResponse().StatusCode,
@@ -125,24 +93,24 @@ func (u *studentDefServiceGW) GetStudentDef(ctx context.Context, req *pb.GetStud
 		StudentDef: &pb.StudentDefResponse{
 			Id: res.GetStudentDef().Id,
 			Infor: &pb.StudentDefUserResponse{
-				Id:       userRes.GetUser().GetId(),
-				Class:    userRes.GetUser().GetClass(),
-				Major:    userRes.GetUser().Major,
-				Phone:    userRes.GetUser().Phone,
-				PhotoSrc: userRes.GetUser().GetPhotoSrc(),
-				Name:     userRes.GetUser().GetName(),
-				Email:    userRes.GetUser().GetEmail(),
-				Role:     userRes.GetUser().GetRole(),
+				Id:       res.StudentDef.User.GetId(),
+				Class:    res.StudentDef.User.GetClass(),
+				Major:    res.StudentDef.User.Major,
+				Phone:    res.StudentDef.User.Phone,
+				PhotoSrc: res.StudentDef.User.GetPhotoSrc(),
+				Name:     res.StudentDef.User.GetName(),
+				Email:    res.StudentDef.User.GetEmail(),
+				Role:     res.StudentDef.User.GetRole(),
 			},
 			Instructor: &pb.StudentDefUserResponse{
-				Id:       instructorRes.GetUser().GetId(),
-				Class:    instructorRes.GetUser().GetClass(),
-				Major:    instructorRes.GetUser().Major,
-				Phone:    instructorRes.GetUser().Phone,
-				PhotoSrc: instructorRes.GetUser().GetPhotoSrc(),
-				Name:     instructorRes.GetUser().GetName(),
-				Email:    instructorRes.GetUser().GetEmail(),
-				Role:     instructorRes.GetUser().GetRole(),
+				Id:       res.StudentDef.Instructor.GetId(),
+				Class:    res.StudentDef.Instructor.GetClass(),
+				Major:    res.StudentDef.Instructor.Major,
+				Phone:    res.StudentDef.Instructor.Phone,
+				PhotoSrc: res.StudentDef.Instructor.GetPhotoSrc(),
+				Name:     res.StudentDef.Instructor.GetName(),
+				Email:    res.StudentDef.Instructor.GetEmail(),
+				Role:     res.StudentDef.Instructor.GetRole(),
 			},
 		},
 	}, nil
@@ -220,59 +188,27 @@ func (u *studentDefServiceGW) GetStudentDefs(ctx context.Context, req *pb.GetStu
 
 	var studentDefs []*pb.StudentDefResponse
 	for _, s := range res.GetStudentDefs() {
-		userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: s.UserID,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if userRes.GetResponse().StatusCode != 200 {
-			return &pb.GetStudentDefsResponse{
-				Response: &pb.CommonStudentDefResponse{
-					StatusCode: userRes.GetResponse().StatusCode,
-					Message:    userRes.GetResponse().Message,
-				},
-			}, nil
-		}
-
-		instructorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: s.InstructorID,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if userRes.GetResponse().StatusCode != 200 {
-			return &pb.GetStudentDefsResponse{
-				Response: &pb.CommonStudentDefResponse{
-					StatusCode: userRes.GetResponse().StatusCode,
-					Message:    userRes.GetResponse().Message,
-				},
-			}, nil
-		}
-
 		studentDefs = append(studentDefs, &pb.StudentDefResponse{
 			Id: s.Id,
 			Infor: &pb.StudentDefUserResponse{
-				Id:       userRes.GetUser().GetId(),
-				Class:    userRes.GetUser().GetClass(),
-				Major:    userRes.GetUser().Major,
-				Phone:    userRes.GetUser().Phone,
-				PhotoSrc: userRes.GetUser().GetPhotoSrc(),
-				Name:     userRes.GetUser().GetName(),
-				Email:    userRes.GetUser().GetEmail(),
-				Role:     userRes.GetUser().GetRole(),
+				Id:       s.User.GetId(),
+				Class:    s.User.GetClass(),
+				Major:    s.User.Major,
+				Phone:    s.User.Phone,
+				PhotoSrc: s.User.GetPhotoSrc(),
+				Name:     s.User.GetName(),
+				Email:    s.User.GetEmail(),
+				Role:     s.User.GetRole(),
 			},
 			Instructor: &pb.StudentDefUserResponse{
-				Id:       instructorRes.GetUser().GetId(),
-				Class:    instructorRes.GetUser().GetClass(),
-				Major:    instructorRes.GetUser().Major,
-				Phone:    instructorRes.GetUser().Phone,
-				PhotoSrc: instructorRes.GetUser().GetPhotoSrc(),
-				Name:     instructorRes.GetUser().GetName(),
-				Email:    instructorRes.GetUser().GetEmail(),
-				Role:     instructorRes.GetUser().GetRole(),
+				Id:       s.Instructor.GetId(),
+				Class:    s.Instructor.GetClass(),
+				Major:    s.Instructor.Major,
+				Phone:    s.Instructor.Phone,
+				PhotoSrc: s.Instructor.GetPhotoSrc(),
+				Name:     s.Instructor.GetName(),
+				Email:    s.Instructor.GetEmail(),
+				Role:     s.Instructor.GetRole(),
 			},
 		})
 	}
@@ -297,59 +233,27 @@ func (u *studentDefServiceGW) GetAllStudentDefsOfInstructor(ctx context.Context,
 
 	var studentDefs []*pb.StudentDefResponse
 	for _, s := range res.GetStudentDefs() {
-		userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: s.UserID,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if userRes.GetResponse().StatusCode != 200 {
-			return &pb.GetAllStudentDefsOfInstructorResponse{
-				Response: &pb.CommonStudentDefResponse{
-					StatusCode: userRes.GetResponse().StatusCode,
-					Message:    userRes.GetResponse().Message,
-				},
-			}, nil
-		}
-
-		instructorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: s.InstructorID,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if userRes.GetResponse().StatusCode != 200 {
-			return &pb.GetAllStudentDefsOfInstructorResponse{
-				Response: &pb.CommonStudentDefResponse{
-					StatusCode: userRes.GetResponse().StatusCode,
-					Message:    userRes.GetResponse().Message,
-				},
-			}, nil
-		}
-
 		studentDefs = append(studentDefs, &pb.StudentDefResponse{
 			Id: s.Id,
 			Infor: &pb.StudentDefUserResponse{
-				Id:       userRes.GetUser().GetId(),
-				Class:    userRes.GetUser().GetClass(),
-				Major:    userRes.GetUser().Major,
-				Phone:    userRes.GetUser().Phone,
-				PhotoSrc: userRes.GetUser().GetPhotoSrc(),
-				Name:     userRes.GetUser().GetName(),
-				Email:    userRes.GetUser().GetEmail(),
-				Role:     userRes.GetUser().GetRole(),
+				Id:       s.User.GetId(),
+				Class:    s.User.GetClass(),
+				Major:    s.User.Major,
+				Phone:    s.User.Phone,
+				PhotoSrc: s.User.GetPhotoSrc(),
+				Name:     s.User.GetName(),
+				Email:    s.User.GetEmail(),
+				Role:     s.User.GetRole(),
 			},
 			Instructor: &pb.StudentDefUserResponse{
-				Id:       instructorRes.GetUser().GetId(),
-				Class:    instructorRes.GetUser().GetClass(),
-				Major:    instructorRes.GetUser().Major,
-				Phone:    instructorRes.GetUser().Phone,
-				PhotoSrc: instructorRes.GetUser().GetPhotoSrc(),
-				Name:     instructorRes.GetUser().GetName(),
-				Email:    instructorRes.GetUser().GetEmail(),
-				Role:     instructorRes.GetUser().GetRole(),
+				Id:       s.Instructor.GetId(),
+				Class:    s.Instructor.GetClass(),
+				Major:    s.Instructor.Major,
+				Phone:    s.Instructor.Phone,
+				PhotoSrc: s.Instructor.GetPhotoSrc(),
+				Name:     s.Instructor.GetName(),
+				Email:    s.Instructor.GetEmail(),
+				Role:     s.Instructor.GetRole(),
 			},
 		})
 	}

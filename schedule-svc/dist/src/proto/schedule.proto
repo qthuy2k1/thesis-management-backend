@@ -1,0 +1,162 @@
+syntax = "proto3";
+
+package schedule.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/schedule/api/v1";
+
+service ScheduleService {
+    rpc GetSchedules(GetSchedulesRequest) returns (GetSchedulesResponse) {}
+
+    rpc CreateSchedule(CreateScheduleRequest) returns (CreateScheduleResponse) {}
+
+
+    rpc GetNotifications(GetNotificationsRequest) returns (GetNotificationsResponse) {}
+
+    rpc CreateNotification(CreateNotificationRequest) returns (CreateNotificationResponse) {}
+
+    rpc CreateOrUpdatePointDef(CreateOrUpdatePointDefRequest) returns (CreateOrUpdatePointDefResponse) {}
+}
+
+
+message UserScheduleResponse {
+    string id = 1;
+    string class = 2;
+    optional string major = 3;
+    optional string phone = 4;
+    string photoSrc = 5;
+    string role = 6;
+    string name = 7;
+    string email = 8;
+}
+
+message StudentDefScheduleResponse {
+    string id = 1;
+    UserScheduleResponse infor = 2;
+    UserScheduleResponse instructor = 3;
+    google.protobuf.Timestamp createdAt = 4;
+}
+
+message TimeSlot {
+    string date = 1;
+    string shift = 2;
+    string id = 3;
+    string time = 4;
+}
+
+message RoomSchedule {
+    string id = 1;
+    string name = 2;
+    string school = 3;
+    string type = 4;
+    string description = 5;
+    string createdAt = 6;
+}
+
+message TimeSlots {
+    StudentDefScheduleResponse student = 1;
+    TimeSlot timeSlot = 2;
+}
+
+message Schedule {
+    repeated TimeSlots timeSlots = 1;
+    RoomSchedule room = 2;
+}
+
+message Thesis {
+    Schedule schedule = 1;
+    repeated UserScheduleResponse council = 2;
+    string id = 3;
+}
+
+message ScheduleResponse {
+    string id = 1;
+    Thesis thesis = 2;
+    google.protobuf.Timestamp createdAt = 3;
+}
+
+message GetSchedulesRequest{}
+
+message GetSchedulesResponse{
+    string id = 1;
+    repeated Thesis thesis = 2;
+    // google.protobuf.Timestamp createdAt = 3;
+}
+
+
+message CreateScheduleRequest{
+    string startDate = 1;
+    int64 quantityWeek = 2;
+    repeated RoomSchedule rooms = 3;
+    repeated UserScheduleResponse councils = 4;
+    repeated StudentDefScheduleResponse studentDefs = 5;
+}
+
+message CreateScheduleResponse{
+    string id = 1;
+    repeated Thesis thesis = 2;
+    // google.protobuf.Timestamp createdAt = 3;
+}
+
+
+
+// NOTIFICATION
+message Notification {
+    string id = 1;
+    UserScheduleResponse senderUser = 2;
+    UserScheduleResponse receiverAuthor = 3;
+    string type = 4;
+    google.protobuf.Timestamp createdAt = 5;
+}
+
+
+message GetNotificationsRequest {
+}
+
+message GetNotificationsResponse {
+    repeated Notification notifications = 1;
+}
+
+message CreateNotificationRequest {
+    Notification noti = 1;
+}
+
+message CreateNotificationResponse {
+    Notification notification = 1;
+    string message = 2;
+    repeated Notification notifications = 3;
+}
+
+
+// ===========================
+// POINT
+message AssessItem {
+    string id = 1;
+    UserScheduleResponse lecturer = 2;
+    int64 point = 3;
+    string comment = 4;
+}
+
+message Point {
+    string id = 1;
+    UserScheduleResponse student = 2;
+    repeated AssessItem assesses = 3;
+}
+
+message CreateOrUpdatePointDefRequest {
+    Point point = 1;
+}
+
+message CreateOrUpdatePointDefResponse {
+    Point point = 1;
+    string message = 2;
+}
+
+
+message GetAllPointDefRequest {
+}
+
+message GetAllPointDefResponse {
+    repeated Point points = 1;
+}

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "types": ["node", "express"],
+    "target": "ES2019",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*", "src/types/*"]
+    }
+  },
+  "include": ["src/**/*", "app.ts", "src/config/fire-key.json"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}

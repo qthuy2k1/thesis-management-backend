@@ -194,7 +194,9 @@ func (m *WaitingListInput) validate(all bool) error {
 
 	// no validation rules for MemberID
 
-	// no validation rules for IsDefense
+	// no validation rules for RegisterDefense
+
+	// no validation rules for Status
 
 	if len(errors) > 0 {
 		return WaitingListInputMultiError(errors)
@@ -365,7 +367,9 @@ func (m *WaitingListResponse) validate(all bool) error {
 		}
 	}
 
-	// no validation rules for IsDefense
+	// no validation rules for RegisterDefense
+
+	// no validation rules for Status
 
 	if m.GetCreatedAt() == nil {
 		err := WaitingListResponseValidationError{

@@ -1,0 +1,2 @@
+ALTER TABLE "exercises"
+ADD COLUMN "score" TYPE INTEGER;

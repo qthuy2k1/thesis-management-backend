@@ -4650,6 +4650,8 @@ func (m *StudentDefInput) validate(all bool) error {
 
 	// no validation rules for InstructorID
 
+	// no validation rules for TimeSlotsID
+
 	if len(errors) > 0 {
 		return StudentDefInputMultiError(errors)
 	}
@@ -4752,9 +4754,65 @@ func (m *StudentDefResponse) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for UserID
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, StudentDefResponseValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, StudentDefResponseValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return StudentDefResponseValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
-	// no validation rules for InstructorID
+	if all {
+		switch v := interface{}(m.GetInstructor()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, StudentDefResponseValidationError{
+					field:  "Instructor",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, StudentDefResponseValidationError{
+					field:  "Instructor",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetInstructor()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return StudentDefResponseValidationError{
+				field:  "Instructor",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for TimeSlotsID
 
 	if len(errors) > 0 {
 		return StudentDefResponseMultiError(errors)
@@ -6406,3 +6464,244 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetAllStudentDefsOfInstructorResponseValidationError{}
+
+// Validate checks the field values on GetStudentDefByTimeSlotsIDRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *GetStudentDefByTimeSlotsIDRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetStudentDefByTimeSlotsIDRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// GetStudentDefByTimeSlotsIDRequestMultiError, or nil if none found.
+func (m *GetStudentDefByTimeSlotsIDRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetStudentDefByTimeSlotsIDRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for TimeSlotsID
+
+	if len(errors) > 0 {
+		return GetStudentDefByTimeSlotsIDRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetStudentDefByTimeSlotsIDRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// GetStudentDefByTimeSlotsIDRequest.ValidateAll() if the designated
+// constraints aren't met.
+type GetStudentDefByTimeSlotsIDRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetStudentDefByTimeSlotsIDRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetStudentDefByTimeSlotsIDRequestMultiError) AllErrors() []error { return m }
+
+// GetStudentDefByTimeSlotsIDRequestValidationError is the validation error
+// returned by GetStudentDefByTimeSlotsIDRequest.Validate if the designated
+// constraints aren't met.
+type GetStudentDefByTimeSlotsIDRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetStudentDefByTimeSlotsIDRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetStudentDefByTimeSlotsIDRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetStudentDefByTimeSlotsIDRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetStudentDefByTimeSlotsIDRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetStudentDefByTimeSlotsIDRequestValidationError) ErrorName() string {
+	return "GetStudentDefByTimeSlotsIDRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetStudentDefByTimeSlotsIDRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetStudentDefByTimeSlotsIDRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetStudentDefByTimeSlotsIDRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetStudentDefByTimeSlotsIDRequestValidationError{}
+
+// Validate checks the field values on GetStudentDefByTimeSlotsIDResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *GetStudentDefByTimeSlotsIDResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetStudentDefByTimeSlotsIDResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// GetStudentDefByTimeSlotsIDResponseMultiError, or nil if none found.
+func (m *GetStudentDefByTimeSlotsIDResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetStudentDefByTimeSlotsIDResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetStudentDef()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetStudentDefByTimeSlotsIDResponseValidationError{
+					field:  "StudentDef",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetStudentDefByTimeSlotsIDResponseValidationError{
+					field:  "StudentDef",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetStudentDef()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetStudentDefByTimeSlotsIDResponseValidationError{
+				field:  "StudentDef",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return GetStudentDefByTimeSlotsIDResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetStudentDefByTimeSlotsIDResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// GetStudentDefByTimeSlotsIDResponse.ValidateAll() if the designated
+// constraints aren't met.
+type GetStudentDefByTimeSlotsIDResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetStudentDefByTimeSlotsIDResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetStudentDefByTimeSlotsIDResponseMultiError) AllErrors() []error { return m }
+
+// GetStudentDefByTimeSlotsIDResponseValidationError is the validation error
+// returned by GetStudentDefByTimeSlotsIDResponse.Validate if the designated
+// constraints aren't met.
+type GetStudentDefByTimeSlotsIDResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetStudentDefByTimeSlotsIDResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetStudentDefByTimeSlotsIDResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetStudentDefByTimeSlotsIDResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetStudentDefByTimeSlotsIDResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetStudentDefByTimeSlotsIDResponseValidationError) ErrorName() string {
+	return "GetStudentDefByTimeSlotsIDResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetStudentDefByTimeSlotsIDResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetStudentDefByTimeSlotsIDResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetStudentDefByTimeSlotsIDResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetStudentDefByTimeSlotsIDResponseValidationError{}

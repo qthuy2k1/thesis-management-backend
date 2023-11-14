@@ -50,14 +50,16 @@ message CommonCommiteeResponse {
 message CommiteeInput {
     google.type.DateTime startDate = 1;
     string shift = 2;
-    int64 roomID = 3;
+    int64 timeSlotsID = 3;
+    string time = 4;
 }
 
 message CommiteeResponse {
     int64 id = 1;
     google.type.DateTime startDate = 2;
     string shift = 3;
-    int64 roomID = 4;
+    string time = 4;
+    int64 timeSlotsID = 5;
 }
 
 message CreateCommiteeRequest {
@@ -252,4 +254,3 @@ message GetAllRoomsFromCommiteeResponse {
     CommonCommiteeResponse response = 1;
     repeated RoomResponse rooms = 2;
 }
-

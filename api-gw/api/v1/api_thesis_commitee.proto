@@ -40,6 +40,70 @@ service CommiteeService {
             get: "/api/commitee"
         };
     }
+
+    // rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse){
+    //     option (google.api.http) = {
+    //         post: "/api/room"
+    //         body: "*"
+    //     };
+    // }
+    
+    // rpc GetRoom(GetRoomRequest) returns (GetRoomResponse){
+    //     option (google.api.http) = {
+    //         get: "/api/room/{id}"
+    //     };
+    // }
+
+    // rpc UpdateRoom(UpdateRoomRequest) returns (UpdateRoomResponse){
+    //     option (google.api.http) = {
+    //         put: "/api/room/{id}"
+    //         body: "*"
+    //     };
+    // }
+
+    // rpc DeleteRoom(DeleteRoomRequest) returns (DeleteRoomResponse){
+    //     option (google.api.http) = {
+    //         delete: "/api/room/{id}"
+    //     };
+    // }
+
+    // rpc GetRooms(GetRoomsRequest) returns (GetRoomsResponse) {
+    //     option (google.api.http) = {
+    //         get: "/api/room"
+    //     };
+    // }
+
+    rpc CreateCouncil(CreateCouncilRequest) returns (CreateCouncilResponse){
+        option (google.api.http) = {
+            post: "/api/council"
+            body: "*"
+        };
+    }
+    
+    rpc GetCouncil(GetCouncilRequest) returns (GetCouncilResponse){
+        option (google.api.http) = {
+            get: "/api/council/{id}"
+        };
+    }
+
+    // rpc UpdateCouncil(UpdateCouncilRequest) returns (UpdateCouncilResponse){
+    //     option (google.api.http) = {
+    //         put: "/api/council/{id}"
+    //         body: "*"
+    //     };
+    // }
+
+    // rpc DeleteCouncil(DeleteCouncilRequest) returns (DeleteCouncilResponse){
+    //     option (google.api.http) = {
+    //         delete: "/api/council/{id}"
+    //     };
+    // }
+
+    rpc GetCouncils(GetCouncilsRequest) returns (GetCouncilsResponse) {
+        option (google.api.http) = {
+            get: "/api/council"
+        };
+    }
 }
 
 message CommonCommiteeResponse {
@@ -52,10 +116,7 @@ message CommonCommiteeResponse {
 message CommiteeInput {
     google.type.DateTime startDate = 1;
     string shift = 2 [(validate.rules).string = {min_len: 2}];
-    int64 roomID = 3;
-    int64 commiteeID = 4;
-    repeated string lecturerID = 5;
-    repeated string studentID = 6;
+    string time = 3;
 }
 
 message CommiteeResponse {
@@ -183,3 +244,152 @@ message GetCommiteeUserDetailsResponse {
 
 
 
+message ParamSchedule {
+    string startTime = 1;
+    string endTime = 2;
+}
+
+message TimeSlotItem {
+    string id = 1;
+    string date = 2;
+    string time = 3;
+    string shift = 4;
+}
+
+message RoomScheduleInput {
+    string name = 1;
+    string type = 2;
+    string school = 3;
+    string description = 4;
+}
+
+message TimeSlotForStudent {
+    RoomScheduleInput room = 1;
+    repeated TimeSlotItem timeSlots = 2;
+}
+
+message ScheduleDef {
+    RoomScheduleInput room = 1;
+    repeated TimeSlotForStudent timeSlots = 2;
+}
+
+message UserScheduleInput {
+    string id = 1;
+    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["lecturer", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
+}
+
+message CouncilDef {
+    string id = 1;
+    repeated UserScheduleInput council = 2; 
+    ScheduleDef schedule = 3;
+}
+
+message ThesisDef {
+    string id = 1;
+    repeated CouncilDef thesis = 2;
+    int64 fitness = 3;
+}
+
+
+message RoomScheduleResponse {
+    int64 id = 1;
+    string name = 2;
+    string type = 3;
+    string school = 4;
+    string description = 5;
+}
+
+// message CreateRoomRequest {
+//    RoomScheduleInput room = 1;
+// }
+
+// message CreateRoomResponse {
+//     CommonCommiteeResponse response = 1;
+//     RoomScheduleResponse room = 2;
+// }
+
+// // ====== GET ======
+// message GetRoomRequest {
+//     int64 id = 1;
+// }
+
+// message GetRoomResponse {
+//     CommonCommiteeResponse response = 1;
+//     RoomScheduleResponse room = 2;
+// }
+
+// // ====== PUT ======
+// message UpdateRoomRequest {
+//     int64 id = 1;
+//     RoomScheduleInput room = 2;
+// }
+
+// message UpdateRoomResponse {
+//     CommonCommiteeResponse response = 1;
+// }
+
+// // ====== DELETE ======
+// message DeleteRoomRequest {
+//     int64 id = 1;
+// }
+
+// message DeleteRoomResponse {
+//     CommonCommiteeResponse response = 1;
+// }
+
+
+// // ====== GET ALL ======
+// message GetRoomsRequest {
+//     optional string name = 1;
+//     optional string type = 2;
+//     optional string school = 3;
+// }
+
+// message GetRoomsResponse {
+//     CommonCommiteeResponse response = 1;
+//     int64 totalCount = 2;
+//     repeated RoomScheduleResponse rooms = 3;
+// }
+
+
+
+message CouncilInput {
+    string lecturerID = 1;
+    int64 thesisID = 2;
+}
+
+message CouncilResponse {
+    int64 id = 1;
+    string lecturerID = 2;
+    int64 thesisID = 3;
+}
+
+message CreateCouncilRequest {
+    CouncilInput council = 1;
+}
+
+message CreateCouncilResponse  {
+    CommonCommiteeResponse response = 1;
+}
+
+message GetCouncilRequest {
+    int64 id = 1;
+}
+
+message GetCouncilResponse  {
+    CouncilResponse council = 1;
+}
+
+message GetCouncilsRequest {
+
+}
+
+message GetCouncilsResponse  {
+    repeated CouncilResponse councils = 1;
+}

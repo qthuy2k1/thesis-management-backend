@@ -194,7 +194,9 @@ func (m *CommiteeInput) validate(all bool) error {
 
 	// no validation rules for Shift
 
-	// no validation rules for RoomID
+	// no validation rules for TimeSlotsID
+
+	// no validation rules for Time
 
 	if len(errors) > 0 {
 		return CommiteeInputMultiError(errors)
@@ -329,7 +331,9 @@ func (m *CommiteeResponse) validate(all bool) error {
 
 	// no validation rules for Shift
 
-	// no validation rules for RoomID
+	// no validation rules for Time
+
+	// no validation rules for TimeSlotsID
 
 	if len(errors) > 0 {
 		return CommiteeResponseMultiError(errors)

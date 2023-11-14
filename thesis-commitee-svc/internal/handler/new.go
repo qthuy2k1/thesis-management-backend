@@ -7,6 +7,7 @@ import (
 
 type CommiteeHdl struct {
 	commiteepb.UnimplementedCommiteeServiceServer
+	commiteepb.UnimplementedScheduleServiceServer
 	Repository repository.ICommiteeRepo
 }
 

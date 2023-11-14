@@ -79,7 +79,8 @@ func (u *waitingListServiceGW) CreateWaitingList(ctx context.Context, req *pb.Cr
 		WaitingList: &waitingListSvcV1.WaitingListInput{
 			ClassroomID: req.GetWaitingList().GetClassroomID(),
 			UserID:      req.GetWaitingList().GetMemberID(),
-			IsDefense:   req.GetWaitingList().GetIsDefense(),
+			IsDefense:   req.GetWaitingList().GetRegisterDefense(),
+			Status:      req.GetWaitingList().GetStatus(),
 		},
 	})
 	if err != nil {
@@ -163,8 +164,9 @@ func (u *waitingListServiceGW) GetWaitingList(ctx context.Context, req *pb.GetWa
 				Name:     userRes.User.Name,
 				Email:    userRes.User.Email,
 			},
-			IsDefense: res.GetWaitingList().GetIsDefense(),
-			CreatedAt: res.GetWaitingList().GetCreatedAt(),
+			RegisterDefense: res.GetWaitingList().GetIsDefense(),
+			Status:          res.GetWaitingList().GetStatus(),
+			CreatedAt:       res.GetWaitingList().GetCreatedAt(),
 		},
 	}, nil
 }
@@ -224,7 +226,8 @@ func (u *waitingListServiceGW) UpdateWaitingList(ctx context.Context, req *pb.Up
 		WaitingList: &waitingListSvcV1.WaitingListInput{
 			ClassroomID: req.GetWaitingList().GetClassroomID(),
 			UserID:      req.GetWaitingList().GetMemberID(),
-			IsDefense:   req.GetWaitingList().GetIsDefense(),
+			IsDefense:   req.GetWaitingList().GetRegisterDefense(),
+			Status:      req.GetWaitingList().GetStatus(),
 		},
 	})
 	if err != nil {
@@ -375,8 +378,9 @@ func (u *waitingListServiceGW) GetWaitingListsOfClassroom(ctx context.Context, r
 				Name:     userRes.User.Name,
 				Email:    userRes.User.Email,
 			},
-			IsDefense: p.IsDefense,
-			CreatedAt: p.GetCreatedAt(),
+			RegisterDefense: p.IsDefense,
+			Status:          p.Status,
+			CreatedAt:       p.GetCreatedAt(),
 		})
 	}
 

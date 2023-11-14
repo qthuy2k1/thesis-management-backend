@@ -91,7 +91,7 @@ func (r *ExerciseRepo) CreateExercise(ctx context.Context, p ExerciseInputRepo) 
 		return 0, ErrExerciseExisted
 	}
 
-	row, err := QueryRowSQL(ctx, r.Database, "CreateExercise", "INSERT INTO exercises (title, content, classroom_id, deadline, reporting_stage_id, author_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", p.Title, p.Content, p.ClassroomID, p.Deadline, p.ReportingStageID, p.AuthorID)
+	row, err := QueryRowSQL(ctx, r.Database, "CreateExercise", "INSERT INTO exercises (title, content, classroom_id, deadline, reporting_stage_id, author_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", p.Title, p.Content, p.ClassroomID, p.Deadline, p.ReportingStageID, p.AuthorID)
 	if err != nil {
 		return 0, err
 	}

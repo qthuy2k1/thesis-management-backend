@@ -10,12 +10,14 @@ import (
 type StudentDefInputSvc struct {
 	UserID       string
 	InstructorID string
+	TimeSlotsID  int
 }
 
 type StudentDefOutputSvc struct {
 	ID           int
 	UserID       string
 	InstructorID string
+	TimeSlotsID  int
 }
 
 // CreateStudentDef creates a new member in db given by member model
@@ -23,6 +25,7 @@ func (s *UserSvc) CreateStudentDef(ctx context.Context, sd StudentDefInputSvc) e
 	sdRepo := repository.StudentDefInputRepo{
 		UserID:       sd.UserID,
 		InstructorID: sd.InstructorID,
+		TimeSlotsID:  sd.TimeSlotsID,
 	}
 
 	if err := s.Repository.CreateStudentDef(ctx, sdRepo); err != nil {
@@ -49,6 +52,7 @@ func (s *UserSvc) GetStudentDef(ctx context.Context, id int) (StudentDefOutputSv
 		ID:           sd.ID,
 		UserID:       sd.UserID,
 		InstructorID: sd.InstructorID,
+		TimeSlotsID:  sd.TimeSlotsID,
 	}, nil
 }
 
@@ -57,6 +61,7 @@ func (s *UserSvc) UpdateStudentDef(ctx context.Context, id int, sd StudentDefInp
 	if err := s.Repository.UpdateStudentDef(ctx, id, repository.StudentDefInputRepo{
 		UserID:       sd.UserID,
 		InstructorID: sd.InstructorID,
+		TimeSlotsID:  sd.TimeSlotsID,
 	}); err != nil {
 		if errors.Is(err, repository.ErrStudentDefNotFound) {
 			return ErrStudentDefNotFound
@@ -92,6 +97,7 @@ func (s *UserSvc) GetStudentDefs(ctx context.Context) ([]StudentDefOutputSvc, in
 			ID:           sd.ID,
 			UserID:       sd.UserID,
 			InstructorID: sd.InstructorID,
+			TimeSlotsID:  sd.TimeSlotsID,
 		})
 	}
 
@@ -111,8 +117,27 @@ func (s *UserSvc) GetAllStudentDefsOfInstructor(ctx context.Context, instructorI
 			ID:           sd.ID,
 			UserID:       sd.UserID,
 			InstructorID: sd.InstructorID,
+			TimeSlotsID:  sd.TimeSlotsID,
 		})
 	}
 
 	return usSvc, count, nil
+}
+
+// GetStudentDef returns a member in db given by id
+func (s *UserSvc) GetStudentDefByTimeSlotsID(ctx context.Context, timeSlotsID int) (StudentDefOutputSvc, error) {
+	sd, err := s.Repository.GetStudentDefByTimeSlotsID(ctx, timeSlotsID)
+	if err != nil {
+		if errors.Is(err, repository.ErrStudentDefNotFound) {
+			return StudentDefOutputSvc{}, ErrStudentDefNotFound
+		}
+		return StudentDefOutputSvc{}, err
+	}
+
+	return StudentDefOutputSvc{
+		ID:           sd.ID,
+		UserID:       sd.UserID,
+		InstructorID: sd.InstructorID,
+		TimeSlotsID:  sd.TimeSlotsID,
+	}, nil
 }
