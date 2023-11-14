@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"io"
+	"log"
+	"net/http"
 	"sort"
 	"strings"
 
@@ -324,6 +327,17 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 }
 
 func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClassroomsRequest) (*pb.GetClassroomsResponse, error) {
+	a, err := http.Get("http://thesis-management-backend-schedule-service/api/schedule-report")
+	if err != nil {
+		return nil, err
+	}
+
+	b, err := io.ReadAll(a.Body)
+	if err != nil {
+		return nil, err
+	}
+	log.Println(string(b))
+
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}

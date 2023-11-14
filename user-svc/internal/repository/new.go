@@ -54,6 +54,8 @@ type IUserRepo interface {
 	GetStudentDefs(ctx context.Context) ([]StudentDefOutputRepo, int, error)
 	// GetStudentDefsOfInstructor returns a list of members in db with filter
 	GetAllStudentDefsOfInstructor(ctx context.Context, instructorID string) ([]StudentDefOutputRepo, int, error)
+	// GetStudentDefs returns a list of members in db with filter
+	GetStudentDefByTimeSlotsID(ctx context.Context, timeSlotsID int) (StudentDefOutputRepo, error)
 }
 
 type UserRepo struct {

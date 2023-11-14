@@ -53,6 +53,7 @@ func main() {
 	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
 
 	commiteepb.RegisterCommiteeServiceServer(s, handler)
+	commiteepb.RegisterScheduleServiceServer(s, handler)
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

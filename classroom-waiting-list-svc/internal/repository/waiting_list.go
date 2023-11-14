@@ -74,6 +74,7 @@ type WaitingListInputRepo struct {
 	ClassroomID int
 	UserID      string
 	IsDefense   bool
+	Status      string
 }
 
 // CreateWaitingList creates a new waiting_list in db given by waiting_list model
@@ -88,7 +89,7 @@ func (r *WaitingListRepo) CreateWaitingList(ctx context.Context, wt WaitingListI
 		return ErrWaitingListExisted
 	}
 
-	if _, err := ExecSQL(ctx, r.Database, "CreateWaitingList", "INSERT INTO waiting_lists (classroom_id, user_id, is_defense) VALUES ($1, $2, $3) RETURNING id", wt.ClassroomID, wt.UserID, wt.IsDefense); err != nil {
+	if _, err := ExecSQL(ctx, r.Database, "CreateWaitingList", "INSERT INTO waiting_lists (classroom_id, user_id, is_defense, status) VALUES ($1, $2, $3, $4) RETURNING id", wt.ClassroomID, wt.UserID, wt.IsDefense, wt.Status); err != nil {
 		return err
 	}
 
@@ -100,18 +101,19 @@ type WaitingListOutputRepo struct {
 	ClassroomID int
 	UserID      string
 	IsDefense   bool
+	Status      string
 	CreatedAt   time.Time
 }
 
 // GetWaitingList returns a waiting_list in db given by id
 func (r *WaitingListRepo) GetWaitingList(ctx context.Context, id int) (WaitingListOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetWaitingList", "SELECT id, classroom_id, user_id, is_defense, created_at FROM waiting_lists WHERE id=$1", id)
+	row, err := QueryRowSQL(ctx, r.Database, "GetWaitingList", "SELECT id, classroom_id, user_id, is_defense, status, created_at FROM waiting_lists WHERE id=$1", id)
 	if err != nil {
 		return WaitingListOutputRepo{}, err
 	}
 
 	waiting_list := WaitingListOutputRepo{}
-	if err = row.Scan(&waiting_list.ID, &waiting_list.ClassroomID, &waiting_list.UserID, &waiting_list.IsDefense, &waiting_list.CreatedAt); err != nil {
+	if err = row.Scan(&waiting_list.ID, &waiting_list.ClassroomID, &waiting_list.UserID, &waiting_list.IsDefense, &waiting_list.Status, &waiting_list.CreatedAt); err != nil {
 		if err == sql.ErrNoRows {
 			return WaitingListOutputRepo{}, ErrWaitingListNotFound
 		}
@@ -136,7 +138,7 @@ func (r *WaitingListRepo) IsWaitingListExists(ctx context.Context, classroomID i
 
 // UpdateWaitingList updates the specified waiting_list by id
 func (r *WaitingListRepo) UpdateWaitingList(ctx context.Context, id int, waiting_list WaitingListInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdateWaitingList", "UPDATE waiting_lists SET classroom_id=$2, user_id=$3, is_defense=$4 WHERE id=$1", id, waiting_list.ClassroomID, waiting_list.UserID, waiting_list.IsDefense)
+	result, err := ExecSQL(ctx, r.Database, "UpdateWaitingList", "UPDATE waiting_lists SET classroom_id=$2, user_id=$3, is_defense=$4, status=$5 WHERE id=$1", id, waiting_list.ClassroomID, waiting_list.UserID, waiting_list.IsDefense, waiting_list.Status)
 	if err != nil {
 		return err
 	}
@@ -164,7 +166,7 @@ func (r *WaitingListRepo) DeleteWaitingList(ctx context.Context, id int) error {
 
 // GetWaitingList returns a list of waiting_lists in db with filter
 func (r *WaitingListRepo) GetWaitingListsOfClassroom(ctx context.Context, classroomID int) ([]WaitingListOutputRepo, error) {
-	query := []string{fmt.Sprintf("SELECT id, classroom_id, user_id, is_defense, created_at FROM waiting_lists WHERE classroom_id = %d", classroomID)}
+	query := []string{fmt.Sprintf("SELECT id, classroom_id, user_id, is_defense, status, created_at FROM waiting_lists WHERE classroom_id = %d", classroomID)}
 
 	rows, err := QuerySQL(ctx, r.Database, "GetWaitingLists", strings.Join(query, " "))
 	if err != nil {
@@ -181,6 +183,7 @@ func (r *WaitingListRepo) GetWaitingListsOfClassroom(ctx context.Context, classr
 			&waiting_list.ClassroomID,
 			&waiting_list.UserID,
 			&waiting_list.IsDefense,
+			&waiting_list.Status,
 			&waiting_list.CreatedAt,
 		)
 		if err != nil {
@@ -198,7 +201,7 @@ func (r *WaitingListRepo) GetWaitingListsOfClassroom(ctx context.Context, classr
 
 // CheckUserInWaitingListOfClassroom returns a boolean indicating whether user is in waiting list
 func (r *WaitingListRepo) CheckUserInWaitingListOfClassroom(ctx context.Context, userID string) (bool, int, error) {
-	query := []string{fmt.Sprintf("SELECT id, user_id, classroom_id, is_defense FROM waiting_lists WHERE user_id = '%s' LIMIT 1", userID)}
+	query := []string{fmt.Sprintf("SELECT id, user_id, classroom_id, is_defense, status FROM waiting_lists WHERE user_id = '%s' LIMIT 1", userID)}
 
 	row, err := QueryRowSQL(ctx, r.Database, "CheckUserInWaitingListOfClassroom", strings.Join(query, " "))
 	if err != nil {
@@ -209,7 +212,7 @@ func (r *WaitingListRepo) CheckUserInWaitingListOfClassroom(ctx context.Context,
 	}
 
 	var waitingList WaitingListOutputRepo
-	if err := row.Scan(&waitingList.ID, &waitingList.UserID, &waitingList.ClassroomID); err != nil {
+	if err := row.Scan(&waitingList.ID, &waitingList.UserID, &waitingList.ClassroomID, &waitingList.IsDefense, &waitingList.Status); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, 0, nil
 		}

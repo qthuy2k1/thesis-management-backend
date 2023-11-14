@@ -186,3 +186,42 @@ func (r *CommiteeRepo) getCountRoom(ctx context.Context, conditions []string, is
 
 	return count, nil
 }
+
+// GetRoom returns a list of rooms in db with filter
+func (r *CommiteeRepo) GetRoomsByID(ctx context.Context, id []string) ([]RoomOutputRepo, error) {
+	query := []string{"SELECT id, name, type, school, description FROM rooms IN (%s)", strings.Join(id, ",")}
+
+	rows, err := QuerySQL(ctx, r.Database, "GetRooms", strings.Join(query, " "))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Iterate over the result rows and populate the rooms slice
+	var rooms []RoomOutputRepo
+	for rows.Next() {
+		room := RoomOutputRepo{}
+		err := rows.Scan(
+			&room.ID,
+			&room.Name,
+			&room.Type,
+			&room.School,
+			&room.Description,
+		)
+		if err != nil {
+			return nil, err
+		}
+		rooms = append(rooms, room)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	// count, err := r.getCountRoom(ctx)
+	// if err != nil {
+	// 	return nil, 0, err
+	// }
+
+	return rooms, nil
+}

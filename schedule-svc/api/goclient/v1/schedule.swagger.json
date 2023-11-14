@@ -1,0 +1,312 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "schedule.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "ScheduleService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1AssessItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "lecturer": {
+          "$ref": "#/definitions/v1UserScheduleResponse"
+        },
+        "point": {
+          "type": "string",
+          "format": "int64"
+        },
+        "comment": {
+          "type": "string"
+        }
+      },
+      "title": "===========================\nPOINT"
+    },
+    "v1CreateNotificationResponse": {
+      "type": "object",
+      "properties": {
+        "notification": {
+          "$ref": "#/definitions/v1Notification"
+        },
+        "message": {
+          "type": "string"
+        },
+        "notifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Notification"
+          }
+        }
+      }
+    },
+    "v1CreateOrUpdatePointDefResponse": {
+      "type": "object",
+      "properties": {
+        "point": {
+          "$ref": "#/definitions/v1Point"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateScheduleResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "thesis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Thesis"
+          },
+          "title": "google.protobuf.Timestamp createdAt = 3;"
+        }
+      }
+    },
+    "v1GetNotificationsResponse": {
+      "type": "object",
+      "properties": {
+        "notifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Notification"
+          }
+        }
+      }
+    },
+    "v1GetSchedulesResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "thesis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Thesis"
+          },
+          "title": "google.protobuf.Timestamp createdAt = 3;"
+        }
+      }
+    },
+    "v1Notification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "senderUser": {
+          "$ref": "#/definitions/v1UserScheduleResponse"
+        },
+        "receiverAuthor": {
+          "$ref": "#/definitions/v1UserScheduleResponse"
+        },
+        "type": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "NOTIFICATION"
+    },
+    "v1Point": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "student": {
+          "$ref": "#/definitions/v1UserScheduleResponse"
+        },
+        "assesses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1AssessItem"
+          }
+        }
+      }
+    },
+    "v1RoomSchedule": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "school": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        }
+      }
+    },
+    "v1Schedule": {
+      "type": "object",
+      "properties": {
+        "timeSlots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1TimeSlots"
+          }
+        },
+        "room": {
+          "$ref": "#/definitions/v1RoomSchedule"
+        }
+      }
+    },
+    "v1StudentDefScheduleResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "infor": {
+          "$ref": "#/definitions/v1UserScheduleResponse"
+        },
+        "instructor": {
+          "$ref": "#/definitions/v1UserScheduleResponse"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1Thesis": {
+      "type": "object",
+      "properties": {
+        "schedule": {
+          "$ref": "#/definitions/v1Schedule"
+        },
+        "council": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1UserScheduleResponse"
+          }
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1TimeSlot": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "shift": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string"
+        }
+      }
+    },
+    "v1TimeSlots": {
+      "type": "object",
+      "properties": {
+        "student": {
+          "$ref": "#/definitions/v1StudentDefScheduleResponse"
+        },
+        "timeSlot": {
+          "$ref": "#/definitions/v1TimeSlot"
+        }
+      }
+    },
+    "v1UserScheduleResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

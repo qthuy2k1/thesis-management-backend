@@ -3,7 +3,7 @@ version: '3.9'
 services:
   classroom-db:
     image: postgres:alpine
-    container_name: classroom-db
+    container_name: thesis-management-backend-classroom-db-service
     networks:
       mynet:
     environment:
@@ -21,7 +21,7 @@ services:
   
   post-db:
     image: postgres:alpine
-    container_name: post-db
+    container_name: thesis-management-backend-post-db-service
     networks:
       mynet:
     environment:
@@ -39,7 +39,7 @@ services:
 
   exercise-db:
     image: postgres:alpine
-    container_name: exercise-db
+    container_name: thesis-management-backend-exercise-db-service
     networks:
       mynet:
     environment:
@@ -57,7 +57,7 @@ services:
 
   user-db:
     image: postgres:alpine
-    container_name: user-db
+    container_name: thesis-management-backend-user-db-service
     networks:
       mynet:
     environment:
@@ -75,7 +75,7 @@ services:
 
   reporting-stage-db:
     image: postgres:alpine
-    container_name: reporting-stage-db
+    container_name: thesis-management-backend-reporting-stage-db-service
     networks:
       mynet:
     environment:
@@ -93,7 +93,7 @@ services:
 
   submission-db:
     image: postgres:alpine
-    container_name: submission-db
+    container_name: thesis-management-backend-submission-db-service
     networks:
       mynet:
     environment:
@@ -111,7 +111,7 @@ services:
 
   classroom-waiting-list-db:
     image: postgres:alpine
-    container_name: classroom-waiting-list-db
+    container_name: thesis-management-backend-classroom-waiting-list-db-service
     networks:
       mynet:
     environment:
@@ -129,7 +129,7 @@ services:
 
   comment-db:
     image: postgres:alpine
-    container_name: comment-db
+    container_name: thesis-management-backend-comment-db-service
     networks:
       mynet:
     environment:
@@ -147,7 +147,7 @@ services:
 
   attachment-db:
     image: postgres:alpine
-    container_name: attachment-db
+    container_name: thesis-management-backend-attachment-db-service
     networks:
       mynet:
     environment:
@@ -165,7 +165,7 @@ services:
 
   topic-db:
     image: postgres:alpine
-    container_name: topic-db
+    container_name: thesis-management-backend-topic-db-service
     networks:
       mynet:
     environment:
@@ -183,7 +183,7 @@ services:
 
   thesis-commitee-db:
     image: postgres:alpine
-    container_name: thesis-commitee-db
+    container_name: thesis-management-backend-thesis-commitee-db-service
     networks:
       mynet:
     environment:
@@ -200,6 +200,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   api:
+    container_name: thesis-management-backend-service
     build:
       dockerfile: ./api-gw/Dockerfile
       context: .
@@ -210,35 +211,36 @@ services:
       mynet:
     ports:
       - "9091:9091"
-    links:
-      - classroom
-      - post
-      - exercise
-      - user
-      - reporting-stage
-      - submission
-      - classroom-waiting-list
-      - comment
-      - attachment
-      - topic
-      - thesis-commitee
+    # links:
+    #   - classroom
+    #   - post
+    #   - exercise
+    #   - user
+    #   - reporting-stage
+    #   - submission
+    #   - classroom-waiting-list
+    #   - comment
+    #   - attachment
+    #   - topic
+    #   - thesis-commitee
     volumes:
       - .:/usr/src/app
-    depends_on:
-      - classroom-db
-      - post-db
-      - exercise-db
-      - user-db
-      - reporting-stage-db
-      - submission-db
-      - classroom-waiting-list-db
-      - comment-db
-      - attachment-db
-      - topic-db
+    # depends_on:
+    #   - classroom-db
+    #   - post-db
+    #   - exercise-db
+    #   - user-db
+    #   - reporting-stage-db
+    #   - submission-db
+    #   - classroom-waiting-list-db
+    #   - comment-db
+    #   - attachment-db
+    #   - topic-db
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
   classroom:
+    container_name: thesis-management-backend-classroom-service
     build:
       dockerfile: ./classroom-svc/Dockerfile
       context: .
@@ -251,6 +253,7 @@ services:
       - .:/usr/src/app
 
   post:
+    container_name: thesis-management-backend-post-service
     build:
       dockerfile: ./post-svc/Dockerfile
       context: .
@@ -263,6 +266,7 @@ services:
       - .:/usr/src/app
 
   exercise:
+    container_name: thesis-management-backend-exercise-service
     build:
       dockerfile: ./exercise-svc/Dockerfile
       context: .
@@ -275,6 +279,7 @@ services:
       - .:/usr/src/app
     
   user:
+    container_name: thesis-management-backend-user-service
     env_file:
       - .env
     build:
@@ -289,6 +294,7 @@ services:
       - .:/usr/src/app
 
   reporting-stage:
+    container_name: thesis-management-backend-reporting-stage-service
     env_file:
       - .env
     build:
@@ -303,6 +309,7 @@ services:
       - .:/usr/src/app
 
   submission:
+    container_name: thesis-management-backend-submission-service
     env_file:
       - .env
     build:
@@ -319,6 +326,7 @@ services:
       - .:/usr/src/app
 
   classroom-waiting-list:
+    container_name: thesis-management-backend-classroom-waiting-list-service
     env_file:
       - .env
     build:
@@ -333,6 +341,7 @@ services:
       - .:/usr/src/app
 
   comment:
+    container_name: thesis-management-backend-comment-service
     env_file:
       - .env
     build:
@@ -347,6 +356,8 @@ services:
       - .:/usr/src/app
 
   attachment:
+    container_name: thesis-management-backend-attachment-service
+
     env_file:
       - .env
     build:
@@ -361,6 +372,7 @@ services:
       - .:/usr/src/app
 
   topic:
+    container_name: thesis-management-backend-topic-service
     env_file:
       - .env
     build:
@@ -375,6 +387,7 @@ services:
       - .:/usr/src/app
 
   authorization:
+    container_name: thesis-management-backend-authorization-service
     build:
       dockerfile: ./authorization-svc/Dockerfile
       context: .
@@ -385,6 +398,7 @@ services:
       - .:/usr/src/app
 
   thesis-commitee:
+    container_name: thesis-management-backend-thesis-commitee-service
     env_file:
       - .env
     build:
@@ -397,9 +411,23 @@ services:
       - thesis-commitee-db
     volumes:
       - .:/usr/src/app
+
+  schedule:
+    container_name: thesis-management-backend-schedule-service
+    # build:
+    #   dockerfile: ./schedule-svc/Dockerfile
+    #   context: .
+    image: qthuy2k1/thesis-management-backend-schedule
+    networks:
+      mynet:
+    # depends_on:
+    #   - thesis-commitee-db
+    volumes:
+      - .:/usr/src/app
     
     
   apigw-client:
+    container_name: thesis-management-backend-apigw-client-service
     build:
       dockerfile: ./apigw-client/Dockerfile
       context: .

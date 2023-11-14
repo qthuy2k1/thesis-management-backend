@@ -169,6 +169,8 @@ func (m *WaitingListInput) validate(all bool) error {
 
 	// no validation rules for IsDefense
 
+	// no validation rules for Status
+
 	if len(errors) > 0 {
 		return WaitingListInputMultiError(errors)
 	}
@@ -276,6 +278,8 @@ func (m *WaitingListResponse) validate(all bool) error {
 	// no validation rules for UserID
 
 	// no validation rules for IsDefense
+
+	// no validation rules for Status
 
 	if all {
 		switch v := interface{}(m.GetCreatedAt()).(type) {

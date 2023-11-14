@@ -8,7 +8,7 @@
                     "classroomID": "1",
                     "memberID": "12930120",
                     "status": "WAITING",
-                    "isDefense": true
+                    "registerDefense": true
                 }
             },
             "output": {
@@ -24,7 +24,7 @@
                     "classroomID": "1",
                     "memberID": "12930120",
                     "status": "WAITING",
-                    "isDefense": true
+                    "registerDefense": true
                 }
             },
             "output": {
@@ -48,7 +48,7 @@
                     "classroomID": "1",
                     "memberID": "12930120",
                     "status": "WAITING",
-                    "isDefense": true,
+                    "registerDefense": true,
                     "createdAt": "2023-09-01T15:01:00Z"
                 }
             }
@@ -89,7 +89,7 @@
                     "classroomID": "1",
                     "memberID": "12930120",
                     "status": "WAITING",
-                    "isDefense": true
+                    "registerDefense": true
                 }
             },
             "output": {
@@ -105,7 +105,7 @@
                     "classroomID": "1",
                     "memberID": "12930120",
                     "status": "WAITING",
-                    "isDefense": true
+                    "registerDefense": true
                 },
                 "output": {
                     "code": 6,
@@ -131,7 +131,7 @@
                         "classroomID": "1",
                         "memberID": "12930120",
                         "status": "WAITING",
-                        "isDefense": true,
+                        "registerDefense": true,
                         "createdAt": "2023-09-01T15:01:00Z"
                     },
                     {
@@ -139,7 +139,7 @@
                         "classroomID": "1",
                         "memberID": "12930120",
                         "status": "WAITING",
-                        "isDefense": true,
+                        "registerDefense": true,
                         "createdAt": "2023-09-01T15:01:00Z"
                     }
                 ]
@@ -191,7 +191,7 @@
                             "email": "thuyasayady@gmyaail.com"
                         },
                         "status": "asAs",
-                        "isDefense": true,
+                        "registerDefense": true,
                         "createdAt": "2023-10-08T11:52:45Z"
                     }
                 ]

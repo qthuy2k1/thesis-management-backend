@@ -36,9 +36,9 @@ spec:
 
 
 ---
-#For creating Kubernetes StatefulSet in the Minikube cluster
+#For creating Kubernetes Deployment in the Minikube cluster
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: thesis-management-backend-attachment-db
   labels:

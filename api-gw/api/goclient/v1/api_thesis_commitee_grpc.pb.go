@@ -24,6 +24,9 @@ const (
 	CommiteeService_UpdateCommitee_FullMethodName = "/api.commitee.v1.CommiteeService/UpdateCommitee"
 	CommiteeService_DeleteCommitee_FullMethodName = "/api.commitee.v1.CommiteeService/DeleteCommitee"
 	CommiteeService_GetCommitees_FullMethodName   = "/api.commitee.v1.CommiteeService/GetCommitees"
+	CommiteeService_CreateCouncil_FullMethodName  = "/api.commitee.v1.CommiteeService/CreateCouncil"
+	CommiteeService_GetCouncil_FullMethodName     = "/api.commitee.v1.CommiteeService/GetCouncil"
+	CommiteeService_GetCouncils_FullMethodName    = "/api.commitee.v1.CommiteeService/GetCouncils"
 )
 
 // CommiteeServiceClient is the client API for CommiteeService service.
@@ -35,6 +38,9 @@ type CommiteeServiceClient interface {
 	UpdateCommitee(ctx context.Context, in *UpdateCommiteeRequest, opts ...grpc.CallOption) (*UpdateCommiteeResponse, error)
 	DeleteCommitee(ctx context.Context, in *DeleteCommiteeRequest, opts ...grpc.CallOption) (*DeleteCommiteeResponse, error)
 	GetCommitees(ctx context.Context, in *GetCommiteesRequest, opts ...grpc.CallOption) (*GetCommiteesResponse, error)
+	CreateCouncil(ctx context.Context, in *CreateCouncilRequest, opts ...grpc.CallOption) (*CreateCouncilResponse, error)
+	GetCouncil(ctx context.Context, in *GetCouncilRequest, opts ...grpc.CallOption) (*GetCouncilResponse, error)
+	GetCouncils(ctx context.Context, in *GetCouncilsRequest, opts ...grpc.CallOption) (*GetCouncilsResponse, error)
 }
 
 type commiteeServiceClient struct {
@@ -90,6 +96,33 @@ func (c *commiteeServiceClient) GetCommitees(ctx context.Context, in *GetCommite
 	return out, nil
 }
 
+func (c *commiteeServiceClient) CreateCouncil(ctx context.Context, in *CreateCouncilRequest, opts ...grpc.CallOption) (*CreateCouncilResponse, error) {
+	out := new(CreateCouncilResponse)
+	err := c.cc.Invoke(ctx, CommiteeService_CreateCouncil_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commiteeServiceClient) GetCouncil(ctx context.Context, in *GetCouncilRequest, opts ...grpc.CallOption) (*GetCouncilResponse, error) {
+	out := new(GetCouncilResponse)
+	err := c.cc.Invoke(ctx, CommiteeService_GetCouncil_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commiteeServiceClient) GetCouncils(ctx context.Context, in *GetCouncilsRequest, opts ...grpc.CallOption) (*GetCouncilsResponse, error) {
+	out := new(GetCouncilsResponse)
+	err := c.cc.Invoke(ctx, CommiteeService_GetCouncils_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommiteeServiceServer is the server API for CommiteeService service.
 // All implementations must embed UnimplementedCommiteeServiceServer
 // for forward compatibility
@@ -99,6 +132,9 @@ type CommiteeServiceServer interface {
 	UpdateCommitee(context.Context, *UpdateCommiteeRequest) (*UpdateCommiteeResponse, error)
 	DeleteCommitee(context.Context, *DeleteCommiteeRequest) (*DeleteCommiteeResponse, error)
 	GetCommitees(context.Context, *GetCommiteesRequest) (*GetCommiteesResponse, error)
+	CreateCouncil(context.Context, *CreateCouncilRequest) (*CreateCouncilResponse, error)
+	GetCouncil(context.Context, *GetCouncilRequest) (*GetCouncilResponse, error)
+	GetCouncils(context.Context, *GetCouncilsRequest) (*GetCouncilsResponse, error)
 	mustEmbedUnimplementedCommiteeServiceServer()
 }
 
@@ -120,6 +156,15 @@ func (UnimplementedCommiteeServiceServer) DeleteCommitee(context.Context, *Delet
 }
 func (UnimplementedCommiteeServiceServer) GetCommitees(context.Context, *GetCommiteesRequest) (*GetCommiteesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCommitees not implemented")
+}
+func (UnimplementedCommiteeServiceServer) CreateCouncil(context.Context, *CreateCouncilRequest) (*CreateCouncilResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCouncil not implemented")
+}
+func (UnimplementedCommiteeServiceServer) GetCouncil(context.Context, *GetCouncilRequest) (*GetCouncilResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCouncil not implemented")
+}
+func (UnimplementedCommiteeServiceServer) GetCouncils(context.Context, *GetCouncilsRequest) (*GetCouncilsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCouncils not implemented")
 }
 func (UnimplementedCommiteeServiceServer) mustEmbedUnimplementedCommiteeServiceServer() {}
 
@@ -224,6 +269,60 @@ func _CommiteeService_GetCommitees_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommiteeService_CreateCouncil_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCouncilRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommiteeServiceServer).CreateCouncil(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommiteeService_CreateCouncil_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommiteeServiceServer).CreateCouncil(ctx, req.(*CreateCouncilRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommiteeService_GetCouncil_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCouncilRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommiteeServiceServer).GetCouncil(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommiteeService_GetCouncil_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommiteeServiceServer).GetCouncil(ctx, req.(*GetCouncilRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommiteeService_GetCouncils_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCouncilsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommiteeServiceServer).GetCouncils(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommiteeService_GetCouncils_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommiteeServiceServer).GetCouncils(ctx, req.(*GetCouncilsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CommiteeService_ServiceDesc is the grpc.ServiceDesc for CommiteeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +349,18 @@ var CommiteeService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCommitees",
 			Handler:    _CommiteeService_GetCommitees_Handler,
+		},
+		{
+			MethodName: "CreateCouncil",
+			Handler:    _CommiteeService_CreateCouncil_Handler,
+		},
+		{
+			MethodName: "GetCouncil",
+			Handler:    _CommiteeService_GetCouncil_Handler,
+		},
+		{
+			MethodName: "GetCouncils",
+			Handler:    _CommiteeService_GetCouncils_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

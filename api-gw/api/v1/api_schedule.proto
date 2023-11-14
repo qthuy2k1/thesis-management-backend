@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package api.schedule.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/schedule/api/v1";
+
+service ScheduleService {
+    rpc CreateSchedule(CreateScheduleRequest) returns (CreateScheduleResponse){
+        option (google.api.http) = {
+            post: "/api/schedule"
+            body: "*"
+        };
+    }
+
+    rpc GetSchedules(GetSchedulesRequest) returns (GetSchedulesResponse) {
+        option (google.api.http) = {
+            get: "/api/schedule"
+        };
+    }
+}
+
+
+message UserScheduleResponse {
+    string id = 1;
+    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["lecturer", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
+}
+
+message StudentDefScheduleResponse {
+    string id = 1;
+    UserScheduleResponse infor = 2;
+    UserScheduleResponse instructor = 3;
+    google.protobuf.Timestamp createdAt = 4;
+}
+
+message TimeSlot {
+    string date = 1;
+    string shift = 2;
+    string id = 3;
+    string time = 4;
+}
+
+message RoomSchedule {
+    string id = 1;
+    string name = 2;
+    string school = 3;
+    string type = 4;
+    string description = 5;
+}
+
+message TimeSlots {
+    StudentDefScheduleResponse student = 1;
+    TimeSlot timeSlot = 2;
+}
+
+message Schedule {
+    repeated TimeSlots timeSlots = 1;
+    RoomSchedule room = 2;
+}
+
+message Council {
+    string id = 1;
+    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["lecturer", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
+}
+
+message Thesis {
+    Schedule schedule = 1;
+    repeated Council council = 2;
+    string id = 3;
+}
+
+message ScheduleResponse {
+    string id = 1;
+    Thesis thesis = 2;
+    google.protobuf.Timestamp createdAt = 3;
+}
+
+message GetSchedulesRequest{}
+
+message GetSchedulesResponse{
+    repeated Thesis thesis = 1;
+}
+
+
+message CreateScheduleRequest {
+    string startDate = 1 [(validate.rules).string = {min_len: 4}];
+    int64 quantityWeek = 2 [(validate.rules).int64.gte = 1];
+}
+
+message CreateScheduleResponse{
+    // string id = 1;
+    repeated Thesis thesis = 1;
+    // google.protobuf.Timestamp createdAt = 3;
+}
+
+

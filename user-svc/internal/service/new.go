@@ -49,6 +49,8 @@ type IUserSvc interface {
 	GetStudentDefs(ctx context.Context) ([]StudentDefOutputSvc, int, error)
 	// GetAllStudentDefsOfInstructor returns a list of student defs in a classroom
 	GetAllStudentDefsOfInstructor(ctx context.Context, instructorID string) ([]StudentDefOutputSvc, int, error)
+	// GetStudentDef returns a student def in db given by id
+	GetStudentDefByTimeSlotsID(ctx context.Context, timeSlotsID int) (StudentDefOutputSvc, error)
 }
 
 type UserSvc struct {

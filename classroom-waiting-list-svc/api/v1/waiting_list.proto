@@ -43,6 +43,7 @@ message WaitingListInput {
     int64 classroomID = 1;
     string userID = 2;
     bool isDefense = 3;
+    string status = 4;
 }
 
 message WaitingListResponse {
@@ -50,7 +51,8 @@ message WaitingListResponse {
     int64 classroomID = 2;
     string userID = 3;
     bool isDefense = 4;
-    google.protobuf.Timestamp createdAt = 5;
+    string status = 5;
+    google.protobuf.Timestamp createdAt = 6;
 }
 
 message CreateWaitingListRequest {

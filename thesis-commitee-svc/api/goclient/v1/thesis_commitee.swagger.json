@@ -117,9 +117,12 @@
         "shift": {
           "type": "string"
         },
-        "roomID": {
+        "timeSlotsID": {
           "type": "string",
           "format": "int64"
+        },
+        "time": {
+          "type": "string"
         }
       },
       "title": "====== commitee ======"
@@ -137,7 +140,10 @@
         "shift": {
           "type": "string"
         },
-        "roomID": {
+        "time": {
+          "type": "string"
+        },
+        "timeSlotsID": {
           "type": "string",
           "format": "int64"
         }

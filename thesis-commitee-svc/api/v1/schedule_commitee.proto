@@ -1,0 +1,162 @@
+syntax = "proto3";
+
+package commitee.v1;
+
+// import "google/protobuf/timestamp.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/commitee/api/v1";
+
+service ScheduleService {
+    rpc CreateCouncil(CreateCouncilRequest) returns (CreateCouncilResponse){}
+    
+    rpc GetCouncil(GetCouncilRequest) returns (GetCouncilResponse){}
+    // rpc UpdateCouncil(UpdateCouncilRequest) returns (UpdateCouncilResponse){}
+    // rpc DeleteCouncil(DeleteCouncilRequest) returns (DeleteCouncilResponse){}
+    rpc GetCouncilsByThesisID(GetCouncilsByThesisIDRequest) returns (GetCouncilsByThesisIDResponse) {}
+    rpc GetCouncils(GetCouncilsRequest) returns (GetCouncilsResponse) {}
+
+
+    rpc CreateSchedule(CreateScheduleRequest) returns (CreateScheduleResponse){}
+    rpc GetSchedule(GetScheduleRequest) returns (GetScheduleResponse){}
+    // rpc UpdateSchedule(UpdateScheduleRequest) returns (UpdateScheduleResponse){}
+    // rpc DeleteSchedule(DeleteScheduleRequest) returns (DeleteScheduleResponse){}
+    rpc GetSchedulesByThesisID(GetSchedulesByThesisIDRequest) returns (GetSchedulesResponse) {}
+    rpc GetSchedules(GetSchedulesRequest) returns (GetSchedulesResponse) {}
+}
+
+message TimeSlot {
+    string date = 1;
+    string shift = 2;
+    int64 id = 3;
+    string time = 4;
+    int64 timeSlotsID = 5;
+}
+
+message TimeSlotsInput {
+    int64 scheduleID = 2;
+}
+
+message TimeSlotsResponse {
+    int64 id = 1;
+    int64 scheduleID = 2;
+    TimeSlot timeSlot = 3;
+}
+
+message RoomSchedule {
+    int64 id = 1;
+    string name = 2;
+    string school = 3;
+    string type = 4;
+    string description = 5;
+    string createdAt = 6;
+}
+
+message ScheduleInput {
+    int64 roomID = 2;
+    int64 thesisID = 3;
+}
+
+message ScheduleResponse {
+    int64 id = 1;
+    repeated TimeSlotsResponse timeSlots = 2;
+    RoomSchedule room = 3;
+    int64 thesisID = 4;
+}
+
+message Thesis {
+    int64 id = 1;
+    repeated string council_id = 2; 
+    ScheduleResponse schedule = 3;
+}
+
+message ThesisResponse {
+    Thesis thesis = 1;
+}
+
+message GetThesisesRequest{}
+
+message GetThesisesResponse{
+    ThesisResponse scheduleReport = 1;
+}
+
+
+message CommonScheduleResponse {
+    int64 statusCode = 1;
+    string message = 2;
+}
+
+
+
+
+message CouncilInput {
+    string lecturerID = 1;
+    int64 thesisID = 2;
+}
+
+message CouncilResponse {
+    int64 id = 1;
+    string lecturerID = 2;
+    int64 thesisID = 3;
+}
+
+
+message CreateCouncilRequest {
+    CouncilInput council = 1;
+}
+
+message CreateCouncilResponse  {
+    CommonScheduleResponse response = 1;
+}
+
+message GetCouncilRequest {
+    int64 id = 1;
+}
+
+message GetCouncilResponse  {
+    CouncilResponse council = 1;
+}
+
+message GetCouncilsRequest {
+
+}
+
+message GetCouncilsResponse  {
+    repeated CouncilResponse councils = 1;
+}
+
+message GetCouncilsByThesisIDRequest {
+    int64 thesisID = 1;
+}
+
+message GetCouncilsByThesisIDResponse  {
+    repeated CouncilResponse councils = 2;
+}
+
+
+message CreateScheduleRequest {
+    ScheduleInput schedule = 1;
+}
+
+message CreateScheduleResponse {
+    ScheduleResponse schedule = 1;
+}
+
+message GetScheduleRequest {
+    int64 id = 1;
+}
+
+message GetScheduleResponse {
+    ScheduleResponse schedule = 1;
+}
+
+message GetSchedulesRequest {
+
+}
+
+message GetSchedulesResponse {
+    repeated ScheduleResponse schedules = 1;
+}
+
+message GetSchedulesByThesisIDRequest {
+    int64 thesisID = 1;
+}

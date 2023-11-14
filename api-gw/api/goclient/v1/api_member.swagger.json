@@ -369,7 +369,7 @@
         "status": {
           "type": "string"
         },
-        "isDefense": {
+        "registerDefense": {
           "type": "boolean"
         }
       },
@@ -391,7 +391,7 @@
         "status": {
           "type": "string"
         },
-        "isDefense": {
+        "registerDefense": {
           "type": "boolean"
         },
         "createdAt": {

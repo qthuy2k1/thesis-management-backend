@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package api.point.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/point/api/v1";
+
+service PointService {
+    rpc CreateOrUpdatePointDef(CreateOrUpdatePointDefRequest) returns (CreateOrUpdatePointDefResponse) {
+        option (google.api.http) = {
+            post: "/api/schedule"
+            body: "*"
+        };
+    }
+
+    rpc GetAllPointDef(GetAllPointDefRequest) returns (GetAllPointDefResponse) {
+        option (google.api.http) = {
+            get: "/api/schedule"
+        };
+    }
+}
+
+
+message UserScheduleResponse {
+    string id = 1;
+    string class = 2;
+    optional string major = 3;
+    optional string phone = 4;
+    string photoSrc = 5;
+    string role = 6;
+    string name = 7;
+    string email = 8;
+}
+
+// ===========================
+// POINT
+message AssessItemResponse {
+    string id = 1;
+    UserScheduleResponse lecturer = 2;
+    int64 point = 3;
+    string comment = 4;
+}
+
+message AssessItemInput {
+    string id = 1;
+    string lecturerID = 2;
+    int64 point = 3;
+    string comment = 4;
+}
+
+message PointResponse {
+    string id = 1;
+    UserScheduleResponse student = 2;
+    repeated AssessItemResponse assesses = 3;
+}
+
+message Point {
+    string id = 1;
+    string studentID = 2;
+    repeated AssessItemInput assesses = 3;
+}
+
+message CreateOrUpdatePointDefRequest {
+    Point point = 1;
+}
+
+message CreateOrUpdatePointDefResponse {
+    PointResponse point = 1;
+    string message = 2;
+}
+
+
+message GetAllPointDefRequest {
+}
+
+message GetAllPointDefResponse {
+    repeated PointResponse points = 1;
+}

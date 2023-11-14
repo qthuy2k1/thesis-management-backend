@@ -5,20 +5,19 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"strings"
 
 	"google.golang.org/grpc"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
 	authorizationSvcV1 "github.com/qthuy2k1/thesis-management-backend/authorization-svc/api/goclient/v1"
-	authorizeSvcV1 "github.com/qthuy2k1/thesis-management-backend/authorization-svc/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
 	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
+	scheduleSvcV1 "github.com/qthuy2k1/thesis-management-backend/schedule-svc/api/goclient/v1"
 	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
 	commiteeSvcV1 "github.com/qthuy2k1/thesis-management-backend/thesis-commitee-svc/api/goclient/v1"
 	topicSvcV1 "github.com/qthuy2k1/thesis-management-backend/topic-svc/api/goclient/v1"
@@ -39,6 +38,7 @@ var address = map[string]string{
 	"topicAddress":          "thesis-management-backend-topic-service:9091",
 	"authorizationAddress":  "thesis-management-backend-authorization-service:9091",
 	"commiteeAddress":       "thesis-management-backend-thesis-commitee-service:9091",
+	"scheduleAddress":       "thesis-management-backend-schedule-service:9091",
 }
 
 func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
@@ -134,7 +134,7 @@ func newTopicSvcClient() (topicSvcV1.TopicServiceClient, error) {
 func newAuthorizationSvcClient() (authorizationSvcV1.AuthorizationServiceClient, error) {
 	conn, err := grpc.DialContext(context.TODO(), address["authorizationAddress"], grpc.WithInsecure())
 	if err != nil {
-		return nil, fmt.Errorf("topic client: %w", err)
+		return nil, fmt.Errorf("authorize client: %w", err)
 	}
 
 	return authorizationSvcV1.NewAuthorizationServiceClient(conn), nil
@@ -143,10 +143,28 @@ func newAuthorizationSvcClient() (authorizationSvcV1.AuthorizationServiceClient,
 func newCommiteeSvcClient() (commiteeSvcV1.CommiteeServiceClient, error) {
 	conn, err := grpc.DialContext(context.TODO(), address["commiteeAddress"], grpc.WithInsecure())
 	if err != nil {
-		return nil, fmt.Errorf("topic client: %w", err)
+		return nil, fmt.Errorf("commitee client: %w", err)
 	}
 
 	return commiteeSvcV1.NewCommiteeServiceClient(conn), nil
+}
+
+func newThesisSvcClient() (commiteeSvcV1.ScheduleServiceClient, error) {
+	conn, err := grpc.DialContext(context.TODO(), address["commiteeAddress"], grpc.WithInsecure())
+	if err != nil {
+		return nil, fmt.Errorf("commitee client: %w", err)
+	}
+
+	return commiteeSvcV1.NewScheduleServiceClient(conn), nil
+}
+
+func newScheduleSvcClient() (scheduleSvcV1.ScheduleServiceClient, error) {
+	conn, err := grpc.DialContext(context.TODO(), address["scheduleAddress"], grpc.WithInsecure())
+	if err != nil {
+		return nil, fmt.Errorf("schedule client: %w", err)
+	}
+
+	return scheduleSvcV1.NewScheduleServiceClient(conn), nil
 }
 
 func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
@@ -158,34 +176,34 @@ func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, ha
 	return resp, err
 }
 
-func authorize(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	token, err := GetToken(ctx)
-	if err != nil {
-		return nil, err
-	}
+// func authorize(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+// 	token, err := GetToken(ctx)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	authorizationClient, err := newAuthorizationSvcClient()
-	if err != nil {
-		return nil, err
-	}
+// 	authorizationClient, err := newAuthorizationSvcClient()
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	methodArr := strings.Split(info.FullMethod, "/")
-	if _, err := authorizationClient.Authorize(ctx, &authorizeSvcV1.AuthorizeRequest{
-		Token:  token,
-		Method: methodArr[2],
-	}); err != nil {
-		return nil, err
-	}
+// 	methodArr := strings.Split(info.FullMethod, "/")
+// 	if _, err := authorizationClient.Authorize(ctx, &authorizeSvcV1.AuthorizeRequest{
+// 		Token:  token,
+// 		Method: methodArr[2],
+// 	}); err != nil {
+// 		return nil, err
+// 	}
 
-	resp, err := handler(ctx, req)
-	if err != nil {
-		log.Printf("APIGW serivce: method %q failed: %s\n", info.FullMethod, err)
-	}
-	return resp, err
-}
+// 	resp, err := handler(ctx, req)
+// 	if err != nil {
+// 		log.Printf("APIGW serivce: method %q failed: %s\n", info.FullMethod, err)
+// 	}
+// 	return resp, err
+// }
 
 func main() {
-	fmt.Printf("APIGW service starting on %s, classroom ip: %s", address["listenAddress"], address["classroomAddress"])
+	fmt.Printf("APIGW service starting on %s", address["listenAddress"])
 
 	// connect to classroom svc
 	classroomClient, err := newClassroomSvcClient()
@@ -259,6 +277,18 @@ func main() {
 		panic(err)
 	}
 
+	// connect to schedule svc
+	scheduleClient, err := newScheduleSvcClient()
+	if err != nil {
+		panic(err)
+	}
+
+	// connect to schedule svc
+	thesisClient, err := newThesisSvcClient()
+	if err != nil {
+		panic(err)
+	}
+
 	lis, err := net.Listen("tcp", address["listenAddress"])
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -280,6 +310,8 @@ func main() {
 	pb.RegisterCommiteeServiceServer(s, NewCommiteesService(commiteeClient, userClient))
 	pb.RegisterRoomServiceServer(s, NewRoomsService(commiteeClient))
 	pb.RegisterStudentDefServiceServer(s, NewStudentDefsService(userClient))
+	pb.RegisterScheduleServiceServer(s, NewSchedulesService(scheduleClient, commiteeClient, userClient, thesisClient))
+	pb.RegisterNotificationServiceServer(s, NewNotificationsService(scheduleClient, userClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

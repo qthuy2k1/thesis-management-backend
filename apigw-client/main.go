@@ -116,7 +116,15 @@ func run() error {
 		return err
 	}
 
-	fmt.Println("The APIGW-Client starting on 0.0.0.0:8080", "asdasd: ", grpcServerEndpoint)
+	if err := gw.RegisterScheduleServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts); err != nil {
+		return err
+	}
+
+	if err := gw.RegisterNotificationServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts); err != nil {
+		return err
+	}
+
+	fmt.Println("The APIGW-Client starting on 0.0.0.0:8080")
 	go func() {
 		<-ctx.Done()
 		glog.Infof("Shutting down the http server")

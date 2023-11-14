@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS "thesis_commitee_user_details";
+DROP TABLE  IF EXISTS"thesis_commitee_user_details";

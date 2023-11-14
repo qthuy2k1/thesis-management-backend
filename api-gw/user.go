@@ -8,6 +8,8 @@ import (
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type userServiceGW struct {
@@ -49,11 +51,17 @@ func (u *userServiceGW) CreateUser(ctx context.Context, req *pb.CreateUserReques
 		return nil, err
 	}
 
+	password, err := bcrypt.GenerateFromPassword([]byte(req.GetUser().Password), 14)
+	if err != nil {
+		return nil, err
+	}
+
 	return &pb.CreateUserResponse{
 		Response: &pb.CommonUserResponse{
 			StatusCode: res.GetResponse().StatusCode,
 			Message:    res.GetResponse().Message,
 		},
+		HashedPassword: string(password),
 	}, nil
 }
 

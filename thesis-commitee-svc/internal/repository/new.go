@@ -18,6 +18,8 @@ type ICommiteeRepo interface {
 	DeleteCommitee(ctx context.Context, id int) error
 	// GetCommitees returns a list of commitees in db with filter
 	GetCommitees(ctx context.Context) ([]CommiteeOutputRepo, int, error)
+	// GetCommitees returns a list of commitees in db with filter
+	GetCommiteeByTimeSlotsID(ctx context.Context, timeSlotsID int) (CommiteeOutputRepo, error)
 
 	// CreateCommiteeUserDetail creates a new commitee in db given by commitee model
 	CreateCommiteeUserDetail(ctx context.Context, clr CommiteeUserDetailInputRepo) (CommiteeUserDetailOutputRepo, error)
@@ -46,6 +48,42 @@ type ICommiteeRepo interface {
 	DeleteRoom(ctx context.Context, id int) error
 	// GetRooms returns a list of commitees in db with filter
 	GetRooms(ctx context.Context, filter RoomFilter) ([]RoomOutputRepo, int, error)
+	// GetRooms returns a list of commitees in db with filter
+	GetRoomsByID(ctx context.Context, id []string) ([]RoomOutputRepo, error)
+
+	// CreateCouncil creates a new commitee in db given by commitee model
+	CreateCouncil(ctx context.Context, r CouncilInputRepo) (CouncilOutputRepo, error)
+	// GetCouncil returns a commitee in db given by id
+	GetCouncil(ctx context.Context, id int) (CouncilOutputRepo, error)
+	// GetCouncils returns a list of commitees in db with filter
+	GetCouncils(ctx context.Context) ([]CouncilOutputRepo, int, error)
+	// GetCouncils returns a list of commitees in db with filter
+	GetCouncilsByThesisID(ctx context.Context, thesisID int) ([]CouncilOutputRepo, int, error)
+
+	// CreateTimeSlots creates a new commitee in db given by commitee model
+	CreateTimeSlots(ctx context.Context, r TimeSlotsInputRepo) (TimeSlotsOutputRepo, error)
+	// GetTimeSlots returns a commitee in db given by id
+	GetTimeSlots(ctx context.Context, id int) (TimeSlotsOutputRepo, error)
+	// GetTimeSlotss returns a list of commitees in db with filter
+	GetTimeSlotss(ctx context.Context) ([]TimeSlotsOutputRepo, int, error)
+	// GetTimeSlots returns a commitee in db given by id
+	GetTimeSlotsByScheduleID(ctx context.Context, scheduleID int) ([]TimeSlotsOutputRepo, error)
+
+	// CreateSchedule creates a new commitee in db given by commitee model
+	CreateSchedule(ctx context.Context, r ScheduleInputRepo) (ScheduleOutputRepo, error)
+	// GetSchedule returns a commitee in db given by id
+	GetSchedule(ctx context.Context, id int) (ScheduleOutputRepo, error)
+	// GetSchedules returns a list of commitees in db with filter
+	GetSchedules(ctx context.Context) ([]ScheduleOutputRepo, int, error)
+	// GetSchedules returns a list of commitees in db with filter
+	GetSchedulesByThesisID(ctx context.Context, thesisID int) ([]ScheduleOutputRepo, error)
+
+	// CreateThesis creates a new commitee in db given by commitee model
+	CreateThesis(ctx context.Context, r ThesisInputRepo) (ThesisOutputRepo, error)
+	// GetThesis returns a commitee in db given by id
+	GetThesis(ctx context.Context, id int) (ThesisOutputRepo, error)
+	// GetThesiss returns a list of commitees in db with filter
+	GetThesiss(ctx context.Context) ([]ThesisOutputRepo, int, error)
 }
 
 type CommiteeRepo struct {

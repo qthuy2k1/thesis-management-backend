@@ -22,69 +22,71 @@ func NewCommiteesService(commiteeClient commiteeSvcV1.CommiteeServiceClient, use
 }
 
 func (u *commiteeServiceGW) CreateCommitee(ctx context.Context, req *pb.CreateCommiteeRequest) (*pb.CreateCommiteeResponse, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
+	// if err := req.Validate(); err != nil {
+	// 	return nil, err
+	// }
 
-	res, err := u.commiteeClient.CreateCommitee(ctx, &commiteeSvcV1.CreateCommiteeRequest{
-		Commitee: &commiteeSvcV1.CommiteeInput{
-			StartDate: req.GetCommitee().StartDate,
-			Shift:     req.GetCommitee().Shift,
-			RoomID:    req.GetCommitee().RoomID,
-		},
-	})
-	if err != nil {
-		return nil, err
-	}
+	// res, err := u.commiteeClient.CreateCommitee(ctx, &commiteeSvcV1.CreateCommiteeRequest{
+	// 	Commitee: &commiteeSvcV1.CommiteeInput{
+	// 		StartDate: req.GetCommitee().StartDate,
+	// 		Shift:     req.GetCommitee().Shift,
+	// 		// TimeSlotsID: req.GetCommitee().TimeSlotsID,
+	// 		// Time:        req.GetCommitee().Time,
+	// 	},
+	// })
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	var details []*commiteeSvcV1.CreateCommiteeUserDetailResponse
-	for _, lecID := range req.Commitee.LecturerID {
-		detailRes, err := u.commiteeClient.CreateCommiteeUserDetail(ctx, &commiteeSvcV1.CreateCommiteeUserDetailRequest{
-			CommiteeUserDetail: &commiteeSvcV1.CommiteeUserDetail{
-				CommiteeID: res.GetCommitee().Id,
-				LecturerID: lecID,
-				StudentID:  req.Commitee.StudentID,
-			},
-		})
-		if err != nil {
-			if len(details) > 0 {
-				for _, d := range details {
-					if _, err := u.commiteeClient.DeleteCommiteeUserDetail(ctx, &commiteeSvcV1.DeleteCommiteeUserDetailRequest{
-						CommiteeID: d.CommiteeUserDetail.CommiteeID,
-						LecturerID: d.CommiteeUserDetail.LecturerID,
-						StudentID:  d.CommiteeUserDetail.StudentID,
-					}); err != nil {
-						return nil, err
-					}
-				}
+	// var details []*commiteeSvcV1.CreateCommiteeUserDetailResponse
+	// for _, lecID := range req.Commitee.LecturerID {
+	// 	detailRes, err := u.commiteeClient.CreateCommiteeUserDetail(ctx, &commiteeSvcV1.CreateCommiteeUserDetailRequest{
+	// 		CommiteeUserDetail: &commiteeSvcV1.CommiteeUserDetail{
+	// 			CommiteeID: res.GetCommitee().Id,
+	// 			LecturerID: lecID,
+	// 			StudentID:  req.Commitee.StudentID,
+	// 		},
+	// 	})
+	// 	if err != nil {
+	// 		if len(details) > 0 {
+	// 			for _, d := range details {
+	// 				if _, err := u.commiteeClient.DeleteCommiteeUserDetail(ctx, &commiteeSvcV1.DeleteCommiteeUserDetailRequest{
+	// 					CommiteeID: d.CommiteeUserDetail.CommiteeID,
+	// 					LecturerID: d.CommiteeUserDetail.LecturerID,
+	// 					StudentID:  d.CommiteeUserDetail.StudentID,
+	// 				}); err != nil {
+	// 					return nil, err
+	// 				}
+	// 			}
 
-				if _, err := u.commiteeClient.DeleteCommitee(ctx, &commiteeSvcV1.DeleteCommiteeRequest{
-					Id: res.Commitee.Id,
-				}); err != nil {
-					return nil, err
-				}
-			}
-			return nil, err
-		}
+	// 			if _, err := u.commiteeClient.DeleteCommitee(ctx, &commiteeSvcV1.DeleteCommiteeRequest{
+	// 				Id: res.Commitee.Id,
+	// 			}); err != nil {
+	// 				return nil, err
+	// 			}
+	// 		}
+	// 		return nil, err
+	// 	}
 
-		details = append(details, detailRes)
+	// 	details = append(details, detailRes)
 
-		if detailRes.GetResponse().StatusCode != 201 {
-			return &pb.CreateCommiteeResponse{
-				Response: &pb.CommonCommiteeResponse{
-					StatusCode: detailRes.GetResponse().StatusCode,
-					Message:    detailRes.GetResponse().Message,
-				},
-			}, nil
-		}
-	}
+	// 	if detailRes.GetResponse().StatusCode != 201 {
+	// 		return &pb.CreateCommiteeResponse{
+	// 			Response: &pb.CommonCommiteeResponse{
+	// 				StatusCode: detailRes.GetResponse().StatusCode,
+	// 				Message:    detailRes.GetResponse().Message,
+	// 			},
+	// 		}, nil
+	// 	}
+	// }
 
-	return &pb.CreateCommiteeResponse{
-		Response: &pb.CommonCommiteeResponse{
-			StatusCode: res.GetResponse().StatusCode,
-			Message:    res.GetResponse().Message,
-		},
-	}, nil
+	// return &pb.CreateCommiteeResponse{
+	// 	Response: &pb.CommonCommiteeResponse{
+	// 		StatusCode: res.GetResponse().StatusCode,
+	// 		Message:    res.GetResponse().Message,
+	// 	},
+	// }, nil
+	return nil, nil
 }
 
 func (u *commiteeServiceGW) GetCommitee(ctx context.Context, req *pb.GetCommiteeRequest) (*pb.GetCommiteeResponse, error) {
@@ -155,7 +157,6 @@ func (u *commiteeServiceGW) GetCommitee(ctx context.Context, req *pb.GetCommitee
 			Id:        res.GetCommitee().Id,
 			StartDate: res.GetCommitee().StartDate,
 			Shift:     res.GetCommitee().Shift,
-			RoomID:    res.GetCommitee().RoomID,
 			Lecturers: lecturers,
 			Student:   studentList,
 		},
@@ -172,7 +173,6 @@ func (u *commiteeServiceGW) UpdateCommitee(ctx context.Context, req *pb.UpdateCo
 		Commitee: &commiteeSvcV1.CommiteeInput{
 			StartDate: req.GetCommitee().StartDate,
 			Shift:     req.GetCommitee().Shift,
-			RoomID:    req.GetCommitee().RoomID,
 		},
 	})
 	if err != nil {
@@ -272,7 +272,6 @@ func (u *commiteeServiceGW) GetCommitees(ctx context.Context, req *pb.GetCommite
 			Id:        p.Id,
 			StartDate: p.GetStartDate(),
 			Shift:     p.GetShift(),
-			RoomID:    p.GetRoomID(),
 			Lecturers: lecturers,
 			Student:   studentList,
 		})
