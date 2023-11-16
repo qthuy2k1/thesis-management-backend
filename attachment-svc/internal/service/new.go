@@ -19,6 +19,8 @@ type IAttachmentSvc interface {
 	GetAttachmentsOfExercise(ctx context.Context, exerciseID int) ([]AttachmentOutputSvc, error)
 	// GetAttachmentOfExercise returns a list of attachments of a submission in db
 	GetAttachmentsOfSubmission(ctx context.Context, submissionID int) ([]AttachmentOutputSvc, error)
+	// GetAttachmentOfExercise returns a list of attachments of a submission in db
+	GetAttachmentsOfPost(ctx context.Context, postID int) ([]AttachmentOutputSvc, error)
 }
 
 type AttachmentSvc struct {

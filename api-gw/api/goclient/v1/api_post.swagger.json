@@ -336,6 +336,39 @@
         }
       }
     },
+    "v1AttachmentPostInput": {
+      "type": "object",
+      "properties": {
+        "fileURL": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "v1AttachmentPostResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "fileURL": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "author": {
+          "$ref": "#/definitions/v1AuthorPostResponse"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "v1AuthorPostResponse": {
       "type": "object",
       "properties": {
@@ -413,6 +446,9 @@
       "properties": {
         "response": {
           "$ref": "#/definitions/v1CommonPostResponse"
+        },
+        "post": {
+          "$ref": "#/definitions/v1PostResponse"
         }
       }
     },
@@ -518,6 +554,13 @@
         },
         "authorID": {
           "type": "string"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1AttachmentPostInput"
+          }
         }
       },
       "title": "====== POST ======"
@@ -552,6 +595,13 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1AttachmentPostResponse"
+          }
         }
       }
     },

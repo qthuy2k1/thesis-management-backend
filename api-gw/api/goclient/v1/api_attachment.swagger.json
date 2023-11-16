@@ -304,6 +304,10 @@
           "type": "string",
           "format": "int64"
         },
+        "postID": {
+          "type": "string",
+          "format": "int64"
+        },
         "authorID": {
           "type": "string"
         }

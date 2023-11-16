@@ -70,35 +70,6 @@
     }
   },
   "definitions": {
-    "apischedulev1UserScheduleResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "class": {
-          "type": "string"
-        },
-        "major": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
-        },
-        "photoSrc": {
-          "type": "string"
-        },
-        "role": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        }
-      }
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -236,10 +207,10 @@
           "type": "string"
         },
         "infor": {
-          "$ref": "#/definitions/apischedulev1UserScheduleResponse"
+          "$ref": "#/definitions/v1UserScheduleResponse"
         },
         "instructor": {
-          "$ref": "#/definitions/apischedulev1UserScheduleResponse"
+          "$ref": "#/definitions/v1UserScheduleResponse"
         },
         "createdAt": {
           "type": "string",
@@ -290,6 +261,35 @@
         },
         "timeSlot": {
           "$ref": "#/definitions/v1TimeSlot"
+        }
+      }
+    },
+    "v1UserScheduleResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
         }
       }
     }

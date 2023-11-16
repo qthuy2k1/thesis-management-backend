@@ -18,6 +18,8 @@ type IAttachmentRepo interface {
 	GetAttachmentsOfExercise(ctx context.Context, exerciseID int) ([]AttachmentOutputRepo, error)
 	// GetAttachment returns a list of attachments of a submission in db
 	GetAttachmentsOfSubmission(ctx context.Context, submissionID int) ([]AttachmentOutputRepo, error)
+	// GetAttachment returns a list of attachments of a submission in db
+	GetAttachmentsOfPost(ctx context.Context, postID int) ([]AttachmentOutputRepo, error)
 }
 
 type AttachmentRepo struct {

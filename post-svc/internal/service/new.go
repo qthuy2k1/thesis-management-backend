@@ -8,7 +8,7 @@ import (
 
 type IPostSvc interface {
 	// CreatePost creates a new post in db given by post model
-	CreatePost(ctx context.Context, p PostInputSvc) error
+	CreatePost(ctx context.Context, p PostInputSvc) (PostOutputSvc, error)
 	// GetPost returns a post in db given by id
 	GetPost(ctx context.Context, id int) (PostOutputSvc, error)
 	// UpdatePost updates the specified post by id

@@ -7,7 +7,7 @@ import (
 
 type IPostRepo interface {
 	// CreatePost creates a new post in db given by post model
-	CreatePost(ctx context.Context, clr PostInputRepo) error
+	CreatePost(ctx context.Context, clr PostInputRepo) (PostOutputRepo, error)
 	// GetPost returns a post in db given by id
 	GetPost(ctx context.Context, id int) (PostOutputRepo, error)
 	// CheckPostExists checks whether the specified post exists by name

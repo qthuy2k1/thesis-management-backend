@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/schedule": {
+    "/api/point": {
       "get": {
         "operationId": "PointService_GetAllPointDef",
         "responses": {
@@ -70,35 +70,6 @@
     }
   },
   "definitions": {
-    "apipointv1UserScheduleResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "class": {
-          "type": "string"
-        },
-        "major": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
-        },
-        "photoSrc": {
-          "type": "string"
-        },
-        "role": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        }
-      }
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -152,7 +123,7 @@
           "type": "string"
         },
         "lecturer": {
-          "$ref": "#/definitions/apipointv1UserScheduleResponse"
+          "$ref": "#/definitions/v1UserPointResponse"
         },
         "point": {
           "type": "string",
@@ -220,7 +191,7 @@
           "type": "string"
         },
         "student": {
-          "$ref": "#/definitions/apipointv1UserScheduleResponse"
+          "$ref": "#/definitions/v1UserPointResponse"
         },
         "assesses": {
           "type": "array",
@@ -228,6 +199,35 @@
             "type": "object",
             "$ref": "#/definitions/v1AssessItemResponse"
           }
+        }
+      }
+    },
+    "v1UserPointResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
         }
       }
     }

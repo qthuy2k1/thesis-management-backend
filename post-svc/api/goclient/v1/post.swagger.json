@@ -62,6 +62,9 @@
       "properties": {
         "response": {
           "$ref": "#/definitions/v1CommonPostResponse"
+        },
+        "post": {
+          "$ref": "#/definitions/v1PostResponse"
         }
       }
     },

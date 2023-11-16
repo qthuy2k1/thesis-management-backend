@@ -3083,22 +3083,22 @@ var _ interface {
 	ErrorName() string
 } = CreateOrUpdatePointDefResponseValidationError{}
 
-// Validate checks the field values on GetAllPointDefRequest with the rules
+// Validate checks the field values on GetAllPointDefsRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetAllPointDefRequest) Validate() error {
+func (m *GetAllPointDefsRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetAllPointDefRequest with the rules
+// ValidateAll checks the field values on GetAllPointDefsRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// GetAllPointDefRequestMultiError, or nil if none found.
-func (m *GetAllPointDefRequest) ValidateAll() error {
+// GetAllPointDefsRequestMultiError, or nil if none found.
+func (m *GetAllPointDefsRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetAllPointDefRequest) validate(all bool) error {
+func (m *GetAllPointDefsRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -3106,19 +3106,19 @@ func (m *GetAllPointDefRequest) validate(all bool) error {
 	var errors []error
 
 	if len(errors) > 0 {
-		return GetAllPointDefRequestMultiError(errors)
+		return GetAllPointDefsRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetAllPointDefRequestMultiError is an error wrapping multiple validation
-// errors returned by GetAllPointDefRequest.ValidateAll() if the designated
+// GetAllPointDefsRequestMultiError is an error wrapping multiple validation
+// errors returned by GetAllPointDefsRequest.ValidateAll() if the designated
 // constraints aren't met.
-type GetAllPointDefRequestMultiError []error
+type GetAllPointDefsRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetAllPointDefRequestMultiError) Error() string {
+func (m GetAllPointDefsRequestMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -3127,11 +3127,11 @@ func (m GetAllPointDefRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetAllPointDefRequestMultiError) AllErrors() []error { return m }
+func (m GetAllPointDefsRequestMultiError) AllErrors() []error { return m }
 
-// GetAllPointDefRequestValidationError is the validation error returned by
-// GetAllPointDefRequest.Validate if the designated constraints aren't met.
-type GetAllPointDefRequestValidationError struct {
+// GetAllPointDefsRequestValidationError is the validation error returned by
+// GetAllPointDefsRequest.Validate if the designated constraints aren't met.
+type GetAllPointDefsRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -3139,24 +3139,24 @@ type GetAllPointDefRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetAllPointDefRequestValidationError) Field() string { return e.field }
+func (e GetAllPointDefsRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetAllPointDefRequestValidationError) Reason() string { return e.reason }
+func (e GetAllPointDefsRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetAllPointDefRequestValidationError) Cause() error { return e.cause }
+func (e GetAllPointDefsRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetAllPointDefRequestValidationError) Key() bool { return e.key }
+func (e GetAllPointDefsRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetAllPointDefRequestValidationError) ErrorName() string {
-	return "GetAllPointDefRequestValidationError"
+func (e GetAllPointDefsRequestValidationError) ErrorName() string {
+	return "GetAllPointDefsRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e GetAllPointDefRequestValidationError) Error() string {
+func (e GetAllPointDefsRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -3168,14 +3168,14 @@ func (e GetAllPointDefRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetAllPointDefRequest.%s: %s%s",
+		"invalid %sGetAllPointDefsRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetAllPointDefRequestValidationError{}
+var _ error = GetAllPointDefsRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -3183,24 +3183,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetAllPointDefRequestValidationError{}
+} = GetAllPointDefsRequestValidationError{}
 
-// Validate checks the field values on GetAllPointDefResponse with the rules
+// Validate checks the field values on GetAllPointDefsResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetAllPointDefResponse) Validate() error {
+func (m *GetAllPointDefsResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetAllPointDefResponse with the rules
-// defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on GetAllPointDefsResponse with the
+// rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// GetAllPointDefResponseMultiError, or nil if none found.
-func (m *GetAllPointDefResponse) ValidateAll() error {
+// GetAllPointDefsResponseMultiError, or nil if none found.
+func (m *GetAllPointDefsResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetAllPointDefResponse) validate(all bool) error {
+func (m *GetAllPointDefsResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -3214,7 +3214,7 @@ func (m *GetAllPointDefResponse) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, GetAllPointDefResponseValidationError{
+					errors = append(errors, GetAllPointDefsResponseValidationError{
 						field:  fmt.Sprintf("Points[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -3222,7 +3222,7 @@ func (m *GetAllPointDefResponse) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, GetAllPointDefResponseValidationError{
+					errors = append(errors, GetAllPointDefsResponseValidationError{
 						field:  fmt.Sprintf("Points[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -3231,7 +3231,7 @@ func (m *GetAllPointDefResponse) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return GetAllPointDefResponseValidationError{
+				return GetAllPointDefsResponseValidationError{
 					field:  fmt.Sprintf("Points[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -3242,19 +3242,19 @@ func (m *GetAllPointDefResponse) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return GetAllPointDefResponseMultiError(errors)
+		return GetAllPointDefsResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetAllPointDefResponseMultiError is an error wrapping multiple validation
-// errors returned by GetAllPointDefResponse.ValidateAll() if the designated
+// GetAllPointDefsResponseMultiError is an error wrapping multiple validation
+// errors returned by GetAllPointDefsResponse.ValidateAll() if the designated
 // constraints aren't met.
-type GetAllPointDefResponseMultiError []error
+type GetAllPointDefsResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetAllPointDefResponseMultiError) Error() string {
+func (m GetAllPointDefsResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -3263,11 +3263,11 @@ func (m GetAllPointDefResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetAllPointDefResponseMultiError) AllErrors() []error { return m }
+func (m GetAllPointDefsResponseMultiError) AllErrors() []error { return m }
 
-// GetAllPointDefResponseValidationError is the validation error returned by
-// GetAllPointDefResponse.Validate if the designated constraints aren't met.
-type GetAllPointDefResponseValidationError struct {
+// GetAllPointDefsResponseValidationError is the validation error returned by
+// GetAllPointDefsResponse.Validate if the designated constraints aren't met.
+type GetAllPointDefsResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -3275,24 +3275,24 @@ type GetAllPointDefResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetAllPointDefResponseValidationError) Field() string { return e.field }
+func (e GetAllPointDefsResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetAllPointDefResponseValidationError) Reason() string { return e.reason }
+func (e GetAllPointDefsResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetAllPointDefResponseValidationError) Cause() error { return e.cause }
+func (e GetAllPointDefsResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetAllPointDefResponseValidationError) Key() bool { return e.key }
+func (e GetAllPointDefsResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetAllPointDefResponseValidationError) ErrorName() string {
-	return "GetAllPointDefResponseValidationError"
+func (e GetAllPointDefsResponseValidationError) ErrorName() string {
+	return "GetAllPointDefsResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e GetAllPointDefResponseValidationError) Error() string {
+func (e GetAllPointDefsResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -3304,14 +3304,14 @@ func (e GetAllPointDefResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetAllPointDefResponse.%s: %s%s",
+		"invalid %sGetAllPointDefsResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetAllPointDefResponseValidationError{}
+var _ error = GetAllPointDefsResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -3319,4 +3319,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetAllPointDefResponseValidationError{}
+} = GetAllPointDefsResponseValidationError{}

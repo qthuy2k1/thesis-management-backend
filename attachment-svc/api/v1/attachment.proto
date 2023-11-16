@@ -18,6 +18,8 @@ service AttachmentService {
     rpc GetAttachmentsOfExercise(GetAttachmentsOfExerciseRequest) returns (GetAttachmentsOfExerciseResponse) {}
 
     rpc GetAttachmentsOfSubmission(GetAttachmentsOfSubmissionRequest) returns (GetAttachmentsOfSubmissionResponse) {}
+
+    rpc GetAttachmentsOfPost(GetAttachmentsOfPostRequest) returns (GetAttachmentsOfPostResponse) {}
 }
 
 
@@ -30,9 +32,10 @@ message CommonAttachmentResponse {
 message AttachmentInput {
     string fileURL = 1;
     string status = 2;
-    int64 submissionID = 3;
-    int64 exerciseID = 4;
-    string authorID = 5;
+    optional int64 submissionID = 3;
+    optional int64 exerciseID = 4;
+    optional int64 postID = 5;
+    string authorID = 6;
 }
 
 
@@ -40,10 +43,11 @@ message AttachmentResponse {
     int64 id = 1;
     string fileURL = 2;
     string status = 3;
-    int64 submissionID = 4; 
-    int64 exerciseID = 5;
-    string authorID = 6;
-    google.protobuf.Timestamp created_at = 7;
+    optional int64 submissionID = 4; 
+    optional int64 exerciseID = 5;
+    optional int64 postID = 6;
+    string authorID = 7;
+    google.protobuf.Timestamp created_at = 8;
 }
 
 
@@ -113,6 +117,16 @@ message GetAttachmentsOfSubmissionRequest {
 }
 
 message GetAttachmentsOfSubmissionResponse {
+    CommonAttachmentResponse response = 1;
+    repeated AttachmentResponse attachments = 3;
+}
+
+// ====== GET ALL ======
+message GetAttachmentsOfPostRequest {
+    int64 postID = 1;
+}
+
+message GetAttachmentsOfPostResponse {
     CommonAttachmentResponse response = 1;
     repeated AttachmentResponse attachments = 3;
 }

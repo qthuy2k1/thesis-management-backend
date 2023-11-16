@@ -17,6 +17,8 @@ service ScheduleService {
     rpc CreateNotification(CreateNotificationRequest) returns (CreateNotificationResponse) {}
 
     rpc CreateOrUpdatePointDef(CreateOrUpdatePointDefRequest) returns (CreateOrUpdatePointDefResponse) {}
+
+    rpc GetAllPointDefs(GetAllPointDefsRequest) returns (GetAllPointDefsResponse) {}
 }
 
 
@@ -154,9 +156,9 @@ message CreateOrUpdatePointDefResponse {
 }
 
 
-message GetAllPointDefRequest {
+message GetAllPointDefsRequest {
 }
 
-message GetAllPointDefResponse {
+message GetAllPointDefsResponse {
     repeated Point points = 1;
 }

@@ -11,8 +11,9 @@ import (
 type AttachmentInputSvc struct {
 	FileURL      string
 	Status       string
-	SubmissionID int
-	ExerciseID   int
+	SubmissionID *int
+	ExerciseID   *int
+	PostID       *int
 	AuthorID     string
 }
 
@@ -24,6 +25,7 @@ func (s *AttachmentSvc) CreateAttachment(ctx context.Context, att AttachmentInpu
 		SubmissionID: att.SubmissionID,
 		ExerciseID:   att.ExerciseID,
 		AuthorID:     att.AuthorID,
+		PostID:       att.PostID,
 	}
 	attRes, err := s.Repository.CreateAttachment(ctx, attRepo)
 	if err != nil {
@@ -40,6 +42,7 @@ func (s *AttachmentSvc) CreateAttachment(ctx context.Context, att AttachmentInpu
 		SubmissionID: attRes.SubmissionID,
 		ExerciseID:   attRes.ExerciseID,
 		AuthorID:     attRes.AuthorID,
+		PostID:       att.PostID,
 		CreatedAt:    attRes.CreatedAt,
 	}, nil
 }
@@ -61,6 +64,7 @@ func (s *AttachmentSvc) GetAttachment(ctx context.Context, id int) (AttachmentOu
 		SubmissionID: att.SubmissionID,
 		ExerciseID:   att.ExerciseID,
 		AuthorID:     att.AuthorID,
+		PostID:       att.PostID,
 		CreatedAt:    att.CreatedAt,
 	}, nil
 }
@@ -73,6 +77,7 @@ func (s *AttachmentSvc) UpdateAttachment(ctx context.Context, id int, attachment
 		SubmissionID: attachment.SubmissionID,
 		ExerciseID:   attachment.ExerciseID,
 		AuthorID:     attachment.AuthorID,
+		PostID:       attachment.PostID,
 	}); err != nil {
 		if errors.Is(err, repository.ErrAttachmentNotFound) {
 			return ErrAttachmentNotFound
@@ -99,8 +104,9 @@ type AttachmentOutputSvc struct {
 	ID           int
 	FileURL      string
 	Status       string
-	SubmissionID int
-	ExerciseID   int
+	SubmissionID *int
+	ExerciseID   *int
+	PostID       *int
 	AuthorID     string
 	CreatedAt    time.Time
 }
@@ -121,6 +127,7 @@ func (s *AttachmentSvc) GetAttachmentsOfExercise(ctx context.Context, exerciseID
 			SubmissionID: c.SubmissionID,
 			ExerciseID:   c.ExerciseID,
 			AuthorID:     c.AuthorID,
+			PostID:       c.PostID,
 			CreatedAt:    c.CreatedAt,
 		})
 	}
@@ -144,6 +151,31 @@ func (s *AttachmentSvc) GetAttachmentsOfSubmission(ctx context.Context, submissi
 			SubmissionID: c.SubmissionID,
 			ExerciseID:   c.ExerciseID,
 			AuthorID:     c.AuthorID,
+			PostID:       c.PostID,
+			CreatedAt:    c.CreatedAt,
+		})
+	}
+
+	return attsSvc, nil
+}
+
+// GetAttachment returns a list of attachments in db with filter
+func (s *AttachmentSvc) GetAttachmentsOfPost(ctx context.Context, postID int) ([]AttachmentOutputSvc, error) {
+	attsRepo, err := s.Repository.GetAttachmentsOfPost(ctx, postID)
+	if err != nil {
+		return nil, err
+	}
+
+	var attsSvc []AttachmentOutputSvc
+	for _, c := range attsRepo {
+		attsSvc = append(attsSvc, AttachmentOutputSvc{
+			ID:           c.ID,
+			FileURL:      c.FileURL,
+			Status:       c.Status,
+			SubmissionID: c.SubmissionID,
+			ExerciseID:   c.ExerciseID,
+			AuthorID:     c.AuthorID,
+			PostID:       c.PostID,
 			CreatedAt:    c.CreatedAt,
 		})
 	}

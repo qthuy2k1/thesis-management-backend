@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
+	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
@@ -19,15 +20,17 @@ type postServiceGW struct {
 	reportingStageClient rpsSvcV1.ReportingStageServiceClient
 	commentClient        commentSvcV1.CommentServiceClient
 	userClient           userSvcV1.UserServiceClient
+	attachmentClient     attachmentSvcV1.AttachmentServiceClient
 }
 
-func NewPostsService(postClient postSvcV1.PostServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportingStageClient rpsSvcV1.ReportingStageServiceClient, commentCLient commentSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient) *postServiceGW {
+func NewPostsService(postClient postSvcV1.PostServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportingStageClient rpsSvcV1.ReportingStageServiceClient, commentCLient commentSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient) *postServiceGW {
 	return &postServiceGW{
 		postClient:           postClient,
 		classroomClient:      classroomClient,
 		reportingStageClient: reportingStageClient,
 		commentClient:        commentCLient,
 		userClient:           userClient,
+		attachmentClient:     attachmentClient,
 	}
 }
 
@@ -75,6 +78,33 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	var attCreated []int64
+	if req.Post.Attachments != nil && len(req.Post.Attachments) > 0 {
+		for _, att := range req.Post.Attachments {
+			postID := res.Post.Id
+
+			if _, err = u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
+				Attachment: &attachmentSvcV1.AttachmentInput{
+					FileURL:  att.FileURL,
+					Status:   att.FileURL,
+					PostID:   &postID,
+					AuthorID: res.Post.AuthorID,
+				},
+			}); err != nil {
+				if len(attCreated) > 0 {
+					for _, aErr := range attCreated {
+						if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+							Id: aErr,
+						}); err != nil {
+							return nil, err
+						}
+					}
+				}
+				return nil, err
+			}
+		}
 	}
 
 	return &pb.CreatePostResponse{
@@ -143,6 +173,40 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 		return nil, err
 	}
 
+	attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+		PostID: res.Post.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var attachments []*pb.AttachmentPostResponse
+	for _, a := range attachment.Attachments {
+		author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: a.AuthorID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		attachments = append(attachments, &pb.AttachmentPostResponse{
+			Id:      a.Id,
+			FileURL: a.FileURL,
+			Status:  a.Status,
+			Author: &pb.AuthorPostResponse{
+				Id:       author.User.Id,
+				Class:    author.User.Class,
+				Major:    author.User.Major,
+				Phone:    author.User.Phone,
+				PhotoSrc: author.User.PhotoSrc,
+				Role:     author.User.Role,
+				Name:     author.User.Name,
+				Email:    author.User.Email,
+			},
+			CreatedAt: a.CreatedAt,
+		})
+	}
+
 	return &pb.GetPostResponse{
 		Response: &pb.CommonPostResponse{
 			StatusCode: res.GetResponse().StatusCode,
@@ -169,8 +233,9 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 				Name:     authorRes.User.Name,
 				Email:    authorRes.User.Email,
 			},
-			CreatedAt: res.GetPost().CreatedAt,
-			UpdatedAt: res.GetPost().UpdatedAt,
+			CreatedAt:   res.GetPost().CreatedAt,
+			UpdatedAt:   res.GetPost().UpdatedAt,
+			Attachments: attachments,
 		},
 		Comments: comments,
 	}, nil
@@ -323,6 +388,40 @@ func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (
 			return nil, err
 		}
 
+		attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+			PostID: p.Id,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		var attachments []*pb.AttachmentPostResponse
+		for _, a := range attachment.Attachments {
+			author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+				Id: a.AuthorID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			attachments = append(attachments, &pb.AttachmentPostResponse{
+				Id:      a.Id,
+				FileURL: a.FileURL,
+				Status:  a.Status,
+				Author: &pb.AuthorPostResponse{
+					Id:       author.User.Id,
+					Class:    author.User.Class,
+					Major:    author.User.Major,
+					Phone:    author.User.Phone,
+					PhotoSrc: author.User.PhotoSrc,
+					Role:     author.User.Role,
+					Name:     author.User.Name,
+					Email:    author.User.Email,
+				},
+				CreatedAt: a.CreatedAt,
+			})
+		}
+
 		posts = append(posts, &pb.PostResponse{
 			Id:          p.Id,
 			Title:       p.Title,
@@ -344,8 +443,9 @@ func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (
 				Name:     authorRes.User.Name,
 				Email:    authorRes.User.Email,
 			},
-			CreatedAt: p.CreatedAt,
-			UpdatedAt: p.UpdatedAt,
+			CreatedAt:   p.CreatedAt,
+			UpdatedAt:   p.UpdatedAt,
+			Attachments: attachments,
 		})
 	}
 
@@ -437,6 +537,40 @@ func (u *postServiceGW) GetAllPostsOfClassroom(ctx context.Context, req *pb.GetA
 			return nil, err
 		}
 
+		attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+			PostID: p.Id,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		var attachments []*pb.AttachmentPostResponse
+		for _, a := range attachment.Attachments {
+			author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+				Id: a.AuthorID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			attachments = append(attachments, &pb.AttachmentPostResponse{
+				Id:      a.Id,
+				FileURL: a.FileURL,
+				Status:  a.Status,
+				Author: &pb.AuthorPostResponse{
+					Id:       author.User.Id,
+					Class:    author.User.Class,
+					Major:    author.User.Major,
+					Phone:    author.User.Phone,
+					PhotoSrc: author.User.PhotoSrc,
+					Role:     author.User.Role,
+					Name:     author.User.Name,
+					Email:    author.User.Email,
+				},
+				CreatedAt: a.CreatedAt,
+			})
+		}
+
 		posts = append(posts, &pb.PostResponse{
 			Id:          p.Id,
 			Title:       p.Title,
@@ -458,8 +592,9 @@ func (u *postServiceGW) GetAllPostsOfClassroom(ctx context.Context, req *pb.GetA
 				Name:     authorRes.User.Name,
 				Email:    authorRes.User.Email,
 			},
-			CreatedAt: p.CreatedAt,
-			UpdatedAt: p.UpdatedAt,
+			CreatedAt:   p.CreatedAt,
+			UpdatedAt:   p.UpdatedAt,
+			Attachments: attachments,
 		})
 	}
 
@@ -527,6 +662,40 @@ func (u *postServiceGW) GetAllPostsInReportingStage(ctx context.Context, req *pb
 			return nil, err
 		}
 
+		attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+			PostID: p.Id,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		var attachments []*pb.AttachmentPostResponse
+		for _, a := range attachment.Attachments {
+			author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+				Id: a.AuthorID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			attachments = append(attachments, &pb.AttachmentPostResponse{
+				Id:      a.Id,
+				FileURL: a.FileURL,
+				Status:  a.Status,
+				Author: &pb.AuthorPostResponse{
+					Id:       author.User.Id,
+					Class:    author.User.Class,
+					Major:    author.User.Major,
+					Phone:    author.User.Phone,
+					PhotoSrc: author.User.PhotoSrc,
+					Role:     author.User.Role,
+					Name:     author.User.Name,
+					Email:    author.User.Email,
+				},
+				CreatedAt: a.CreatedAt,
+			})
+		}
+
 		posts = append(posts, &pb.PostResponse{
 			Id:          p.Id,
 			Title:       p.Title,
@@ -548,8 +717,9 @@ func (u *postServiceGW) GetAllPostsInReportingStage(ctx context.Context, req *pb
 				Name:     authorRes.User.Name,
 				Email:    authorRes.User.Email,
 			},
-			CreatedAt: p.CreatedAt,
-			UpdatedAt: p.UpdatedAt,
+			CreatedAt:   p.CreatedAt,
+			UpdatedAt:   p.UpdatedAt,
+			Attachments: attachments,
 		})
 	}
 

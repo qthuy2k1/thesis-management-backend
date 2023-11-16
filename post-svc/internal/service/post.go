@@ -16,8 +16,19 @@ type PostInputSvc struct {
 	AuthorID         string
 }
 
+type PostOutputSvc struct {
+	ID               int
+	Title            string
+	Content          string
+	ClassroomID      int
+	ReportingStageID int
+	AuthorID         string
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+}
+
 // CreatePost creates a new post in db given by post model
-func (s *PostSvc) CreatePost(ctx context.Context, p PostInputSvc) error {
+func (s *PostSvc) CreatePost(ctx context.Context, p PostInputSvc) (PostOutputSvc, error) {
 	pRepo := repository.PostInputRepo{
 		Title:            p.Title,
 		Content:          p.Content,
@@ -25,15 +36,24 @@ func (s *PostSvc) CreatePost(ctx context.Context, p PostInputSvc) error {
 		ReportingStageID: p.ReportingStageID,
 		AuthorID:         p.AuthorID,
 	}
-
-	if err := s.Repository.CreatePost(ctx, pRepo); err != nil {
+	pRes, err := s.Repository.CreatePost(ctx, pRepo)
+	if err != nil {
 		if errors.Is(err, repository.ErrPostExisted) {
-			return ErrPostExisted
+			return PostOutputSvc{}, ErrPostExisted
 		}
-		return err
+		return PostOutputSvc{}, err
 	}
 
-	return nil
+	return PostOutputSvc{
+		ID:               pRes.ID,
+		Title:            pRes.Title,
+		Content:          pRes.Content,
+		ClassroomID:      pRes.ClassroomID,
+		ReportingStageID: pRes.ReportingStageID,
+		AuthorID:         pRes.AuthorID,
+		CreatedAt:        pRes.CreatedAt,
+		UpdatedAt:        pRes.UpdatedAt,
+	}, nil
 }
 
 // GetPost returns a post in db given by id
@@ -86,17 +106,6 @@ func (s *PostSvc) DeletePost(ctx context.Context, id int) error {
 	}
 
 	return nil
-}
-
-type PostOutputSvc struct {
-	ID               int
-	Title            string
-	Content          string
-	ClassroomID      int
-	ReportingStageID int
-	AuthorID         string
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
 }
 
 type PostFilterSvc struct {

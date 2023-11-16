@@ -109,6 +109,18 @@
         }
       }
     },
+    "v1GetAllPointDefsResponse": {
+      "type": "object",
+      "properties": {
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Point"
+          }
+        }
+      }
+    },
     "v1GetNotificationsResponse": {
       "type": "object",
       "properties": {

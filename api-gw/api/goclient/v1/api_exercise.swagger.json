@@ -399,6 +399,39 @@
       },
       "description": "Represents a time zone from the\n[IANA Time Zone Database](https://www.iana.org/time-zones)."
     },
+    "v1AttachmentExerciseInput": {
+      "type": "object",
+      "properties": {
+        "fileURL": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "v1AttachmentExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "fileURL": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "author": {
+          "$ref": "#/definitions/v1AuthorExerciseResponse"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "v1AuthorExerciseResponse": {
       "type": "object",
       "properties": {
@@ -509,6 +542,13 @@
         },
         "authorID": {
           "type": "string"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1AttachmentExerciseInput"
+          }
         }
       },
       "title": "====== exercise ======"
@@ -546,6 +586,13 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1AttachmentExerciseResponse"
+          }
         }
       }
     },

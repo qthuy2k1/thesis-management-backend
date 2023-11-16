@@ -25,6 +25,9 @@ func (h *AttachmentHdl) CreateAttachment(ctx context.Context, req *attachmentpb.
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
+	submissionID := int64(*att.SubmissionID)
+	exerciseID := int64(*att.ExerciseID)
+
 	resp := &attachmentpb.CreateAttachmentResponse{
 		Response: &attachmentpb.CommonAttachmentResponse{
 			StatusCode: 201,
@@ -34,8 +37,8 @@ func (h *AttachmentHdl) CreateAttachment(ctx context.Context, req *attachmentpb.
 			Id:           int64(attRes.ID),
 			FileURL:      attRes.FileURL,
 			Status:       attRes.Status,
-			SubmissionID: int64(attRes.SubmissionID),
-			ExerciseID:   int64(attRes.ExerciseID),
+			SubmissionID: &submissionID,
+			ExerciseID:   &exerciseID,
 			AuthorID:     attRes.AuthorID,
 			CreatedAt:    timestamppb.New(attRes.CreatedAt),
 		},
@@ -57,12 +60,15 @@ func (h *AttachmentHdl) GetAttachment(ctx context.Context, req *attachmentpb.Get
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
+	submissionID := int64(*att.SubmissionID)
+	exerciseID := int64(*att.ExerciseID)
+
 	attResp := attachmentpb.AttachmentResponse{
 		Id:           int64(att.ID),
 		FileURL:      att.FileURL,
 		Status:       att.Status,
-		SubmissionID: int64(att.SubmissionID),
-		ExerciseID:   int64(att.ExerciseID),
+		SubmissionID: &submissionID,
+		ExerciseID:   &exerciseID,
 		AuthorID:     att.AuthorID,
 		CreatedAt:    timestamppb.New(att.CreatedAt),
 	}
@@ -144,12 +150,15 @@ func (h *AttachmentHdl) GetAttachmentsOfExercise(ctx context.Context, req *attac
 
 	var attsResp []*attachmentpb.AttachmentResponse
 	for _, c := range atts {
+		submissionID := int64(*c.SubmissionID)
+		exerciseID := int64(*c.ExerciseID)
+
 		attsResp = append(attsResp, &attachmentpb.AttachmentResponse{
 			Id:           int64(c.ID),
 			FileURL:      c.FileURL,
 			Status:       c.Status,
-			SubmissionID: int64(c.SubmissionID),
-			ExerciseID:   int64(c.ExerciseID),
+			SubmissionID: &submissionID,
+			ExerciseID:   &exerciseID,
 			AuthorID:     c.AuthorID,
 			CreatedAt:    timestamppb.New(c.CreatedAt),
 		})
@@ -179,12 +188,15 @@ func (h *AttachmentHdl) GetAttachmentsOfSubmission(ctx context.Context, req *att
 
 	var attsResp []*attachmentpb.AttachmentResponse
 	for _, c := range atts {
+		submissionID := int64(*c.SubmissionID)
+		exerciseID := int64(*c.ExerciseID)
+
 		attsResp = append(attsResp, &attachmentpb.AttachmentResponse{
 			Id:           int64(c.ID),
 			FileURL:      c.FileURL,
 			Status:       c.Status,
-			SubmissionID: int64(c.SubmissionID),
-			ExerciseID:   int64(c.ExerciseID),
+			SubmissionID: &submissionID,
+			ExerciseID:   &exerciseID,
 			AuthorID:     c.AuthorID,
 			CreatedAt:    timestamppb.New(c.CreatedAt),
 		})
@@ -199,16 +211,72 @@ func (h *AttachmentHdl) GetAttachmentsOfSubmission(ctx context.Context, req *att
 	}, nil
 }
 
+func (h *AttachmentHdl) GetAttachmentsOfPost(ctx context.Context, req *attachmentpb.GetAttachmentsOfPostRequest) (*attachmentpb.GetAttachmentsOfPostResponse, error) {
+	log.Println("calling get all attachments...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	atts, err := h.Service.GetAttachmentsOfPost(ctx, int(req.GetPostID()))
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var attsResp []*attachmentpb.AttachmentResponse
+	for _, c := range atts {
+		submissionID := int64(*c.SubmissionID)
+		exerciseID := int64(*c.ExerciseID)
+		postID := int64(*c.PostID)
+
+		attsResp = append(attsResp, &attachmentpb.AttachmentResponse{
+			Id:           int64(c.ID),
+			FileURL:      c.FileURL,
+			Status:       c.Status,
+			SubmissionID: &submissionID,
+			ExerciseID:   &exerciseID,
+			AuthorID:     c.AuthorID,
+			PostID:       &postID,
+			CreatedAt:    timestamppb.New(c.CreatedAt),
+		})
+	}
+
+	return &attachmentpb.GetAttachmentsOfPostResponse{
+		Response: &attachmentpb.CommonAttachmentResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Attachments: attsResp,
+	}, nil
+}
+
 func validateAndConvertAttachment(pbAttachment *attachmentpb.AttachmentInput) (service.AttachmentInputSvc, error) {
 	if err := pbAttachment.Validate(); err != nil {
 		return service.AttachmentInputSvc{}, err
 	}
 
+	var submissionID int
+	if pbAttachment.SubmissionID != nil {
+		submissionID = int(*pbAttachment.SubmissionID)
+	}
+
+	var exerciseID int
+	if pbAttachment.ExerciseID != nil {
+		exerciseID = int(*pbAttachment.ExerciseID)
+	}
+
+	var postID int
+	if pbAttachment.PostID != nil {
+		postID = int(*pbAttachment.PostID)
+	}
+
 	return service.AttachmentInputSvc{
 		FileURL:      pbAttachment.FileURL,
 		Status:       pbAttachment.Status,
-		SubmissionID: int(pbAttachment.SubmissionID),
-		ExerciseID:   int(pbAttachment.ExerciseID),
+		SubmissionID: &submissionID,
+		ExerciseID:   &exerciseID,
+		PostID:       &postID,
 		AuthorID:     pbAttachment.AuthorID,
 	}, nil
 }

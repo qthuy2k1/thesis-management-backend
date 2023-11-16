@@ -185,11 +185,19 @@ func (m *AttachmentInput) validate(all bool) error {
 
 	// no validation rules for Status
 
-	// no validation rules for SubmissionID
-
-	// no validation rules for ExerciseID
-
 	// no validation rules for AuthorID
+
+	if m.SubmissionID != nil {
+		// no validation rules for SubmissionID
+	}
+
+	if m.ExerciseID != nil {
+		// no validation rules for ExerciseID
+	}
+
+	if m.PostID != nil {
+		// no validation rules for PostID
+	}
 
 	if len(errors) > 0 {
 		return AttachmentInputMultiError(errors)
@@ -298,35 +306,6 @@ func (m *AttachmentResponse) validate(all bool) error {
 	// no validation rules for Status
 
 	if all {
-		switch v := interface{}(m.GetSubmission()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, AttachmentResponseValidationError{
-					field:  "Submission",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, AttachmentResponseValidationError{
-					field:  "Submission",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetSubmission()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return AttachmentResponseValidationError{
-				field:  "Submission",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if all {
 		switch v := interface{}(m.GetAuthor()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
@@ -382,6 +361,39 @@ func (m *AttachmentResponse) validate(all bool) error {
 				cause:  err,
 			}
 		}
+	}
+
+	if m.Submission != nil {
+
+		if all {
+			switch v := interface{}(m.GetSubmission()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AttachmentResponseValidationError{
+						field:  "Submission",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AttachmentResponseValidationError{
+						field:  "Submission",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetSubmission()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AttachmentResponseValidationError{
+					field:  "Submission",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
 	}
 
 	if len(errors) > 0 {

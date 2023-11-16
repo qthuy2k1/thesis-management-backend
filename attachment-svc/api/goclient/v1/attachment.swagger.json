@@ -62,6 +62,10 @@
           "type": "string",
           "format": "int64"
         },
+        "postID": {
+          "type": "string",
+          "format": "int64"
+        },
         "authorID": {
           "type": "string"
         }
@@ -86,6 +90,10 @@
           "format": "int64"
         },
         "exerciseID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "postID": {
           "type": "string",
           "format": "int64"
         },
@@ -141,6 +149,21 @@
       }
     },
     "v1GetAttachmentsOfExerciseResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonAttachmentResponse"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1AttachmentResponse"
+          }
+        }
+      }
+    },
+    "v1GetAttachmentsOfPostResponse": {
       "type": "object",
       "properties": {
         "response": {
