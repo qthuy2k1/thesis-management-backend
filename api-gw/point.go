@@ -12,9 +12,7 @@ import (
 type pointServiceGW struct {
 	pb.UnimplementedPointServiceServer
 	pointClient pointSvcV1.ScheduleServiceClient
-	// commiteeClient commiteeSvcV1.CommiteeServiceClient
-	// thesisClient   commiteeSvcV1.PointServiceClient
-	userClient userSvcV1.UserServiceClient
+	userClient  userSvcV1.UserServiceClient
 }
 
 func NewPointsService(pointClient pointSvcV1.ScheduleServiceClient, userClient userSvcV1.UserServiceClient) *pointServiceGW {
@@ -24,87 +22,57 @@ func NewPointsService(pointClient pointSvcV1.ScheduleServiceClient, userClient u
 	}
 }
 
-// func (u *pointServiceGW) GetAllPointDef(ctx context.Context, req *pb.GetAllPointDefRequest) (*pb.GetAllPointDefResponse, error) {
-// 	if err := req.Validate(); err != nil {
-// 		return nil, err
-// 	}
+func (u *pointServiceGW) GetAllPointDef(ctx context.Context, req *pb.GetAllPointDefRequest) (*pb.GetAllPointDefResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
 
-// 	res, err := u.pointClient.Get(ctx, &pointSvcV1.GetPointsRequest{})
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	res, err := u.pointClient.GetAllPointDefs(ctx, &pointSvcV1.GetAllPointDefsRequest{})
+	if err != nil {
+		return nil, err
+	}
 
-// 	var thesisRes []*pb.Thesis
-// 	for _, t := range res.Thesis {
-// 		var councilsPointResponse []*pb.Council
-// 		for _, c := range t.Council {
-// 			councilsPointResponse = append(councilsPointResponse, &pb.Council{
-// 				Id:       c.Id,
-// 				Class:    c.Class,
-// 				Major:    c.Major,
-// 				Phone:    c.Phone,
-// 				PhotoSrc: c.PhotoSrc,
-// 				Role:     c.Role,
-// 				Name:     c.Name,
-// 				Email:    c.Email,
-// 			})
-// 		}
+	var pointRes []*pb.PointResponse
+	for _, t := range res.Points {
+		var assessItems []*pb.AssessItemResponse
+		for _, c := range t.Assesses {
+			assessItems = append(assessItems, &pb.AssessItemResponse{
+				Id: c.Id,
+				Lecturer: &pb.UserPointResponse{
+					Id:       c.Lecturer.GetId(),
+					Class:    c.Lecturer.GetClass(),
+					Major:    c.Lecturer.Major,
+					Phone:    c.Lecturer.Phone,
+					PhotoSrc: c.Lecturer.GetPhotoSrc(),
+					Name:     c.Lecturer.GetName(),
+					Email:    c.Lecturer.GetEmail(),
+					Role:     c.Lecturer.GetRole(),
+				},
+				Point:   c.Point,
+				Comment: c.Comment,
+			})
+		}
 
-// 		var timeSlotsResponse []*pb.TimeSlots
-// 		for _, t := range t.Point.TimeSlots {
-// 			timeSlotsResponse = append(timeSlotsResponse, &pb.TimeSlots{
-// 				Student: &pb.StudentDefPointResponse{
-// 					Id: t.Student.Id,
-// 					Infor: &pb.UserPointResponse{
-// 						Id:       t.Student.Infor.GetId(),
-// 						Class:    t.Student.Infor.GetClass(),
-// 						Major:    t.Student.Infor.Major,
-// 						Phone:    t.Student.Infor.Phone,
-// 						PhotoSrc: t.Student.Infor.GetPhotoSrc(),
-// 						Name:     t.Student.Infor.GetName(),
-// 						Email:    t.Student.Infor.GetEmail(),
-// 						Role:     t.Student.Infor.GetRole(),
-// 					},
-// 					Instructor: &pb.UserPointResponse{
-// 						Id:       t.Student.Instructor.GetId(),
-// 						Class:    t.Student.Instructor.GetClass(),
-// 						Major:    t.Student.Instructor.Major,
-// 						Phone:    t.Student.Instructor.Phone,
-// 						PhotoSrc: t.Student.Instructor.GetPhotoSrc(),
-// 						Name:     t.Student.Instructor.GetName(),
-// 						Email:    t.Student.Instructor.GetEmail(),
-// 						Role:     t.Student.Instructor.GetRole(),
-// 					},
-// 				},
-// 				TimeSlot: &pb.TimeSlot{
-// 					Date:  t.TimeSlot.Date,
-// 					Shift: t.TimeSlot.Shift,
-// 					Id:    t.TimeSlot.Id,
-// 					Time:  t.TimeSlot.Time,
-// 				},
-// 			})
-// 		}
+		pointRes = append(pointRes, &pb.PointResponse{
+			Id: t.Id,
+			Student: &pb.UserPointResponse{
+				Id:       t.Student.GetId(),
+				Class:    t.Student.GetClass(),
+				Major:    t.Student.Major,
+				Phone:    t.Student.Phone,
+				PhotoSrc: t.Student.GetPhotoSrc(),
+				Name:     t.Student.GetName(),
+				Email:    t.Student.GetEmail(),
+				Role:     t.Student.GetRole(),
+			},
+			Assesses: assessItems,
+		})
+	}
 
-// 		thesisRes = append(thesisRes, &pb.Thesis{
-// 			Point: &pb.Point{
-// 				TimeSlots: timeSlotsResponse,
-// 				Room: &pb.RoomPoint{
-// 					Id:          t.Point.Room.Id,
-// 					Name:        t.Point.Room.Name,
-// 					School:      t.Point.Room.School,
-// 					Type:        t.Point.Room.Type,
-// 					Description: t.Point.Room.Description,
-// 				},
-// 			},
-// 			Council: councilsPointResponse,
-// 			Id:      t.Id,
-// 		})
-// 	}
-
-// 	return &pb.GetPointsResponse{
-// 		Thesis: thesisRes,
-// 	}, nil
-// }
+	return &pb.GetAllPointDefResponse{
+		Points: pointRes,
+	}, nil
+}
 
 func (u *pointServiceGW) CreateOrUpdatePointDef(ctx context.Context, req *pb.CreateOrUpdatePointDefRequest) (*pb.CreateOrUpdatePointDefResponse, error) {
 	if err := req.Validate(); err != nil {
@@ -169,7 +137,7 @@ func (u *pointServiceGW) CreateOrUpdatePointDef(ctx context.Context, req *pb.Cre
 	for _, a := range res.Point.Assesses {
 		assessRes = append(assessRes, &pb.AssessItemResponse{
 			Id: a.Id,
-			Lecturer: &pb.UserScheduleResponse{
+			Lecturer: &pb.UserPointResponse{
 				Id:       a.Lecturer.Id,
 				Class:    a.Lecturer.Class,
 				Major:    a.Lecturer.Major,
@@ -187,7 +155,7 @@ func (u *pointServiceGW) CreateOrUpdatePointDef(ctx context.Context, req *pb.Cre
 	return &pb.CreateOrUpdatePointDefResponse{
 		Point: &pb.PointResponse{
 			Id: res.Point.Id,
-			Student: &pb.UserScheduleResponse{
+			Student: &pb.UserPointResponse{
 				Id:       res.Point.Student.Id,
 				Class:    res.Point.Student.Class,
 				Major:    res.Point.Student.Major,

@@ -67,6 +67,7 @@ message PostInput {
     int64 classroomID = 3 [(validate.rules).int64.gte = 1];
     int64 categoryID = 4 [(validate.rules).int64.gte = 1];
     string authorID = 5;
+    repeated AttachmentPostInput attachments = 6;
 }
 
 message PostResponse {
@@ -78,6 +79,7 @@ message PostResponse {
     AuthorPostResponse author = 6;
     google.protobuf.Timestamp createdAt = 7 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 8 [(validate.rules).timestamp.required = true];
+    repeated AttachmentPostResponse attachments = 9;
 }
 
 message ReportingStagePostResponse {
@@ -85,6 +87,19 @@ message ReportingStagePostResponse {
     string label = 2 [(validate.rules).string = {min_len: 2}];
     string description = 3 [(validate.rules).string = {min_len: 2}];   
     string value = 4;
+}
+
+message AttachmentPostResponse {
+    int64 id = 1;
+    string fileURL = 2;
+    string status = 3;
+    AuthorPostResponse author = 6;
+    google.protobuf.Timestamp created_at = 7;
+}
+
+message AttachmentPostInput {
+    string fileURL = 2;
+    string status = 3;
 }
 
 message AuthorPostResponse {
@@ -104,6 +119,7 @@ message CreatePostRequest {
 
 message CreatePostResponse {
     CommonPostResponse response = 1 [(validate.rules).message = {required: true}];
+    PostResponse post = 2;
 }
 
 message CommentPostResponse {

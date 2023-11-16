@@ -83,6 +83,33 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 		return nil, err
 	}
 
+	var attCreated []int64
+	if req.Exercise.Attachments != nil && len(req.Exercise.Attachments) > 0 {
+		for _, att := range req.Exercise.Attachments {
+			attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
+				Attachment: &attachmentSvcV1.AttachmentInput{
+					FileURL: att.FileURL,
+					Status:  att.FileURL,
+					PostID:  &res.ExerciseID,
+				},
+			})
+			if err != nil {
+				if len(attCreated) > 0 {
+					for _, aErr := range attCreated {
+						if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+							Id: aErr,
+						}); err != nil {
+							return nil, err
+						}
+					}
+				}
+				return nil, err
+			}
+
+			attCreated = append(attCreated, attRes.AttachmentRes.Id)
+		}
+	}
+
 	return &pb.CreateExerciseResponse{
 		Response: &pb.CommonExerciseResponse{
 			StatusCode: res.GetResponse().StatusCode,
@@ -149,6 +176,40 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 		return nil, err
 	}
 
+	attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+		ExerciseID: res.Exercise.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var attachments []*pb.AttachmentExerciseResponse
+	for _, a := range attachment.Attachments {
+		author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: a.AuthorID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		attachments = append(attachments, &pb.AttachmentExerciseResponse{
+			Id:      a.Id,
+			FileURL: a.FileURL,
+			Status:  a.Status,
+			Author: &pb.AuthorExerciseResponse{
+				Id:       author.User.Id,
+				Class:    author.User.Class,
+				Major:    author.User.Major,
+				Phone:    author.User.Phone,
+				PhotoSrc: author.User.PhotoSrc,
+				Role:     author.User.Role,
+				Name:     author.User.Name,
+				Email:    author.User.Email,
+			},
+			CreatedAt: a.CreatedAt,
+		})
+	}
+
 	return &pb.GetExerciseResponse{
 		Exercise: &pb.ExerciseResponse{
 			Id:          res.GetExercise().Id,
@@ -172,8 +233,9 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 				Name:     authorRes.User.Name,
 				Email:    authorRes.User.Email,
 			},
-			CreatedAt: res.GetExercise().CreatedAt,
-			UpdatedAt: res.GetExercise().UpdatedAt,
+			CreatedAt:   res.GetExercise().CreatedAt,
+			UpdatedAt:   res.GetExercise().UpdatedAt,
+			Attachments: attachments,
 		},
 		Comments: comments,
 	}, nil
@@ -329,6 +391,40 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 			return nil, err
 		}
 
+		attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+			ExerciseID: e.Id,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		var attachments []*pb.AttachmentExerciseResponse
+		for _, a := range attachment.Attachments {
+			author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+				Id: a.AuthorID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			attachments = append(attachments, &pb.AttachmentExerciseResponse{
+				Id:      a.Id,
+				FileURL: a.FileURL,
+				Status:  a.Status,
+				Author: &pb.AuthorExerciseResponse{
+					Id:       author.User.Id,
+					Class:    author.User.Class,
+					Major:    author.User.Major,
+					Phone:    author.User.Phone,
+					PhotoSrc: author.User.PhotoSrc,
+					Role:     author.User.Role,
+					Name:     author.User.Name,
+					Email:    author.User.Email,
+				},
+				CreatedAt: a.CreatedAt,
+			})
+		}
+
 		exercises = append(exercises, &pb.ExerciseResponse{
 			Id:          e.Id,
 			Title:       e.Title,
@@ -351,8 +447,9 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 				Name:     authorRes.User.Name,
 				Email:    authorRes.User.Email,
 			},
-			CreatedAt: e.CreatedAt,
-			UpdatedAt: e.UpdatedAt,
+			CreatedAt:   e.CreatedAt,
+			UpdatedAt:   e.UpdatedAt,
+			Attachments: attachments,
 		})
 	}
 
@@ -442,6 +539,40 @@ func (u *exerciseServiceGW) GetAllExercisesOfClassroom(ctx context.Context, req 
 			return nil, err
 		}
 
+		attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+			ExerciseID: p.Id,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		var attachments []*pb.AttachmentExerciseResponse
+		for _, a := range attachment.Attachments {
+			author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+				Id: a.AuthorID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			attachments = append(attachments, &pb.AttachmentExerciseResponse{
+				Id:      a.Id,
+				FileURL: a.FileURL,
+				Status:  a.Status,
+				Author: &pb.AuthorExerciseResponse{
+					Id:       author.User.Id,
+					Class:    author.User.Class,
+					Major:    author.User.Major,
+					Phone:    author.User.Phone,
+					PhotoSrc: author.User.PhotoSrc,
+					Role:     author.User.Role,
+					Name:     author.User.Name,
+					Email:    author.User.Email,
+				},
+				CreatedAt: a.CreatedAt,
+			})
+		}
+
 		exercises = append(exercises, &pb.ExerciseResponse{
 			Id:          p.Id,
 			Title:       p.Title,
@@ -464,8 +595,9 @@ func (u *exerciseServiceGW) GetAllExercisesOfClassroom(ctx context.Context, req 
 				Name:     authorRes.User.Name,
 				Email:    authorRes.User.Email,
 			},
-			CreatedAt: p.CreatedAt,
-			UpdatedAt: p.UpdatedAt,
+			CreatedAt:   p.CreatedAt,
+			UpdatedAt:   p.UpdatedAt,
+			Attachments: attachments,
 		})
 	}
 
@@ -529,6 +661,40 @@ func (u *exerciseServiceGW) GetAllExercisesInReportingStage(ctx context.Context,
 			return nil, err
 		}
 
+		attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+			ExerciseID: p.Id,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		var attachments []*pb.AttachmentExerciseResponse
+		for _, a := range attachment.Attachments {
+			author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+				Id: a.AuthorID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			attachments = append(attachments, &pb.AttachmentExerciseResponse{
+				Id:      a.Id,
+				FileURL: a.FileURL,
+				Status:  a.Status,
+				Author: &pb.AuthorExerciseResponse{
+					Id:       author.User.Id,
+					Class:    author.User.Class,
+					Major:    author.User.Major,
+					Phone:    author.User.Phone,
+					PhotoSrc: author.User.PhotoSrc,
+					Role:     author.User.Role,
+					Name:     author.User.Name,
+					Email:    author.User.Email,
+				},
+				CreatedAt: a.CreatedAt,
+			})
+		}
+
 		exercises = append(exercises, &pb.ExerciseResponse{
 			Id:          p.Id,
 			Title:       p.Title,
@@ -551,8 +717,9 @@ func (u *exerciseServiceGW) GetAllExercisesInReportingStage(ctx context.Context,
 				Name:     authorRes.User.Name,
 				Email:    authorRes.User.Email,
 			},
-			CreatedAt: p.CreatedAt,
-			UpdatedAt: p.UpdatedAt,
+			CreatedAt:   p.CreatedAt,
+			UpdatedAt:   p.UpdatedAt,
+			Attachments: attachments,
 		})
 	}
 

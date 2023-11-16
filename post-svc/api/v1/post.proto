@@ -54,6 +54,7 @@ message CreatePostRequest {
 
 message CreatePostResponse {
     CommonPostResponse response = 1;
+    PostResponse post = 2;
 }
 
 

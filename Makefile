@@ -369,20 +369,20 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-attachment:latest
 	docker push qthuy2k1/thesis-management-backend-topic:latest
 	docker push qthuy2k1/thesis-management-backend-authorization:latest
-	docker push qthuy2k1/thesis-management-backend-thesis-commitee:latest
+	# docker push qthuy2k1/thesis-management-backend-thesis-commitee:latest
 
 	# DB
-	docker push qthuy2k1/thesis-management-backend-classroom-db:latest
-	docker push qthuy2k1/thesis-management-backend-post-db:latest
-	docker push qthuy2k1/thesis-management-backend-exercise-db:latest
-	docker push qthuy2k1/thesis-management-backend-user-db:latest
-	docker push qthuy2k1/thesis-management-backend-reporting-stage-db:latest
-	docker push qthuy2k1/thesis-management-backend-submission-db:latest
-	docker push qthuy2k1/thesis-management-backend-classroom-waiting-list-db:latest
-	docker push qthuy2k1/thesis-management-backend-comment-db:latest
-	docker push qthuy2k1/thesis-management-backend-attachment-db:latest
-	docker push qthuy2k1/thesis-management-backend-topic-db:latest
-	docker push qthuy2k1/thesis-management-backend-thesis-commitee-db:latest
+	# docker push qthuy2k1/thesis-management-backend-classroom-db:latest
+	# docker push qthuy2k1/thesis-management-backend-post-db:latest
+	# docker push qthuy2k1/thesis-management-backend-exercise-db:latest
+	# docker push qthuy2k1/thesis-management-backend-user-db:latest
+	# docker push qthuy2k1/thesis-management-backend-reporting-stage-db:latest
+	# docker push qthuy2k1/thesis-management-backend-submission-db:latest
+	# docker push qthuy2k1/thesis-management-backend-classroom-waiting-list-db:latest
+	# docker push qthuy2k1/thesis-management-backend-comment-db:latest
+	# docker push qthuy2k1/thesis-management-backend-attachment-db:latest
+	# docker push qthuy2k1/thesis-management-backend-topic-db:latest
+	# docker push qthuy2k1/thesis-management-backend-thesis-commitee-db:latest
 
 
 migrate_all_up:
@@ -588,6 +588,7 @@ kuber-del:
 	kubectl delete -f kubernetes/submission-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/schedule-deployment.yaml --namespace thesis-management-backend
 
 	kubectl delete -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
@@ -604,3 +605,6 @@ build-a-svc:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/$(name) ./$(folder)
 	docker build -f $(folder)/Dockerfile -t qthuy2k1/thesis-management-backend$(svc) .
 	docker compose up
+
+kuber-update:
+	kubectl set image deployment thesis-management-backend-$(deployment-name) $(container-name)=$(new-image)

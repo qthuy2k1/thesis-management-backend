@@ -33,8 +33,9 @@ func (u *attachmentServiceGW) CreateAttachment(ctx context.Context, req *pb.Crea
 		Attachment: &attachmentSvcV1.AttachmentInput{
 			FileURL:      req.GetAttachment().GetFileURL(),
 			Status:       req.GetAttachment().GetStatus(),
-			SubmissionID: req.GetAttachment().GetExerciseID(),
-			ExerciseID:   req.GetAttachment().GetExerciseID(),
+			SubmissionID: req.GetAttachment().SubmissionID,
+			ExerciseID:   req.GetAttachment().ExerciseID,
+			PostID:       req.GetAttachment().PostID,
 			AuthorID:     req.GetAttachment().GetAuthorID(),
 		},
 	})
@@ -145,3 +146,30 @@ func (u *attachmentServiceGW) GetAttachmentsOfExercise(ctx context.Context, req 
 		Attachments: attachments,
 	}, nil
 }
+
+// func (u *attachmentServiceGW) GetAttachmentsOfPost(ctx context.Context, req *pb.GetAttachmentsOfPostRequest) (*pb.GetAttachmentsOfExerciseResponse, error) {
+// 	if err := req.Validate(); err != nil {
+// 		return nil, err
+// 	}
+
+// 	res, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+// 		PostID: req.GetPostID(),
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	var attachments []*pb.AttachmentResponse
+// 	for _, c := range res.GetAttachments() {
+// 		attachments = append(attachments, &pb.AttachmentResponse{
+// 			Id:        c.Id,
+// 			FileURL:   c.FileURL,
+// 			Status:    c.Status,
+// 			CreatedAt: c.CreatedAt,
+// 		})
+// 	}
+
+// 	return &pb.GetAttachmentsOfExerciseResponse{
+// 		Attachments: attachments,
+// 	}, nil
+// }

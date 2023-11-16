@@ -54,9 +54,10 @@ message CommonAttachmentResponse {
 message AttachmentInput {
     string fileURL = 1;
     string status = 2;
-    int64 submissionID = 3;
-    int64 exerciseID = 4;
-    string authorID = 5;
+    optional int64 submissionID = 3;
+    optional int64 exerciseID = 4;
+    optional int64 postID = 5;
+    string authorID = 6;
 }
 
 
@@ -64,7 +65,7 @@ message AttachmentResponse {
     int64 id = 1;
     string fileURL = 2;
     string status = 3;
-    SubmissionAttachmentResponse submission = 4; 
+    optional SubmissionAttachmentResponse submission = 4; 
     AuthorAttachmentResponse author = 6;
     google.protobuf.Timestamp created_at = 7;
 }

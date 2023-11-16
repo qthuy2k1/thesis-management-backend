@@ -19,7 +19,8 @@ func (h *PostHdl) CreatePost(ctx context.Context, req *postpb.CreatePostRequest)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
-	if err := h.Service.CreatePost(ctx, p); err != nil {
+	pRes, err := h.Service.CreatePost(ctx, p)
+	if err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
@@ -28,6 +29,16 @@ func (h *PostHdl) CreatePost(ctx context.Context, req *postpb.CreatePostRequest)
 		Response: &postpb.CommonPostResponse{
 			StatusCode: 201,
 			Message:    "Created",
+		},
+		Post: &postpb.PostResponse{
+			Id:               int64(pRes.ID),
+			Title:            pRes.Title,
+			Content:          pRes.Content,
+			ClassroomID:      int64(pRes.ClassroomID),
+			ReportingStageID: int64(pRes.ReportingStageID),
+			AuthorID:         pRes.AuthorID,
+			CreatedAt:        timestamppb.New(pRes.CreatedAt),
+			UpdatedAt:        timestamppb.New(pRes.UpdatedAt),
 		},
 	}
 

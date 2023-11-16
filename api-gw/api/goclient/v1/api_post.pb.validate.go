@@ -227,6 +227,40 @@ func (m *PostInput) validate(all bool) error {
 
 	// no validation rules for AuthorID
 
+	for idx, item := range m.GetAttachments() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, PostInputValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, PostInputValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return PostInputValidationError{
+					field:  fmt.Sprintf("Attachments[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	if len(errors) > 0 {
 		return PostInputMultiError(errors)
 	}
@@ -450,6 +484,40 @@ func (m *PostResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	for idx, item := range m.GetAttachments() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, PostResponseValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, PostResponseValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return PostResponseValidationError{
+					field:  fmt.Sprintf("Attachments[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	if len(errors) > 0 {
 		return PostResponseMultiError(errors)
 	}
@@ -663,6 +731,278 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ReportingStagePostResponseValidationError{}
+
+// Validate checks the field values on AttachmentPostResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AttachmentPostResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AttachmentPostResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AttachmentPostResponseMultiError, or nil if none found.
+func (m *AttachmentPostResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AttachmentPostResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for FileURL
+
+	// no validation rules for Status
+
+	if all {
+		switch v := interface{}(m.GetAuthor()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AttachmentPostResponseValidationError{
+					field:  "Author",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AttachmentPostResponseValidationError{
+					field:  "Author",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetAuthor()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AttachmentPostResponseValidationError{
+				field:  "Author",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AttachmentPostResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AttachmentPostResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AttachmentPostResponseValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return AttachmentPostResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// AttachmentPostResponseMultiError is an error wrapping multiple validation
+// errors returned by AttachmentPostResponse.ValidateAll() if the designated
+// constraints aren't met.
+type AttachmentPostResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AttachmentPostResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AttachmentPostResponseMultiError) AllErrors() []error { return m }
+
+// AttachmentPostResponseValidationError is the validation error returned by
+// AttachmentPostResponse.Validate if the designated constraints aren't met.
+type AttachmentPostResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AttachmentPostResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AttachmentPostResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AttachmentPostResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AttachmentPostResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AttachmentPostResponseValidationError) ErrorName() string {
+	return "AttachmentPostResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AttachmentPostResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAttachmentPostResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AttachmentPostResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AttachmentPostResponseValidationError{}
+
+// Validate checks the field values on AttachmentPostInput with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AttachmentPostInput) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AttachmentPostInput with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AttachmentPostInputMultiError, or nil if none found.
+func (m *AttachmentPostInput) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AttachmentPostInput) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for FileURL
+
+	// no validation rules for Status
+
+	if len(errors) > 0 {
+		return AttachmentPostInputMultiError(errors)
+	}
+
+	return nil
+}
+
+// AttachmentPostInputMultiError is an error wrapping multiple validation
+// errors returned by AttachmentPostInput.ValidateAll() if the designated
+// constraints aren't met.
+type AttachmentPostInputMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AttachmentPostInputMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AttachmentPostInputMultiError) AllErrors() []error { return m }
+
+// AttachmentPostInputValidationError is the validation error returned by
+// AttachmentPostInput.Validate if the designated constraints aren't met.
+type AttachmentPostInputValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AttachmentPostInputValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AttachmentPostInputValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AttachmentPostInputValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AttachmentPostInputValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AttachmentPostInputValidationError) ErrorName() string {
+	return "AttachmentPostInputValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AttachmentPostInputValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAttachmentPostInput.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AttachmentPostInputValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AttachmentPostInputValidationError{}
 
 // Validate checks the field values on AuthorPostResponse with the rules
 // defined in the proto definition for this message. If any rules are
@@ -1099,6 +1439,35 @@ func (m *CreatePostResponse) validate(all bool) error {
 		if err := v.Validate(); err != nil {
 			return CreatePostResponseValidationError{
 				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetPost()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CreatePostResponseValidationError{
+					field:  "Post",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CreatePostResponseValidationError{
+					field:  "Post",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPost()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreatePostResponseValidationError{
+				field:  "Post",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}

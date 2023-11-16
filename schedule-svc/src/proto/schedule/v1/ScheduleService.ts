@@ -8,6 +8,8 @@ import type { CreateOrUpdatePointDefRequest as _schedule_v1_CreateOrUpdatePointD
 import type { CreateOrUpdatePointDefResponse as _schedule_v1_CreateOrUpdatePointDefResponse, CreateOrUpdatePointDefResponse__Output as _schedule_v1_CreateOrUpdatePointDefResponse__Output } from '../../schedule/v1/CreateOrUpdatePointDefResponse';
 import type { CreateScheduleRequest as _schedule_v1_CreateScheduleRequest, CreateScheduleRequest__Output as _schedule_v1_CreateScheduleRequest__Output } from '../../schedule/v1/CreateScheduleRequest';
 import type { CreateScheduleResponse as _schedule_v1_CreateScheduleResponse, CreateScheduleResponse__Output as _schedule_v1_CreateScheduleResponse__Output } from '../../schedule/v1/CreateScheduleResponse';
+import type { GetAllPointDefsRequest as _schedule_v1_GetAllPointDefsRequest, GetAllPointDefsRequest__Output as _schedule_v1_GetAllPointDefsRequest__Output } from '../../schedule/v1/GetAllPointDefsRequest';
+import type { GetAllPointDefsResponse as _schedule_v1_GetAllPointDefsResponse, GetAllPointDefsResponse__Output as _schedule_v1_GetAllPointDefsResponse__Output } from '../../schedule/v1/GetAllPointDefsResponse';
 import type { GetNotificationsRequest as _schedule_v1_GetNotificationsRequest, GetNotificationsRequest__Output as _schedule_v1_GetNotificationsRequest__Output } from '../../schedule/v1/GetNotificationsRequest';
 import type { GetNotificationsResponse as _schedule_v1_GetNotificationsResponse, GetNotificationsResponse__Output as _schedule_v1_GetNotificationsResponse__Output } from '../../schedule/v1/GetNotificationsResponse';
 import type { GetSchedulesRequest as _schedule_v1_GetSchedulesRequest, GetSchedulesRequest__Output as _schedule_v1_GetSchedulesRequest__Output } from '../../schedule/v1/GetSchedulesRequest';
@@ -41,6 +43,15 @@ export interface ScheduleServiceClient extends grpc.Client {
   createSchedule(argument: _schedule_v1_CreateScheduleRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_CreateScheduleResponse__Output>): grpc.ClientUnaryCall;
   createSchedule(argument: _schedule_v1_CreateScheduleRequest, callback: grpc.requestCallback<_schedule_v1_CreateScheduleResponse__Output>): grpc.ClientUnaryCall;
   
+  GetAllPointDefs(argument: _schedule_v1_GetAllPointDefsRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetAllPointDefsResponse__Output>): grpc.ClientUnaryCall;
+  GetAllPointDefs(argument: _schedule_v1_GetAllPointDefsRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_schedule_v1_GetAllPointDefsResponse__Output>): grpc.ClientUnaryCall;
+  GetAllPointDefs(argument: _schedule_v1_GetAllPointDefsRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetAllPointDefsResponse__Output>): grpc.ClientUnaryCall;
+  GetAllPointDefs(argument: _schedule_v1_GetAllPointDefsRequest, callback: grpc.requestCallback<_schedule_v1_GetAllPointDefsResponse__Output>): grpc.ClientUnaryCall;
+  getAllPointDefs(argument: _schedule_v1_GetAllPointDefsRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetAllPointDefsResponse__Output>): grpc.ClientUnaryCall;
+  getAllPointDefs(argument: _schedule_v1_GetAllPointDefsRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_schedule_v1_GetAllPointDefsResponse__Output>): grpc.ClientUnaryCall;
+  getAllPointDefs(argument: _schedule_v1_GetAllPointDefsRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetAllPointDefsResponse__Output>): grpc.ClientUnaryCall;
+  getAllPointDefs(argument: _schedule_v1_GetAllPointDefsRequest, callback: grpc.requestCallback<_schedule_v1_GetAllPointDefsResponse__Output>): grpc.ClientUnaryCall;
+  
   GetNotifications(argument: _schedule_v1_GetNotificationsRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetNotificationsResponse__Output>): grpc.ClientUnaryCall;
   GetNotifications(argument: _schedule_v1_GetNotificationsRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_schedule_v1_GetNotificationsResponse__Output>): grpc.ClientUnaryCall;
   GetNotifications(argument: _schedule_v1_GetNotificationsRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetNotificationsResponse__Output>): grpc.ClientUnaryCall;
@@ -68,6 +79,8 @@ export interface ScheduleServiceHandlers extends grpc.UntypedServiceImplementati
   
   CreateSchedule: grpc.handleUnaryCall<_schedule_v1_CreateScheduleRequest__Output, _schedule_v1_CreateScheduleResponse>;
   
+  GetAllPointDefs: grpc.handleUnaryCall<_schedule_v1_GetAllPointDefsRequest__Output, _schedule_v1_GetAllPointDefsResponse>;
+  
   GetNotifications: grpc.handleUnaryCall<_schedule_v1_GetNotificationsRequest__Output, _schedule_v1_GetNotificationsResponse>;
   
   GetSchedules: grpc.handleUnaryCall<_schedule_v1_GetSchedulesRequest__Output, _schedule_v1_GetSchedulesResponse>;
@@ -78,6 +91,7 @@ export interface ScheduleServiceDefinition extends grpc.ServiceDefinition {
   CreateNotification: MethodDefinition<_schedule_v1_CreateNotificationRequest, _schedule_v1_CreateNotificationResponse, _schedule_v1_CreateNotificationRequest__Output, _schedule_v1_CreateNotificationResponse__Output>
   CreateOrUpdatePointDef: MethodDefinition<_schedule_v1_CreateOrUpdatePointDefRequest, _schedule_v1_CreateOrUpdatePointDefResponse, _schedule_v1_CreateOrUpdatePointDefRequest__Output, _schedule_v1_CreateOrUpdatePointDefResponse__Output>
   CreateSchedule: MethodDefinition<_schedule_v1_CreateScheduleRequest, _schedule_v1_CreateScheduleResponse, _schedule_v1_CreateScheduleRequest__Output, _schedule_v1_CreateScheduleResponse__Output>
+  GetAllPointDefs: MethodDefinition<_schedule_v1_GetAllPointDefsRequest, _schedule_v1_GetAllPointDefsResponse, _schedule_v1_GetAllPointDefsRequest__Output, _schedule_v1_GetAllPointDefsResponse__Output>
   GetNotifications: MethodDefinition<_schedule_v1_GetNotificationsRequest, _schedule_v1_GetNotificationsResponse, _schedule_v1_GetNotificationsRequest__Output, _schedule_v1_GetNotificationsResponse__Output>
   GetSchedules: MethodDefinition<_schedule_v1_GetSchedulesRequest, _schedule_v1_GetSchedulesResponse, _schedule_v1_GetSchedulesRequest__Output, _schedule_v1_GetSchedulesResponse__Output>
 }

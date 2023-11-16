@@ -10,20 +10,20 @@ option go_package="github.com/qthuy2k1/thesis_management_backend/point/api/v1";
 service PointService {
     rpc CreateOrUpdatePointDef(CreateOrUpdatePointDefRequest) returns (CreateOrUpdatePointDefResponse) {
         option (google.api.http) = {
-            post: "/api/schedule"
+            post: "/api/point"
             body: "*"
         };
     }
 
     rpc GetAllPointDef(GetAllPointDefRequest) returns (GetAllPointDefResponse) {
         option (google.api.http) = {
-            get: "/api/schedule"
+            get: "/api/point"
         };
     }
 }
 
 
-message UserScheduleResponse {
+message UserPointResponse {
     string id = 1;
     string class = 2;
     optional string major = 3;
@@ -38,7 +38,7 @@ message UserScheduleResponse {
 // POINT
 message AssessItemResponse {
     string id = 1;
-    UserScheduleResponse lecturer = 2;
+    UserPointResponse lecturer = 2;
     int64 point = 3;
     string comment = 4;
 }
@@ -52,7 +52,7 @@ message AssessItemInput {
 
 message PointResponse {
     string id = 1;
-    UserScheduleResponse student = 2;
+    UserPointResponse student = 2;
     repeated AssessItemResponse assesses = 3;
 }
 

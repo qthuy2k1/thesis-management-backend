@@ -69,6 +69,7 @@ message ExerciseInput {
     google.type.DateTime deadline = 4;
     int64 categoryID = 5 [(validate.rules).int64.gte = 1];
     string authorID = 6;
+    repeated AttachmentExerciseInput attachments = 7;
 }
 
 message SubmissionExerciseInput {
@@ -91,7 +92,25 @@ message ExerciseResponse {
     AuthorExerciseResponse author = 7;
     google.protobuf.Timestamp createdAt = 8 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 9 [(validate.rules).timestamp.required = true];
+    repeated AttachmentExerciseResponse attachments = 10;
+}
 
+
+// message SubmissionExerciseResponse {
+//     int64 id = 1 [(validate.rules).int64.gte = 1];
+//     string userID = 2;
+//     int64 exerciseID = 3 [(validate.rules).int64.gte = 1];
+//     google.type.DateTime submission_date = 4;
+//     string status = 5 [(validate.rules).string = {min_len: 2}];
+//     repeated AttachmentExerciseResponse attachments = 6;
+// }
+
+message AttachmentExerciseResponse {
+    int64 id = 1;
+    string fileURL = 2;
+    string status = 3;
+    AuthorExerciseResponse author = 6;
+    google.protobuf.Timestamp created_at = 7;
 }
 
 message ReportingStageExerciseResponse {

@@ -35,22 +35,22 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on UserScheduleResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UserScheduleResponse) Validate() error {
+// Validate checks the field values on UserPointResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *UserPointResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on UserScheduleResponse with the rules
+// ValidateAll checks the field values on UserPointResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// UserScheduleResponseMultiError, or nil if none found.
-func (m *UserScheduleResponse) ValidateAll() error {
+// UserPointResponseMultiError, or nil if none found.
+func (m *UserPointResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *UserScheduleResponse) validate(all bool) error {
+func (m *UserPointResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -78,19 +78,19 @@ func (m *UserScheduleResponse) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return UserScheduleResponseMultiError(errors)
+		return UserPointResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// UserScheduleResponseMultiError is an error wrapping multiple validation
-// errors returned by UserScheduleResponse.ValidateAll() if the designated
-// constraints aren't met.
-type UserScheduleResponseMultiError []error
+// UserPointResponseMultiError is an error wrapping multiple validation errors
+// returned by UserPointResponse.ValidateAll() if the designated constraints
+// aren't met.
+type UserPointResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m UserScheduleResponseMultiError) Error() string {
+func (m UserPointResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -99,11 +99,11 @@ func (m UserScheduleResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m UserScheduleResponseMultiError) AllErrors() []error { return m }
+func (m UserPointResponseMultiError) AllErrors() []error { return m }
 
-// UserScheduleResponseValidationError is the validation error returned by
-// UserScheduleResponse.Validate if the designated constraints aren't met.
-type UserScheduleResponseValidationError struct {
+// UserPointResponseValidationError is the validation error returned by
+// UserPointResponse.Validate if the designated constraints aren't met.
+type UserPointResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -111,24 +111,24 @@ type UserScheduleResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e UserScheduleResponseValidationError) Field() string { return e.field }
+func (e UserPointResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e UserScheduleResponseValidationError) Reason() string { return e.reason }
+func (e UserPointResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e UserScheduleResponseValidationError) Cause() error { return e.cause }
+func (e UserPointResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e UserScheduleResponseValidationError) Key() bool { return e.key }
+func (e UserPointResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e UserScheduleResponseValidationError) ErrorName() string {
-	return "UserScheduleResponseValidationError"
+func (e UserPointResponseValidationError) ErrorName() string {
+	return "UserPointResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e UserScheduleResponseValidationError) Error() string {
+func (e UserPointResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -140,14 +140,14 @@ func (e UserScheduleResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sUserScheduleResponse.%s: %s%s",
+		"invalid %sUserPointResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = UserScheduleResponseValidationError{}
+var _ error = UserPointResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -155,7 +155,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = UserScheduleResponseValidationError{}
+} = UserPointResponseValidationError{}
 
 // Validate checks the field values on AssessItemResponse with the rules
 // defined in the proto definition for this message. If any rules are

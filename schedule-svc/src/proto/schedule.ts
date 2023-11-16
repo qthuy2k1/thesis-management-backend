@@ -22,8 +22,8 @@ export interface ProtoGrpcType {
       CreateOrUpdatePointDefResponse: MessageTypeDefinition
       CreateScheduleRequest: MessageTypeDefinition
       CreateScheduleResponse: MessageTypeDefinition
-      GetAllPointDefRequest: MessageTypeDefinition
-      GetAllPointDefResponse: MessageTypeDefinition
+      GetAllPointDefsRequest: MessageTypeDefinition
+      GetAllPointDefsResponse: MessageTypeDefinition
       GetNotificationsRequest: MessageTypeDefinition
       GetNotificationsResponse: MessageTypeDefinition
       GetSchedulesRequest: MessageTypeDefinition

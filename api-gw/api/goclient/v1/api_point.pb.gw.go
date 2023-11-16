@@ -97,7 +97,7 @@ func RegisterPointServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.point.v1.PointService/CreateOrUpdatePointDef", runtime.WithHTTPPathPattern("/api/schedule"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.point.v1.PointService/CreateOrUpdatePointDef", runtime.WithHTTPPathPattern("/api/point"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -122,7 +122,7 @@ func RegisterPointServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.point.v1.PointService/GetAllPointDef", runtime.WithHTTPPathPattern("/api/schedule"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.point.v1.PointService/GetAllPointDef", runtime.WithHTTPPathPattern("/api/point"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -186,7 +186,7 @@ func RegisterPointServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.point.v1.PointService/CreateOrUpdatePointDef", runtime.WithHTTPPathPattern("/api/schedule"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.point.v1.PointService/CreateOrUpdatePointDef", runtime.WithHTTPPathPattern("/api/point"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -208,7 +208,7 @@ func RegisterPointServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.point.v1.PointService/GetAllPointDef", runtime.WithHTTPPathPattern("/api/schedule"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.point.v1.PointService/GetAllPointDef", runtime.WithHTTPPathPattern("/api/point"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -228,9 +228,9 @@ func RegisterPointServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 }
 
 var (
-	pattern_PointService_CreateOrUpdatePointDef_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "schedule"}, ""))
+	pattern_PointService_CreateOrUpdatePointDef_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "point"}, ""))
 
-	pattern_PointService_GetAllPointDef_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "schedule"}, ""))
+	pattern_PointService_GetAllPointDef_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "point"}, ""))
 )
 
 var (

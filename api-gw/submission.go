@@ -66,12 +66,14 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 	var attResList []*attachmentSvcV1.AttachmentResponse
 	var attIDList []int64
 	for _, attReq := range req.GetSubmission().GetAttachments() {
+		exerciseID := req.GetSubmission().GetExerciseID()
+
 		attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
 			Attachment: &attachmentSvcV1.AttachmentInput{
 				FileURL:      attReq.FileURL,
 				Status:       attReq.Status,
-				SubmissionID: 0,
-				ExerciseID:   req.GetSubmission().GetExerciseID(),
+				SubmissionID: nil,
+				ExerciseID:   &exerciseID,
 				AuthorID:     req.GetSubmission().GetUserID(),
 			},
 		})
@@ -107,12 +109,14 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 
 	// Update the submission ID for attachment
 	for _, att := range attResList {
+		submissionID := res.GetSubmissionID()
+
 		if _, err = u.attachmentClient.UpdateAttachment(ctx, &attachmentSvcV1.UpdateAttachmentRequest{
 			Id: att.Id,
 			Attachment: &attachmentSvcV1.AttachmentInput{
 				FileURL:      att.FileURL,
 				Status:       att.Status,
-				SubmissionID: res.GetSubmissionID(),
+				SubmissionID: &submissionID,
 				ExerciseID:   att.ExerciseID,
 				AuthorID:     att.AuthorID,
 			},
