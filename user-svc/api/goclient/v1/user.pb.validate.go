@@ -165,8 +165,6 @@ func (m *UserInput) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for Class
-
 	// no validation rules for PhotoSrc
 
 	// no validation rules for Role
@@ -174,6 +172,10 @@ func (m *UserInput) validate(all bool) error {
 	// no validation rules for Name
 
 	// no validation rules for Email
+
+	if m.Class != nil {
+		// no validation rules for Class
+	}
 
 	if m.Major != nil {
 		// no validation rules for Major
@@ -284,8 +286,6 @@ func (m *UserResponse) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for Class
-
 	// no validation rules for PhotoSrc
 
 	// no validation rules for Role
@@ -293,6 +293,10 @@ func (m *UserResponse) validate(all bool) error {
 	// no validation rules for Name
 
 	// no validation rules for Email
+
+	if m.Class != nil {
+		// no validation rules for Class
+	}
 
 	if m.Major != nil {
 		// no validation rules for Major

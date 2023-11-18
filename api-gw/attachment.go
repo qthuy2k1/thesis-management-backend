@@ -5,6 +5,7 @@ import (
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
+	redisSvcV1 "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
@@ -14,13 +15,15 @@ type attachmentServiceGW struct {
 	attachmentClient attachmentSvcV1.AttachmentServiceClient
 	userClient       userSvcV1.UserServiceClient
 	submissionClient submissionSvcV1.SubmissionServiceClient
+	redisClient      redisSvcV1.RedisServiceClient
 }
 
-func NewAttachmentsService(attachmentClient attachmentSvcV1.AttachmentServiceClient, userClient userSvcV1.UserServiceClient, submissionClient submissionSvcV1.SubmissionServiceClient) *attachmentServiceGW {
+func NewAttachmentsService(attachmentClient attachmentSvcV1.AttachmentServiceClient, userClient userSvcV1.UserServiceClient, submissionClient submissionSvcV1.SubmissionServiceClient, redisClient redisSvcV1.RedisServiceClient) *attachmentServiceGW {
 	return &attachmentServiceGW{
 		attachmentClient: attachmentClient,
 		userClient:       userClient,
 		submissionClient: submissionClient,
+		redisClient:      redisClient,
 	}
 }
 
@@ -68,11 +71,60 @@ func (u *attachmentServiceGW) GetAttachment(ctx context.Context, req *pb.GetAtta
 		return nil, err
 	}
 
-	authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-		Id: res.GetAttachment().AuthorID,
+	redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
+		Id: res.Attachment.AuthorID,
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	var authorRes *userSvcV1.GetUserResponse
+	if redis.User != nil && redis.GetResponse().StatusCode == 200 {
+		authorRes = &userSvcV1.GetUserResponse{
+			Response: &userSvcV1.CommonUserResponse{
+				StatusCode: 200,
+				Message:    "OK",
+			},
+			User: &userSvcV1.UserResponse{
+				Id:       redis.User.GetId(),
+				Class:    redis.User.Class,
+				Major:    redis.User.Major,
+				Phone:    redis.User.Phone,
+				PhotoSrc: redis.User.GetPhotoSrc(),
+				Role:     redis.User.GetRole(),
+				Name:     redis.User.GetName(),
+				Email:    redis.User.GetEmail(),
+			},
+		}
+	} else {
+		authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: res.Attachment.AuthorID})
+		if err != nil {
+			return nil, err
+		}
+
+		if res.Response.StatusCode != 200 {
+			return &pb.GetAttachmentResponse{}, nil
+		}
+
+		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
+			User: &redisSvcV1.User{
+				Id:       authorRes.User.GetId(),
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Major,
+				PhotoSrc: authorRes.User.GetPhotoSrc(),
+				Role:     authorRes.User.GetRole(),
+				Name:     authorRes.User.GetName(),
+				Email:    authorRes.User.GetEmail(),
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if cache.Response.StatusCode != 200 {
+			return &pb.GetAttachmentResponse{}, nil
+		}
 	}
 
 	return &pb.GetAttachmentResponse{

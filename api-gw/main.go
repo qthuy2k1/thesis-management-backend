@@ -16,6 +16,7 @@ import (
 	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
+	redisSvcV1 "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 	scheduleSvcV1 "github.com/qthuy2k1/thesis-management-backend/schedule-svc/api/goclient/v1"
 	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
@@ -39,6 +40,7 @@ var address = map[string]string{
 	"authorizationAddress":  "thesis-management-backend-authorization-service:9091",
 	"commiteeAddress":       "thesis-management-backend-thesis-commitee-service:9091",
 	"scheduleAddress":       "thesis-management-backend-schedule-service:9091",
+	"redisAddress":          "thesis-management-backend-redis-service:9091",
 }
 
 func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
@@ -152,7 +154,7 @@ func newCommiteeSvcClient() (commiteeSvcV1.CommiteeServiceClient, error) {
 func newThesisSvcClient() (commiteeSvcV1.ScheduleServiceClient, error) {
 	conn, err := grpc.DialContext(context.TODO(), address["commiteeAddress"], grpc.WithInsecure())
 	if err != nil {
-		return nil, fmt.Errorf("commitee client: %w", err)
+		return nil, fmt.Errorf("thesis client: %w", err)
 	}
 
 	return commiteeSvcV1.NewScheduleServiceClient(conn), nil
@@ -165,6 +167,15 @@ func newScheduleSvcClient() (scheduleSvcV1.ScheduleServiceClient, error) {
 	}
 
 	return scheduleSvcV1.NewScheduleServiceClient(conn), nil
+}
+
+func newRedisSvcClient() (redisSvcV1.RedisServiceClient, error) {
+	conn, err := grpc.DialContext(context.TODO(), address["redisAddress"], grpc.WithInsecure())
+	if err != nil {
+		return nil, fmt.Errorf("redis client: %w", err)
+	}
+
+	return redisSvcV1.NewRedisServiceClient(conn), nil
 }
 
 func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
@@ -283,8 +294,14 @@ func main() {
 		panic(err)
 	}
 
-	// connect to schedule svc
+	// connect to thesis svc
 	thesisClient, err := newThesisSvcClient()
+	if err != nil {
+		panic(err)
+	}
+
+	// connect to redis svc
+	redisClient, err := newRedisSvcClient()
 	if err != nil {
 		panic(err)
 	}
@@ -295,23 +312,23 @@ func main() {
 	}
 	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
 
-	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient, rpsClient, userClient, topicClient))
-	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient, commentClient, userClient, attachmentClient))
-	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient, commentClient, userClient, submissionClient, attachmentClient))
+	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient, rpsClient, userClient, topicClient, redisClient))
+	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient, commentClient, userClient, attachmentClient, redisClient))
+	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient, commentClient, userClient, submissionClient, attachmentClient, redisClient))
 	pb.RegisterReportingStageServiceServer(s, NewReportingStagesService(rpsClient))
-	pb.RegisterSubmissionServiceServer(s, NewSubmissionsService(submissionClient, classroomClient, exerciseClient, attachmentClient, userClient))
-	pb.RegisterUserServiceServer(s, NewUsersService(userClient, classroomClient, waitingListClient))
-	pb.RegisterWaitingListServiceServer(s, NewWaitingListsService(waitingListClient, classroomClient, userClient))
+	pb.RegisterSubmissionServiceServer(s, NewSubmissionsService(submissionClient, classroomClient, exerciseClient, attachmentClient, userClient, redisClient))
+	pb.RegisterUserServiceServer(s, NewUsersService(userClient, classroomClient, waitingListClient, topicClient, redisClient))
+	pb.RegisterWaitingListServiceServer(s, NewWaitingListsService(waitingListClient, classroomClient, userClient, redisClient))
 	pb.RegisterCommentServiceServer(s, NewCommentsService(commentClient, postClient, exerciseClient, userClient))
-	pb.RegisterAttachmentServiceServer(s, NewAttachmentsService(attachmentClient, userClient, submissionClient))
-	pb.RegisterTopicServiceServer(s, NewTopicsService(topicClient, userClient))
+	pb.RegisterAttachmentServiceServer(s, NewAttachmentsService(attachmentClient, userClient, submissionClient, redisClient))
+	pb.RegisterTopicServiceServer(s, NewTopicsService(topicClient, userClient, redisClient))
 	pb.RegisterAuthorizationServiceServer(s, NewAuthorizationService(userClient, authorizationClient))
-	pb.RegisterMemberServiceServer(s, NewMembersService(userClient, classroomClient, waitingListClient))
+	pb.RegisterMemberServiceServer(s, NewMembersService(userClient, classroomClient, waitingListClient, redisClient))
 	pb.RegisterCommiteeServiceServer(s, NewCommiteesService(commiteeClient, userClient))
 	pb.RegisterRoomServiceServer(s, NewRoomsService(commiteeClient))
 	pb.RegisterStudentDefServiceServer(s, NewStudentDefsService(userClient))
-	pb.RegisterScheduleServiceServer(s, NewSchedulesService(scheduleClient, commiteeClient, userClient, thesisClient))
-	pb.RegisterNotificationServiceServer(s, NewNotificationsService(scheduleClient, userClient))
+	pb.RegisterScheduleServiceServer(s, NewSchedulesService(scheduleClient, commiteeClient, userClient, thesisClient, redisClient))
+	pb.RegisterNotificationServiceServer(s, NewNotificationsService(scheduleClient, userClient, redisClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

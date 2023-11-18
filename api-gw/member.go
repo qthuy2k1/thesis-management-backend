@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"errors"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
+	redisSvcV1 "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
@@ -14,13 +16,15 @@ type memberServiceGW struct {
 	userClient        userSvcV1.UserServiceClient
 	classroomClient   classroomSvcV1.ClassroomServiceClient
 	waitingListClient waitingListSvcV1.WaitingListServiceClient
+	redisClient       redisSvcV1.RedisServiceClient
 }
 
-func NewMembersService(userClient userSvcV1.UserServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, waitingListClient waitingListSvcV1.WaitingListServiceClient) *memberServiceGW {
+func NewMembersService(userClient userSvcV1.UserServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, waitingListClient waitingListSvcV1.WaitingListServiceClient, redisClient redisSvcV1.RedisServiceClient) *memberServiceGW {
 	return &memberServiceGW{
 		userClient:        userClient,
 		classroomClient:   classroomClient,
 		waitingListClient: waitingListClient,
+		redisClient:       redisClient,
 	}
 }
 
@@ -93,11 +97,60 @@ func (u *memberServiceGW) GetMember(ctx context.Context, req *pb.GetMemberReques
 		}, nil
 	}
 
-	userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-		Id: res.GetMember().MemberID,
+	redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
+		Id: res.Member.MemberID,
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	var userRes *userSvcV1.GetUserResponse
+	if redis.User != nil && redis.GetResponse().StatusCode == 200 {
+		userRes = &userSvcV1.GetUserResponse{
+			Response: &userSvcV1.CommonUserResponse{
+				StatusCode: 200,
+				Message:    "OK",
+			},
+			User: &userSvcV1.UserResponse{
+				Id:       redis.User.GetId(),
+				Class:    redis.User.Class,
+				Major:    redis.User.Major,
+				Phone:    redis.User.Phone,
+				PhotoSrc: redis.User.GetPhotoSrc(),
+				Role:     redis.User.GetRole(),
+				Name:     redis.User.GetName(),
+				Email:    redis.User.GetEmail(),
+			},
+		}
+	} else {
+		userRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: res.Member.MemberID})
+		if err != nil {
+			return nil, err
+		}
+
+		if userRes.Response.StatusCode != 200 {
+			return nil, errors.New("error getting user")
+		}
+
+		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
+			User: &redisSvcV1.User{
+				Id:       userRes.User.GetId(),
+				Class:    userRes.User.Class,
+				Major:    userRes.User.Major,
+				Phone:    userRes.User.Major,
+				PhotoSrc: userRes.User.GetPhotoSrc(),
+				Role:     userRes.User.GetRole(),
+				Name:     userRes.User.GetName(),
+				Email:    userRes.User.GetEmail(),
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if cache.Response.StatusCode != 200 {
+			return nil, errors.New("error set user cache")
+		}
 	}
 
 	if userRes.GetResponse().StatusCode != 200 {
@@ -109,11 +162,60 @@ func (u *memberServiceGW) GetMember(ctx context.Context, req *pb.GetMemberReques
 		}, nil
 	}
 
-	lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-		Id: clrRes.GetClassroom().LecturerID,
+	redis, err = u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
+		Id: clrRes.Classroom.LecturerID,
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	var lecturerRes *userSvcV1.GetUserResponse
+	if redis.User != nil && redis.GetResponse().StatusCode == 200 {
+		lecturerRes = &userSvcV1.GetUserResponse{
+			Response: &userSvcV1.CommonUserResponse{
+				StatusCode: 200,
+				Message:    "OK",
+			},
+			User: &userSvcV1.UserResponse{
+				Id:       redis.User.GetId(),
+				Class:    redis.User.Class,
+				Major:    redis.User.Major,
+				Phone:    redis.User.Phone,
+				PhotoSrc: redis.User.GetPhotoSrc(),
+				Role:     redis.User.GetRole(),
+				Name:     redis.User.GetName(),
+				Email:    redis.User.GetEmail(),
+			},
+		}
+	} else {
+		lecturerRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: clrRes.Classroom.LecturerID})
+		if err != nil {
+			return nil, err
+		}
+
+		if lecturerRes.Response.StatusCode != 200 {
+			return nil, errors.New("error getting user")
+		}
+
+		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
+			User: &redisSvcV1.User{
+				Id:       lecturerRes.User.GetId(),
+				Class:    lecturerRes.User.Class,
+				Major:    lecturerRes.User.Major,
+				Phone:    lecturerRes.User.Major,
+				PhotoSrc: lecturerRes.User.GetPhotoSrc(),
+				Role:     lecturerRes.User.GetRole(),
+				Name:     lecturerRes.User.GetName(),
+				Email:    lecturerRes.User.GetEmail(),
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if cache.Response.StatusCode != 200 {
+			return nil, errors.New("error set user cache")
+		}
 	}
 
 	if userRes.GetResponse().StatusCode != 200 {
@@ -139,7 +241,7 @@ func (u *memberServiceGW) GetMember(ctx context.Context, req *pb.GetMemberReques
 				Status:      clrRes.GetClassroom().GetStatus(),
 				Lecturer: &pb.UserMemberResponse{
 					Id:       lecturerRes.GetUser().GetId(),
-					Class:    lecturerRes.GetUser().GetClass(),
+					Class:    lecturerRes.GetUser().Class,
 					Major:    lecturerRes.GetUser().Major,
 					Phone:    lecturerRes.GetUser().Phone,
 					PhotoSrc: lecturerRes.GetUser().GetPhotoSrc(),
@@ -155,7 +257,7 @@ func (u *memberServiceGW) GetMember(ctx context.Context, req *pb.GetMemberReques
 			},
 			Member: &pb.UserMemberResponse{
 				Id:       userRes.GetUser().GetId(),
-				Class:    userRes.GetUser().GetClass(),
+				Class:    userRes.GetUser().Class,
 				Major:    userRes.GetUser().Major,
 				Phone:    userRes.GetUser().Phone,
 				PhotoSrc: userRes.GetUser().GetPhotoSrc(),
@@ -258,11 +360,60 @@ func (u *memberServiceGW) GetMembers(ctx context.Context, req *pb.GetMembersRequ
 			}, nil
 		}
 
-		userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
 			Id: m.MemberID,
 		})
 		if err != nil {
 			return nil, err
+		}
+
+		var userRes *userSvcV1.GetUserResponse
+		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
+			userRes = &userSvcV1.GetUserResponse{
+				Response: &userSvcV1.CommonUserResponse{
+					StatusCode: 200,
+					Message:    "OK",
+				},
+				User: &userSvcV1.UserResponse{
+					Id:       redis.User.GetId(),
+					Class:    redis.User.Class,
+					Major:    redis.User.Major,
+					Phone:    redis.User.Phone,
+					PhotoSrc: redis.User.GetPhotoSrc(),
+					Role:     redis.User.GetRole(),
+					Name:     redis.User.GetName(),
+					Email:    redis.User.GetEmail(),
+				},
+			}
+		} else {
+			userRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: m.MemberID})
+			if err != nil {
+				return nil, err
+			}
+
+			if userRes.Response.StatusCode != 200 {
+				return nil, errors.New("error getting user")
+			}
+
+			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
+				User: &redisSvcV1.User{
+					Id:       userRes.User.GetId(),
+					Class:    userRes.User.Class,
+					Major:    userRes.User.Major,
+					Phone:    userRes.User.Major,
+					PhotoSrc: userRes.User.GetPhotoSrc(),
+					Role:     userRes.User.GetRole(),
+					Name:     userRes.User.GetName(),
+					Email:    userRes.User.GetEmail(),
+				},
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			if cache.Response.StatusCode != 200 {
+				return nil, errors.New("error set user cache")
+			}
 		}
 
 		if userRes.GetResponse().StatusCode != 200 {
@@ -274,11 +425,60 @@ func (u *memberServiceGW) GetMembers(ctx context.Context, req *pb.GetMembersRequ
 			}, nil
 		}
 
-		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: clrRes.GetClassroom().LecturerID,
+		redis, err = u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
+			Id: clrRes.Classroom.LecturerID,
 		})
 		if err != nil {
 			return nil, err
+		}
+
+		var lecturerRes *userSvcV1.GetUserResponse
+		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
+			lecturerRes = &userSvcV1.GetUserResponse{
+				Response: &userSvcV1.CommonUserResponse{
+					StatusCode: 200,
+					Message:    "OK",
+				},
+				User: &userSvcV1.UserResponse{
+					Id:       redis.User.GetId(),
+					Class:    redis.User.Class,
+					Major:    redis.User.Major,
+					Phone:    redis.User.Phone,
+					PhotoSrc: redis.User.GetPhotoSrc(),
+					Role:     redis.User.GetRole(),
+					Name:     redis.User.GetName(),
+					Email:    redis.User.GetEmail(),
+				},
+			}
+		} else {
+			lecturerRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: clrRes.Classroom.LecturerID})
+			if err != nil {
+				return nil, err
+			}
+
+			if lecturerRes.Response.StatusCode != 200 {
+				return nil, errors.New("error getting user")
+			}
+
+			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
+				User: &redisSvcV1.User{
+					Id:       lecturerRes.User.GetId(),
+					Class:    lecturerRes.User.Class,
+					Major:    lecturerRes.User.Major,
+					Phone:    lecturerRes.User.Major,
+					PhotoSrc: lecturerRes.User.GetPhotoSrc(),
+					Role:     lecturerRes.User.GetRole(),
+					Name:     lecturerRes.User.GetName(),
+					Email:    lecturerRes.User.GetEmail(),
+				},
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			if cache.Response.StatusCode != 200 {
+				return nil, errors.New("error set user cache")
+			}
 		}
 
 		if userRes.GetResponse().StatusCode != 200 {
@@ -299,7 +499,7 @@ func (u *memberServiceGW) GetMembers(ctx context.Context, req *pb.GetMembersRequ
 				Status:      clrRes.GetClassroom().GetStatus(),
 				Lecturer: &pb.UserMemberResponse{
 					Id:       lecturerRes.GetUser().GetId(),
-					Class:    lecturerRes.GetUser().GetClass(),
+					Class:    lecturerRes.GetUser().Class,
 					Major:    lecturerRes.GetUser().Major,
 					Phone:    lecturerRes.GetUser().Phone,
 					PhotoSrc: lecturerRes.GetUser().GetPhotoSrc(),
@@ -315,7 +515,7 @@ func (u *memberServiceGW) GetMembers(ctx context.Context, req *pb.GetMembersRequ
 			},
 			Member: &pb.UserMemberResponse{
 				Id:       userRes.GetUser().GetId(),
-				Class:    userRes.GetUser().GetClass(),
+				Class:    userRes.GetUser().Class,
 				Major:    userRes.GetUser().Major,
 				Phone:    userRes.GetUser().Phone,
 				PhotoSrc: userRes.GetUser().GetPhotoSrc(),
@@ -422,7 +622,7 @@ func (u *memberServiceGW) GetAllMembersOfClassroom(ctx context.Context, req *pb.
 				Status:      clrRes.GetClassroom().GetStatus(),
 				Lecturer: &pb.UserMemberResponse{
 					Id:       lecturerRes.GetUser().GetId(),
-					Class:    lecturerRes.GetUser().GetClass(),
+					Class:    lecturerRes.GetUser().Class,
 					Major:    lecturerRes.GetUser().Major,
 					Phone:    lecturerRes.GetUser().Phone,
 					PhotoSrc: lecturerRes.GetUser().GetPhotoSrc(),
@@ -438,7 +638,7 @@ func (u *memberServiceGW) GetAllMembersOfClassroom(ctx context.Context, req *pb.
 			},
 			Member: &pb.UserMemberResponse{
 				Id:       userRes.GetUser().GetId(),
-				Class:    userRes.GetUser().GetClass(),
+				Class:    userRes.GetUser().Class,
 				Major:    userRes.GetUser().Major,
 				Phone:    userRes.GetUser().Phone,
 				PhotoSrc: userRes.GetUser().GetPhotoSrc(),

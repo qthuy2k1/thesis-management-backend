@@ -7,7 +7,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/joho/godotenv"
+	redispb "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 )
@@ -33,15 +33,15 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	if err := godotenv.Load(); err != nil {
-		log.Fatal(err)
-	}
+	// if err := godotenv.Load(); err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	redisPort := os.Getenv("REDIS_PORT")
 	redisPass := os.Getenv("REDIS_PASSWORD")
 
 	client := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("redis:%s", redisPort),
+		Addr:     fmt.Sprintf("thesis-management-backend-redis-db-service:%s", redisPort),
 		Password: redisPass,
 		DB:       0,
 	})
@@ -51,6 +51,9 @@ func main() {
 	}
 
 	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
+
+	redis := NewRedis(client)
+	redispb.RegisterRedisServiceServer(s, redis)
 
 	log.Printf("Started REDIS server on %s", redisPort)
 	if err := s.Serve(lis); err != nil {

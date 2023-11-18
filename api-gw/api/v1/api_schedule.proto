@@ -26,7 +26,7 @@ service ScheduleService {
 
 message UserScheduleResponse {
     string id = 1;
-    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
     optional string major = 3 [(validate.rules).string = {min_len: 2}];
     optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
     string photoSrc = 5;

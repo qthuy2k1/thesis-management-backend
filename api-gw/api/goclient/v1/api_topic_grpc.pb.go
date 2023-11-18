@@ -23,6 +23,7 @@ const (
 	TopicService_GetTopic_FullMethodName    = "/api.topic.v1.TopicService/GetTopic"
 	TopicService_UpdateTopic_FullMethodName = "/api.topic.v1.TopicService/UpdateTopic"
 	TopicService_DeleteTopic_FullMethodName = "/api.topic.v1.TopicService/DeleteTopic"
+	TopicService_GetTopics_FullMethodName   = "/api.topic.v1.TopicService/GetTopics"
 )
 
 // TopicServiceClient is the client API for TopicService service.
@@ -33,6 +34,7 @@ type TopicServiceClient interface {
 	GetTopic(ctx context.Context, in *GetTopicRequest, opts ...grpc.CallOption) (*GetTopicResponse, error)
 	UpdateTopic(ctx context.Context, in *UpdateTopicRequest, opts ...grpc.CallOption) (*UpdateTopicResponse, error)
 	DeleteTopic(ctx context.Context, in *DeleteTopicRequest, opts ...grpc.CallOption) (*DeleteTopicResponse, error)
+	GetTopics(ctx context.Context, in *GetTopicsRequest, opts ...grpc.CallOption) (*GetTopicsResponse, error)
 }
 
 type topicServiceClient struct {
@@ -79,6 +81,15 @@ func (c *topicServiceClient) DeleteTopic(ctx context.Context, in *DeleteTopicReq
 	return out, nil
 }
 
+func (c *topicServiceClient) GetTopics(ctx context.Context, in *GetTopicsRequest, opts ...grpc.CallOption) (*GetTopicsResponse, error) {
+	out := new(GetTopicsResponse)
+	err := c.cc.Invoke(ctx, TopicService_GetTopics_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TopicServiceServer is the server API for TopicService service.
 // All implementations must embed UnimplementedTopicServiceServer
 // for forward compatibility
@@ -87,6 +98,7 @@ type TopicServiceServer interface {
 	GetTopic(context.Context, *GetTopicRequest) (*GetTopicResponse, error)
 	UpdateTopic(context.Context, *UpdateTopicRequest) (*UpdateTopicResponse, error)
 	DeleteTopic(context.Context, *DeleteTopicRequest) (*DeleteTopicResponse, error)
+	GetTopics(context.Context, *GetTopicsRequest) (*GetTopicsResponse, error)
 	mustEmbedUnimplementedTopicServiceServer()
 }
 
@@ -105,6 +117,9 @@ func (UnimplementedTopicServiceServer) UpdateTopic(context.Context, *UpdateTopic
 }
 func (UnimplementedTopicServiceServer) DeleteTopic(context.Context, *DeleteTopicRequest) (*DeleteTopicResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTopic not implemented")
+}
+func (UnimplementedTopicServiceServer) GetTopics(context.Context, *GetTopicsRequest) (*GetTopicsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTopics not implemented")
 }
 func (UnimplementedTopicServiceServer) mustEmbedUnimplementedTopicServiceServer() {}
 
@@ -191,6 +206,24 @@ func _TopicService_DeleteTopic_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TopicService_GetTopics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTopicsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TopicServiceServer).GetTopics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TopicService_GetTopics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TopicServiceServer).GetTopics(ctx, req.(*GetTopicsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TopicService_ServiceDesc is the grpc.ServiceDesc for TopicService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +246,10 @@ var TopicService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteTopic",
 			Handler:    _TopicService_DeleteTopic_Handler,
+		},
+		{
+			MethodName: "GetTopics",
+			Handler:    _TopicService_GetTopics_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

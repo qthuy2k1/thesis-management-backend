@@ -183,17 +183,6 @@ func (m *UserInput) validate(all bool) error {
 
 	// no validation rules for Id
 
-	if l := utf8.RuneCountInString(m.GetClass()); l < 4 || l > 10 {
-		err := UserInputValidationError{
-			field:  "Class",
-			reason: "value length must be between 4 and 10 runes, inclusive",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	// no validation rules for PhotoSrc
 
 	if _, ok := _UserInput_Role_InLookup[m.GetRole()]; !ok {
@@ -230,15 +219,19 @@ func (m *UserInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetPassword()) < 2 {
-		err := UserInputValidationError{
-			field:  "Password",
-			reason: "value length must be at least 2 runes",
+	if m.Class != nil {
+
+		if l := utf8.RuneCountInString(m.GetClass()); l < 4 || l > 10 {
+			err := UserInputValidationError{
+				field:  "Class",
+				reason: "value length must be between 4 and 10 runes, inclusive",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
 		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
+
 	}
 
 	if m.Major != nil {
@@ -262,6 +255,21 @@ func (m *UserInput) validate(all bool) error {
 			err := UserInputValidationError{
 				field:  "Phone",
 				reason: "value length must be between 10 and 11 runes, inclusive",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.Password != nil {
+
+		if utf8.RuneCountInString(m.GetPassword()) < 2 {
+			err := UserInputValidationError{
+				field:  "Password",
+				reason: "value length must be at least 2 runes",
 			}
 			if !all {
 				return err
@@ -428,17 +436,6 @@ func (m *UserResponse) validate(all bool) error {
 
 	// no validation rules for Id
 
-	if l := utf8.RuneCountInString(m.GetClass()); l < 4 || l > 10 {
-		err := UserResponseValidationError{
-			field:  "Class",
-			reason: "value length must be between 4 and 10 runes, inclusive",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	// no validation rules for PhotoSrc
 
 	if _, ok := _UserResponse_Role_InLookup[m.GetRole()]; !ok {
@@ -484,6 +481,50 @@ func (m *UserResponse) validate(all bool) error {
 			return err
 		}
 		errors = append(errors, err)
+	}
+
+	if all {
+		switch v := interface{}(m.GetTopic()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UserResponseValidationError{
+					field:  "Topic",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UserResponseValidationError{
+					field:  "Topic",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTopic()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UserResponseValidationError{
+				field:  "Topic",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.Class != nil {
+
+		if l := utf8.RuneCountInString(m.GetClass()); l < 4 || l > 10 {
+			err := UserResponseValidationError{
+				field:  "Class",
+				reason: "value length must be between 4 and 10 runes, inclusive",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
 	}
 
 	if m.Major != nil {
@@ -1757,6 +1798,149 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DeleteUserResponseValidationError{}
+
+// Validate checks the field values on TopicUserResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *TopicUserResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on TopicUserResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// TopicUserResponseMultiError, or nil if none found.
+func (m *TopicUserResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *TopicUserResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Title
+
+	// no validation rules for TypeTopic
+
+	// no validation rules for MemberQuantity
+
+	if all {
+		switch v := interface{}(m.GetStudent()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, TopicUserResponseValidationError{
+					field:  "Student",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, TopicUserResponseValidationError{
+					field:  "Student",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetStudent()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return TopicUserResponseValidationError{
+				field:  "Student",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for MemberEmail
+
+	// no validation rules for Description
+
+	if len(errors) > 0 {
+		return TopicUserResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// TopicUserResponseMultiError is an error wrapping multiple validation errors
+// returned by TopicUserResponse.ValidateAll() if the designated constraints
+// aren't met.
+type TopicUserResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m TopicUserResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m TopicUserResponseMultiError) AllErrors() []error { return m }
+
+// TopicUserResponseValidationError is the validation error returned by
+// TopicUserResponse.Validate if the designated constraints aren't met.
+type TopicUserResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e TopicUserResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e TopicUserResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e TopicUserResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e TopicUserResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e TopicUserResponseValidationError) ErrorName() string {
+	return "TopicUserResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e TopicUserResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sTopicUserResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = TopicUserResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = TopicUserResponseValidationError{}
 
 // Validate checks the field values on GetUsersRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, the
@@ -3088,6 +3272,8 @@ func (m *CheckStatusUserJoinClassroomResponse) validate(all bool) error {
 			}
 		}
 	}
+
+	// no validation rules for Status
 
 	if len(errors) > 0 {
 		return CheckStatusUserJoinClassroomResponseMultiError(errors)

@@ -115,6 +115,24 @@ func (r *TopicRepo) GetTopic(ctx context.Context, id int) (TopicOutputRepo, erro
 	return topic, nil
 }
 
+// GetTopic returns a topic in db given by id
+func (r *TopicRepo) GetTopicFromUser(ctx context.Context, id string) (TopicOutputRepo, error) {
+	row, err := QueryRowSQL(ctx, r.Database, "GetTopic", "SELECT id, title, type_topic, member_quantity, student_id, member_email, description FROM topics WHERE student_id=$1", id)
+	if err != nil {
+		return TopicOutputRepo{}, err
+	}
+	topic := TopicOutputRepo{}
+
+	if err = row.Scan(&topic.ID, &topic.Title, &topic.TypeTopic, &topic.MemberQuantity, &topic.StudentID, &topic.MemberEmail, &topic.Description); err != nil {
+		if err == sql.ErrNoRows {
+			return TopicOutputRepo{}, ErrTopicNotFound
+		}
+		return TopicOutputRepo{}, err
+	}
+
+	return topic, nil
+}
+
 // UpdateTopic updates the specified topic by id
 func (r *TopicRepo) UpdateTopic(ctx context.Context, id int, topic TopicInputRepo) error {
 	result, err := ExecSQL(ctx, r.Database, "UpdateTopic", "UPDATE topics SET title=$2, type_topic=$3, member_quantity=$4, student_id=$5, member_email=$6, description=$7 WHERE id=$1", id, topic.Title, topic.TypeTopic, topic.MemberQuantity, topic.StudentID, topic.MemberEmail, topic.Description)

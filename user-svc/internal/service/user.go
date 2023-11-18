@@ -10,7 +10,7 @@ import (
 type UserInputSvc struct {
 	ID       string
 	Email    string
-	Class    string
+	Class    *string
 	Major    *string
 	Phone    *string
 	PhotoSrc string
@@ -98,7 +98,7 @@ func (s *UserSvc) DeleteUser(ctx context.Context, id string) error {
 type UserOutputSvc struct {
 	ID       string
 	Email    string
-	Class    string
+	Class    *string
 	Major    *string
 	Phone    *string
 	PhotoSrc string

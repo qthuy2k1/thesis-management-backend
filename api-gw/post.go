@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
@@ -9,6 +10,7 @@ import (
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
+	redisSvcV1 "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
@@ -21,9 +23,10 @@ type postServiceGW struct {
 	commentClient        commentSvcV1.CommentServiceClient
 	userClient           userSvcV1.UserServiceClient
 	attachmentClient     attachmentSvcV1.AttachmentServiceClient
+	redisClient          redisSvcV1.RedisServiceClient
 }
 
-func NewPostsService(postClient postSvcV1.PostServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportingStageClient rpsSvcV1.ReportingStageServiceClient, commentCLient commentSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient) *postServiceGW {
+func NewPostsService(postClient postSvcV1.PostServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportingStageClient rpsSvcV1.ReportingStageServiceClient, commentCLient commentSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient, redisClient redisSvcV1.RedisServiceClient) *postServiceGW {
 	return &postServiceGW{
 		postClient:           postClient,
 		classroomClient:      classroomClient,
@@ -31,6 +34,7 @@ func NewPostsService(postClient postSvcV1.PostServiceClient, classroomClient cla
 		commentClient:        commentCLient,
 		userClient:           userClient,
 		attachmentClient:     attachmentClient,
+		redisClient:          redisClient,
 	}
 }
 
@@ -166,11 +170,64 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 		return nil, err
 	}
 
-	authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+	redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
 		Id: res.Post.AuthorID,
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	var authorRes *userSvcV1.GetUserResponse
+	if redis.User != nil && redis.GetResponse().StatusCode == 200 {
+		authorRes = &userSvcV1.GetUserResponse{
+			Response: &userSvcV1.CommonUserResponse{
+				StatusCode: 200,
+				Message:    "OK",
+			},
+			User: &userSvcV1.UserResponse{
+				Id:       redis.User.GetId(),
+				Class:    redis.User.Class,
+				Major:    redis.User.Major,
+				Phone:    redis.User.Phone,
+				PhotoSrc: redis.User.GetPhotoSrc(),
+				Role:     redis.User.GetRole(),
+				Name:     redis.User.GetName(),
+				Email:    redis.User.GetEmail(),
+			},
+		}
+	} else {
+		authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: res.Post.AuthorID})
+		if err != nil {
+			return nil, err
+		}
+
+		if authorRes.Response.StatusCode != 200 {
+			return nil, errors.New("error getting user")
+		}
+
+		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
+			User: &redisSvcV1.User{
+				Id:       authorRes.User.GetId(),
+				Class:    authorRes.User.Class,
+				Major:    authorRes.User.Major,
+				Phone:    authorRes.User.Major,
+				PhotoSrc: authorRes.User.GetPhotoSrc(),
+				Role:     authorRes.User.GetRole(),
+				Name:     authorRes.User.GetName(),
+				Email:    authorRes.User.GetEmail(),
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if cache.Response.StatusCode != 200 {
+			return nil, errors.New("error set user cache")
+		}
+	}
+
+	if authorRes.Response.StatusCode == 404 {
+		return nil, errors.New("user not found")
 	}
 
 	attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
@@ -381,11 +438,64 @@ func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (
 			return nil, err
 		}
 
-		authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
 			Id: p.AuthorID,
 		})
 		if err != nil {
 			return nil, err
+		}
+
+		var authorRes *userSvcV1.GetUserResponse
+		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
+			authorRes = &userSvcV1.GetUserResponse{
+				Response: &userSvcV1.CommonUserResponse{
+					StatusCode: 200,
+					Message:    "OK",
+				},
+				User: &userSvcV1.UserResponse{
+					Id:       redis.User.GetId(),
+					Class:    redis.User.Class,
+					Major:    redis.User.Major,
+					Phone:    redis.User.Phone,
+					PhotoSrc: redis.User.GetPhotoSrc(),
+					Role:     redis.User.GetRole(),
+					Name:     redis.User.GetName(),
+					Email:    redis.User.GetEmail(),
+				},
+			}
+		} else {
+			authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.AuthorID})
+			if err != nil {
+				return nil, err
+			}
+
+			if authorRes.Response.StatusCode != 200 {
+				return nil, errors.New("error getting user")
+			}
+
+			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
+				User: &redisSvcV1.User{
+					Id:       authorRes.User.GetId(),
+					Class:    authorRes.User.Class,
+					Major:    authorRes.User.Major,
+					Phone:    authorRes.User.Major,
+					PhotoSrc: authorRes.User.GetPhotoSrc(),
+					Role:     authorRes.User.GetRole(),
+					Name:     authorRes.User.GetName(),
+					Email:    authorRes.User.GetEmail(),
+				},
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			if cache.Response.StatusCode != 200 {
+				return nil, errors.New("error set user cache")
+			}
+		}
+
+		if authorRes.Response.StatusCode == 404 {
+			return nil, errors.New("user not found")
 		}
 
 		attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
@@ -530,11 +640,64 @@ func (u *postServiceGW) GetAllPostsOfClassroom(ctx context.Context, req *pb.GetA
 			return nil, err
 		}
 
-		authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
 			Id: p.AuthorID,
 		})
 		if err != nil {
 			return nil, err
+		}
+
+		var authorRes *userSvcV1.GetUserResponse
+		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
+			authorRes = &userSvcV1.GetUserResponse{
+				Response: &userSvcV1.CommonUserResponse{
+					StatusCode: 200,
+					Message:    "OK",
+				},
+				User: &userSvcV1.UserResponse{
+					Id:       redis.User.GetId(),
+					Class:    redis.User.Class,
+					Major:    redis.User.Major,
+					Phone:    redis.User.Phone,
+					PhotoSrc: redis.User.GetPhotoSrc(),
+					Role:     redis.User.GetRole(),
+					Name:     redis.User.GetName(),
+					Email:    redis.User.GetEmail(),
+				},
+			}
+		} else {
+			authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.AuthorID})
+			if err != nil {
+				return nil, err
+			}
+
+			if authorRes.Response.StatusCode != 200 {
+				return nil, errors.New("error getting user")
+			}
+
+			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
+				User: &redisSvcV1.User{
+					Id:       authorRes.User.GetId(),
+					Class:    authorRes.User.Class,
+					Major:    authorRes.User.Major,
+					Phone:    authorRes.User.Major,
+					PhotoSrc: authorRes.User.GetPhotoSrc(),
+					Role:     authorRes.User.GetRole(),
+					Name:     authorRes.User.GetName(),
+					Email:    authorRes.User.GetEmail(),
+				},
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			if cache.Response.StatusCode != 200 {
+				return nil, errors.New("error set user cache")
+			}
+		}
+
+		if authorRes.Response.StatusCode == 404 {
+			return nil, errors.New("user not found")
 		}
 
 		attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
@@ -655,11 +818,64 @@ func (u *postServiceGW) GetAllPostsInReportingStage(ctx context.Context, req *pb
 
 	var posts []*pb.PostResponse
 	for _, p := range res.GetPosts() {
-		authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
 			Id: p.AuthorID,
 		})
 		if err != nil {
 			return nil, err
+		}
+
+		var authorRes *userSvcV1.GetUserResponse
+		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
+			authorRes = &userSvcV1.GetUserResponse{
+				Response: &userSvcV1.CommonUserResponse{
+					StatusCode: 200,
+					Message:    "OK",
+				},
+				User: &userSvcV1.UserResponse{
+					Id:       redis.User.GetId(),
+					Class:    redis.User.Class,
+					Major:    redis.User.Major,
+					Phone:    redis.User.Phone,
+					PhotoSrc: redis.User.GetPhotoSrc(),
+					Role:     redis.User.GetRole(),
+					Name:     redis.User.GetName(),
+					Email:    redis.User.GetEmail(),
+				},
+			}
+		} else {
+			authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.AuthorID})
+			if err != nil {
+				return nil, err
+			}
+
+			if authorRes.Response.StatusCode != 200 {
+				return nil, errors.New("error getting user")
+			}
+
+			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
+				User: &redisSvcV1.User{
+					Id:       authorRes.User.GetId(),
+					Class:    authorRes.User.Class,
+					Major:    authorRes.User.Major,
+					Phone:    authorRes.User.Major,
+					PhotoSrc: authorRes.User.GetPhotoSrc(),
+					Role:     authorRes.User.GetRole(),
+					Name:     authorRes.User.GetName(),
+					Email:    authorRes.User.GetEmail(),
+				},
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			if cache.Response.StatusCode != 200 {
+				return nil, errors.New("error set user cache")
+			}
+		}
+
+		if authorRes.Response.StatusCode == 404 {
+			return nil, errors.New("user not found")
 		}
 
 		attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{

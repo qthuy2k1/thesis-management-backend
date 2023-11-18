@@ -25,7 +25,7 @@ service PointService {
 
 message UserPointResponse {
     string id = 1;
-    string class = 2;
+    optional string class = 2;
     optional string major = 3;
     optional string phone = 4;
     string photoSrc = 5;
