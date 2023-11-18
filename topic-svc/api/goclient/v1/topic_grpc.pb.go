@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	TopicService_CreateTopic_FullMethodName            = "/topic.v1.TopicService/CreateTopic"
 	TopicService_GetTopic_FullMethodName               = "/topic.v1.TopicService/GetTopic"
+	TopicService_GetTopicFromUser_FullMethodName       = "/topic.v1.TopicService/GetTopicFromUser"
 	TopicService_UpdateTopic_FullMethodName            = "/topic.v1.TopicService/UpdateTopic"
 	TopicService_DeleteTopic_FullMethodName            = "/topic.v1.TopicService/DeleteTopic"
 	TopicService_GetTopics_FullMethodName              = "/topic.v1.TopicService/GetTopics"
@@ -33,6 +34,7 @@ const (
 type TopicServiceClient interface {
 	CreateTopic(ctx context.Context, in *CreateTopicRequest, opts ...grpc.CallOption) (*CreateTopicResponse, error)
 	GetTopic(ctx context.Context, in *GetTopicRequest, opts ...grpc.CallOption) (*GetTopicResponse, error)
+	GetTopicFromUser(ctx context.Context, in *GetTopicFromUserRequest, opts ...grpc.CallOption) (*GetTopicFromUserResponse, error)
 	UpdateTopic(ctx context.Context, in *UpdateTopicRequest, opts ...grpc.CallOption) (*UpdateTopicResponse, error)
 	DeleteTopic(ctx context.Context, in *DeleteTopicRequest, opts ...grpc.CallOption) (*DeleteTopicResponse, error)
 	GetTopics(ctx context.Context, in *GetTopicsRequest, opts ...grpc.CallOption) (*GetTopicsResponse, error)
@@ -59,6 +61,15 @@ func (c *topicServiceClient) CreateTopic(ctx context.Context, in *CreateTopicReq
 func (c *topicServiceClient) GetTopic(ctx context.Context, in *GetTopicRequest, opts ...grpc.CallOption) (*GetTopicResponse, error) {
 	out := new(GetTopicResponse)
 	err := c.cc.Invoke(ctx, TopicService_GetTopic_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *topicServiceClient) GetTopicFromUser(ctx context.Context, in *GetTopicFromUserRequest, opts ...grpc.CallOption) (*GetTopicFromUserResponse, error) {
+	out := new(GetTopicFromUserResponse)
+	err := c.cc.Invoke(ctx, TopicService_GetTopicFromUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -107,6 +118,7 @@ func (c *topicServiceClient) GetAllTopicsOfListUser(ctx context.Context, in *Get
 type TopicServiceServer interface {
 	CreateTopic(context.Context, *CreateTopicRequest) (*CreateTopicResponse, error)
 	GetTopic(context.Context, *GetTopicRequest) (*GetTopicResponse, error)
+	GetTopicFromUser(context.Context, *GetTopicFromUserRequest) (*GetTopicFromUserResponse, error)
 	UpdateTopic(context.Context, *UpdateTopicRequest) (*UpdateTopicResponse, error)
 	DeleteTopic(context.Context, *DeleteTopicRequest) (*DeleteTopicResponse, error)
 	GetTopics(context.Context, *GetTopicsRequest) (*GetTopicsResponse, error)
@@ -123,6 +135,9 @@ func (UnimplementedTopicServiceServer) CreateTopic(context.Context, *CreateTopic
 }
 func (UnimplementedTopicServiceServer) GetTopic(context.Context, *GetTopicRequest) (*GetTopicResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTopic not implemented")
+}
+func (UnimplementedTopicServiceServer) GetTopicFromUser(context.Context, *GetTopicFromUserRequest) (*GetTopicFromUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTopicFromUser not implemented")
 }
 func (UnimplementedTopicServiceServer) UpdateTopic(context.Context, *UpdateTopicRequest) (*UpdateTopicResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateTopic not implemented")
@@ -181,6 +196,24 @@ func _TopicService_GetTopic_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TopicServiceServer).GetTopic(ctx, req.(*GetTopicRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TopicService_GetTopicFromUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTopicFromUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TopicServiceServer).GetTopicFromUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TopicService_GetTopicFromUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TopicServiceServer).GetTopicFromUser(ctx, req.(*GetTopicFromUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -271,6 +304,10 @@ var TopicService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTopic",
 			Handler:    _TopicService_GetTopic_Handler,
+		},
+		{
+			MethodName: "GetTopicFromUser",
+			Handler:    _TopicService_GetTopicFromUser_Handler,
 		},
 		{
 			MethodName: "UpdateTopic",

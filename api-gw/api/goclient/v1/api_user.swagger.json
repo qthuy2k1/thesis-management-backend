@@ -424,6 +424,9 @@
         },
         "member": {
           "$ref": "#/definitions/v1MemberUserResponse"
+        },
+        "status": {
+          "type": "string"
         }
       }
     },
@@ -579,6 +582,34 @@
         }
       }
     },
+    "v1TopicUserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "typeTopic": {
+          "type": "string"
+        },
+        "memberQuantity": {
+          "type": "string",
+          "format": "int64"
+        },
+        "student": {
+          "$ref": "#/definitions/v1UserResponse"
+        },
+        "memberEmail": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
     "v1UnsubscribeClassroomResponse": {
       "type": "object",
       "properties": {
@@ -665,6 +696,9 @@
         },
         "hashedPassword": {
           "type": "string"
+        },
+        "topic": {
+          "$ref": "#/definitions/v1TopicUserResponse"
         }
       }
     }

@@ -17,7 +17,7 @@ service TopicService {
     
     rpc GetTopic(GetTopicRequest) returns (GetTopicResponse){
         option (google.api.http) = {
-            get: "/api/topic/{id}"
+            get: "/api/topic/{studentID}"
         };
     }
 
@@ -33,12 +33,30 @@ service TopicService {
             delete: "/api/topic/{id}"
         };
     }
+    
+    rpc GetTopics(GetTopicsRequest) returns (GetTopicsResponse){
+        option (google.api.http) = {
+            get: "/api/topic"
+        };
+    }
 }
 
 
 message CommonTopicResponse {
     int64 statusCode = 1;
     string message = 2;
+}
+
+message UserTopicInput {
+    string id = 1;
+    optional string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["lecturer", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
+    optional string password = 9 [(validate.rules).string = {min_len: 2}];
 }
 
 // ====== POST ======
@@ -57,7 +75,7 @@ message TopicResponse {
     string title = 2;
     string typeTopic = 3;
     int64 memberQuantity = 4;
-    UserTopicResponse studentID = 5;
+    UserTopicResponse student = 5;
     string memberEmail = 6;
     string description = 7;
 }
@@ -74,7 +92,7 @@ message CreateTopicResponse {
 
 // ====== GET ======
 message GetTopicRequest {
-    int64 id = 1;
+    string studentID = 1;
 }
 
 message GetTopicResponse {
@@ -119,4 +137,9 @@ message UserTopicResponse {
     string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
+}
+
+message GetTopicsRequest {}
+message GetTopicsResponse {
+    repeated TopicResponse topics = 1;
 }

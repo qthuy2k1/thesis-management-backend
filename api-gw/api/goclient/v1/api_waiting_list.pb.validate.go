@@ -486,17 +486,6 @@ func (m *UserWaitingListResponse) validate(all bool) error {
 
 	// no validation rules for Id
 
-	if l := utf8.RuneCountInString(m.GetClass()); l < 4 || l > 10 {
-		err := UserWaitingListResponseValidationError{
-			field:  "Class",
-			reason: "value length must be between 4 and 10 runes, inclusive",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	// no validation rules for PhotoSrc
 
 	if _, ok := _UserWaitingListResponse_Role_InLookup[m.GetRole()]; !ok {
@@ -531,6 +520,21 @@ func (m *UserWaitingListResponse) validate(all bool) error {
 			return err
 		}
 		errors = append(errors, err)
+	}
+
+	if m.Class != nil {
+
+		if l := utf8.RuneCountInString(m.GetClass()); l < 4 || l > 10 {
+			err := UserWaitingListResponseValidationError{
+				field:  "Class",
+				reason: "value length must be between 4 and 10 runes, inclusive",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
 	}
 
 	if m.Major != nil {

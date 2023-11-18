@@ -9,6 +9,8 @@ service TopicService {
     
     rpc GetTopic(GetTopicRequest) returns (GetTopicResponse){}
 
+    rpc GetTopicFromUser(GetTopicFromUserRequest) returns (GetTopicFromUserResponse){}
+
     rpc UpdateTopic(UpdateTopicRequest) returns (UpdateTopicResponse){}
 
     rpc DeleteTopic(DeleteTopicRequest) returns (DeleteTopicResponse){}
@@ -111,4 +113,13 @@ message GetAllTopicsOfListUserRequest {
 message GetAllTopicsOfListUserResponse {
     CommonTopicResponse response = 1;
     repeated TopicResponse topic = 2;
+}
+
+message GetTopicFromUserRequest {
+    string userID = 1;
+}
+
+message GetTopicFromUserResponse {
+    CommonTopicResponse response = 1;
+    TopicResponse topic = 2;
 }

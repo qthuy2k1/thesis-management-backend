@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+#For creating Kubernetes Deployment in the Minikube cluster
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thesis-management-backend-redis-db
+  labels:
+    app: thesis-management-backend-redis-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thesis-management-backend-redis-db
+  template:
+    metadata:
+      labels:
+        app: thesis-management-backend-redis-db 
+    spec:
+      containers:
+      - name: thesis-management-backend-redis-db
+        image: qthuy2k1/thesis-management-backend-redis-db
+        env:
+        - name: REDIS_HOST
+          value: "cache"
+        - name: REDIS_PASS
+          value: ""
+        - name: REDIS_PORT
+          value: "6379"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+          - name: cache
+            mountPath: /data
+      volumes:
+        - name: redis-db
+          persistentVolumeClaim:
+            claimName: redis-db-pvc
+      
+        
+
+---
+#For creating a Kubernetes Service in the Minikube cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: thesis-management-backend-redis-db-service
+spec:
+  selector:
+    app: thesis-management-backend-redis-db 
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 6379
+    targetPort: 6379

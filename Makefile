@@ -283,6 +283,7 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/topic ./topic-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/authorization ./authorization-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/thesis-commitee ./thesis-commitee-svc
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/redis ./redis-svc
 
 
 
@@ -369,6 +370,7 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-attachment:latest
 	docker push qthuy2k1/thesis-management-backend-topic:latest
 	docker push qthuy2k1/thesis-management-backend-authorization:latest
+	docker push qthuy2k1/thesis-management-backend-redis:latest
 	# docker push qthuy2k1/thesis-management-backend-thesis-commitee:latest
 
 	# DB
@@ -383,6 +385,7 @@ docker-push:
 	# docker push qthuy2k1/thesis-management-backend-attachment-db:latest
 	# docker push qthuy2k1/thesis-management-backend-topic-db:latest
 	# docker push qthuy2k1/thesis-management-backend-thesis-commitee-db:latest
+	docker push qthuy2k1/thesis-management-backend-redis-db:latest
 
 
 migrate_all_up:
@@ -461,80 +464,6 @@ kuber-exec:
 kuber-delete:
 	kubectl delete -f $(file).yaml --cascade=orphan
 
-kuber-all: clean build
-	docker compose build
-
-	# ===================================== PUSHING TO DOCKER =====================================
-	# APP
-	docker push qthuy2k1/thesis-management-backend:latest
-	docker push qthuy2k1/thesis-management-backend-apigw-client:latest
-	docker push qthuy2k1/thesis-management-backend-classroom:latest
-	docker push qthuy2k1/thesis-management-backend-post:latest
-	docker push qthuy2k1/thesis-management-backend-exercise:latest
-	docker push qthuy2k1/thesis-management-backend-user:latest
-	docker push qthuy2k1/thesis-management-backend-reporting-stage:latest
-	docker push qthuy2k1/thesis-management-backend-submission:latest
-	docker push qthuy2k1/thesis-management-backend-classroom-waiting-list:latest
-	docker push qthuy2k1/thesis-management-backend-comment:latest
-	docker push qthuy2k1/thesis-management-backend-attachment:latest
-	docker push qthuy2k1/thesis-management-backend-topic:latest
-	docker push qthuy2k1/thesis-management-backend-authorization:latest
-	docker push qthuy2k1/thesis-management-backend-thesis-commitee:latest
-
-
-	# ===================================== DELETING KUBERNETES =================================
-	kubectl delete -f kubernetes/attachment-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/classroom-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/classroom-waiting-list-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/comment-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/exercise-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/post-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/reporting-stage-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/submission-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
-
-	kubectl delete -f kubernetes/attachment-db-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/classroom-db-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/classroom-waiting-list-db-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/comment-db-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/exercise-db-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/post-db-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/reporting-stage-db-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/submission-db-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/topic-db-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/user-db-deployment.yaml --namespace thesis-management-backend
-
-	kubectl delete -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
-
-
-	# ===================================== APPLYING KUBERNETES =================================
-	kubectl apply -f kubernetes/attachment-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/classroom-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/classroom-waiting-list-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/comment-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/exercise-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/post-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/reporting-stage-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/submission-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
-
-	kubectl apply -f kubernetes/attachment-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/classroom-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/classroom-waiting-list-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/comment-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/exercise-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/post-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/reporting-stage-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/submission-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/topic-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/user-db-deployment.yaml --namespace thesis-management-backend
-
-	kubectl apply -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
-
 kuber-serve-gw-client:
 	minikube service thesis-management-backend-apigw-client-service --url -n thesis-management-backend
 
@@ -564,6 +493,8 @@ kuber-apply:
 
 	kubectl apply -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/apigw-client-deployment-2.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/apigw-client-deployment-3.yaml --namespace thesis-management-backend
 
 
 kuber-del:
@@ -592,6 +523,8 @@ kuber-del:
 
 	kubectl delete -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/apigw-client-deployment-2.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/apigw-client-deployment-3.yaml --namespace thesis-management-backend
 
 
 rebuild-kuber:
@@ -608,3 +541,4 @@ build-a-svc:
 
 kuber-update:
 	kubectl set image deployment thesis-management-backend-$(deployment-name) $(container-name)=$(new-image)
+

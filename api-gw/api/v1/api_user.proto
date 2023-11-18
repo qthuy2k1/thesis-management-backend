@@ -81,19 +81,19 @@ message CommonUserResponse {
 // ====== user ======
 message UserInput {
     string id = 1;
-    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
     optional string major = 3 [(validate.rules).string = {min_len: 2}];
     optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
     string photoSrc = 5;
     string role = 6 [(validate.rules).string = {in: ["lecturer", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    string password = 9 [(validate.rules).string = {min_len: 2}];
+    optional string password = 9 [(validate.rules).string = {min_len: 2}];
 }
 
 message UserResponse {
     string id = 1;
-    string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
     optional string major = 3 [(validate.rules).string = {min_len: 2}];
     optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
     string photoSrc = 5;
@@ -101,6 +101,7 @@ message UserResponse {
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
     string hashedPassword = 9 [(validate.rules).string = {min_len: 2}];
+    TopicUserResponse topic = 10;
 }
 
 message CreateUserRequest {
@@ -142,6 +143,15 @@ message DeleteUserResponse {
     CommonUserResponse response = 1 [(validate.rules).message = {required: true}];
 }
 
+message TopicUserResponse {
+    int64 id = 1;
+    string title = 2;
+    string typeTopic = 3;
+    int64 memberQuantity = 4;
+    UserResponse student = 5;
+    string memberEmail = 6;
+    string description = 7;
+}
 
 // ====== GET ALL ======
 message GetUsersRequest {}
@@ -204,6 +214,7 @@ message MemberUserResponse {
 message CheckStatusUserJoinClassroomResponse{
     CommonUserResponse response = 1;
     MemberUserResponse member = 2;
+    string status = 3;
 }
 
 

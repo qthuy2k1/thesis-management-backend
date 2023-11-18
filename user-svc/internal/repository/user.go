@@ -75,7 +75,7 @@ func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, arg
 type UserInputRepo struct {
 	ID       string
 	Email    string
-	Class    string
+	Class    *string
 	Major    *string
 	Phone    *string
 	PhotoSrc string
@@ -106,7 +106,7 @@ func (r *UserRepo) CreateUser(ctx context.Context, u UserInputRepo) error {
 type UserOutputRepo struct {
 	ID       string
 	Email    string
-	Class    string
+	Class    *string
 	Major    *string
 	Phone    *string
 	PhotoSrc string

@@ -45,33 +45,38 @@
         }
       }
     },
+    "v1CommonRedisResponse": {
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "string",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "v1GetUserResponse": {
       "type": "object",
       "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonRedisResponse"
+        },
         "user": {
-          "$ref": "#/definitions/v1UserOutput"
+          "$ref": "#/definitions/v1User"
         }
       }
     },
     "v1SetUserResponse": {
-      "type": "object"
-    },
-    "v1UserInput": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "email": {
-          "type": "string"
-        },
-        "role": {
-          "type": "string"
+        "response": {
+          "$ref": "#/definitions/v1CommonRedisResponse"
         }
       }
     },
-    "v1UserOutput": {
+    "v1User": {
       "type": "object",
       "properties": {
         "id": {
@@ -98,7 +103,7 @@
         "email": {
           "type": "string"
         },
-        "classroomID": {
+        "hashedPassword": {
           "type": "string"
         }
       }

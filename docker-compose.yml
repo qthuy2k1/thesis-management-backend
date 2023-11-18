@@ -199,6 +199,22 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+  redis-db:
+    image: redis:alpine
+    container_name: thesis-management-backend-redis-db-service
+    networks:
+      mynet:
+    restart: always
+    environment:
+      REDIS_HOST: cache
+      REDIS_PASS: 
+      REDIS_PORT: 6379
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning
+    volumes: 
+      - cache:/data
+
   api:
     container_name: thesis-management-backend-service
     build:
@@ -412,6 +428,21 @@ services:
     volumes:
       - .:/usr/src/app
 
+  redis:
+    container_name: thesis-management-backend-redis-service
+    env_file:
+      - .env
+    build:
+      dockerfile: ./redis-svc/Dockerfile
+      context: .
+    image: qthuy2k1/thesis-management-backend-redis
+    networks:
+      mynet:
+    depends_on:
+      - redis-db
+    volumes:
+      - .:/usr/src/app
+
   schedule:
     container_name: thesis-management-backend-schedule-service
     # build:
@@ -468,5 +499,6 @@ volumes:
   attachment-db:
   topic-db:
   thesis-commitee-db:
+  cache:
 networks:
   mynet:

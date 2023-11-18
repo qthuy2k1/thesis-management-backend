@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "grpc": "^1.24.11",
-    "grpc_tools_node_protoc_ts": "^5.3.3",
-    "grpc-tools": "^1.12.4"
-  }
-}

@@ -88,6 +88,17 @@
         }
       }
     },
+    "v1GetTopicFromUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonTopicResponse"
+        },
+        "topic": {
+          "$ref": "#/definitions/v1TopicResponse"
+        }
+      }
+    },
     "v1GetTopicResponse": {
       "type": "object",
       "properties": {

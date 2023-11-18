@@ -17,6 +17,26 @@
   ],
   "paths": {
     "/api/topic": {
+      "get": {
+        "operationId": "TopicService_GetTopics",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetTopicsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "TopicService"
+        ]
+      },
       "post": {
         "operationId": "TopicService_CreateTopic",
         "responses": {
@@ -49,35 +69,6 @@
       }
     },
     "/api/topic/{id}": {
-      "get": {
-        "operationId": "TopicService_GetTopic",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetTopicResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "int64"
-          }
-        ],
-        "tags": [
-          "TopicService"
-        ]
-      },
       "delete": {
         "operationId": "TopicService_DeleteTopic",
         "responses": {
@@ -144,6 +135,36 @@
               },
               "title": "====== PUT ======"
             }
+          }
+        ],
+        "tags": [
+          "TopicService"
+        ]
+      }
+    },
+    "/api/topic/{studentID}": {
+      "get": {
+        "operationId": "TopicService_GetTopic",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetTopicResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "studentID",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [
@@ -228,6 +249,18 @@
         }
       }
     },
+    "v1GetTopicsResponse": {
+      "type": "object",
+      "properties": {
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1TopicResponse"
+          }
+        }
+      }
+    },
     "v1TopicInput": {
       "type": "object",
       "properties": {
@@ -270,7 +303,7 @@
           "type": "string",
           "format": "int64"
         },
-        "studentID": {
+        "student": {
           "$ref": "#/definitions/v1UserTopicResponse"
         },
         "memberEmail": {

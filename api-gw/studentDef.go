@@ -94,7 +94,7 @@ func (u *studentDefServiceGW) GetStudentDef(ctx context.Context, req *pb.GetStud
 			Id: res.GetStudentDef().Id,
 			Infor: &pb.StudentDefUserResponse{
 				Id:       res.StudentDef.User.GetId(),
-				Class:    res.StudentDef.User.GetClass(),
+				Class:    res.StudentDef.User.Class,
 				Major:    res.StudentDef.User.Major,
 				Phone:    res.StudentDef.User.Phone,
 				PhotoSrc: res.StudentDef.User.GetPhotoSrc(),
@@ -104,7 +104,7 @@ func (u *studentDefServiceGW) GetStudentDef(ctx context.Context, req *pb.GetStud
 			},
 			Instructor: &pb.StudentDefUserResponse{
 				Id:       res.StudentDef.Instructor.GetId(),
-				Class:    res.StudentDef.Instructor.GetClass(),
+				Class:    res.StudentDef.Instructor.Class,
 				Major:    res.StudentDef.Instructor.Major,
 				Phone:    res.StudentDef.Instructor.Phone,
 				PhotoSrc: res.StudentDef.Instructor.GetPhotoSrc(),
@@ -192,7 +192,7 @@ func (u *studentDefServiceGW) GetStudentDefs(ctx context.Context, req *pb.GetStu
 			Id: s.Id,
 			Infor: &pb.StudentDefUserResponse{
 				Id:       s.User.GetId(),
-				Class:    s.User.GetClass(),
+				Class:    s.User.Class,
 				Major:    s.User.Major,
 				Phone:    s.User.Phone,
 				PhotoSrc: s.User.GetPhotoSrc(),
@@ -202,7 +202,7 @@ func (u *studentDefServiceGW) GetStudentDefs(ctx context.Context, req *pb.GetStu
 			},
 			Instructor: &pb.StudentDefUserResponse{
 				Id:       s.Instructor.GetId(),
-				Class:    s.Instructor.GetClass(),
+				Class:    s.Instructor.Class,
 				Major:    s.Instructor.Major,
 				Phone:    s.Instructor.Phone,
 				PhotoSrc: s.Instructor.GetPhotoSrc(),
@@ -237,7 +237,7 @@ func (u *studentDefServiceGW) GetAllStudentDefsOfInstructor(ctx context.Context,
 			Id: s.Id,
 			Infor: &pb.StudentDefUserResponse{
 				Id:       s.User.GetId(),
-				Class:    s.User.GetClass(),
+				Class:    s.User.Class,
 				Major:    s.User.Major,
 				Phone:    s.User.Phone,
 				PhotoSrc: s.User.GetPhotoSrc(),
@@ -247,7 +247,7 @@ func (u *studentDefServiceGW) GetAllStudentDefsOfInstructor(ctx context.Context,
 			},
 			Instructor: &pb.StudentDefUserResponse{
 				Id:       s.Instructor.GetId(),
-				Class:    s.Instructor.GetClass(),
+				Class:    s.Instructor.Class,
 				Major:    s.Instructor.Major,
 				Phone:    s.Instructor.Phone,
 				PhotoSrc: s.Instructor.GetPhotoSrc(),

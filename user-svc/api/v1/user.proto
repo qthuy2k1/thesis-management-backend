@@ -61,7 +61,7 @@ message CommonUserResponse {
 // ====== user ======
 message UserInput {
     string id = 1;
-    string class = 2;
+    optional string class = 2;
     optional string major = 3;
     optional string phone = 4;
     string photoSrc = 5;
@@ -72,7 +72,7 @@ message UserInput {
 
 message UserResponse {
     string id = 1;
-    string class = 2;
+    optional string class = 2;
     optional string major = 3;
     optional string phone = 4;
     string photoSrc = 5;

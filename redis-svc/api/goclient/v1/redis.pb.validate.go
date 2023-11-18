@@ -35,47 +35,46 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on UserInput with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *UserInput) Validate() error {
+// Validate checks the field values on CommonRedisResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CommonRedisResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on UserInput with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in UserInputMultiError, or nil
-// if none found.
-func (m *UserInput) ValidateAll() error {
+// ValidateAll checks the field values on CommonRedisResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CommonRedisResponseMultiError, or nil if none found.
+func (m *CommonRedisResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *UserInput) validate(all bool) error {
+func (m *CommonRedisResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for Id
+	// no validation rules for StatusCode
 
-	// no validation rules for Email
-
-	// no validation rules for Role
+	// no validation rules for Message
 
 	if len(errors) > 0 {
-		return UserInputMultiError(errors)
+		return CommonRedisResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// UserInputMultiError is an error wrapping multiple validation errors returned
-// by UserInput.ValidateAll() if the designated constraints aren't met.
-type UserInputMultiError []error
+// CommonRedisResponseMultiError is an error wrapping multiple validation
+// errors returned by CommonRedisResponse.ValidateAll() if the designated
+// constraints aren't met.
+type CommonRedisResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m UserInputMultiError) Error() string {
+func (m CommonRedisResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -84,11 +83,11 @@ func (m UserInputMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m UserInputMultiError) AllErrors() []error { return m }
+func (m CommonRedisResponseMultiError) AllErrors() []error { return m }
 
-// UserInputValidationError is the validation error returned by
-// UserInput.Validate if the designated constraints aren't met.
-type UserInputValidationError struct {
+// CommonRedisResponseValidationError is the validation error returned by
+// CommonRedisResponse.Validate if the designated constraints aren't met.
+type CommonRedisResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -96,22 +95,24 @@ type UserInputValidationError struct {
 }
 
 // Field function returns field value.
-func (e UserInputValidationError) Field() string { return e.field }
+func (e CommonRedisResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e UserInputValidationError) Reason() string { return e.reason }
+func (e CommonRedisResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e UserInputValidationError) Cause() error { return e.cause }
+func (e CommonRedisResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e UserInputValidationError) Key() bool { return e.key }
+func (e CommonRedisResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e UserInputValidationError) ErrorName() string { return "UserInputValidationError" }
+func (e CommonRedisResponseValidationError) ErrorName() string {
+	return "CommonRedisResponseValidationError"
+}
 
 // Error satisfies the builtin error interface
-func (e UserInputValidationError) Error() string {
+func (e CommonRedisResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -123,14 +124,14 @@ func (e UserInputValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sUserInput.%s: %s%s",
+		"invalid %sCommonRedisResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = UserInputValidationError{}
+var _ error = CommonRedisResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -138,7 +139,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = UserInputValidationError{}
+} = CommonRedisResponseValidationError{}
 
 // Validate checks the field values on SetUserRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
@@ -291,6 +292,35 @@ func (m *SetUserResponse) validate(all bool) error {
 
 	var errors []error
 
+	if all {
+		switch v := interface{}(m.GetResponse()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, SetUserResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, SetUserResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return SetUserResponseValidationError{
+				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if len(errors) > 0 {
 		return SetUserResponseMultiError(errors)
 	}
@@ -369,22 +399,21 @@ var _ interface {
 	ErrorName() string
 } = SetUserResponseValidationError{}
 
-// Validate checks the field values on UserOutput with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *UserOutput) Validate() error {
+// Validate checks the field values on User with the rules defined in the proto
+// definition for this message. If any rules are violated, the first error
+// encountered is returned, or nil if there are no violations.
+func (m *User) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on UserOutput with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in UserOutputMultiError, or
-// nil if none found.
-func (m *UserOutput) ValidateAll() error {
+// ValidateAll checks the field values on User with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in UserMultiError, or nil if none found.
+func (m *User) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *UserOutput) validate(all bool) error {
+func (m *User) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -392,8 +421,6 @@ func (m *UserOutput) validate(all bool) error {
 	var errors []error
 
 	// no validation rules for Id
-
-	// no validation rules for Class
 
 	// no validation rules for PhotoSrc
 
@@ -403,7 +430,11 @@ func (m *UserOutput) validate(all bool) error {
 
 	// no validation rules for Email
 
-	// no validation rules for ClassroomID
+	// no validation rules for HashedPassword
+
+	if m.Class != nil {
+		// no validation rules for Class
+	}
 
 	if m.Major != nil {
 		// no validation rules for Major
@@ -414,18 +445,18 @@ func (m *UserOutput) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return UserOutputMultiError(errors)
+		return UserMultiError(errors)
 	}
 
 	return nil
 }
 
-// UserOutputMultiError is an error wrapping multiple validation errors
-// returned by UserOutput.ValidateAll() if the designated constraints aren't met.
-type UserOutputMultiError []error
+// UserMultiError is an error wrapping multiple validation errors returned by
+// User.ValidateAll() if the designated constraints aren't met.
+type UserMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m UserOutputMultiError) Error() string {
+func (m UserMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -434,11 +465,11 @@ func (m UserOutputMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m UserOutputMultiError) AllErrors() []error { return m }
+func (m UserMultiError) AllErrors() []error { return m }
 
-// UserOutputValidationError is the validation error returned by
-// UserOutput.Validate if the designated constraints aren't met.
-type UserOutputValidationError struct {
+// UserValidationError is the validation error returned by User.Validate if the
+// designated constraints aren't met.
+type UserValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -446,22 +477,22 @@ type UserOutputValidationError struct {
 }
 
 // Field function returns field value.
-func (e UserOutputValidationError) Field() string { return e.field }
+func (e UserValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e UserOutputValidationError) Reason() string { return e.reason }
+func (e UserValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e UserOutputValidationError) Cause() error { return e.cause }
+func (e UserValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e UserOutputValidationError) Key() bool { return e.key }
+func (e UserValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e UserOutputValidationError) ErrorName() string { return "UserOutputValidationError" }
+func (e UserValidationError) ErrorName() string { return "UserValidationError" }
 
 // Error satisfies the builtin error interface
-func (e UserOutputValidationError) Error() string {
+func (e UserValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -473,14 +504,14 @@ func (e UserOutputValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sUserOutput.%s: %s%s",
+		"invalid %sUser.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = UserOutputValidationError{}
+var _ error = UserValidationError{}
 
 var _ interface {
 	Field() string
@@ -488,7 +519,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = UserOutputValidationError{}
+} = UserValidationError{}
 
 // Validate checks the field values on GetUserRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
@@ -613,6 +644,35 @@ func (m *GetUserResponse) validate(all bool) error {
 	}
 
 	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetResponse()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetUserResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetUserResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetUserResponseValidationError{
+				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if all {
 		switch v := interface{}(m.GetUser()).(type) {
