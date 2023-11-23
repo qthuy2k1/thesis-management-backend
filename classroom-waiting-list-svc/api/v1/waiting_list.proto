@@ -23,13 +23,13 @@ service WaitingListService {
         
     }
 
-    rpc GetWaitingListsOfClassroom(GetWaitingListsRequest) returns (GetWaitingListsResponse) {
+    rpc GetWaitingListsOfClassroom(GetWaitingListsOfClassroomRequest) returns (GetWaitingListsOfClassroomResponse) {
         
     }
 
-    rpc CheckUserInWaitingListOfClassroom(CheckUserInWaitingListClassroomRequest) returns (CheckUserInWaitingListClassroomResponse) {
-        
-    }
+    rpc CheckUserInWaitingListOfClassroom(CheckUserInWaitingListClassroomRequest) returns (CheckUserInWaitingListClassroomResponse) {}
+
+    rpc GetWaitingLists(GetWaitingListsRequest) returns (GetWaitingListsResponse) {}
 }
 
 message CommonWaitingListResponse {
@@ -94,9 +94,16 @@ message DeleteWaitingListResponse {
 }
 
 // ====== GET ALL ======
-message GetWaitingListsRequest {
+message GetWaitingListsOfClassroomRequest {
     int64 classroomID = 1;
 }
+
+message GetWaitingListsOfClassroomResponse {
+    CommonWaitingListResponse response = 1; 
+    repeated WaitingListResponse waitingLists = 3;
+}
+
+message GetWaitingListsRequest {}
 
 message GetWaitingListsResponse {
     CommonWaitingListResponse response = 1; 

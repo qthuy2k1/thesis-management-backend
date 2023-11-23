@@ -10,7 +10,6 @@ import (
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
-	redisSvcV1 "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	reportingStageSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 	topicSvcV1 "github.com/qthuy2k1/thesis-management-backend/topic-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
@@ -24,10 +23,9 @@ type classroomServiceGW struct {
 	reportingStageClient reportingStageSvcV1.ReportingStageServiceClient
 	userClient           userSvcV1.UserServiceClient
 	topicClient          topicSvcV1.TopicServiceClient
-	redisClient          redisSvcV1.RedisServiceClient
 }
 
-func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, reportingStageClient reportingStageSvcV1.ReportingStageServiceClient, userClient userSvcV1.UserServiceClient, topicClient topicSvcV1.TopicServiceClient, redisClient redisSvcV1.RedisServiceClient) *classroomServiceGW {
+func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, reportingStageClient reportingStageSvcV1.ReportingStageServiceClient, userClient userSvcV1.UserServiceClient, topicClient topicSvcV1.TopicServiceClient) *classroomServiceGW {
 	return &classroomServiceGW{
 		classroomClient:      classroomClient,
 		postClient:           postClient,
@@ -35,7 +33,6 @@ func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient,
 		reportingStageClient: reportingStageClient,
 		userClient:           userClient,
 		topicClient:          topicClient,
-		redisClient:          redisClient,
 	}
 }
 
@@ -44,14 +41,28 @@ func (u *classroomServiceGW) CreateClassroom(ctx context.Context, req *pb.Create
 		return nil, err
 	}
 
+	topicTags := ""
+	if req.GetClassroom().TopicTags != nil {
+		topicTags = req.GetClassroom().GetTopicTags()
+	}
+
+	lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.Classroom.LecturerID})
+	if err != nil {
+		return nil, err
+	}
+
+	if lecturerRes.Response.StatusCode == 404 {
+		return nil, errors.New("user not found")
+	}
+
 	res, err := u.classroomClient.CreateClassroom(ctx, &classroomSvcV1.CreateClassroomRequest{
 		Classroom: &classroomSvcV1.ClassroomInput{
-			Title:           req.GetClassroom().GetTitle(),
-			Description:     req.GetClassroom().GetDescription(),
+			Title:           "",
+			Description:     "",
 			Status:          req.GetClassroom().GetStatus(),
 			LecturerID:      req.GetClassroom().GetLecturerID(),
 			ClassCourse:     req.GetClassroom().GetClassCourse(),
-			TopicTags:       req.GetClassroom().GetTopicTags(),
+			TopicTags:       &topicTags,
 			QuantityStudent: req.GetClassroom().GetQuantityStudent(),
 		},
 	})
@@ -117,60 +128,9 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 			return nil, err
 		}
 
-		redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-			Id: p.AuthorID,
-		})
+		authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.AuthorID})
 		if err != nil {
 			return nil, err
-		}
-
-		var authorRes *userSvcV1.GetUserResponse
-		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-			authorRes = &userSvcV1.GetUserResponse{
-				Response: &userSvcV1.CommonUserResponse{
-					StatusCode: 200,
-					Message:    "OK",
-				},
-				User: &userSvcV1.UserResponse{
-					Id:       redis.User.GetId(),
-					Class:    redis.User.Class,
-					Major:    redis.User.Major,
-					Phone:    redis.User.Phone,
-					PhotoSrc: redis.User.GetPhotoSrc(),
-					Role:     redis.User.GetRole(),
-					Name:     redis.User.GetName(),
-					Email:    redis.User.GetEmail(),
-				},
-			}
-		} else {
-			authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.AuthorID})
-			if err != nil {
-				return nil, err
-			}
-
-			if authorRes.Response.StatusCode != 200 {
-				return nil, errors.New("error getting user")
-			}
-
-			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-				User: &redisSvcV1.User{
-					Id:       authorRes.User.GetId(),
-					Class:    authorRes.User.Class,
-					Major:    authorRes.User.Major,
-					Phone:    authorRes.User.Major,
-					PhotoSrc: authorRes.User.GetPhotoSrc(),
-					Role:     authorRes.User.GetRole(),
-					Name:     authorRes.User.GetName(),
-					Email:    authorRes.User.GetEmail(),
-				},
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if cache.Response.StatusCode != 200 {
-				return nil, errors.New("error set user cache")
-			}
 		}
 
 		if authorRes.Response.StatusCode == 404 {
@@ -225,60 +185,9 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 			return nil, err
 		}
 
-		redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-			Id: p.AuthorID,
-		})
+		authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.AuthorID})
 		if err != nil {
 			return nil, err
-		}
-
-		var authorRes *userSvcV1.GetUserResponse
-		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-			authorRes = &userSvcV1.GetUserResponse{
-				Response: &userSvcV1.CommonUserResponse{
-					StatusCode: 200,
-					Message:    "OK",
-				},
-				User: &userSvcV1.UserResponse{
-					Id:       redis.User.GetId(),
-					Class:    redis.User.Class,
-					Major:    redis.User.Major,
-					Phone:    redis.User.Phone,
-					PhotoSrc: redis.User.GetPhotoSrc(),
-					Role:     redis.User.GetRole(),
-					Name:     redis.User.GetName(),
-					Email:    redis.User.GetEmail(),
-				},
-			}
-		} else {
-			authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.AuthorID})
-			if err != nil {
-				return nil, err
-			}
-
-			if authorRes.Response.StatusCode != 200 {
-				return nil, errors.New("error getting user")
-			}
-
-			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-				User: &redisSvcV1.User{
-					Id:       authorRes.User.GetId(),
-					Class:    authorRes.User.Class,
-					Major:    authorRes.User.Major,
-					Phone:    authorRes.User.Major,
-					PhotoSrc: authorRes.User.GetPhotoSrc(),
-					Role:     authorRes.User.GetRole(),
-					Name:     authorRes.User.GetName(),
-					Email:    authorRes.User.GetEmail(),
-				},
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if cache.Response.StatusCode != 200 {
-				return nil, errors.New("error set user cache")
-			}
 		}
 
 		if authorRes.Response.StatusCode == 404 {
@@ -357,14 +266,17 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 		})
 	}
 
+	topicTags := ""
+	if res.GetClassroom().TopicTags != nil {
+		topicTags = res.GetClassroom().GetTopicTags()
+	}
+
 	return &pb.GetClassroomResponse{
 		Classroom: &pb.ClassroomResponse{
 			Id:          res.GetClassroom().GetId(),
-			Title:       res.GetClassroom().GetTitle(),
-			Description: res.GetClassroom().GetDescription(),
 			Status:      res.GetClassroom().GetStatus(),
 			ClassCourse: res.GetClassroom().GetClassCourse(),
-			TopicTags:   res.GetClassroom().GetTopicTags(),
+			TopicTags:   &topicTags,
 			Lecturer: &pb.AuthorClassroomResponse{
 				Id:       lecturerRes.User.Id,
 				Class:    lecturerRes.User.Class,
@@ -389,15 +301,20 @@ func (u *classroomServiceGW) UpdateClassroom(ctx context.Context, req *pb.Update
 		return nil, err
 	}
 
+	topicTags := ""
+	if req.GetClassroom().TopicTags != nil {
+		topicTags = req.GetClassroom().GetTopicTags()
+	}
+
 	res, err := u.classroomClient.UpdateClassroom(ctx, &classroomSvcV1.UpdateClassroomRequest{
 		Id: req.GetId(),
 		Classroom: &classroomSvcV1.ClassroomInput{
-			Title:           req.GetClassroom().GetTitle(),
-			Description:     req.GetClassroom().GetDescription(),
+			Title:           "",
+			Description:     "",
 			Status:          req.GetClassroom().GetStatus(),
 			LecturerID:      req.GetClassroom().GetLecturerID(),
 			ClassCourse:     req.GetClassroom().GetClassCourse(),
-			TopicTags:       req.GetClassroom().GetTopicTags(),
+			TopicTags:       &topicTags,
 			QuantityStudent: req.GetClassroom().GetQuantityStudent(),
 		},
 	})
@@ -520,60 +437,9 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 				return nil, err
 			}
 
-			redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-				Id: p.AuthorID,
-			})
+			authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.AuthorID})
 			if err != nil {
 				return nil, err
-			}
-
-			var authorRes *userSvcV1.GetUserResponse
-			if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-				authorRes = &userSvcV1.GetUserResponse{
-					Response: &userSvcV1.CommonUserResponse{
-						StatusCode: 200,
-						Message:    "OK",
-					},
-					User: &userSvcV1.UserResponse{
-						Id:       redis.User.GetId(),
-						Class:    redis.User.Class,
-						Major:    redis.User.Major,
-						Phone:    redis.User.Phone,
-						PhotoSrc: redis.User.GetPhotoSrc(),
-						Role:     redis.User.GetRole(),
-						Name:     redis.User.GetName(),
-						Email:    redis.User.GetEmail(),
-					},
-				}
-			} else {
-				authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.AuthorID})
-				if err != nil {
-					return nil, err
-				}
-
-				if authorRes.Response.StatusCode != 200 {
-					return nil, errors.New("error getting user")
-				}
-
-				cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-					User: &redisSvcV1.User{
-						Id:       authorRes.User.GetId(),
-						Class:    authorRes.User.Class,
-						Major:    authorRes.User.Major,
-						Phone:    authorRes.User.Major,
-						PhotoSrc: authorRes.User.GetPhotoSrc(),
-						Role:     authorRes.User.GetRole(),
-						Name:     authorRes.User.GetName(),
-						Email:    authorRes.User.GetEmail(),
-					},
-				})
-				if err != nil {
-					return nil, err
-				}
-
-				if cache.Response.StatusCode != 200 {
-					return nil, errors.New("error set user cache")
-				}
 			}
 
 			postsAndExercises = append(postsAndExercises, &pb.PostsAndExercisesOfClassroom{
@@ -624,60 +490,9 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 				return nil, err
 			}
 
-			redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-				Id: p.AuthorID,
-			})
+			authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.AuthorID})
 			if err != nil {
 				return nil, err
-			}
-
-			var authorRes *userSvcV1.GetUserResponse
-			if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-				authorRes = &userSvcV1.GetUserResponse{
-					Response: &userSvcV1.CommonUserResponse{
-						StatusCode: 200,
-						Message:    "OK",
-					},
-					User: &userSvcV1.UserResponse{
-						Id:       redis.User.GetId(),
-						Class:    redis.User.Class,
-						Major:    redis.User.Major,
-						Phone:    redis.User.Phone,
-						PhotoSrc: redis.User.GetPhotoSrc(),
-						Role:     redis.User.GetRole(),
-						Name:     redis.User.GetName(),
-						Email:    redis.User.GetEmail(),
-					},
-				}
-			} else {
-				authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.AuthorID})
-				if err != nil {
-					return nil, err
-				}
-
-				if authorRes.Response.StatusCode != 200 {
-					return nil, errors.New("error getting user")
-				}
-
-				cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-					User: &redisSvcV1.User{
-						Id:       authorRes.User.GetId(),
-						Class:    authorRes.User.Class,
-						Major:    authorRes.User.Major,
-						Phone:    authorRes.User.Major,
-						PhotoSrc: authorRes.User.GetPhotoSrc(),
-						Role:     authorRes.User.GetRole(),
-						Name:     authorRes.User.GetName(),
-						Email:    authorRes.User.GetEmail(),
-					},
-				})
-				if err != nil {
-					return nil, err
-				}
-
-				if cache.Response.StatusCode != 200 {
-					return nil, errors.New("error set user cache")
-				}
 			}
 
 			postsAndExercises = append(postsAndExercises, &pb.PostsAndExercisesOfClassroom{
@@ -713,67 +528,14 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 			return postsAndExercises[i].CreatedAt.AsTime().Before(postsAndExercises[j].CreatedAt.AsTime())
 		})
 
-		redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-			Id: c.LecturerID,
-		})
+		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: c.LecturerID})
 		if err != nil {
 			return nil, err
 		}
 
-		var lecturerRes *userSvcV1.GetUserResponse
-		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-			lecturerRes = &userSvcV1.GetUserResponse{
-				Response: &userSvcV1.CommonUserResponse{
-					StatusCode: 200,
-					Message:    "OK",
-				},
-				User: &userSvcV1.UserResponse{
-					Id:       redis.User.GetId(),
-					Class:    redis.User.Class,
-					Major:    redis.User.Major,
-					Phone:    redis.User.Phone,
-					PhotoSrc: redis.User.GetPhotoSrc(),
-					Role:     redis.User.GetRole(),
-					Name:     redis.User.GetName(),
-					Email:    redis.User.GetEmail(),
-				},
-			}
-		} else {
-			lecturerRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: c.LecturerID})
-			if err != nil {
-				return nil, err
-			}
-
-			if lecturerRes.Response.StatusCode != 200 {
-				return nil, errors.New("error getting user")
-			}
-
-			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-				User: &redisSvcV1.User{
-					Id:       lecturerRes.User.GetId(),
-					Class:    lecturerRes.User.Class,
-					Major:    lecturerRes.User.Major,
-					Phone:    lecturerRes.User.Major,
-					PhotoSrc: lecturerRes.User.GetPhotoSrc(),
-					Role:     lecturerRes.User.GetRole(),
-					Name:     lecturerRes.User.GetName(),
-					Email:    lecturerRes.User.GetEmail(),
-				},
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if cache.Response.StatusCode != 200 {
-				return nil, errors.New("error set user cache")
-			}
-		}
-
 		classrooms = append(classrooms, &pb.ClassroomResponse{
-			Id:          c.Id,
-			Title:       c.Title,
-			Description: c.Description,
-			Status:      c.Status,
+			Id:     c.Id,
+			Status: c.Status,
 			Lecturer: &pb.AuthorClassroomResponse{
 				Id:       lecturerRes.User.Id,
 				Class:    lecturerRes.User.Class,

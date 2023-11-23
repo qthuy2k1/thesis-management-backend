@@ -20,6 +20,8 @@ type IWaitingListRepo interface {
 	GetWaitingListsOfClassroom(ctx context.Context, classroomID int) ([]WaitingListOutputRepo, error)
 	// CheckUserInWaitingListOfClassroom returns a boolean indicating whether user is in waiting list
 	CheckUserInWaitingListOfClassroom(ctx context.Context, userID string) (bool, int, error)
+	// GetWaitingList returns a list of waiting_lists in db
+	GetWaitingLists(ctx context.Context) ([]WaitingListOutputRepo, error)
 }
 
 type WaitingListRepo struct {

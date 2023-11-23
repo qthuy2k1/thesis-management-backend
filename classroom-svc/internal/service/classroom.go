@@ -15,7 +15,7 @@ type ClassroomInputSvc struct {
 	Status          string
 	LecturerID      string
 	ClassCourse     string
-	TopicTags       string
+	TopicTags       *string
 	QuantityStudent int
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
@@ -44,16 +44,16 @@ func (s *ClassroomSvc) CreateClassroom(ctx context.Context, clr ClassroomInputSv
 }
 
 // GetClassroom returns a classroom in db given by id
-func (s *ClassroomSvc) GetClassroom(ctx context.Context, id int) (ClassroomInputSvc, error) {
+func (s *ClassroomSvc) GetClassroom(ctx context.Context, id int) (ClassroomOutputSvc, error) {
 	clr, err := s.Repository.GetClassroom(ctx, id)
 	if err != nil {
 		if errors.Is(err, repository.ErrClassroomNotFound) {
-			return ClassroomInputSvc{}, ErrClassroomNotFound
+			return ClassroomOutputSvc{}, ErrClassroomNotFound
 		}
-		return ClassroomInputSvc{}, err
+		return ClassroomOutputSvc{}, err
 	}
 
-	return ClassroomInputSvc{
+	return ClassroomOutputSvc{
 		ID:              clr.ID,
 		Title:           clr.Title,
 		Description:     clr.Description,
@@ -118,7 +118,7 @@ type ClassroomOutputSvc struct {
 	Status          string
 	LecturerID      string
 	ClassCourse     string
-	TopicTags       string
+	TopicTags       *string
 	QuantityStudent int
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
@@ -135,11 +135,11 @@ type ClassroomFilterSvc struct {
 // GetClassroom returns a list of classrooms in db with filter
 func (s *ClassroomSvc) GetClassrooms(ctx context.Context, filter ClassroomFilterSvc) ([]ClassroomOutputSvc, int, error) {
 	clrsRepo, count, err := s.Repository.GetClassrooms(ctx, repository.ClassroomFilterRepo{
-		Limit:       filter.Limit,
-		Page:        filter.Page,
-		TitleSearch: filter.TitleSearch,
-		SortColumn:  filter.SortColumn,
-		SortOrder:   filter.SortOrder,
+		Limit: filter.Limit,
+		Page:  filter.Page,
+		// TitleSearch: filter.TitleSearch,
+		SortColumn: filter.SortColumn,
+		SortOrder:  filter.SortOrder,
 	})
 	if err != nil {
 		return nil, 0, err

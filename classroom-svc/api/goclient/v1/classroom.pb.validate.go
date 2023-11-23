@@ -173,9 +173,11 @@ func (m *ClassroomInput) validate(all bool) error {
 
 	// no validation rules for ClassCourse
 
-	// no validation rules for TopicTags
-
 	// no validation rules for QuantityStudent
+
+	if m.TopicTags != nil {
+		// no validation rules for TopicTags
+	}
 
 	if len(errors) > 0 {
 		return ClassroomInputMultiError(errors)
@@ -288,8 +290,6 @@ func (m *ClassroomResponse) validate(all bool) error {
 	// no validation rules for LecturerID
 
 	// no validation rules for ClassCourse
-
-	// no validation rules for TopicTags
 
 	// no validation rules for QuantityStudent
 
@@ -417,6 +417,10 @@ func (m *ClassroomResponse) validate(all bool) error {
 			}
 		}
 
+	}
+
+	if m.TopicTags != nil {
+		// no validation rules for TopicTags
 	}
 
 	if len(errors) > 0 {

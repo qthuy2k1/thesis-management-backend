@@ -408,6 +408,9 @@
         },
         "email": {
           "type": "string"
+        },
+        "hashedPassword": {
+          "type": "string"
         }
       },
       "title": "====== user ======"
@@ -437,6 +440,9 @@
           "type": "string"
         },
         "email": {
+          "type": "string"
+        },
+        "hashedPassword": {
           "type": "string"
         }
       }

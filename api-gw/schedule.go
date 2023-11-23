@@ -2,12 +2,10 @@ package main
 
 import (
 	"context"
-	"errors"
 	"log"
 	"strconv"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
-	redisSvcV1 "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	scheduleSvcV1 "github.com/qthuy2k1/thesis-management-backend/schedule-svc/api/goclient/v1"
 	commiteeSvcV1 "github.com/qthuy2k1/thesis-management-backend/thesis-commitee-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
@@ -19,16 +17,14 @@ type scheduleServiceGW struct {
 	commiteeClient commiteeSvcV1.CommiteeServiceClient
 	thesisClient   commiteeSvcV1.ScheduleServiceClient
 	userClient     userSvcV1.UserServiceClient
-	redisClient    redisSvcV1.RedisServiceClient
 }
 
-func NewSchedulesService(scheduleClient scheduleSvcV1.ScheduleServiceClient, commiteeClient commiteeSvcV1.CommiteeServiceClient, userClient userSvcV1.UserServiceClient, thesisClient commiteeSvcV1.ScheduleServiceClient, redisClient redisSvcV1.RedisServiceClient) *scheduleServiceGW {
+func NewSchedulesService(scheduleClient scheduleSvcV1.ScheduleServiceClient, commiteeClient commiteeSvcV1.CommiteeServiceClient, userClient userSvcV1.UserServiceClient, thesisClient commiteeSvcV1.ScheduleServiceClient) *scheduleServiceGW {
 	return &scheduleServiceGW{
 		scheduleClient: scheduleClient,
 		commiteeClient: commiteeClient,
 		userClient:     userClient,
 		thesisClient:   thesisClient,
-		redisClient:    redisClient,
 	}
 }
 
@@ -143,66 +139,9 @@ func (u *scheduleServiceGW) CreateSchedule(ctx context.Context, req *pb.CreateSc
 	}
 
 	for _, r := range councilRes.Councils {
-		// userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-		// 	Id: r.LecturerID,
-		// })
-		// if err != nil {
-		// 	return nil, err
-		// }
-		redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-			Id: r.LecturerID,
-		})
+		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: r.LecturerID})
 		if err != nil {
 			return nil, err
-		}
-
-		var lecturerRes *userSvcV1.GetUserResponse
-		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-			lecturerRes = &userSvcV1.GetUserResponse{
-				Response: &userSvcV1.CommonUserResponse{
-					StatusCode: 200,
-					Message:    "OK",
-				},
-				User: &userSvcV1.UserResponse{
-					Id:       redis.User.GetId(),
-					Class:    redis.User.Class,
-					Major:    redis.User.Major,
-					Phone:    redis.User.Phone,
-					PhotoSrc: redis.User.GetPhotoSrc(),
-					Role:     redis.User.GetRole(),
-					Name:     redis.User.GetName(),
-					Email:    redis.User.GetEmail(),
-				},
-			}
-		} else {
-			lecturerRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: r.LecturerID})
-			if err != nil {
-				return nil, err
-			}
-
-			if lecturerRes.Response.StatusCode != 200 {
-				return nil, errors.New("error getting user")
-			}
-
-			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-				User: &redisSvcV1.User{
-					Id:       lecturerRes.User.GetId(),
-					Class:    lecturerRes.User.Class,
-					Major:    lecturerRes.User.Major,
-					Phone:    lecturerRes.User.Major,
-					PhotoSrc: lecturerRes.User.GetPhotoSrc(),
-					Role:     lecturerRes.User.GetRole(),
-					Name:     lecturerRes.User.GetName(),
-					Email:    lecturerRes.User.GetEmail(),
-				},
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if cache.Response.StatusCode != 200 {
-				return nil, errors.New("error set user cache")
-			}
 		}
 
 		councils = append(councils, &scheduleSvcV1.UserScheduleResponse{

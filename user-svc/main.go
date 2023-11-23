@@ -46,7 +46,12 @@ func main() {
 		log.Fatalf("Could not set up database: %v", err)
 	}
 
-	repository := repository.NewUserRepo(database)
+	redisPort := os.Getenv("REDIS_PORT")
+	redisPassword := os.Getenv("REDIS_PORT")
+
+	redis := db.RedisInitialize(redisPort, redisPassword)
+
+	repository := repository.NewUserRepo(database, redis)
 	service := service.NewUserSvc(repository)
 	handler := handler.NewUserHdl(service)
 

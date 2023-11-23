@@ -35,9 +35,15 @@ service WaitingListService {
         };
     }
 
-    rpc GetWaitingListsOfClassroom(GetWaitingListsRequest) returns (GetWaitingListsResponse) {
+    rpc GetWaitingListsOfClassroom(GetWaitingListsOfClassroomRequest) returns (GetWaitingListsOfClassroomResponse) {
         option (google.api.http) = {
             get: "/api/requirement/class/{classroomID}"
+        };
+    }
+
+    rpc GetWaitingLists(GetWaitingListsRequest) returns (GetWaitingListsResponse) {
+        option (google.api.http) = {
+            get: "/api/requirement"
         };
     }
 
@@ -122,9 +128,17 @@ message DeleteWaitingListResponse {
 }
 
 // ====== GET ALL ======
-message GetWaitingListsRequest {
+message GetWaitingListsOfClassroomRequest {
     int64 classroomID = 1 [(validate.rules).int64.gte = 1];
 }
+
+message GetWaitingListsOfClassroomResponse {
+    CommonWaitingListResponse response = 1 [(validate.rules).message = {required: true}]; 
+    repeated WaitingListResponse waitingLists = 2;
+}
+
+// ====== GET ALL ======
+message GetWaitingListsRequest {}
 
 message GetWaitingListsResponse {
     CommonWaitingListResponse response = 1 [(validate.rules).message = {required: true}]; 
@@ -138,7 +152,7 @@ message ClassroomWTLResponse {
     string status = 4 [(validate.rules).string = {min_len: 2}];
     LecturerWaitingListResponse lecturer = 5;
     string classCourse = 6 [(validate.rules).string = {min_len: 2}];
-    string topicTags = 7 [(validate.rules).string = {min_len: 2}];
+    optional string topicTags = 7 [(validate.rules).string = {min_len: 2}];
     int64 quantityStudent = 8 [(validate.rules).int64.gte = 0];
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];

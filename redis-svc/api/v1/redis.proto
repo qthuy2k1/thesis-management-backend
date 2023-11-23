@@ -32,7 +32,7 @@ message User {
     string role = 6;
     string name = 7;
     string email = 8;
-    string hashedPassword = 9;
+    optional string hashedPassword = 9;
 }
 
 message GetUserRequest {

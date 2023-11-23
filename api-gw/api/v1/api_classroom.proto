@@ -53,12 +53,10 @@ message CommonClassroomResponse {
 
 // ====== POST ======
 message ClassroomInput {
-    string title = 1 [(validate.rules).string = {min_len: 2, max_len: 200}];
-    string description = 2 [(validate.rules).string = {min_len: 2}];
     string status = 3 [(validate.rules).string = {min_len: 2}];
     string lecturerID = 4 [(validate.rules).string = {min_len: 2}];
     string classCourse = 5 [(validate.rules).string = {min_len: 2}];
-    string topicTags = 6 [(validate.rules).string = {min_len: 2}];
+    optional string topicTags = 6;
     int64 quantityStudent = 7 [(validate.rules).int64.gte = 0];
 }
 
@@ -82,12 +80,10 @@ message AuthorClassroomResponse {
 
 message ClassroomResponse {
     int64 id = 1 [(validate.rules).int64.gte = 1];
-    string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
-    string description = 3 [(validate.rules).string = {min_len: 2}];
     string status = 4 [(validate.rules).string = {min_len: 2}];
     AuthorClassroomResponse lecturer = 5;
     string classCourse = 6 [(validate.rules).string = {min_len: 2}];
-    string topicTags = 7 [(validate.rules).string = {min_len: 2}];
+    optional string topicTags = 7;
     int64 quantityStudent = 8 [(validate.rules).int64.gte = 0];
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];

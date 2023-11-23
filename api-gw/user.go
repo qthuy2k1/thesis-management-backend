@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"errors"
 	"log"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
-	redisSvcV1 "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	topicSvcV1 "github.com/qthuy2k1/thesis-management-backend/topic-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 
@@ -21,16 +19,14 @@ type userServiceGW struct {
 	classroomClient   classroomSvcV1.ClassroomServiceClient
 	waitingListClient waitingListSvcV1.WaitingListServiceClient
 	topicClient       topicSvcV1.TopicServiceClient
-	redisClient       redisSvcV1.RedisServiceClient
 }
 
-func NewUsersService(userClient userSvcV1.UserServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, waitingListClient waitingListSvcV1.WaitingListServiceClient, topicClient topicSvcV1.TopicServiceClient, redisClient redisSvcV1.RedisServiceClient) *userServiceGW {
+func NewUsersService(userClient userSvcV1.UserServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, waitingListClient waitingListSvcV1.WaitingListServiceClient, topicClient topicSvcV1.TopicServiceClient) *userServiceGW {
 	return &userServiceGW{
 		userClient:        userClient,
 		classroomClient:   classroomClient,
 		waitingListClient: waitingListClient,
 		topicClient:       topicClient,
-		redisClient:       redisClient,
 	}
 }
 
@@ -42,25 +38,28 @@ func (u *userServiceGW) CreateUser(ctx context.Context, req *pb.CreateUserReques
 	class := req.GetUser().GetClass()
 	major := req.GetUser().GetMajor()
 	phone := req.GetUser().GetPhone()
+	password := req.GetUser().GetPassword()
 
-	res, err := u.userClient.CreateUser(ctx, &userSvcV1.CreateUserRequest{
-		User: &userSvcV1.UserInput{
-			Id:       req.GetUser().GetId(),
-			Class:    &class,
-			Major:    &major,
-			Phone:    &phone,
-			PhotoSrc: req.GetUser().GetPhotoSrc(),
-			Role:     req.GetUser().GetRole(),
-			Name:     req.GetUser().GetName(),
-			Email:    req.GetUser().GetEmail(),
-		},
-	})
+	passwordHashed, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
 		return nil, err
 	}
 
-	password := req.GetUser().Password
-	passwordHashed, err := bcrypt.GenerateFromPassword([]byte(*password), 10)
+	passwordHashedStr := string(passwordHashed)
+
+	res, err := u.userClient.CreateUser(ctx, &userSvcV1.CreateUserRequest{
+		User: &userSvcV1.UserInput{
+			Id:             req.GetUser().GetId(),
+			Class:          &class,
+			Major:          &major,
+			Phone:          &phone,
+			PhotoSrc:       req.GetUser().GetPhotoSrc(),
+			Role:           req.GetUser().GetRole(),
+			Name:           req.GetUser().GetName(),
+			Email:          req.GetUser().GetEmail(),
+			HashedPassword: &passwordHashedStr,
+		},
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -79,72 +78,9 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 		return nil, err
 	}
 
-	redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-		Id: req.Id,
-	})
+	res, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
-	}
-
-	var res *userSvcV1.GetUserResponse
-	if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-		log.Println("got user from redis")
-		res = &userSvcV1.GetUserResponse{
-			Response: &userSvcV1.CommonUserResponse{
-				StatusCode: 200,
-				Message:    "OK",
-			},
-			User: &userSvcV1.UserResponse{
-				Id:       redis.User.GetId(),
-				Class:    redis.User.Class,
-				Major:    redis.User.Major,
-				Phone:    redis.User.Phone,
-				PhotoSrc: redis.User.GetPhotoSrc(),
-				Role:     redis.User.GetRole(),
-				Name:     redis.User.GetName(),
-				Email:    redis.User.GetEmail(),
-			},
-		}
-	} else {
-		log.Println("user not found in redis")
-		res, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.GetId()})
-		if err != nil {
-			return nil, err
-		}
-
-		if res.Response.StatusCode != 200 {
-			return &pb.GetUserResponse{
-				Response: &pb.CommonUserResponse{
-					StatusCode: res.Response.StatusCode,
-					Message:    res.Response.Message,
-				},
-			}, nil
-		}
-
-		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-			User: &redisSvcV1.User{
-				Id:       res.User.GetId(),
-				Class:    res.User.Class,
-				Major:    res.User.Major,
-				Phone:    res.User.Major,
-				PhotoSrc: res.User.GetPhotoSrc(),
-				Role:     res.User.GetRole(),
-				Name:     res.User.GetName(),
-				Email:    res.User.GetEmail(),
-			},
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if cache.Response.StatusCode != 200 {
-			return &pb.GetUserResponse{
-				Response: &pb.CommonUserResponse{
-					StatusCode: cache.Response.StatusCode,
-					Message:    cache.Response.Message,
-				},
-			}, nil
-		}
 	}
 
 	topic, err := u.topicClient.GetTopicFromUser(ctx, &topicSvcV1.GetTopicFromUserRequest{
@@ -174,6 +110,7 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 	class := res.GetUser().GetClass()
 	major := res.GetUser().GetMajor()
 	phone := res.GetUser().GetPhone()
+	password := res.GetUser().GetHashedPassword()
 
 	return &pb.GetUserResponse{
 		Response: &pb.CommonUserResponse{
@@ -181,15 +118,16 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 			Message:    res.GetResponse().Message,
 		},
 		User: &pb.UserResponse{
-			Id:       res.GetUser().Id,
-			Class:    &class,
-			Major:    &major,
-			Phone:    &phone,
-			PhotoSrc: res.GetUser().GetPhotoSrc(),
-			Role:     res.GetUser().GetRole(),
-			Name:     res.GetUser().GetName(),
-			Email:    res.GetUser().GetEmail(),
-			Topic:    topicRes,
+			Id:             res.GetUser().Id,
+			Class:          &class,
+			Major:          &major,
+			Phone:          &phone,
+			PhotoSrc:       res.GetUser().GetPhotoSrc(),
+			Role:           res.GetUser().GetRole(),
+			Name:           res.GetUser().GetName(),
+			Email:          res.GetUser().GetEmail(),
+			HashedPassword: &password,
+			Topic:          topicRes,
 		},
 	}, nil
 }
@@ -202,17 +140,26 @@ func (u *userServiceGW) UpdateUser(ctx context.Context, req *pb.UpdateUserReques
 	class := req.GetUser().GetClass()
 	major := req.GetUser().GetMajor()
 	phone := req.GetUser().GetPhone()
+	password := req.GetUser().GetPassword()
+
+	passwordHashed, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	if err != nil {
+		return nil, err
+	}
+
+	passwordHashedStr := string(passwordHashed)
 
 	res, err := u.userClient.UpdateUser(ctx, &userSvcV1.UpdateUserRequest{
 		Id: req.GetId(),
 		User: &userSvcV1.UserInput{
-			Class:    &class,
-			Major:    &major,
-			Phone:    &phone,
-			PhotoSrc: req.GetUser().GetPhotoSrc(),
-			Role:     req.GetUser().GetRole(),
-			Name:     req.GetUser().GetName(),
-			Email:    req.GetUser().GetEmail(),
+			Class:          &class,
+			Major:          &major,
+			Phone:          &phone,
+			PhotoSrc:       req.GetUser().GetPhotoSrc(),
+			Role:           req.GetUser().GetRole(),
+			Name:           req.GetUser().GetName(),
+			Email:          req.GetUser().GetEmail(),
+			HashedPassword: &passwordHashedStr,
 		},
 	})
 	if err != nil {
@@ -273,22 +220,22 @@ func (u *userServiceGW) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (
 				Title:          topic.Topic[0].GetTitle(),
 				TypeTopic:      topic.Topic[0].GetTypeTopic(),
 				MemberQuantity: topic.Topic[0].GetMemberQuantity(),
-				Student:        &pb.UserResponse{},
+				Student:        nil,
 				MemberEmail:    topic.Topic[0].GetMemberEmail(),
 				Description:    topic.Topic[0].GetDescription(),
 			}
 		}
-
 		users = append(users, &pb.UserResponse{
-			Id:       us.Id,
-			Class:    us.Class,
-			Major:    us.Major,
-			Phone:    us.Phone,
-			PhotoSrc: us.PhotoSrc,
-			Role:     us.Role,
-			Name:     us.Name,
-			Email:    us.Email,
-			Topic:    topicRes,
+			Id:             us.Id,
+			Class:          us.Class,
+			Major:          us.Major,
+			Phone:          us.Phone,
+			PhotoSrc:       us.PhotoSrc,
+			Role:           us.Role,
+			Name:           us.Name,
+			Email:          us.Email,
+			HashedPassword: us.HashedPassword,
+			Topic:          topicRes,
 		})
 	}
 
@@ -323,83 +270,24 @@ func (u *userServiceGW) ApproveUserJoinClassroom(ctx context.Context, req *pb.Ap
 		}, nil
 	}
 
-	var userRes *userSvcV1.GetUserResponse
-	redis, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+	userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 		Id: req.UserID,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	if redis.User != nil && redis.Response.StatusCode == 200 {
-		userRes = &userSvcV1.GetUserResponse{
-			Response: &userSvcV1.CommonUserResponse{
-				StatusCode: 200,
-				Message:    "OK",
-			},
-			User: &userSvcV1.UserResponse{
-				Id:       redis.User.GetId(),
-				Class:    redis.User.Class,
-				Major:    redis.User.Major,
-				Phone:    redis.User.Phone,
-				PhotoSrc: redis.User.GetPhotoSrc(),
-				Role:     redis.User.GetRole(),
-				Name:     redis.User.GetName(),
-				Email:    redis.User.GetEmail(),
-			},
-		}
-	} else {
-		userRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: req.UserID,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if userRes.Response.StatusCode != 200 {
-			return nil, errors.New("error getting user")
-		}
-
-		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-			User: &redisSvcV1.User{
-				Id:       userRes.User.GetId(),
-				Class:    userRes.User.Class,
-				Major:    userRes.User.Major,
-				Phone:    userRes.User.Major,
-				PhotoSrc: userRes.User.GetPhotoSrc(),
-				Role:     userRes.User.GetRole(),
-				Name:     userRes.User.GetName(),
-				Email:    userRes.User.GetEmail(),
-			},
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if cache.Response.StatusCode != 200 {
-			return nil, errors.New("error set user cache")
-		}
-	}
-
-	if userRes.Response.StatusCode == 404 {
-		return &pb.ApproveUserJoinClassroomResponse{
-			Response: &pb.CommonUserResponse{
-				StatusCode: 404,
-				Message:    "User does not exist",
-			},
-		}, nil
-	}
-
 	res, err := u.userClient.UpdateUser(ctx, &userSvcV1.UpdateUserRequest{
 		Id: req.GetUserID(),
 		User: &userSvcV1.UserInput{
-			Class:    userRes.User.Class,
-			Major:    userRes.User.Major,
-			Phone:    userRes.User.Phone,
-			PhotoSrc: userRes.User.PhotoSrc,
-			Role:     userRes.User.Role,
-			Name:     userRes.User.Name,
-			Email:    userRes.User.Email,
+			Class:          userRes.User.Class,
+			Major:          userRes.User.Major,
+			Phone:          userRes.User.Phone,
+			PhotoSrc:       userRes.User.PhotoSrc,
+			Role:           userRes.User.Role,
+			Name:           userRes.User.Name,
+			Email:          userRes.User.Email,
+			HashedPassword: userRes.User.HashedPassword,
 		},
 	})
 	if err != nil {
@@ -423,85 +311,231 @@ func (u *userServiceGW) ApproveUserJoinClassroom(ctx context.Context, req *pb.Ap
 	}, nil
 }
 
+// func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *pb.CheckStatusUserJoinClassroomRequest) (*pb.CheckStatusUserJoinClassroomResponse, error) {
+// 	if err := req.Validate(); err != nil {
+// 		return nil, err
+// 	}
+
+// 	redis, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+// 		Id: req.UserID,
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	var userRes *userSvcV1.GetUserResponse
+// 	if redis.User != nil && redis.Response.StatusCode == 200 {
+// 		userRes = &userSvcV1.GetUserResponse{
+// 			Response: &userSvcV1.CommonUserResponse{
+// 				StatusCode: 200,
+// 				Message:    "OK",
+// 			},
+// 			User: &userSvcV1.UserResponse{
+// 				Id:             redis.User.GetId(),
+// 				Class:          redis.User.Class,
+// 				Major:          redis.User.Major,
+// 				Phone:          redis.User.Phone,
+// 				PhotoSrc:       redis.User.GetPhotoSrc(),
+// 				Role:           redis.User.GetRole(),
+// 				Name:           redis.User.GetName(),
+// 				Email:          redis.User.GetEmail(),
+// 				HashedPassword: redis.User.HashedPassword,
+// 			},
+// 		}
+// 	} else {
+// 		userRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+// 			Id: req.UserID,
+// 		})
+// 		if err != nil {
+// 			return nil, err
+// 		}
+
+// 		if userRes.Response.StatusCode != 200 {
+// 			return nil, errors.New("error getting user")
+// 		}
+
+// 		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
+// 			User: &redisSvcV1.User{
+// 				Id:             userRes.User.GetId(),
+// 				Class:          userRes.User.Class,
+// 				Major:          userRes.User.Major,
+// 				Phone:          userRes.User.Phone,
+// 				PhotoSrc:       userRes.User.GetPhotoSrc(),
+// 				Role:           userRes.User.GetRole(),
+// 				Name:           userRes.User.GetName(),
+// 				Email:          userRes.User.GetEmail(),
+// 				HashedPassword: userRes.User.HashedPassword,
+// 			},
+// 		})
+// 		if err != nil {
+// 			return nil, err
+// 		}
+
+// 		if cache.Response.StatusCode != 200 {
+// 			return nil, errors.New("error set user cache")
+// 		}
+// 	}
+
+// 	if userRes.Response.StatusCode == 404 {
+// 		return &pb.CheckStatusUserJoinClassroomResponse{
+// 			Response: &pb.CommonUserResponse{
+// 				StatusCode: 404,
+// 				Message:    "User does not exist",
+// 			},
+// 		}, nil
+// 	}
+
+// 	if userRes.GetResponse().StatusCode != 200 {
+// 		return &pb.CheckStatusUserJoinClassroomResponse{
+// 			Response: &pb.CommonUserResponse{
+// 				StatusCode: userRes.GetResponse().StatusCode,
+// 				Message:    userRes.GetResponse().Message,
+// 			},
+// 		}, nil
+// 	}
+
+// memberRes, err := u.userClient.IsUserJoinedClassroom(ctx, &userSvcV1.IsUserJoinedClassroomRequest{
+// 	UserID: req.GetUserID(),
+// })
+// if err != nil {
+// 	return nil, err
+// }
+
+// if memberRes.Response.StatusCode != 200 {
+// 	return &pb.CheckStatusUserJoinClassroomResponse{
+// 		Response: &pb.CommonUserResponse{
+// 			StatusCode: memberRes.GetResponse().StatusCode,
+// 			Message:    memberRes.GetResponse().Message,
+// 		},
+// 		Member: &pb.MemberUserResponse{},
+// 		Status: "NOT SUBSCRIBED YET",
+// 	}, nil
+// }
+
+// if memberRes.Member != nil {
+// 	clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
+// 		Id: memberRes.GetMember().ClassroomID,
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	if clrRes.GetResponse().StatusCode == 404 {
+// 		return &pb.CheckStatusUserJoinClassroomResponse{
+// 			Response: &pb.CommonUserResponse{
+// 				StatusCode: clrRes.GetResponse().StatusCode,
+// 				Message:    clrRes.GetResponse().Message,
+// 			},
+// 		}, nil
+// 	}
+
+// }
+
+// wlt, err := u.waitingListClient.GetWaitingListsOfClassroom(ctx, &waitingListSvcV1.GetWaitingListsRequest{
+// 	ClassroomID: clrRes.Classroom.Id,
+// })
+// if err != nil {
+// 	return nil, err
+// }
+
+// for _, w := range wlt.WaitingLists {
+// 	if w.UserID == userRes.User.Id {
+// 		topicTags := ""
+// 		if clrRes.GetClassroom().TopicTags != nil {
+// 			topicTags = clrRes.GetClassroom().GetTopicTags()
+// 		}
+
+// 		return &pb.CheckStatusUserJoinClassroomResponse{
+// 			Member: &pb.MemberUserResponse{
+// 				Id: memberRes.GetMember().Id,
+// 				Classroom: &pb.ClassroomUserResponse{
+// 					Id:              clrRes.GetClassroom().GetId(),
+// 					Title:           clrRes.GetClassroom().GetTitle(),
+// 					Description:     clrRes.GetClassroom().GetDescription(),
+// 					Status:          clrRes.GetClassroom().GetStatus(),
+// 					LecturerID:      clrRes.GetClassroom().GetLecturerID(),
+// 					ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
+// 					TopicTags:       &topicTags,
+// 					QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
+// 					CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
+// 					UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
+// 				},
+// 				Member: &pb.UserResponse{
+// 					Class:          userRes.User.Class,
+// 					Major:          userRes.User.Major,
+// 					Phone:          userRes.User.Phone,
+// 					PhotoSrc:       userRes.User.PhotoSrc,
+// 					Role:           userRes.User.Role,
+// 					Name:           userRes.User.Name,
+// 					Email:          userRes.User.Email,
+// 					Id:             userRes.User.Id,
+// 					HashedPassword: userRes.User.HashedPassword,
+// 				},
+// 				Status:    memberRes.GetMember().Status,
+// 				IsDefense: memberRes.GetMember().IsDefense,
+// 				CreatedAt: memberRes.GetMember().CreatedAt,
+// 			},
+// 			Status: "SUBSCRIBED",
+// 		}, nil
+// 	}
+// }
+
+// topicTags := ""
+// if clrRes.GetClassroom().TopicTags != nil {
+// 	topicTags = clrRes.GetClassroom().GetTopicTags()
+// }
+
+// return &pb.CheckStatusUserJoinClassroomResponse{
+// 	Member: &pb.MemberUserResponse{
+// 		Id: memberRes.GetMember().Id,
+// 		Classroom: &pb.ClassroomUserResponse{
+// 			Id:              clrRes.GetClassroom().GetId(),
+// 			Title:           clrRes.GetClassroom().GetTitle(),
+// 			Description:     clrRes.GetClassroom().GetDescription(),
+// 			Status:          clrRes.GetClassroom().GetStatus(),
+// 			LecturerID:      clrRes.GetClassroom().GetLecturerID(),
+// 			ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
+// 			TopicTags:       &topicTags,
+// 			QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
+// 			CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
+// 			UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
+// 		},
+// 		Member: &pb.UserResponse{
+// 			Id:             userRes.User.Id,
+// 			Class:          userRes.User.Class,
+// 			Major:          userRes.User.Major,
+// 			Phone:          userRes.User.Phone,
+// 			PhotoSrc:       userRes.User.PhotoSrc,
+// 			Role:           userRes.User.Role,
+// 			Name:           userRes.User.Name,
+// 			Email:          userRes.User.Email,
+// 			HashedPassword: userRes.User.HashedPassword,
+// 		},
+// 		Status:    memberRes.GetMember().Status,
+// 		IsDefense: memberRes.GetMember().IsDefense,
+// 		CreatedAt: memberRes.GetMember().CreatedAt,
+// 	},
+// 	Status: "WAITING",
+// }, nil
+
+// return &pb.CheckStatusUserJoinClassroomResponse{
+// 	Response: &pb.CommonUserResponse{
+// 		StatusCode: memberRes.GetResponse().StatusCode,
+// 		Message:    memberRes.GetResponse().Message,
+// 	},
+// }, nil
+// }
+
 func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *pb.CheckStatusUserJoinClassroomRequest) (*pb.CheckStatusUserJoinClassroomResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	redis, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+	userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 		Id: req.UserID,
 	})
 	if err != nil {
 		return nil, err
-	}
-
-	var userRes *userSvcV1.GetUserResponse
-	if redis.User != nil && redis.Response.StatusCode == 200 {
-		userRes = &userSvcV1.GetUserResponse{
-			Response: &userSvcV1.CommonUserResponse{
-				StatusCode: 200,
-				Message:    "OK",
-			},
-			User: &userSvcV1.UserResponse{
-				Id:       redis.User.GetId(),
-				Class:    redis.User.Class,
-				Major:    redis.User.Major,
-				Phone:    redis.User.Phone,
-				PhotoSrc: redis.User.GetPhotoSrc(),
-				Role:     redis.User.GetRole(),
-				Name:     redis.User.GetName(),
-				Email:    redis.User.GetEmail(),
-			},
-		}
-	} else {
-		userRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: req.UserID,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if userRes.Response.StatusCode != 200 {
-			return nil, errors.New("error getting user")
-		}
-
-		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-			User: &redisSvcV1.User{
-				Id:       userRes.User.GetId(),
-				Class:    userRes.User.Class,
-				Major:    userRes.User.Major,
-				Phone:    userRes.User.Major,
-				PhotoSrc: userRes.User.GetPhotoSrc(),
-				Role:     userRes.User.GetRole(),
-				Name:     userRes.User.GetName(),
-				Email:    userRes.User.GetEmail(),
-			},
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if cache.Response.StatusCode != 200 {
-			return nil, errors.New("error set user cache")
-		}
-	}
-
-	if userRes.Response.StatusCode == 404 {
-		return &pb.CheckStatusUserJoinClassroomResponse{
-			Response: &pb.CommonUserResponse{
-				StatusCode: 404,
-				Message:    "User does not exist",
-			},
-		}, nil
-	}
-
-	if userRes.GetResponse().StatusCode != 200 {
-		return &pb.CheckStatusUserJoinClassroomResponse{
-			Response: &pb.CommonUserResponse{
-				StatusCode: userRes.GetResponse().StatusCode,
-				Message:    userRes.GetResponse().Message,
-			},
-		}, nil
 	}
 
 	memberRes, err := u.userClient.IsUserJoinedClassroom(ctx, &userSvcV1.IsUserJoinedClassroomRequest{
@@ -511,18 +545,7 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 		return nil, err
 	}
 
-	if memberRes.Response.StatusCode != 200 {
-		return &pb.CheckStatusUserJoinClassroomResponse{
-			Response: &pb.CommonUserResponse{
-				StatusCode: memberRes.GetResponse().StatusCode,
-				Message:    memberRes.GetResponse().Message,
-			},
-			Member: &pb.MemberUserResponse{},
-			Status: "NOT SUBSCRIBED YET",
-		}, nil
-	}
-
-	if memberRes.Member != nil && memberRes.Response.StatusCode == 200 {
+	if memberRes.Member != nil {
 		clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
 			Id: memberRes.GetMember().ClassroomID,
 		})
@@ -539,87 +562,151 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 			}, nil
 		}
 
-		wlt, err := u.waitingListClient.GetWaitingListsOfClassroom(ctx, &waitingListSvcV1.GetWaitingListsRequest{
-			ClassroomID: clrRes.Classroom.Id,
+		topicTags := ""
+		if clrRes.GetClassroom().TopicTags != nil {
+			topicTags = clrRes.GetClassroom().GetTopicTags()
+		}
+
+		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: clrRes.GetClassroom().GetLecturerID(),
 		})
 		if err != nil {
 			return nil, err
 		}
 
+		return &pb.CheckStatusUserJoinClassroomResponse{
+			Member: []*pb.MemberUserResponse{
+				{
+					Id: memberRes.GetMember().Id,
+					Classroom: &pb.ClassroomUserResponse{
+						Id:          clrRes.GetClassroom().GetId(),
+						Title:       clrRes.GetClassroom().GetTitle(),
+						Description: clrRes.GetClassroom().GetDescription(),
+						Status:      clrRes.GetClassroom().GetStatus(),
+						Lecturer: &pb.UserResponse{
+							Class:          lecturerRes.User.Class,
+							Major:          lecturerRes.User.Major,
+							Phone:          lecturerRes.User.Phone,
+							PhotoSrc:       lecturerRes.User.PhotoSrc,
+							Role:           lecturerRes.User.Role,
+							Name:           lecturerRes.User.Name,
+							Email:          lecturerRes.User.Email,
+							Id:             lecturerRes.User.Id,
+							HashedPassword: lecturerRes.User.HashedPassword,
+						},
+						ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
+						TopicTags:       &topicTags,
+						QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
+						CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
+						UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
+					},
+					Member: &pb.UserResponse{
+						Class:          userRes.User.Class,
+						Major:          userRes.User.Major,
+						Phone:          userRes.User.Phone,
+						PhotoSrc:       userRes.User.PhotoSrc,
+						Role:           userRes.User.Role,
+						Name:           userRes.User.Name,
+						Email:          userRes.User.Email,
+						Id:             userRes.User.Id,
+						HashedPassword: userRes.User.HashedPassword,
+					},
+					Status:    memberRes.GetMember().Status,
+					IsDefense: memberRes.GetMember().IsDefense,
+					CreatedAt: memberRes.GetMember().CreatedAt,
+				},
+			},
+			Status: "SUBSCRIBED",
+		}, nil
+	} else {
+		wlt, err := u.waitingListClient.GetWaitingLists(ctx, &waitingListSvcV1.GetWaitingListsRequest{})
+		if err != nil {
+			return nil, err
+		}
+
+		var userInWLT []*waitingListSvcV1.WaitingListResponse
 		for _, w := range wlt.WaitingLists {
 			if w.UserID == userRes.User.Id {
-				return &pb.CheckStatusUserJoinClassroomResponse{
-					Member: &pb.MemberUserResponse{
-						Id: memberRes.GetMember().Id,
-						Classroom: &pb.ClassroomUserResponse{
-							Id:              clrRes.GetClassroom().GetId(),
-							Title:           clrRes.GetClassroom().GetTitle(),
-							Description:     clrRes.GetClassroom().GetDescription(),
-							Status:          clrRes.GetClassroom().GetStatus(),
-							LecturerID:      clrRes.GetClassroom().GetLecturerID(),
-							ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
-							TopicTags:       clrRes.GetClassroom().GetTopicTags(),
-							QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
-							CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
-							UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
-						},
-						Member: &pb.UserResponse{
-							Class:    userRes.User.Class,
-							Major:    userRes.User.Major,
-							Phone:    userRes.User.Phone,
-							PhotoSrc: userRes.User.PhotoSrc,
-							Role:     userRes.User.Role,
-							Name:     userRes.User.Name,
-							Email:    userRes.User.Email,
-						},
-						Status:    memberRes.GetMember().Status,
-						IsDefense: memberRes.GetMember().IsDefense,
-						CreatedAt: memberRes.GetMember().CreatedAt,
-					},
-					Status: "SUBSCRIBED",
-				}, nil
+				userInWLT = append(userInWLT, w)
 			}
 		}
 
-		return &pb.CheckStatusUserJoinClassroomResponse{
-			Member: &pb.MemberUserResponse{
-				Id: memberRes.GetMember().Id,
-				Classroom: &pb.ClassroomUserResponse{
-					Id:              clrRes.GetClassroom().GetId(),
-					Title:           clrRes.GetClassroom().GetTitle(),
-					Description:     clrRes.GetClassroom().GetDescription(),
-					Status:          clrRes.GetClassroom().GetStatus(),
-					LecturerID:      clrRes.GetClassroom().GetLecturerID(),
-					ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
-					TopicTags:       clrRes.GetClassroom().GetTopicTags(),
-					QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
-					CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
-					UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
+		if len(userInWLT) > 0 {
+			var members []*pb.MemberUserResponse
+			for _, m := range userInWLT {
+				clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
+					Id: m.ClassroomID,
+				})
+				if err != nil {
+					return nil, err
+				}
+
+				topicTags := ""
+				if clrRes.GetClassroom().TopicTags != nil {
+					topicTags = clrRes.GetClassroom().GetTopicTags()
+				}
+
+				lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+					Id: clrRes.GetClassroom().GetLecturerID(),
+				})
+				if err != nil {
+					return nil, err
+				}
+
+				members = append(members, &pb.MemberUserResponse{
+					Classroom: &pb.ClassroomUserResponse{
+						Id:          clrRes.GetClassroom().GetId(),
+						Title:       clrRes.GetClassroom().GetTitle(),
+						Description: clrRes.GetClassroom().GetDescription(),
+						Status:      clrRes.GetClassroom().GetStatus(),
+						Lecturer: &pb.UserResponse{
+							Class:          lecturerRes.User.Class,
+							Major:          lecturerRes.User.Major,
+							Phone:          lecturerRes.User.Phone,
+							PhotoSrc:       lecturerRes.User.PhotoSrc,
+							Role:           lecturerRes.User.Role,
+							Name:           lecturerRes.User.Name,
+							Email:          lecturerRes.User.Email,
+							Id:             lecturerRes.User.Id,
+							HashedPassword: lecturerRes.User.HashedPassword,
+						},
+						ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
+						TopicTags:       &topicTags,
+						QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
+						CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
+						UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
+					},
+					Member: &pb.UserResponse{
+						Class:          userRes.User.Class,
+						Major:          userRes.User.Major,
+						Phone:          userRes.User.Phone,
+						PhotoSrc:       userRes.User.PhotoSrc,
+						Role:           userRes.User.Role,
+						Name:           userRes.User.Name,
+						Email:          userRes.User.Email,
+						Id:             userRes.User.Id,
+						HashedPassword: userRes.User.HashedPassword,
+					},
+					Status:    m.Status,
+					IsDefense: m.IsDefense,
+				})
+			}
+
+			return &pb.CheckStatusUserJoinClassroomResponse{
+				Member: members,
+				Status: "WAITING",
+			}, nil
+		} else {
+			return &pb.CheckStatusUserJoinClassroomResponse{
+				Response: &pb.CommonUserResponse{
+					StatusCode: memberRes.GetResponse().StatusCode,
+					Message:    memberRes.GetResponse().Message,
 				},
-				Member: &pb.UserResponse{
-					Class:    userRes.User.Class,
-					Major:    userRes.User.Major,
-					Phone:    userRes.User.Phone,
-					PhotoSrc: userRes.User.PhotoSrc,
-					Role:     userRes.User.Role,
-					Name:     userRes.User.Name,
-					Email:    userRes.User.Email,
-				},
-				Status:    memberRes.GetMember().Status,
-				IsDefense: memberRes.GetMember().IsDefense,
-				CreatedAt: memberRes.GetMember().CreatedAt,
-			},
-			Status: "WAITING",
-		}, nil
+				Member: nil,
+				Status: "NOT SUBSCRIBED YET",
+			}, nil
+		}
 	}
-
-	return &pb.CheckStatusUserJoinClassroomResponse{
-		Response: &pb.CommonUserResponse{
-			StatusCode: memberRes.GetResponse().StatusCode,
-			Message:    memberRes.GetResponse().Message,
-		},
-	}, nil
-
 }
 
 func (u *userServiceGW) UpdateBasicUser(ctx context.Context, req *pb.UpdateBasicUserRequest) (*pb.UpdateBasicUserResponse, error) {
@@ -704,15 +791,16 @@ func (u *userServiceGW) GetAllLecturers(ctx context.Context, req *pb.GetAllLectu
 			}
 		}
 		lecturers = append(lecturers, &pb.UserResponse{
-			Id:       l.Id,
-			Class:    l.Class,
-			Major:    l.Major,
-			Phone:    l.Phone,
-			PhotoSrc: l.PhotoSrc,
-			Role:     l.Role,
-			Name:     l.Name,
-			Email:    l.Email,
-			Topic:    topicRes,
+			Id:             l.Id,
+			Class:          l.Class,
+			Major:          l.Major,
+			Phone:          l.Phone,
+			PhotoSrc:       l.PhotoSrc,
+			Role:           l.Role,
+			Name:           l.Name,
+			Email:          l.Email,
+			HashedPassword: l.HashedPassword,
+			Topic:          topicRes,
 		})
 	}
 

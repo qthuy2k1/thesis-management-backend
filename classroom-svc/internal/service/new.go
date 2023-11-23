@@ -10,7 +10,7 @@ type IClassroomSvc interface {
 	// CreateClasroom creates a new classroom in db given by classroom model
 	CreateClassroom(ctx context.Context, clr ClassroomInputSvc) error
 	// GetClassroom returns a classroom in db given by id
-	GetClassroom(ctx context.Context, id int) (ClassroomInputSvc, error)
+	GetClassroom(ctx context.Context, id int) (ClassroomOutputSvc, error)
 	// CheckClassroomExists checks if a classroom with given id exists in db
 	CheckClassroomExists(ctx context.Context, id int) (bool, error)
 	// UpdateClassroom updates the specified classroom by id

@@ -11,7 +11,7 @@ type IClassroomRepo interface {
 	// GetClassroom returns a classroom in db given by id
 	GetClassroom(ctx context.Context, id int) (ClassroomOutputRepo, error)
 	// CheckClassroomExists checks whether the specified classroom exists by name
-	IsClassroomExists(ctx context.Context, title string) (bool, error)
+	// IsClassroomExists(ctx context.Context, title string) (bool, error)
 	// UpdateClassroom updates the specified classroom by id
 	UpdateClassroom(ctx context.Context, id int, classroom ClassroomInputRepo) error
 	// DeleteClassroom deletes a classroom in db given by id

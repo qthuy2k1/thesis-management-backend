@@ -423,7 +423,11 @@
           "$ref": "#/definitions/v1CommonUserResponse"
         },
         "member": {
-          "$ref": "#/definitions/v1MemberUserResponse"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1MemberUserResponse"
+          }
         },
         "status": {
           "type": "string"
@@ -446,8 +450,8 @@
         "status": {
           "type": "string"
         },
-        "lecturerID": {
-          "type": "string"
+        "lecturer": {
+          "$ref": "#/definitions/v1UserResponse"
         },
         "classCourse": {
           "type": "string"

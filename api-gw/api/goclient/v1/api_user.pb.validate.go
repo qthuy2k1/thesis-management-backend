@@ -181,7 +181,16 @@ func (m *UserInput) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if utf8.RuneCountInString(m.GetId()) < 2 {
+		err := UserInputValidationError{
+			field:  "Id",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	// no validation rules for PhotoSrc
 
@@ -472,17 +481,6 @@ func (m *UserResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetHashedPassword()) < 2 {
-		err := UserResponseValidationError{
-			field:  "HashedPassword",
-			reason: "value length must be at least 2 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if all {
 		switch v := interface{}(m.GetTopic()).(type) {
 		case interface{ ValidateAll() error }:
@@ -548,6 +546,21 @@ func (m *UserResponse) validate(all bool) error {
 			err := UserResponseValidationError{
 				field:  "Phone",
 				reason: "value length must be between 10 and 11 runes, inclusive",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.HashedPassword != nil {
+
+		if utf8.RuneCountInString(m.GetHashedPassword()) < 2 {
+			err := UserResponseValidationError{
+				field:  "HashedPassword",
+				reason: "value length must be at least 2 runes",
 			}
 			if !all {
 				return err
@@ -1007,7 +1020,16 @@ func (m *GetUserRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if utf8.RuneCountInString(m.GetId()) < 2 {
+		err := GetUserRequestValidationError{
+			field:  "Id",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return GetUserRequestMultiError(errors)
@@ -1289,7 +1311,16 @@ func (m *UpdateUserRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if utf8.RuneCountInString(m.GetId()) < 2 {
+		err := UpdateUserRequestValidationError{
+			field:  "Id",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if m.GetUser() == nil {
 		err := UpdateUserRequestValidationError{
@@ -1575,7 +1606,16 @@ func (m *DeleteUserRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	if utf8.RuneCountInString(m.GetId()) < 2 {
+		err := DeleteUserRequestValidationError{
+			field:  "Id",
+			reason: "value length must be at least 2 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return DeleteUserRequestMultiError(errors)
@@ -2753,22 +2793,38 @@ func (m *ClassroomUserResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for LecturerID
+	if all {
+		switch v := interface{}(m.GetLecturer()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ClassroomUserResponseValidationError{
+					field:  "Lecturer",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ClassroomUserResponseValidationError{
+					field:  "Lecturer",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetLecturer()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ClassroomUserResponseValidationError{
+				field:  "Lecturer",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if utf8.RuneCountInString(m.GetClassCourse()) < 2 {
 		err := ClassroomUserResponseValidationError{
 			field:  "ClassCourse",
-			reason: "value length must be at least 2 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if utf8.RuneCountInString(m.GetTopicTags()) < 2 {
-		err := ClassroomUserResponseValidationError{
-			field:  "TopicTags",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -2808,6 +2864,21 @@ func (m *ClassroomUserResponse) validate(all bool) error {
 			return err
 		}
 		errors = append(errors, err)
+	}
+
+	if m.TopicTags != nil {
+
+		if utf8.RuneCountInString(m.GetTopicTags()) < 2 {
+			err := ClassroomUserResponseValidationError{
+				field:  "TopicTags",
+				reason: "value length must be at least 2 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
 	}
 
 	if len(errors) > 0 {
@@ -3244,33 +3315,38 @@ func (m *CheckStatusUserJoinClassroomResponse) validate(all bool) error {
 		}
 	}
 
-	if all {
-		switch v := interface{}(m.GetMember()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, CheckStatusUserJoinClassroomResponseValidationError{
-					field:  "Member",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
+	for idx, item := range m.GetMember() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, CheckStatusUserJoinClassroomResponseValidationError{
+						field:  fmt.Sprintf("Member[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, CheckStatusUserJoinClassroomResponseValidationError{
+						field:  fmt.Sprintf("Member[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
 			}
-		case interface{ Validate() error }:
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				errors = append(errors, CheckStatusUserJoinClassroomResponseValidationError{
-					field:  "Member",
+				return CheckStatusUserJoinClassroomResponseValidationError{
+					field:  fmt.Sprintf("Member[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
-				})
+				}
 			}
 		}
-	} else if v, ok := interface{}(m.GetMember()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return CheckStatusUserJoinClassroomResponseValidationError{
-				field:  "Member",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
+
 	}
 
 	// no validation rules for Status

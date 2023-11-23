@@ -17,6 +17,26 @@
   ],
   "paths": {
     "/api/requirement": {
+      "get": {
+        "operationId": "WaitingListService_GetWaitingLists",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetWaitingListsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "WaitingListService"
+        ]
+      },
       "post": {
         "operationId": "WaitingListService_CreateWaitingList",
         "responses": {
@@ -55,7 +75,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1GetWaitingListsResponse"
+              "$ref": "#/definitions/v1GetWaitingListsOfClassroomResponse"
             }
           },
           "default": {
@@ -336,6 +356,21 @@
         },
         "waitingList": {
           "$ref": "#/definitions/v1WaitingListResponse"
+        }
+      }
+    },
+    "v1GetWaitingListsOfClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonWaitingListResponse"
+        },
+        "waitingLists": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1WaitingListResponse"
+          }
         }
       }
     },

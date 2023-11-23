@@ -30,7 +30,7 @@ proto-api:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./api-gw/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto api_comment.proto api_attachment.proto api_topic.proto api_authorization.proto api_member.proto api_thesis_commitee.proto api_room.proto api_student_def.proto api_schedule.proto api_notification.proto api_point.proto
+		  api_classroom.proto api_post.proto api_exercise.proto api_reporting_stage.proto api_submission.proto api_user.proto api_waiting_list.proto api_comment.proto api_attachment.proto api_topic.proto api_authorization.proto api_member.proto api_thesis_commitee.proto api_room.proto api_student_def.proto api_schedule.proto api_notification.proto api_point.proto
 	@echo "Done"
 
 proto-classroom:
@@ -490,6 +490,8 @@ kuber-apply:
 	kubectl apply -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/schedule-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/redis-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/redis-db-deployment.yaml --namespace thesis-management-backend
 
 	kubectl apply -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
@@ -508,6 +510,7 @@ kuber-del:
 	kubectl delete -f kubernetes/submission-db-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/topic-db-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/user-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/redis-db-deployment.yaml --namespace thesis-management-backend
 
 	kubectl delete -f kubernetes/attachment-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/classroom-deployment.yaml --namespace thesis-management-backend
@@ -520,6 +523,7 @@ kuber-del:
 	kubectl delete -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/schedule-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/redis-deployment.yaml --namespace thesis-management-backend
 
 	kubectl delete -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
@@ -542,3 +546,7 @@ build-a-svc:
 kuber-update:
 	kubectl set image deployment thesis-management-backend-$(deployment-name) $(container-name)=$(new-image)
 
+
+gen-mocks:
+	mockery --dir $(name)-svc/internal/service --all --recursive --inpackage
+	mockery --dir $(name)-svc/internal/repository --all --recursive --inpackage

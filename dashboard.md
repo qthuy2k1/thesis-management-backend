@@ -5,7 +5,7 @@
 
 ## In local machine
 <code>
-gcloud compute ssh --zone "asia-southeast1-a" "qthuy2609@instance-2" --project "thesis-course-registration" --ssh-flag="-L 8001:localhost:8001"
+ssh -L 9001:103.82.132.17:8001 new_user@103.82.132.1
 </code>
 
 ### Page

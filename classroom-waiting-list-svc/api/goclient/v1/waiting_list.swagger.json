@@ -96,6 +96,21 @@
         }
       }
     },
+    "v1GetWaitingListsOfClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonWaitingListResponse"
+        },
+        "waitingLists": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1WaitingListResponse"
+          }
+        }
+      }
+    },
     "v1GetWaitingListsResponse": {
       "type": "object",
       "properties": {

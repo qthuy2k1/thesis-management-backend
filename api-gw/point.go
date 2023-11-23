@@ -122,14 +122,15 @@ func (u *pointServiceGW) CreateOrUpdatePointDef(ctx context.Context, req *pb.Cre
 
 		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
 			User: &redisSvcV1.User{
-				Id:       studentRes.User.GetId(),
-				Class:    studentRes.User.Class,
-				Major:    studentRes.User.Major,
-				Phone:    studentRes.User.Major,
-				PhotoSrc: studentRes.User.GetPhotoSrc(),
-				Role:     studentRes.User.GetRole(),
-				Name:     studentRes.User.GetName(),
-				Email:    studentRes.User.GetEmail(),
+				Id:             studentRes.User.GetId(),
+				Class:          studentRes.User.Class,
+				Major:          studentRes.User.Major,
+				Phone:          studentRes.User.Phone,
+				PhotoSrc:       studentRes.User.GetPhotoSrc(),
+				Role:           studentRes.User.GetRole(),
+				Name:           studentRes.User.GetName(),
+				Email:          studentRes.User.GetEmail(),
+				HashedPassword: studentRes.User.HashedPassword,
 			},
 		})
 		if err != nil {
@@ -184,14 +185,15 @@ func (u *pointServiceGW) CreateOrUpdatePointDef(ctx context.Context, req *pb.Cre
 
 			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
 				User: &redisSvcV1.User{
-					Id:       lecturerRes.User.GetId(),
-					Class:    lecturerRes.User.Class,
-					Major:    lecturerRes.User.Major,
-					Phone:    lecturerRes.User.Major,
-					PhotoSrc: lecturerRes.User.GetPhotoSrc(),
-					Role:     lecturerRes.User.GetRole(),
-					Name:     lecturerRes.User.GetName(),
-					Email:    lecturerRes.User.GetEmail(),
+					Id:             lecturerRes.User.GetId(),
+					Class:          lecturerRes.User.Class,
+					Major:          lecturerRes.User.Major,
+					Phone:          lecturerRes.User.Phone,
+					PhotoSrc:       lecturerRes.User.GetPhotoSrc(),
+					Role:           lecturerRes.User.GetRole(),
+					Name:           lecturerRes.User.GetName(),
+					Email:          lecturerRes.User.GetEmail(),
+					HashedPassword: lecturerRes.User.HashedPassword,
 				},
 			})
 			if err != nil {

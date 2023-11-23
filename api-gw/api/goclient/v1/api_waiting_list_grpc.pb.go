@@ -24,6 +24,7 @@ const (
 	WaitingListService_UpdateWaitingList_FullMethodName                 = "/api.waitingList.v1.WaitingListService/UpdateWaitingList"
 	WaitingListService_DeleteWaitingList_FullMethodName                 = "/api.waitingList.v1.WaitingListService/DeleteWaitingList"
 	WaitingListService_GetWaitingListsOfClassroom_FullMethodName        = "/api.waitingList.v1.WaitingListService/GetWaitingListsOfClassroom"
+	WaitingListService_GetWaitingLists_FullMethodName                   = "/api.waitingList.v1.WaitingListService/GetWaitingLists"
 	WaitingListService_CheckUserInWaitingListOfClassroom_FullMethodName = "/api.waitingList.v1.WaitingListService/CheckUserInWaitingListOfClassroom"
 )
 
@@ -35,7 +36,8 @@ type WaitingListServiceClient interface {
 	GetWaitingList(ctx context.Context, in *GetWaitingListRequest, opts ...grpc.CallOption) (*GetWaitingListResponse, error)
 	UpdateWaitingList(ctx context.Context, in *UpdateWaitingListRequest, opts ...grpc.CallOption) (*UpdateWaitingListResponse, error)
 	DeleteWaitingList(ctx context.Context, in *DeleteWaitingListRequest, opts ...grpc.CallOption) (*DeleteWaitingListResponse, error)
-	GetWaitingListsOfClassroom(ctx context.Context, in *GetWaitingListsRequest, opts ...grpc.CallOption) (*GetWaitingListsResponse, error)
+	GetWaitingListsOfClassroom(ctx context.Context, in *GetWaitingListsOfClassroomRequest, opts ...grpc.CallOption) (*GetWaitingListsOfClassroomResponse, error)
+	GetWaitingLists(ctx context.Context, in *GetWaitingListsRequest, opts ...grpc.CallOption) (*GetWaitingListsResponse, error)
 	CheckUserInWaitingListOfClassroom(ctx context.Context, in *CheckUserInWaitingListClassroomRequest, opts ...grpc.CallOption) (*CheckUserInWaitingListClassroomResponse, error)
 }
 
@@ -83,9 +85,18 @@ func (c *waitingListServiceClient) DeleteWaitingList(ctx context.Context, in *De
 	return out, nil
 }
 
-func (c *waitingListServiceClient) GetWaitingListsOfClassroom(ctx context.Context, in *GetWaitingListsRequest, opts ...grpc.CallOption) (*GetWaitingListsResponse, error) {
-	out := new(GetWaitingListsResponse)
+func (c *waitingListServiceClient) GetWaitingListsOfClassroom(ctx context.Context, in *GetWaitingListsOfClassroomRequest, opts ...grpc.CallOption) (*GetWaitingListsOfClassroomResponse, error) {
+	out := new(GetWaitingListsOfClassroomResponse)
 	err := c.cc.Invoke(ctx, WaitingListService_GetWaitingListsOfClassroom_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *waitingListServiceClient) GetWaitingLists(ctx context.Context, in *GetWaitingListsRequest, opts ...grpc.CallOption) (*GetWaitingListsResponse, error) {
+	out := new(GetWaitingListsResponse)
+	err := c.cc.Invoke(ctx, WaitingListService_GetWaitingLists_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +120,8 @@ type WaitingListServiceServer interface {
 	GetWaitingList(context.Context, *GetWaitingListRequest) (*GetWaitingListResponse, error)
 	UpdateWaitingList(context.Context, *UpdateWaitingListRequest) (*UpdateWaitingListResponse, error)
 	DeleteWaitingList(context.Context, *DeleteWaitingListRequest) (*DeleteWaitingListResponse, error)
-	GetWaitingListsOfClassroom(context.Context, *GetWaitingListsRequest) (*GetWaitingListsResponse, error)
+	GetWaitingListsOfClassroom(context.Context, *GetWaitingListsOfClassroomRequest) (*GetWaitingListsOfClassroomResponse, error)
+	GetWaitingLists(context.Context, *GetWaitingListsRequest) (*GetWaitingListsResponse, error)
 	CheckUserInWaitingListOfClassroom(context.Context, *CheckUserInWaitingListClassroomRequest) (*CheckUserInWaitingListClassroomResponse, error)
 	mustEmbedUnimplementedWaitingListServiceServer()
 }
@@ -130,8 +142,11 @@ func (UnimplementedWaitingListServiceServer) UpdateWaitingList(context.Context, 
 func (UnimplementedWaitingListServiceServer) DeleteWaitingList(context.Context, *DeleteWaitingListRequest) (*DeleteWaitingListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteWaitingList not implemented")
 }
-func (UnimplementedWaitingListServiceServer) GetWaitingListsOfClassroom(context.Context, *GetWaitingListsRequest) (*GetWaitingListsResponse, error) {
+func (UnimplementedWaitingListServiceServer) GetWaitingListsOfClassroom(context.Context, *GetWaitingListsOfClassroomRequest) (*GetWaitingListsOfClassroomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWaitingListsOfClassroom not implemented")
+}
+func (UnimplementedWaitingListServiceServer) GetWaitingLists(context.Context, *GetWaitingListsRequest) (*GetWaitingListsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetWaitingLists not implemented")
 }
 func (UnimplementedWaitingListServiceServer) CheckUserInWaitingListOfClassroom(context.Context, *CheckUserInWaitingListClassroomRequest) (*CheckUserInWaitingListClassroomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckUserInWaitingListOfClassroom not implemented")
@@ -222,7 +237,7 @@ func _WaitingListService_DeleteWaitingList_Handler(srv interface{}, ctx context.
 }
 
 func _WaitingListService_GetWaitingListsOfClassroom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetWaitingListsRequest)
+	in := new(GetWaitingListsOfClassroomRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -234,7 +249,25 @@ func _WaitingListService_GetWaitingListsOfClassroom_Handler(srv interface{}, ctx
 		FullMethod: WaitingListService_GetWaitingListsOfClassroom_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WaitingListServiceServer).GetWaitingListsOfClassroom(ctx, req.(*GetWaitingListsRequest))
+		return srv.(WaitingListServiceServer).GetWaitingListsOfClassroom(ctx, req.(*GetWaitingListsOfClassroomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WaitingListService_GetWaitingLists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetWaitingListsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WaitingListServiceServer).GetWaitingLists(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WaitingListService_GetWaitingLists_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WaitingListServiceServer).GetWaitingLists(ctx, req.(*GetWaitingListsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -283,6 +316,10 @@ var WaitingListService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetWaitingListsOfClassroom",
 			Handler:    _WaitingListService_GetWaitingListsOfClassroom_Handler,
+		},
+		{
+			MethodName: "GetWaitingLists",
+			Handler:    _WaitingListService_GetWaitingLists_Handler,
 		},
 		{
 			MethodName: "CheckUserInWaitingListOfClassroom",

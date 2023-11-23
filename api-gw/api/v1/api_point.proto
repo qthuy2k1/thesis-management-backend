@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package api.point.v1;
 
-import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 
 option go_package="github.com/qthuy2k1/thesis_management_backend/point/api/v1";

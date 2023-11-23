@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"log"
 
 	classroompb "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	service "github.com/qthuy2k1/thesis-management-backend/classroom-svc/internal/service"
@@ -12,7 +11,6 @@ import (
 
 // CreateClassroom retrieves a classroom request from gRPC-gateway and calls to the Service layer, then returns the response and status code.
 func (h *ClassroomHdl) CreateClassroom(ctx context.Context, req *classroompb.CreateClassroomRequest) (*classroompb.CreateClassroomResponse, error) {
-	log.Println("calling insert classroom...")
 	clr, err := validateAndConvertClassroom(req.Classroom)
 	if err != nil {
 		code, err := convertCtrlError(err)
@@ -26,8 +24,8 @@ func (h *ClassroomHdl) CreateClassroom(ctx context.Context, req *classroompb.Cre
 
 	resp := &classroompb.CreateClassroomResponse{
 		Response: &classroompb.CommonClassroomResponse{
-			StatusCode: 200,
-			Message:    "OK",
+			StatusCode: 201,
+			Message:    "Created",
 		},
 	}
 
@@ -36,7 +34,6 @@ func (h *ClassroomHdl) CreateClassroom(ctx context.Context, req *classroompb.Cre
 
 // GetClassroom returns a classroom in db given by id
 func (h *ClassroomHdl) GetClassroom(ctx context.Context, req *classroompb.GetClassroomRequest) (*classroompb.GetClassroomResponse, error) {
-	log.Println("calling get classroom...")
 	if err := req.Validate(); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -71,7 +68,6 @@ func (h *ClassroomHdl) GetClassroom(ctx context.Context, req *classroompb.GetCla
 }
 
 func (h *ClassroomHdl) CheckClassroomExists(ctx context.Context, req *classroompb.CheckClassroomExistsRequest) (*classroompb.CheckClassroomExistsResponse, error) {
-	log.Println("calling check classroom exists...")
 	if err := req.Validate(); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -89,7 +85,6 @@ func (h *ClassroomHdl) CheckClassroomExists(ctx context.Context, req *classroomp
 }
 
 func (c *ClassroomHdl) UpdateClassroom(ctx context.Context, req *classroompb.UpdateClassroomRequest) (*classroompb.UpdateClassroomResponse, error) {
-	log.Println("calling update classroom...")
 	if err := req.Validate(); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -123,7 +118,6 @@ func (c *ClassroomHdl) UpdateClassroom(ctx context.Context, req *classroompb.Upd
 }
 
 func (h *ClassroomHdl) DeleteClassroom(ctx context.Context, req *classroompb.DeleteClassroomRequest) (*classroompb.DeleteClassroomResponse, error) {
-	log.Println("calling delete classroom...")
 	if err := req.Validate(); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -143,7 +137,6 @@ func (h *ClassroomHdl) DeleteClassroom(ctx context.Context, req *classroompb.Del
 }
 
 func (h *ClassroomHdl) GetClassrooms(ctx context.Context, req *classroompb.GetClassroomsRequest) (*classroompb.GetClassroomsResponse, error) {
-	log.Println("calling get all classrooms...")
 	if err := req.Validate(); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)

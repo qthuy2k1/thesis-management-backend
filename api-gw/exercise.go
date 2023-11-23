@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
@@ -10,7 +9,6 @@ import (
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
-	redisSvcV1 "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
@@ -25,10 +23,9 @@ type exerciseServiceGW struct {
 	userClient           userSvcV1.UserServiceClient
 	submissionClient     submissionSvcV1.SubmissionServiceClient
 	attachmentClient     attachmentSvcV1.AttachmentServiceClient
-	redisClient          redisSvcV1.RedisServiceClient
 }
 
-func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportStageClient rpsSvcV1.ReportingStageServiceClient, commentClient commentSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient, submissionClient submissionSvcV1.SubmissionServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient, redisClient redisSvcV1.RedisServiceClient) *exerciseServiceGW {
+func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportStageClient rpsSvcV1.ReportingStageServiceClient, commentClient commentSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient, submissionClient submissionSvcV1.SubmissionServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient) *exerciseServiceGW {
 	return &exerciseServiceGW{
 		exerciseClient:       exerciseClient,
 		classroomClient:      classroomClient,
@@ -37,7 +34,6 @@ func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, cla
 		userClient:           userClient,
 		submissionClient:     submissionClient,
 		attachmentClient:     attachmentClient,
-		redisClient:          redisClient,
 	}
 }
 
@@ -141,66 +137,11 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 
 	var comments []*pb.CommentExerciseResponse
 	for _, c := range commentRes.GetComments() {
-		var userRes *userSvcV1.GetUserResponse
-		redis, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 			Id: c.UserID,
 		})
 		if err != nil {
 			return nil, err
-		}
-
-		if redis.User != nil && redis.Response.StatusCode == 200 {
-			userRes = &userSvcV1.GetUserResponse{
-				Response: &userSvcV1.CommonUserResponse{
-					StatusCode: 200,
-					Message:    "OK",
-				},
-				User: &userSvcV1.UserResponse{
-					Id:       redis.User.GetId(),
-					Class:    redis.User.Class,
-					Major:    redis.User.Major,
-					Phone:    redis.User.Phone,
-					PhotoSrc: redis.User.GetPhotoSrc(),
-					Role:     redis.User.GetRole(),
-					Name:     redis.User.GetName(),
-					Email:    redis.User.GetEmail(),
-				},
-			}
-		} else {
-			userRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-				Id: c.UserID,
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if userRes.Response.StatusCode != 200 {
-				return nil, errors.New("error getting user")
-			}
-
-			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-				User: &redisSvcV1.User{
-					Id:       userRes.User.GetId(),
-					Class:    userRes.User.Class,
-					Major:    userRes.User.Major,
-					Phone:    userRes.User.Major,
-					PhotoSrc: userRes.User.GetPhotoSrc(),
-					Role:     userRes.User.GetRole(),
-					Name:     userRes.User.GetName(),
-					Email:    userRes.User.GetEmail(),
-				},
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if cache.Response.StatusCode != 200 {
-				return nil, errors.New("error set user cache")
-			}
-		}
-
-		if userRes.Response.StatusCode == 404 {
-			return nil, errors.New("error user not found")
 		}
 
 		comments = append(comments, &pb.CommentExerciseResponse{
@@ -228,66 +169,11 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 		return nil, err
 	}
 
-	var authorRes *userSvcV1.GetUserResponse
-	redis, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+	authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 		Id: res.Exercise.AuthorID,
 	})
 	if err != nil {
 		return nil, err
-	}
-
-	if redis.User != nil && redis.Response.StatusCode == 200 {
-		authorRes = &userSvcV1.GetUserResponse{
-			Response: &userSvcV1.CommonUserResponse{
-				StatusCode: 200,
-				Message:    "OK",
-			},
-			User: &userSvcV1.UserResponse{
-				Id:       redis.User.GetId(),
-				Class:    redis.User.Class,
-				Major:    redis.User.Major,
-				Phone:    redis.User.Phone,
-				PhotoSrc: redis.User.GetPhotoSrc(),
-				Role:     redis.User.GetRole(),
-				Name:     redis.User.GetName(),
-				Email:    redis.User.GetEmail(),
-			},
-		}
-	} else {
-		authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: res.Exercise.AuthorID,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if authorRes.Response.StatusCode != 200 {
-			return nil, errors.New("error getting user")
-		}
-
-		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-			User: &redisSvcV1.User{
-				Id:       authorRes.User.GetId(),
-				Class:    authorRes.User.Class,
-				Major:    authorRes.User.Major,
-				Phone:    authorRes.User.Major,
-				PhotoSrc: authorRes.User.GetPhotoSrc(),
-				Role:     authorRes.User.GetRole(),
-				Name:     authorRes.User.GetName(),
-				Email:    authorRes.User.GetEmail(),
-			},
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if cache.Response.StatusCode != 200 {
-			return nil, errors.New("error set user cache")
-		}
-	}
-
-	if authorRes.Response.StatusCode == 404 {
-		return nil, errors.New("error user not found")
 	}
 
 	attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
@@ -498,66 +384,11 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 			return nil, err
 		}
 
-		var authorRes *userSvcV1.GetUserResponse
-		redis, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 			Id: e.AuthorID,
 		})
 		if err != nil {
 			return nil, err
-		}
-
-		if redis.User != nil && redis.Response.StatusCode == 200 {
-			authorRes = &userSvcV1.GetUserResponse{
-				Response: &userSvcV1.CommonUserResponse{
-					StatusCode: 200,
-					Message:    "OK",
-				},
-				User: &userSvcV1.UserResponse{
-					Id:       redis.User.GetId(),
-					Class:    redis.User.Class,
-					Major:    redis.User.Major,
-					Phone:    redis.User.Phone,
-					PhotoSrc: redis.User.GetPhotoSrc(),
-					Role:     redis.User.GetRole(),
-					Name:     redis.User.GetName(),
-					Email:    redis.User.GetEmail(),
-				},
-			}
-		} else {
-			authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-				Id: e.AuthorID,
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if authorRes.Response.StatusCode != 200 {
-				return nil, errors.New("error getting user")
-			}
-
-			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-				User: &redisSvcV1.User{
-					Id:       authorRes.User.GetId(),
-					Class:    authorRes.User.Class,
-					Major:    authorRes.User.Major,
-					Phone:    authorRes.User.Major,
-					PhotoSrc: authorRes.User.GetPhotoSrc(),
-					Role:     authorRes.User.GetRole(),
-					Name:     authorRes.User.GetName(),
-					Email:    authorRes.User.GetEmail(),
-				},
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if cache.Response.StatusCode != 200 {
-				return nil, errors.New("error set user cache")
-			}
-		}
-
-		if authorRes.Response.StatusCode == 404 {
-			return nil, errors.New("error user not found")
 		}
 
 		attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
@@ -701,66 +532,11 @@ func (u *exerciseServiceGW) GetAllExercisesOfClassroom(ctx context.Context, req 
 			return nil, err
 		}
 
-		var authorRes *userSvcV1.GetUserResponse
-		redis, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 			Id: p.AuthorID,
 		})
 		if err != nil {
 			return nil, err
-		}
-
-		if redis.User != nil && redis.Response.StatusCode == 200 {
-			authorRes = &userSvcV1.GetUserResponse{
-				Response: &userSvcV1.CommonUserResponse{
-					StatusCode: 200,
-					Message:    "OK",
-				},
-				User: &userSvcV1.UserResponse{
-					Id:       redis.User.GetId(),
-					Class:    redis.User.Class,
-					Major:    redis.User.Major,
-					Phone:    redis.User.Phone,
-					PhotoSrc: redis.User.GetPhotoSrc(),
-					Role:     redis.User.GetRole(),
-					Name:     redis.User.GetName(),
-					Email:    redis.User.GetEmail(),
-				},
-			}
-		} else {
-			authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-				Id: p.AuthorID,
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if authorRes.Response.StatusCode != 200 {
-				return nil, errors.New("error getting user")
-			}
-
-			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-				User: &redisSvcV1.User{
-					Id:       authorRes.User.GetId(),
-					Class:    authorRes.User.Class,
-					Major:    authorRes.User.Major,
-					Phone:    authorRes.User.Major,
-					PhotoSrc: authorRes.User.GetPhotoSrc(),
-					Role:     authorRes.User.GetRole(),
-					Name:     authorRes.User.GetName(),
-					Email:    authorRes.User.GetEmail(),
-				},
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if cache.Response.StatusCode != 200 {
-				return nil, errors.New("error set user cache")
-			}
-		}
-
-		if authorRes.Response.StatusCode == 404 {
-			return nil, errors.New("error user not found")
 		}
 
 		attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
@@ -878,66 +654,11 @@ func (u *exerciseServiceGW) GetAllExercisesInReportingStage(ctx context.Context,
 
 	var exercises []*pb.ExerciseResponse
 	for _, p := range res.GetExercises() {
-		var authorRes *userSvcV1.GetUserResponse
-		redis, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		authorRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 			Id: p.AuthorID,
 		})
 		if err != nil {
 			return nil, err
-		}
-
-		if redis.User != nil && redis.Response.StatusCode == 200 {
-			authorRes = &userSvcV1.GetUserResponse{
-				Response: &userSvcV1.CommonUserResponse{
-					StatusCode: 200,
-					Message:    "OK",
-				},
-				User: &userSvcV1.UserResponse{
-					Id:       redis.User.GetId(),
-					Class:    redis.User.Class,
-					Major:    redis.User.Major,
-					Phone:    redis.User.Phone,
-					PhotoSrc: redis.User.GetPhotoSrc(),
-					Role:     redis.User.GetRole(),
-					Name:     redis.User.GetName(),
-					Email:    redis.User.GetEmail(),
-				},
-			}
-		} else {
-			authorRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-				Id: p.AuthorID,
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if authorRes.Response.StatusCode != 200 {
-				return nil, errors.New("error getting user")
-			}
-
-			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-				User: &redisSvcV1.User{
-					Id:       authorRes.User.GetId(),
-					Class:    authorRes.User.Class,
-					Major:    authorRes.User.Major,
-					Phone:    authorRes.User.Major,
-					PhotoSrc: authorRes.User.GetPhotoSrc(),
-					Role:     authorRes.User.GetRole(),
-					Name:     authorRes.User.GetName(),
-					Email:    authorRes.User.GetEmail(),
-				},
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if cache.Response.StatusCode != 200 {
-				return nil, errors.New("error set user cache")
-			}
-		}
-
-		if authorRes.Response.StatusCode == 404 {
-			return nil, errors.New("error user not found")
 		}
 
 		attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{

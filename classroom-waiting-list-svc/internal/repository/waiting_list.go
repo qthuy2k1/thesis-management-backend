@@ -199,6 +199,39 @@ func (r *WaitingListRepo) GetWaitingListsOfClassroom(ctx context.Context, classr
 	return waiting_lists, nil
 }
 
+// GetWaitingList returns a list of waiting_lists in db
+func (r *WaitingListRepo) GetWaitingLists(ctx context.Context) ([]WaitingListOutputRepo, error) {
+	rows, err := QuerySQL(ctx, r.Database, "GetWaitingLists", "SELECT id, classroom_id, user_id, is_defense, status, created_at FROM waiting_lists")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Iterate over the result rows and populate the waiting_lists slice
+	var waiting_lists []WaitingListOutputRepo
+	for rows.Next() {
+		waiting_list := WaitingListOutputRepo{}
+		err := rows.Scan(
+			&waiting_list.ID,
+			&waiting_list.ClassroomID,
+			&waiting_list.UserID,
+			&waiting_list.IsDefense,
+			&waiting_list.Status,
+			&waiting_list.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		waiting_lists = append(waiting_lists, waiting_list)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return waiting_lists, nil
+}
+
 // CheckUserInWaitingListOfClassroom returns a boolean indicating whether user is in waiting list
 func (r *WaitingListRepo) CheckUserInWaitingListOfClassroom(ctx context.Context, userID string) (bool, int, error) {
 	query := []string{fmt.Sprintf("SELECT id, user_id, classroom_id, is_defense, status FROM waiting_lists WHERE user_id = '%s' LIMIT 1", userID)}

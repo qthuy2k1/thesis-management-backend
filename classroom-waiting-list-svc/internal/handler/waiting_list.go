@@ -117,7 +117,7 @@ func (h *WaitingListHdl) DeleteWaitingList(ctx context.Context, req *waitingList
 	}, nil
 }
 
-func (h *WaitingListHdl) GetWaitingListsOfClassroom(ctx context.Context, req *waitingListpb.GetWaitingListsRequest) (*waitingListpb.GetWaitingListsResponse, error) {
+func (h *WaitingListHdl) GetWaitingListsOfClassroom(ctx context.Context, req *waitingListpb.GetWaitingListsOfClassroomRequest) (*waitingListpb.GetWaitingListsOfClassroomResponse, error) {
 	log.Println("calling get all waitingLists...")
 	if err := req.Validate(); err != nil {
 		code, err := convertCtrlError(err)
@@ -125,6 +125,39 @@ func (h *WaitingListHdl) GetWaitingListsOfClassroom(ctx context.Context, req *wa
 	}
 
 	wts, err := h.Service.GetWaitingListsOfClassroom(ctx, int(req.GetClassroomID()))
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var wtsResp []*waitingListpb.WaitingListResponse
+	for _, wt := range wts {
+		wtsResp = append(wtsResp, &waitingListpb.WaitingListResponse{
+			Id:          int64(wt.ID),
+			ClassroomID: int64(wt.ClassroomID),
+			UserID:      wt.UserID,
+			IsDefense:   wt.IsDefense,
+			Status:      wt.Status,
+			CreatedAt:   timestamppb.New(wt.CreatedAt),
+		})
+	}
+
+	return &waitingListpb.GetWaitingListsOfClassroomResponse{
+		Response: &waitingListpb.CommonWaitingListResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		WaitingLists: wtsResp,
+	}, nil
+}
+func (h *WaitingListHdl) GetWaitingLists(ctx context.Context, req *waitingListpb.GetWaitingListsRequest) (*waitingListpb.GetWaitingListsResponse, error) {
+	log.Println("calling get all waitingLists...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	wts, err := h.Service.GetWaitingLists(ctx)
 	if err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
