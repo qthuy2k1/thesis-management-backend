@@ -301,10 +301,10 @@ func main() {
 	}
 
 	// connect to redis svc
-	redisClient, err := newRedisSvcClient()
-	if err != nil {
-		panic(err)
-	}
+	// redisClient, err := newRedisSvcClient()
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	lis, err := net.Listen("tcp", address["listenAddress"])
 	if err != nil {
@@ -312,23 +312,23 @@ func main() {
 	}
 	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
 
-	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient, rpsClient, userClient, topicClient, redisClient))
-	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient, commentClient, userClient, attachmentClient, redisClient))
-	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient, commentClient, userClient, submissionClient, attachmentClient, redisClient))
+	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient, rpsClient, userClient, topicClient))
+	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient, commentClient, userClient, attachmentClient))
+	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient, commentClient, userClient, submissionClient, attachmentClient))
 	pb.RegisterReportingStageServiceServer(s, NewReportingStagesService(rpsClient))
-	pb.RegisterSubmissionServiceServer(s, NewSubmissionsService(submissionClient, classroomClient, exerciseClient, attachmentClient, userClient, redisClient))
-	pb.RegisterUserServiceServer(s, NewUsersService(userClient, classroomClient, waitingListClient, topicClient, redisClient))
-	pb.RegisterWaitingListServiceServer(s, NewWaitingListsService(waitingListClient, classroomClient, userClient, redisClient))
+	pb.RegisterSubmissionServiceServer(s, NewSubmissionsService(submissionClient, classroomClient, exerciseClient, attachmentClient, userClient))
+	pb.RegisterUserServiceServer(s, NewUsersService(userClient, classroomClient, waitingListClient, topicClient))
+	pb.RegisterWaitingListServiceServer(s, NewWaitingListsService(waitingListClient, classroomClient, userClient))
 	pb.RegisterCommentServiceServer(s, NewCommentsService(commentClient, postClient, exerciseClient, userClient))
-	pb.RegisterAttachmentServiceServer(s, NewAttachmentsService(attachmentClient, userClient, submissionClient, redisClient))
-	pb.RegisterTopicServiceServer(s, NewTopicsService(topicClient, userClient, redisClient))
+	pb.RegisterAttachmentServiceServer(s, NewAttachmentsService(attachmentClient, userClient, submissionClient))
+	pb.RegisterTopicServiceServer(s, NewTopicsService(topicClient, userClient))
 	pb.RegisterAuthorizationServiceServer(s, NewAuthorizationService(userClient, authorizationClient))
-	pb.RegisterMemberServiceServer(s, NewMembersService(userClient, classroomClient, waitingListClient, redisClient))
+	pb.RegisterMemberServiceServer(s, NewMembersService(userClient, classroomClient, waitingListClient))
 	pb.RegisterCommiteeServiceServer(s, NewCommiteesService(commiteeClient, userClient))
 	pb.RegisterRoomServiceServer(s, NewRoomsService(commiteeClient))
 	pb.RegisterStudentDefServiceServer(s, NewStudentDefsService(userClient))
-	pb.RegisterScheduleServiceServer(s, NewSchedulesService(scheduleClient, commiteeClient, userClient, thesisClient, redisClient))
-	pb.RegisterNotificationServiceServer(s, NewNotificationsService(scheduleClient, userClient, redisClient))
+	pb.RegisterScheduleServiceServer(s, NewSchedulesService(scheduleClient, commiteeClient, userClient, thesisClient))
+	pb.RegisterNotificationServiceServer(s, NewNotificationsService(scheduleClient, userClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

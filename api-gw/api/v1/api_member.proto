@@ -137,7 +137,7 @@ message ClassroomMemberResponse {
     string status = 4 [(validate.rules).string = {min_len: 2}];
     UserMemberResponse lecturer = 5;
     string classCourse = 6 [(validate.rules).string = {min_len: 2}];
-    string topicTags = 7 [(validate.rules).string = {min_len: 2}];
+    optional string topicTags = 7 [(validate.rules).string = {min_len: 2}];
     int64 quantityStudent = 8 [(validate.rules).int64.gte = 0];
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];

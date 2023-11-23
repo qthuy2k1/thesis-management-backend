@@ -80,7 +80,7 @@ message CommonUserResponse {
 
 // ====== user ======
 message UserInput {
-    string id = 1;
+    string id = 1 [(validate.rules).string = {min_len: 2}];
     optional string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
     optional string major = 3 [(validate.rules).string = {min_len: 2}];
     optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
@@ -100,7 +100,7 @@ message UserResponse {
     string role = 6 [(validate.rules).string = {in: ["lecturer", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    string hashedPassword = 9 [(validate.rules).string = {min_len: 2}];
+    optional string hashedPassword = 9 [(validate.rules).string = {min_len: 2}];
     TopicUserResponse topic = 10;
 }
 
@@ -116,7 +116,7 @@ message CreateUserResponse {
 
 // ====== GET ======
 message GetUserRequest {
-    string id = 1;
+    string id = 1 [(validate.rules).string = {min_len: 2}];
 }
 
 message GetUserResponse {
@@ -126,7 +126,7 @@ message GetUserResponse {
 
 // ====== PUT ======
 message UpdateUserRequest {
-    string id = 1;
+    string id = 1 [(validate.rules).string = {min_len: 2}];
     UserInput user = 2 [(validate.rules).message = {required: true}];
 }
 
@@ -136,7 +136,7 @@ message UpdateUserResponse {
 
 // ====== DELETE ======
 message DeleteUserRequest {
-    string id = 1;
+    string id = 1 [(validate.rules).string = {min_len: 2}];
 }
 
 message DeleteUserResponse {
@@ -185,9 +185,9 @@ message ClassroomUserResponse {
     string title = 2 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string description = 3 [(validate.rules).string = {min_len: 2}];
     string status = 4 [(validate.rules).string = {min_len: 2}];
-    string lecturerID = 5;
+    UserResponse lecturer = 5;
     string classCourse = 6 [(validate.rules).string = {min_len: 2}];
-    string topicTags = 7 [(validate.rules).string = {min_len: 2}];
+    optional string topicTags = 7 [(validate.rules).string = {min_len: 2}];
     int64 quantityStudent = 8 [(validate.rules).int64.gte = 0];
     google.protobuf.Timestamp createdAt = 9 [(validate.rules).timestamp.required = true];
     google.protobuf.Timestamp updatedAt = 10 [(validate.rules).timestamp.required = true];
@@ -213,7 +213,7 @@ message MemberUserResponse {
 
 message CheckStatusUserJoinClassroomResponse{
     CommonUserResponse response = 1;
-    MemberUserResponse member = 2;
+    repeated MemberUserResponse member = 2;
     string status = 3;
 }
 

@@ -6,6 +6,7 @@
         "status": "<string>",
         "classCourse": "<string>",
         "topicTags" :"<string>",    // separate by a comma each tag (tag 1, tag 2, etc)
+        "lecturerID": "123123",
         "quantityStudent": "<integer>", 
         "createdAt": "<dateTime>",
         "updatedAt": "<dateTime>"

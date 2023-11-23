@@ -34,7 +34,7 @@ message ClassroomInput {
     string status = 3;
     string lecturerID = 4;
     string classCourse = 5;
-    string topicTags = 6;
+    optional string topicTags = 6;
     int64 quantityStudent = 7;
 }
 
@@ -46,7 +46,7 @@ message ClassroomResponse {
     string status = 4;
     string lecturerID = 5;
     string classCourse = 6;
-    string topicTags = 7;
+    optional string topicTags = 7;
     int64 quantityStudent = 8;
     google.protobuf.Timestamp created_at = 9;
     google.protobuf.Timestamp updated_at = 10;

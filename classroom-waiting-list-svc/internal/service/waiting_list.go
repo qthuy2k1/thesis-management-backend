@@ -114,6 +114,28 @@ func (s *WaitingListSvc) GetWaitingListsOfClassroom(ctx context.Context, classro
 	return wtsSvc, nil
 }
 
+// GetWaitingLists returns a list of waiting lists in a classroom
+func (s *WaitingListSvc) GetWaitingLists(ctx context.Context) ([]WaitingListOutputSvc, error) {
+	wtsRepo, err := s.Repository.GetWaitingLists(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var wtsSvc []WaitingListOutputSvc
+	for _, wt := range wtsRepo {
+		wtsSvc = append(wtsSvc, WaitingListOutputSvc{
+			ID:          wt.ID,
+			ClassroomID: wt.ClassroomID,
+			UserID:      wt.UserID,
+			IsDefense:   wt.IsDefense,
+			Status:      wt.Status,
+			CreatedAt:   wt.CreatedAt,
+		})
+	}
+
+	return wtsSvc, nil
+}
+
 // CheckUserInWaitingListOfClassroom returns a boolean indicating whether user is in waiting list
 func (s *WaitingListSvc) CheckUserInWaitingListOfClassroom(ctx context.Context, userID string) (bool, int, error) {
 	isIn, classroomID, err := s.Repository.CheckUserInWaitingListOfClassroom(ctx, userID)

@@ -2,12 +2,10 @@ package main
 
 import (
 	"context"
-	"errors"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
-	redisSvcV1 "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
@@ -16,15 +14,13 @@ type waitingListServiceGW struct {
 	waitingListClient waitingListSvcV1.WaitingListServiceClient
 	classroomClient   classroomSvcV1.ClassroomServiceClient
 	userClient        userSvcV1.UserServiceClient
-	redisClient       redisSvcV1.RedisServiceClient
 }
 
-func NewWaitingListsService(waitingListClient waitingListSvcV1.WaitingListServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, userClient userSvcV1.UserServiceClient, redisClient redisSvcV1.RedisServiceClient) *waitingListServiceGW {
+func NewWaitingListsService(waitingListClient waitingListSvcV1.WaitingListServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, userClient userSvcV1.UserServiceClient) *waitingListServiceGW {
 	return &waitingListServiceGW{
 		waitingListClient: waitingListClient,
 		classroomClient:   classroomClient,
 		userClient:        userClient,
-		redisClient:       redisClient,
 	}
 }
 
@@ -116,116 +112,14 @@ func (u *waitingListServiceGW) GetWaitingList(ctx context.Context, req *pb.GetWa
 		return nil, err
 	}
 
-	redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-		Id: res.WaitingList.UserID,
-	})
+	studentRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: res.WaitingList.UserID})
 	if err != nil {
 		return nil, err
 	}
 
-	var studentRes *userSvcV1.GetUserResponse
-	if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-		studentRes = &userSvcV1.GetUserResponse{
-			Response: &userSvcV1.CommonUserResponse{
-				StatusCode: 200,
-				Message:    "OK",
-			},
-			User: &userSvcV1.UserResponse{
-				Id:       redis.User.GetId(),
-				Class:    redis.User.Class,
-				Major:    redis.User.Major,
-				Phone:    redis.User.Phone,
-				PhotoSrc: redis.User.GetPhotoSrc(),
-				Role:     redis.User.GetRole(),
-				Name:     redis.User.GetName(),
-				Email:    redis.User.GetEmail(),
-			},
-		}
-	} else {
-		studentRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: res.WaitingList.UserID})
-		if err != nil {
-			return nil, err
-		}
-
-		if studentRes.Response.StatusCode != 200 {
-			return nil, errors.New("error getting user")
-		}
-
-		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-			User: &redisSvcV1.User{
-				Id:       studentRes.User.GetId(),
-				Class:    studentRes.User.Class,
-				Major:    studentRes.User.Major,
-				Phone:    studentRes.User.Major,
-				PhotoSrc: studentRes.User.GetPhotoSrc(),
-				Role:     studentRes.User.GetRole(),
-				Name:     studentRes.User.GetName(),
-				Email:    studentRes.User.GetEmail(),
-			},
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if cache.Response.StatusCode != 200 {
-			return nil, errors.New("error set user cache")
-		}
-	}
-
-	redis, err = u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-		Id: clrRes.Classroom.LecturerID,
-	})
+	lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: clrRes.Classroom.LecturerID})
 	if err != nil {
 		return nil, err
-	}
-
-	var lecturerRes *userSvcV1.GetUserResponse
-	if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-		lecturerRes = &userSvcV1.GetUserResponse{
-			Response: &userSvcV1.CommonUserResponse{
-				StatusCode: 200,
-				Message:    "OK",
-			},
-			User: &userSvcV1.UserResponse{
-				Id:       redis.User.GetId(),
-				Class:    redis.User.Class,
-				Major:    redis.User.Major,
-				Phone:    redis.User.Phone,
-				PhotoSrc: redis.User.GetPhotoSrc(),
-				Role:     redis.User.GetRole(),
-				Name:     redis.User.GetName(),
-				Email:    redis.User.GetEmail(),
-			},
-		}
-	} else {
-		lecturerRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: clrRes.Classroom.LecturerID})
-		if err != nil {
-			return nil, err
-		}
-
-		if lecturerRes.Response.StatusCode != 200 {
-			return nil, errors.New("error getting user")
-		}
-
-		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-			User: &redisSvcV1.User{
-				Id:       lecturerRes.User.GetId(),
-				Class:    lecturerRes.User.Class,
-				Major:    lecturerRes.User.Major,
-				Phone:    lecturerRes.User.Major,
-				PhotoSrc: lecturerRes.User.GetPhotoSrc(),
-				Role:     lecturerRes.User.GetRole(),
-				Name:     lecturerRes.User.GetName(),
-				Email:    lecturerRes.User.GetEmail(),
-			},
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if cache.Response.StatusCode != 200 {
-			return nil, errors.New("error set user cache")
-		}
 	}
 
 	return &pb.GetWaitingListResponse{
@@ -372,60 +266,9 @@ func (u *waitingListServiceGW) DeleteWaitingList(ctx context.Context, req *pb.De
 		return nil, err
 	}
 
-	redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-		Id: wtl.WaitingList.UserID,
-	})
+	studentRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: wtl.WaitingList.UserID})
 	if err != nil {
 		return nil, err
-	}
-
-	var studentRes *userSvcV1.GetUserResponse
-	if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-		studentRes = &userSvcV1.GetUserResponse{
-			Response: &userSvcV1.CommonUserResponse{
-				StatusCode: 200,
-				Message:    "OK",
-			},
-			User: &userSvcV1.UserResponse{
-				Id:       redis.User.GetId(),
-				Class:    redis.User.Class,
-				Major:    redis.User.Major,
-				Phone:    redis.User.Phone,
-				PhotoSrc: redis.User.GetPhotoSrc(),
-				Role:     redis.User.GetRole(),
-				Name:     redis.User.GetName(),
-				Email:    redis.User.GetEmail(),
-			},
-		}
-	} else {
-		studentRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: wtl.WaitingList.UserID})
-		if err != nil {
-			return nil, err
-		}
-
-		if studentRes.Response.StatusCode != 200 {
-			return nil, errors.New("error getting user")
-		}
-
-		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-			User: &redisSvcV1.User{
-				Id:       studentRes.User.GetId(),
-				Class:    studentRes.User.Class,
-				Major:    studentRes.User.Major,
-				Phone:    studentRes.User.Major,
-				PhotoSrc: studentRes.User.GetPhotoSrc(),
-				Role:     studentRes.User.GetRole(),
-				Name:     studentRes.User.GetName(),
-				Email:    studentRes.User.GetEmail(),
-			},
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if cache.Response.StatusCode != 200 {
-			return nil, errors.New("error set user cache")
-		}
 	}
 
 	userUpdateRes, err := u.userClient.UpdateUser(ctx, &userSvcV1.UpdateUserRequest{
@@ -461,12 +304,12 @@ func (u *waitingListServiceGW) DeleteWaitingList(ctx context.Context, req *pb.De
 	}, nil
 }
 
-func (u *waitingListServiceGW) GetWaitingListsOfClassroom(ctx context.Context, req *pb.GetWaitingListsRequest) (*pb.GetWaitingListsResponse, error) {
+func (u *waitingListServiceGW) GetWaitingListsOfClassroom(ctx context.Context, req *pb.GetWaitingListsOfClassroomRequest) (*pb.GetWaitingListsOfClassroomResponse, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	res, err := u.waitingListClient.GetWaitingListsOfClassroom(ctx, &waitingListSvcV1.GetWaitingListsRequest{
+	res, err := u.waitingListClient.GetWaitingListsOfClassroom(ctx, &waitingListSvcV1.GetWaitingListsOfClassroomRequest{
 		ClassroomID: req.GetClassroomID(),
 	})
 	if err != nil {
@@ -482,116 +325,91 @@ func (u *waitingListServiceGW) GetWaitingListsOfClassroom(ctx context.Context, r
 			return nil, err
 		}
 
-		redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-			Id: p.UserID,
-		})
+		studentRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.UserID})
 		if err != nil {
 			return nil, err
 		}
 
-		var studentRes *userSvcV1.GetUserResponse
-		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-			studentRes = &userSvcV1.GetUserResponse{
-				Response: &userSvcV1.CommonUserResponse{
-					StatusCode: 200,
-					Message:    "OK",
-				},
-				User: &userSvcV1.UserResponse{
-					Id:       redis.User.GetId(),
-					Class:    redis.User.Class,
-					Major:    redis.User.Major,
-					Phone:    redis.User.Phone,
-					PhotoSrc: redis.User.GetPhotoSrc(),
-					Role:     redis.User.GetRole(),
-					Name:     redis.User.GetName(),
-					Email:    redis.User.GetEmail(),
-				},
-			}
-		} else {
-			studentRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.UserID})
-			if err != nil {
-				return nil, err
-			}
-
-			if studentRes.Response.StatusCode != 200 {
-				return nil, errors.New("error getting user")
-			}
-
-			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-				User: &redisSvcV1.User{
-					Id:       studentRes.User.GetId(),
-					Class:    studentRes.User.Class,
-					Major:    studentRes.User.Major,
-					Phone:    studentRes.User.Major,
-					PhotoSrc: studentRes.User.GetPhotoSrc(),
-					Role:     studentRes.User.GetRole(),
-					Name:     studentRes.User.GetName(),
-					Email:    studentRes.User.GetEmail(),
-				},
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if cache.Response.StatusCode != 200 {
-				return nil, errors.New("error set user cache")
-			}
-		}
-
-		redis, err = u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-			Id: clrRes.Classroom.LecturerID,
-		})
+		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: clrRes.Classroom.LecturerID})
 		if err != nil {
 			return nil, err
 		}
 
-		var lecturerRes *userSvcV1.GetUserResponse
-		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-			lecturerRes = &userSvcV1.GetUserResponse{
-				Response: &userSvcV1.CommonUserResponse{
-					StatusCode: 200,
-					Message:    "OK",
-				},
-				User: &userSvcV1.UserResponse{
-					Id:       redis.User.GetId(),
-					Class:    redis.User.Class,
-					Major:    redis.User.Major,
-					Phone:    redis.User.Phone,
-					PhotoSrc: redis.User.GetPhotoSrc(),
-					Role:     redis.User.GetRole(),
-					Name:     redis.User.GetName(),
-					Email:    redis.User.GetEmail(),
-				},
-			}
-		} else {
-			lecturerRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: clrRes.Classroom.LecturerID})
-			if err != nil {
-				return nil, err
-			}
-
-			if lecturerRes.Response.StatusCode != 200 {
-				return nil, errors.New("error getting user")
-			}
-
-			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-				User: &redisSvcV1.User{
-					Id:       lecturerRes.User.GetId(),
-					Class:    lecturerRes.User.Class,
+		waitingLists = append(waitingLists, &pb.WaitingListResponse{
+			Id: p.Id,
+			Classroom: &pb.ClassroomWTLResponse{
+				Id:          clrRes.Classroom.Id,
+				Title:       clrRes.Classroom.Title,
+				Description: clrRes.Classroom.Description,
+				Status:      clrRes.Classroom.Status,
+				Lecturer: &pb.LecturerWaitingListResponse{
+					Id:       lecturerRes.User.Id,
+					Class:    lecturerRes.User.GetClass(),
 					Major:    lecturerRes.User.Major,
-					Phone:    lecturerRes.User.Major,
-					PhotoSrc: lecturerRes.User.GetPhotoSrc(),
-					Role:     lecturerRes.User.GetRole(),
-					Name:     lecturerRes.User.GetName(),
-					Email:    lecturerRes.User.GetEmail(),
+					Phone:    lecturerRes.User.Phone,
+					PhotoSrc: lecturerRes.User.PhotoSrc,
+					Role:     lecturerRes.User.Role,
+					Name:     lecturerRes.User.Name,
+					Email:    lecturerRes.User.Email,
 				},
-			})
-			if err != nil {
-				return nil, err
-			}
+				ClassCourse:     clrRes.Classroom.ClassCourse,
+				TopicTags:       clrRes.Classroom.TopicTags,
+				QuantityStudent: clrRes.Classroom.QuantityStudent,
+				CreatedAt:       clrRes.Classroom.CreatedAt,
+				UpdatedAt:       clrRes.Classroom.UpdatedAt,
+			},
+			Member: &pb.UserWaitingListResponse{
+				Id:       studentRes.User.Id,
+				Class:    studentRes.User.Class,
+				Major:    studentRes.User.Major,
+				Phone:    studentRes.User.Phone,
+				PhotoSrc: studentRes.User.PhotoSrc,
+				Role:     studentRes.User.Role,
+				Name:     studentRes.User.Name,
+				Email:    studentRes.User.Email,
+			},
+			RegisterDefense: p.IsDefense,
+			Status:          p.Status,
+			CreatedAt:       p.GetCreatedAt(),
+		})
+	}
 
-			if cache.Response.StatusCode != 200 {
-				return nil, errors.New("error set user cache")
-			}
+	return &pb.GetWaitingListsOfClassroomResponse{
+		Response: &pb.CommonWaitingListResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+		WaitingLists: waitingLists,
+	}, nil
+}
+
+func (u *waitingListServiceGW) GetWaitingLists(ctx context.Context, req *pb.GetWaitingListsRequest) (*pb.GetWaitingListsResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	res, err := u.waitingListClient.GetWaitingLists(ctx, &waitingListSvcV1.GetWaitingListsRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	var waitingLists []*pb.WaitingListResponse
+	for _, p := range res.GetWaitingLists() {
+		clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
+			Id: p.ClassroomID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		studentRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: p.UserID})
+		if err != nil {
+			return nil, err
+		}
+
+		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: clrRes.Classroom.LecturerID})
+		if err != nil {
+			return nil, err
 		}
 
 		waitingLists = append(waitingLists, &pb.WaitingListResponse{
@@ -662,60 +480,14 @@ func (u *waitingListServiceGW) CheckUserInWaitingListClassroom(ctx context.Conte
 			return nil, err
 		}
 
-		redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-			Id: clrRes.Classroom.LecturerID,
-		})
+		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: clrRes.Classroom.LecturerID})
 		if err != nil {
 			return nil, err
 		}
 
-		var lecturerRes *userSvcV1.GetUserResponse
-		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-			lecturerRes = &userSvcV1.GetUserResponse{
-				Response: &userSvcV1.CommonUserResponse{
-					StatusCode: 200,
-					Message:    "OK",
-				},
-				User: &userSvcV1.UserResponse{
-					Id:       redis.User.GetId(),
-					Class:    redis.User.Class,
-					Major:    redis.User.Major,
-					Phone:    redis.User.Phone,
-					PhotoSrc: redis.User.GetPhotoSrc(),
-					Role:     redis.User.GetRole(),
-					Name:     redis.User.GetName(),
-					Email:    redis.User.GetEmail(),
-				},
-			}
-		} else {
-			lecturerRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: clrRes.Classroom.LecturerID})
-			if err != nil {
-				return nil, err
-			}
-
-			if lecturerRes.Response.StatusCode != 200 {
-				return nil, errors.New("error getting user")
-			}
-
-			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-				User: &redisSvcV1.User{
-					Id:       lecturerRes.User.GetId(),
-					Class:    lecturerRes.User.Class,
-					Major:    lecturerRes.User.Major,
-					Phone:    lecturerRes.User.Major,
-					PhotoSrc: lecturerRes.User.GetPhotoSrc(),
-					Role:     lecturerRes.User.GetRole(),
-					Name:     lecturerRes.User.GetName(),
-					Email:    lecturerRes.User.GetEmail(),
-				},
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if cache.Response.StatusCode != 200 {
-				return nil, errors.New("error set user cache")
-			}
+		topicTags := ""
+		if clrRes.GetClassroom().TopicTags != nil {
+			topicTags = clrRes.GetClassroom().GetTopicTags()
 		}
 
 		return &pb.CheckUserInWaitingListClassroomResponse{
@@ -736,7 +508,7 @@ func (u *waitingListServiceGW) CheckUserInWaitingListClassroom(ctx context.Conte
 					Email:    lecturerRes.User.Email,
 				},
 				ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
-				TopicTags:       clrRes.GetClassroom().GetTopicTags(),
+				TopicTags:       &topicTags,
 				QuantityStudent: clrRes.GetClassroom().GetQuantityStudent(),
 				CreatedAt:       clrRes.GetClassroom().GetCreatedAt(),
 				UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"log"
 
 	userpb "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 	service "github.com/qthuy2k1/thesis-management-backend/user-svc/internal/service"
@@ -11,7 +10,6 @@ import (
 
 // CreateUser retrieves a user request from gRPC-gateway and calls to the Service layer, then returns the response and status code.
 func (h *UserHdl) CreateUser(ctx context.Context, req *userpb.CreateUserRequest) (*userpb.CreateUserResponse, error) {
-	log.Println("calling insert user...")
 	u, err := validateAndConvertUser(req.User)
 	if err != nil {
 		code, err := convertCtrlError(err)
@@ -35,11 +33,11 @@ func (h *UserHdl) CreateUser(ctx context.Context, req *userpb.CreateUserRequest)
 
 // GetUser returns a user in db given by id
 func (h *UserHdl) GetUser(ctx context.Context, req *userpb.GetUserRequest) (*userpb.GetUserResponse, error) {
-	log.Println("calling get user...")
 	if err := req.Validate(); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
+
 	u, err := h.Service.GetUser(ctx, req.GetId())
 	if err != nil {
 		code, err := convertCtrlError(err)
@@ -47,14 +45,15 @@ func (h *UserHdl) GetUser(ctx context.Context, req *userpb.GetUserRequest) (*use
 	}
 
 	pResp := userpb.UserResponse{
-		Id:       u.ID,
-		Class:    u.Class,
-		Major:    u.Major,
-		Phone:    u.Phone,
-		PhotoSrc: u.PhotoSrc,
-		Role:     u.Role,
-		Name:     u.Name,
-		Email:    u.Email,
+		Id:             u.ID,
+		Class:          u.Class,
+		Major:          u.Major,
+		Phone:          u.Phone,
+		PhotoSrc:       u.PhotoSrc,
+		Role:           u.Role,
+		Name:           u.Name,
+		Email:          u.Email,
+		HashedPassword: u.HashedPassword,
 	}
 
 	resp := &userpb.GetUserResponse{
@@ -69,7 +68,6 @@ func (h *UserHdl) GetUser(ctx context.Context, req *userpb.GetUserRequest) (*use
 }
 
 func (c *UserHdl) UpdateUser(ctx context.Context, req *userpb.UpdateUserRequest) (*userpb.UpdateUserResponse, error) {
-	log.Println("calling update user...")
 	if err := req.Validate(); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -82,13 +80,14 @@ func (c *UserHdl) UpdateUser(ctx context.Context, req *userpb.UpdateUserRequest)
 	}
 
 	if err := c.Service.UpdateUser(ctx, req.GetId(), service.UserInputSvc{
-		Class:    u.Class,
-		Major:    u.Major,
-		Phone:    u.Phone,
-		PhotoSrc: u.PhotoSrc,
-		Role:     u.Role,
-		Name:     u.Name,
-		Email:    u.Email,
+		Class:          u.Class,
+		Major:          u.Major,
+		Phone:          u.Phone,
+		PhotoSrc:       u.PhotoSrc,
+		Role:           u.Role,
+		Name:           u.Name,
+		Email:          u.Email,
+		HashedPassword: u.HashedPassword,
 	}); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -103,7 +102,6 @@ func (c *UserHdl) UpdateUser(ctx context.Context, req *userpb.UpdateUserRequest)
 }
 
 func (h *UserHdl) DeleteUser(ctx context.Context, req *userpb.DeleteUserRequest) (*userpb.DeleteUserResponse, error) {
-	log.Println("calling delete user...")
 	if err := req.Validate(); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -123,7 +121,6 @@ func (h *UserHdl) DeleteUser(ctx context.Context, req *userpb.DeleteUserRequest)
 }
 
 func (h *UserHdl) GetUsers(ctx context.Context, req *userpb.GetUsersRequest) (*userpb.GetUsersResponse, error) {
-	log.Println("calling get all users...")
 	if err := req.Validate(); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -138,14 +135,15 @@ func (h *UserHdl) GetUsers(ctx context.Context, req *userpb.GetUsersRequest) (*u
 	var psResp []*userpb.UserResponse
 	for _, u := range ps {
 		psResp = append(psResp, &userpb.UserResponse{
-			Id:       u.ID,
-			Class:    u.Class,
-			Major:    u.Major,
-			Phone:    u.Phone,
-			PhotoSrc: u.PhotoSrc,
-			Role:     u.Role,
-			Name:     u.Name,
-			Email:    u.Email,
+			Id:             u.ID,
+			Class:          u.Class,
+			Major:          u.Major,
+			Phone:          u.Phone,
+			PhotoSrc:       u.PhotoSrc,
+			Role:           u.Role,
+			Name:           u.Name,
+			Email:          u.Email,
+			HashedPassword: u.HashedPassword,
 		})
 	}
 
@@ -169,14 +167,15 @@ func (h *UserHdl) GetAllLecturers(ctx context.Context, req *userpb.GetAllLecture
 	var psResp []*userpb.UserResponse
 	for _, u := range ps {
 		psResp = append(psResp, &userpb.UserResponse{
-			Id:       u.ID,
-			Class:    u.Class,
-			Major:    u.Major,
-			Phone:    u.Phone,
-			PhotoSrc: u.PhotoSrc,
-			Role:     u.Role,
-			Name:     u.Name,
-			Email:    u.Email,
+			Id:             u.ID,
+			Class:          u.Class,
+			Major:          u.Major,
+			Phone:          u.Phone,
+			PhotoSrc:       u.PhotoSrc,
+			Role:           u.Role,
+			Name:           u.Name,
+			Email:          u.Email,
+			HashedPassword: u.HashedPassword,
 		})
 	}
 
@@ -210,13 +209,14 @@ func validateAndConvertUser(pbUser *userpb.UserInput) (service.UserInputSvc, err
 	}
 
 	return service.UserInputSvc{
-		ID:       pbUser.Id,
-		Class:    pbUser.Class,
-		Major:    pbUser.Major,
-		Phone:    pbUser.Phone,
-		PhotoSrc: pbUser.PhotoSrc,
-		Role:     pbUser.Role,
-		Name:     pbUser.Name,
-		Email:    pbUser.Email,
+		ID:             pbUser.Id,
+		Class:          pbUser.Class,
+		Major:          pbUser.Major,
+		Phone:          pbUser.Phone,
+		PhotoSrc:       pbUser.PhotoSrc,
+		Role:           pbUser.Role,
+		Name:           pbUser.Name,
+		Email:          pbUser.Email,
+		HashedPassword: pbUser.HashedPassword,
 	}, nil
 }

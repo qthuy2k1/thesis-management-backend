@@ -8,27 +8,29 @@ import (
 )
 
 type UserInputSvc struct {
-	ID       string
-	Email    string
-	Class    *string
-	Major    *string
-	Phone    *string
-	PhotoSrc string
-	Role     string
-	Name     string
+	ID             string
+	Email          string
+	Class          *string
+	Major          *string
+	Phone          *string
+	PhotoSrc       string
+	Role           string
+	Name           string
+	HashedPassword *string
 }
 
 // CreateUser creates a new user in db given by user model
 func (s *UserSvc) CreateUser(ctx context.Context, u UserInputSvc) error {
 	pRepo := repository.UserInputRepo{
-		ID:       u.ID,
-		Class:    u.Class,
-		Major:    u.Major,
-		Phone:    u.Phone,
-		PhotoSrc: u.PhotoSrc,
-		Role:     u.Role,
-		Name:     u.Name,
-		Email:    u.Email,
+		ID:             u.ID,
+		Class:          u.Class,
+		Major:          u.Major,
+		Phone:          u.Phone,
+		PhotoSrc:       u.PhotoSrc,
+		Role:           u.Role,
+		Name:           u.Name,
+		Email:          u.Email,
+		HashedPassword: u.HashedPassword,
 	}
 
 	if err := s.Repository.CreateUser(ctx, pRepo); err != nil {
@@ -52,27 +54,29 @@ func (s *UserSvc) GetUser(ctx context.Context, id string) (UserOutputSvc, error)
 	}
 
 	return UserOutputSvc{
-		ID:       u.ID,
-		Class:    u.Class,
-		Major:    u.Major,
-		Phone:    u.Phone,
-		PhotoSrc: u.PhotoSrc,
-		Role:     u.Role,
-		Name:     u.Name,
-		Email:    u.Email,
+		ID:             u.ID,
+		Class:          u.Class,
+		Major:          u.Major,
+		Phone:          u.Phone,
+		PhotoSrc:       u.PhotoSrc,
+		Role:           u.Role,
+		Name:           u.Name,
+		Email:          u.Email,
+		HashedPassword: u.HashedPassword,
 	}, nil
 }
 
 // UpdateUser updates the specified user by id
 func (s *UserSvc) UpdateUser(ctx context.Context, id string, user UserInputSvc) error {
 	if err := s.Repository.UpdateUser(ctx, id, repository.UserInputRepo{
-		Class:    user.Class,
-		Major:    user.Major,
-		Phone:    user.Phone,
-		PhotoSrc: user.PhotoSrc,
-		Role:     user.Role,
-		Name:     user.Name,
-		Email:    user.Email,
+		Class:          user.Class,
+		Major:          user.Major,
+		Phone:          user.Phone,
+		PhotoSrc:       user.PhotoSrc,
+		Role:           user.Role,
+		Name:           user.Name,
+		Email:          user.Email,
+		HashedPassword: user.HashedPassword,
 	}); err != nil {
 		if errors.Is(err, repository.ErrUserNotFound) {
 			return ErrUserNotFound
@@ -96,14 +100,15 @@ func (s *UserSvc) DeleteUser(ctx context.Context, id string) error {
 }
 
 type UserOutputSvc struct {
-	ID       string
-	Email    string
-	Class    *string
-	Major    *string
-	Phone    *string
-	PhotoSrc string
-	Role     string
-	Name     string
+	ID             string
+	Email          string
+	Class          *string
+	Major          *string
+	Phone          *string
+	PhotoSrc       string
+	Role           string
+	Name           string
+	HashedPassword *string
 }
 
 // GetUsers returns a list of users in db
@@ -116,14 +121,15 @@ func (s *UserSvc) GetUsers(ctx context.Context) ([]UserOutputSvc, int, error) {
 	var psSvc []UserOutputSvc
 	for _, u := range psRepo {
 		psSvc = append(psSvc, UserOutputSvc{
-			ID:       u.ID,
-			Class:    u.Class,
-			Major:    u.Major,
-			Phone:    u.Phone,
-			PhotoSrc: u.PhotoSrc,
-			Role:     u.Role,
-			Name:     u.Name,
-			Email:    u.Email,
+			ID:             u.ID,
+			Class:          u.Class,
+			Major:          u.Major,
+			Phone:          u.Phone,
+			PhotoSrc:       u.PhotoSrc,
+			Role:           u.Role,
+			Name:           u.Name,
+			Email:          u.Email,
+			HashedPassword: u.HashedPassword,
 		})
 	}
 
@@ -140,14 +146,15 @@ func (s *UserSvc) GetAllLecturers(ctx context.Context) ([]UserOutputSvc, int, er
 	var psSvc []UserOutputSvc
 	for _, u := range psRepo {
 		psSvc = append(psSvc, UserOutputSvc{
-			ID:       u.ID,
-			Class:    u.Class,
-			Major:    u.Major,
-			Phone:    u.Phone,
-			PhotoSrc: u.PhotoSrc,
-			Role:     u.Role,
-			Name:     u.Name,
-			Email:    u.Email,
+			ID:             u.ID,
+			Class:          u.Class,
+			Major:          u.Major,
+			Phone:          u.Phone,
+			PhotoSrc:       u.PhotoSrc,
+			Role:           u.Role,
+			Name:           u.Name,
+			Email:          u.Email,
+			HashedPassword: u.HashedPassword,
 		})
 	}
 

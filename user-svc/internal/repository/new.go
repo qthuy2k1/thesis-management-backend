@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type IUserRepo interface {
@@ -60,8 +62,12 @@ type IUserRepo interface {
 
 type UserRepo struct {
 	Database *sql.DB
+	Redis    *redis.Client
 }
 
-func NewUserRepo(db *sql.DB) IUserRepo {
-	return &UserRepo{Database: db}
+func NewUserRepo(db *sql.DB, redis *redis.Client) IUserRepo {
+	return &UserRepo{
+		Database: db,
+		Redis:    redis,
+	}
 }

@@ -181,28 +181,6 @@ func (m *ClassroomInput) validate(all bool) error {
 
 	var errors []error
 
-	if l := utf8.RuneCountInString(m.GetTitle()); l < 2 || l > 200 {
-		err := ClassroomInputValidationError{
-			field:  "Title",
-			reason: "value length must be between 2 and 200 runes, inclusive",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if utf8.RuneCountInString(m.GetDescription()) < 2 {
-		err := ClassroomInputValidationError{
-			field:  "Description",
-			reason: "value length must be at least 2 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if utf8.RuneCountInString(m.GetStatus()) < 2 {
 		err := ClassroomInputValidationError{
 			field:  "Status",
@@ -236,17 +214,6 @@ func (m *ClassroomInput) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetTopicTags()) < 2 {
-		err := ClassroomInputValidationError{
-			field:  "TopicTags",
-			reason: "value length must be at least 2 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if m.GetQuantityStudent() < 0 {
 		err := ClassroomInputValidationError{
 			field:  "QuantityStudent",
@@ -256,6 +223,10 @@ func (m *ClassroomInput) validate(all bool) error {
 			return err
 		}
 		errors = append(errors, err)
+	}
+
+	if m.TopicTags != nil {
+		// no validation rules for TopicTags
 	}
 
 	if len(errors) > 0 {
@@ -748,28 +719,6 @@ func (m *ClassroomResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if l := utf8.RuneCountInString(m.GetTitle()); l < 2 || l > 200 {
-		err := ClassroomResponseValidationError{
-			field:  "Title",
-			reason: "value length must be between 2 and 200 runes, inclusive",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if utf8.RuneCountInString(m.GetDescription()) < 2 {
-		err := ClassroomResponseValidationError{
-			field:  "Description",
-			reason: "value length must be at least 2 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if utf8.RuneCountInString(m.GetStatus()) < 2 {
 		err := ClassroomResponseValidationError{
 			field:  "Status",
@@ -813,17 +762,6 @@ func (m *ClassroomResponse) validate(all bool) error {
 	if utf8.RuneCountInString(m.GetClassCourse()) < 2 {
 		err := ClassroomResponseValidationError{
 			field:  "ClassCourse",
-			reason: "value length must be at least 2 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if utf8.RuneCountInString(m.GetTopicTags()) < 2 {
-		err := ClassroomResponseValidationError{
-			field:  "TopicTags",
 			reason: "value length must be at least 2 runes",
 		}
 		if !all {
@@ -931,6 +869,10 @@ func (m *ClassroomResponse) validate(all bool) error {
 			}
 		}
 
+	}
+
+	if m.TopicTags != nil {
+		// no validation rules for TopicTags
 	}
 
 	if len(errors) > 0 {

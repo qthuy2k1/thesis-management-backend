@@ -2276,17 +2276,6 @@ func (m *ClassroomMemberResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetTopicTags()) < 2 {
-		err := ClassroomMemberResponseValidationError{
-			field:  "TopicTags",
-			reason: "value length must be at least 2 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if m.GetQuantityStudent() < 0 {
 		err := ClassroomMemberResponseValidationError{
 			field:  "QuantityStudent",
@@ -2318,6 +2307,21 @@ func (m *ClassroomMemberResponse) validate(all bool) error {
 			return err
 		}
 		errors = append(errors, err)
+	}
+
+	if m.TopicTags != nil {
+
+		if utf8.RuneCountInString(m.GetTopicTags()) < 2 {
+			err := ClassroomMemberResponseValidationError{
+				field:  "TopicTags",
+				reason: "value length must be at least 2 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
 	}
 
 	if len(errors) > 0 {

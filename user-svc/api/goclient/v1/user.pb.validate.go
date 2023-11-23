@@ -185,6 +185,10 @@ func (m *UserInput) validate(all bool) error {
 		// no validation rules for Phone
 	}
 
+	if m.HashedPassword != nil {
+		// no validation rules for HashedPassword
+	}
+
 	if len(errors) > 0 {
 		return UserInputMultiError(errors)
 	}
@@ -304,6 +308,10 @@ func (m *UserResponse) validate(all bool) error {
 
 	if m.Phone != nil {
 		// no validation rules for Phone
+	}
+
+	if m.HashedPassword != nil {
+		// no validation rules for HashedPassword
 	}
 
 	if len(errors) > 0 {

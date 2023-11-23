@@ -199,9 +199,9 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  redis-db:
+  user-redis-db:
     image: redis:alpine
-    container_name: thesis-management-backend-redis-db-service
+    container_name: thesis-management-backend-user-redis-db-service
     networks:
       mynet:
     restart: always
@@ -428,20 +428,18 @@ services:
     volumes:
       - .:/usr/src/app
 
-  redis:
-    container_name: thesis-management-backend-redis-service
-    env_file:
-      - .env
-    build:
-      dockerfile: ./redis-svc/Dockerfile
-      context: .
-    image: qthuy2k1/thesis-management-backend-redis
-    networks:
-      mynet:
-    depends_on:
-      - redis-db
-    volumes:
-      - .:/usr/src/app
+  # redis:
+  #   container_name: thesis-management-backend-redis-service
+  #   env_file:
+  #     - .env
+  #   build:
+  #     dockerfile: ./redis-svc/Dockerfile
+  #     context: .
+  #   image: qthuy2k1/thesis-management-backend-redis
+  #   networks:
+  #     mynet:
+  #   volumes:
+  #     - .:/usr/src/app
 
   schedule:
     container_name: thesis-management-backend-schedule-service

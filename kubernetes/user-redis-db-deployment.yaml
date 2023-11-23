@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: redis-db-pvc
+  name: user-redis-db-pvc
 spec:
   accessModes:
     - ReadWriteOnce
@@ -14,22 +14,22 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: thesis-management-backend-redis-db
+  name: thesis-management-backend-user-redis-db
   labels:
-    app: thesis-management-backend-redis-db
+    app: thesis-management-backend-user-redis-db
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: thesis-management-backend-redis-db
+      app: thesis-management-backend-user-redis-db
   template:
     metadata:
       labels:
-        app: thesis-management-backend-redis-db 
+        app: thesis-management-backend-user-redis-db 
     spec:
       containers:
-      - name: thesis-management-backend-redis-db
-        image: qthuy2k1/thesis-management-backend-redis-db
+      - name: thesis-management-backend-user-redis-db
+        image: qthuy2k1/thesis-management-backend-user-redis-db
         env:
         - name: REDIS_HOST
           value: "cache"
@@ -44,9 +44,9 @@ spec:
           - name: cache
             mountPath: /data
       volumes:
-        - name: redis-db
+        - name: cache
           persistentVolumeClaim:
-            claimName: redis-db-pvc
+            claimName: user-redis-db-pvc
       
         
 
@@ -55,10 +55,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: thesis-management-backend-redis-db-service
+  name: thesis-management-backend-user-redis-db-service
 spec:
   selector:
-    app: thesis-management-backend-redis-db 
+    app: thesis-management-backend-user-redis-db 
   type: ClusterIP
   ports:
   - protocol: TCP

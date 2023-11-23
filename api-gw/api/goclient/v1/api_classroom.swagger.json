@@ -350,12 +350,6 @@
     "v1ClassroomInput": {
       "type": "object",
       "properties": {
-        "title": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
         "status": {
           "type": "string"
         },
@@ -381,12 +375,6 @@
         "id": {
           "type": "string",
           "format": "int64"
-        },
-        "title": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
         },
         "status": {
           "type": "string"

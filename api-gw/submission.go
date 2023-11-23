@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"errors"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
-	redisSvcV1 "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
@@ -20,17 +18,15 @@ type submissionServiceGW struct {
 	exerciseClient   exerciseSvcV1.ExerciseServiceClient
 	attachmentClient attachmentSvcV1.AttachmentServiceClient
 	userClient       userSvcV1.UserServiceClient
-	redisClient      redisSvcV1.RedisServiceClient
 }
 
-func NewSubmissionsService(submissionClient submissionSvcV1.SubmissionServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient, userClient userSvcV1.UserServiceClient, redisClient redisSvcV1.RedisServiceClient) *submissionServiceGW {
+func NewSubmissionsService(submissionClient submissionSvcV1.SubmissionServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient, userClient userSvcV1.UserServiceClient) *submissionServiceGW {
 	return &submissionServiceGW{
 		submissionClient: submissionClient,
 		classroomClient:  classroomClient,
 		exerciseClient:   exerciseClient,
 		attachmentClient: attachmentClient,
 		userClient:       userClient,
-		redisClient:      redisClient,
 	}
 }
 
@@ -53,60 +49,9 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 		}, nil
 	}
 
-	redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-		Id: req.Submission.UserID,
-	})
+	userExists, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.Submission.UserID})
 	if err != nil {
 		return nil, err
-	}
-
-	var userExists *userSvcV1.GetUserResponse
-	if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-		userExists = &userSvcV1.GetUserResponse{
-			Response: &userSvcV1.CommonUserResponse{
-				StatusCode: 200,
-				Message:    "OK",
-			},
-			User: &userSvcV1.UserResponse{
-				Id:       redis.User.GetId(),
-				Class:    redis.User.Class,
-				Major:    redis.User.Major,
-				Phone:    redis.User.Phone,
-				PhotoSrc: redis.User.GetPhotoSrc(),
-				Role:     redis.User.GetRole(),
-				Name:     redis.User.GetName(),
-				Email:    redis.User.GetEmail(),
-			},
-		}
-	} else {
-		userExists, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.Submission.UserID})
-		if err != nil {
-			return nil, err
-		}
-
-		if userExists.Response.StatusCode != 200 {
-			return nil, errors.New("error getting user")
-		}
-
-		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-			User: &redisSvcV1.User{
-				Id:       userExists.User.GetId(),
-				Class:    userExists.User.Class,
-				Major:    userExists.User.Major,
-				Phone:    userExists.User.Major,
-				PhotoSrc: userExists.User.GetPhotoSrc(),
-				Role:     userExists.User.GetRole(),
-				Name:     userExists.User.GetName(),
-				Email:    userExists.User.GetEmail(),
-			},
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if cache.Response.StatusCode != 200 {
-			return nil, errors.New("error set user cache")
-		}
 	}
 
 	if userExists.GetResponse().StatusCode == 404 {

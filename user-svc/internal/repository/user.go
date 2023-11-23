@@ -73,14 +73,27 @@ func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, arg
 }
 
 type UserInputRepo struct {
-	ID       string
-	Email    string
-	Class    *string
-	Major    *string
-	Phone    *string
-	PhotoSrc string
-	Role     string
-	Name     string
+	ID             string
+	Email          string
+	Class          *string
+	Major          *string
+	Phone          *string
+	PhotoSrc       string
+	Role           string
+	Name           string
+	HashedPassword *string
+}
+
+type UserRedis struct {
+	ID             string `redis:"id" json:"id"`
+	Class          string `redis:"class,omitempty" json:"class,omitempty"`
+	Major          string `redis:"major,omitempty" json:"major,omitempty"`
+	Phone          string `redis:"phone,omitempty" json:"phone,omitempty"`
+	PhotoSrc       string `redis:"photoSrc" json:"photoSrc`
+	Role           string `redis:"role" json:"role"`
+	Name           string `redis:"name" json:"name"`
+	Email          string `redis:"email" json:"email"`
+	HashedPassword string `redis:"hashed_password" json:"hashed_password"`
 }
 
 // CreateUser creates a new user in db given by user model
@@ -95,7 +108,7 @@ func (r *UserRepo) CreateUser(ctx context.Context, u UserInputRepo) error {
 		return ErrUserExisted
 	}
 
-	if _, err := ExecSQL(ctx, r.Database, "CreateUser", "INSERT INTO users (id, class, major, phone, photo_src, role, name, email) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id", u.ID, u.Class, u.Major, u.Phone, u.PhotoSrc, u.Role, u.Name, u.Email); err != nil {
+	if _, err := ExecSQL(ctx, r.Database, "CreateUser", "INSERT INTO users (id, class, major, phone, photo_src, role, name, email, hashed_password) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id", u.ID, u.Class, u.Major, u.Phone, u.PhotoSrc, u.Role, u.Name, u.Email, u.HashedPassword); err != nil {
 		logger(err, "execute SQL statement", "CreateUser")
 		return err
 	}
@@ -104,33 +117,91 @@ func (r *UserRepo) CreateUser(ctx context.Context, u UserInputRepo) error {
 }
 
 type UserOutputRepo struct {
-	ID       string
-	Email    string
-	Class    *string
-	Major    *string
-	Phone    *string
-	PhotoSrc string
-	Role     string
-	Name     string
+	ID             string
+	Email          string
+	Class          *string
+	Major          *string
+	Phone          *string
+	PhotoSrc       string
+	Role           string
+	Name           string
+	HashedPassword *string
 }
 
 // GetUser returns a user in db given by id
 func (r *UserRepo) GetUser(ctx context.Context, id string) (UserOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetUser", fmt.Sprintf("SELECT id, class, major, phone, photo_src, role, name, email FROM users WHERE id='%s'", id))
+	userRedis := r.Redis.HGetAll(ctx, fmt.Sprintf("user:%s", id))
+
+	if len(userRedis.Val()) > 0 {
+		var userScan UserRedis
+		if err := userRedis.Scan(&userScan); err != nil {
+			return UserOutputRepo{}, err
+		}
+
+		return UserOutputRepo{
+			ID:             userScan.ID,
+			Class:          &userScan.Class,
+			Major:          &userScan.Major,
+			Phone:          &userScan.Phone,
+			PhotoSrc:       userScan.PhotoSrc,
+			Role:           userScan.Role,
+			Name:           userScan.Name,
+			Email:          userScan.Email,
+			HashedPassword: &userScan.HashedPassword,
+		}, nil
+	}
+
+	row, err := QueryRowSQL(ctx, r.Database, "GetUser", fmt.Sprintf("SELECT id, class, major, phone, photo_src, role, name, email, hashed_password FROM users WHERE id='%s'", id))
 	if err != nil {
 		logger(err, "query row sql", "GetUser")
 		return UserOutputRepo{}, err
 	}
 
-	user := UserOutputRepo{}
-
-	if err = row.Scan(&user.ID, &user.Class, &user.Major, &user.Phone, &user.PhotoSrc, &user.Role, &user.Name, &user.Email); err != nil {
+	var user UserOutputRepo
+	if err = row.Scan(&user.ID, &user.Class, &user.Major, &user.Phone, &user.PhotoSrc, &user.Role, &user.Name, &user.Email, &user.HashedPassword); err != nil {
 		if err == sql.ErrNoRows {
 			logger(err, "user not found", "GetUser")
 			return UserOutputRepo{}, ErrUserNotFound
 		}
 		logger(err, "row scan err", "GetUser")
 		return UserOutputRepo{}, err
+	}
+
+	// set cache
+	class := ""
+	if user.Class != nil {
+		class = *user.Class
+	}
+
+	phone := ""
+	if user.Phone != nil {
+		phone = *user.Phone
+	}
+
+	major := ""
+	if user.Major != nil {
+		major = *user.Major
+	}
+
+	hashedPassword := ""
+	if user.HashedPassword != nil {
+		hashedPassword = *user.HashedPassword
+	}
+
+	userCache := UserRedis{
+		ID:             user.ID,
+		Class:          class,
+		Major:          major,
+		Phone:          phone,
+		PhotoSrc:       user.PhotoSrc,
+		Role:           user.Role,
+		Name:           user.Name,
+		Email:          user.Email,
+		HashedPassword: hashedPassword,
+	}
+
+	if errCache := r.Redis.HSet(ctx, fmt.Sprintf("user:%s", id), userCache); errCache.Err() != nil {
+		return UserOutputRepo{}, errCache.Err()
 	}
 
 	return user, nil
@@ -153,7 +224,7 @@ func (r *UserRepo) IsUserExists(ctx context.Context, email, id string) (bool, er
 
 // UpdateUser updates the specified user by id
 func (r *UserRepo) UpdateUser(ctx context.Context, id string, user UserInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdateUser", "UPDATE users SET class=$2, major=$3, phone=$4, photo_src=$5, role=$6, name=$7, email=$8 WHERE id=$1", id, user.Class, user.Major, user.Phone, user.PhotoSrc, user.Role, user.Name, user.Email)
+	result, err := ExecSQL(ctx, r.Database, "UpdateUser", "UPDATE users SET class=$2, major=$3, phone=$4, photo_src=$5, role=$6, name=$7, email=$8, hashed_password=$9 WHERE id=$1", id, user.Class, user.Major, user.Phone, user.PhotoSrc, user.Role, user.Name, user.Email, user.HashedPassword)
 	if err != nil {
 		logger(err, "Exec SQL", "UpdateUser")
 		return err
@@ -162,6 +233,43 @@ func (r *UserRepo) UpdateUser(ctx context.Context, id string, user UserInputRepo
 	if rowsAff, _ := result.RowsAffected(); rowsAff == 0 {
 		logger(ErrUserNotFound, "rows affected equal 0", "UpdateUser")
 		return ErrUserNotFound
+	}
+
+	// update cache
+	class := ""
+	if user.Class != nil {
+		class = *user.Class
+	}
+
+	phone := ""
+	if user.Phone != nil {
+		phone = *user.Phone
+	}
+
+	major := ""
+	if user.Major != nil {
+		major = *user.Major
+	}
+
+	hashedPassword := ""
+	if user.HashedPassword != nil {
+		hashedPassword = *user.HashedPassword
+	}
+
+	userCache := UserRedis{
+		ID:             user.ID,
+		Class:          class,
+		Major:          major,
+		Phone:          phone,
+		PhotoSrc:       user.PhotoSrc,
+		Role:           user.Role,
+		Name:           user.Name,
+		Email:          user.Email,
+		HashedPassword: hashedPassword,
+	}
+
+	if errCache := r.Redis.HSet(ctx, fmt.Sprintf("user:%s", id), userCache); errCache.Err() != nil {
+		return errCache.Err()
 	}
 
 	return nil
@@ -185,7 +293,7 @@ func (r *UserRepo) DeleteUser(ctx context.Context, id string) error {
 
 // GetUser returns a list of users in db with filter
 func (r *UserRepo) GetUsers(ctx context.Context) ([]UserOutputRepo, int, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetUsers", "SELECT id, class, major, phone, photo_src, role, name, email FROM users")
+	rows, err := QuerySQL(ctx, r.Database, "GetUsers", "SELECT id, class, major, phone, photo_src, role, name, email, hashed_password FROM users")
 	if err != nil {
 		logger(err, "Query SQL", "GetUsers")
 		return nil, 0, err
@@ -205,6 +313,7 @@ func (r *UserRepo) GetUsers(ctx context.Context) ([]UserOutputRepo, int, error) 
 			&user.Role,
 			&user.Name,
 			&user.Email,
+			&user.HashedPassword,
 		)
 		if err != nil {
 			logger(err, "rows scan", "GetUsers")
@@ -229,7 +338,7 @@ func (r *UserRepo) GetUsers(ctx context.Context) ([]UserOutputRepo, int, error) 
 
 // GetAllLecturers returns all members who has the role named "lecturer"
 func (r *UserRepo) GetAllLecturers(ctx context.Context) ([]UserOutputRepo, int, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetAllLecturers", "SELECT id, class, major, phone, photo_src, role, name, email FROM users WHERE role = 'lecturer'")
+	rows, err := QuerySQL(ctx, r.Database, "GetAllLecturers", "SELECT id, class, major, phone, photo_src, role, name, email, hashed_password FROM users WHERE role = 'lecturer'")
 	if err != nil {
 		return nil, 0, err
 	}
@@ -248,6 +357,7 @@ func (r *UserRepo) GetAllLecturers(ctx context.Context) ([]UserOutputRepo, int, 
 			&user.Role,
 			&user.Name,
 			&user.Email,
+			&user.HashedPassword,
 		)
 		if err != nil {
 			return nil, 0, err

@@ -430,8 +430,6 @@ func (m *User) validate(all bool) error {
 
 	// no validation rules for Email
 
-	// no validation rules for HashedPassword
-
 	if m.Class != nil {
 		// no validation rules for Class
 	}
@@ -442,6 +440,10 @@ func (m *User) validate(all bool) error {
 
 	if m.Phone != nil {
 		// no validation rules for Phone
+	}
+
+	if m.HashedPassword != nil {
+		// no validation rules for HashedPassword
 	}
 
 	if len(errors) > 0 {
