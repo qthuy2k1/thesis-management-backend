@@ -182,6 +182,37 @@ func (h *ClassroomHdl) GetClassrooms(ctx context.Context, req *classroompb.GetCl
 	}, nil
 }
 
+// GetClassroom returns a classroom in db given by id
+func (h *ClassroomHdl) GetLecturerClassroom(ctx context.Context, req *classroompb.GetLecturerClassroomRequest) (*classroompb.GetLecturerClassroomResponse, error) {
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+	clr, err := h.Service.GetLecturerClassroom(ctx, req.LecturerID)
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	clrResp := classroompb.ClassroomResponse{
+		Id:              int64(clr.ID),
+		Title:           clr.Title,
+		Description:     clr.Description,
+		Status:          clr.Status,
+		LecturerID:      clr.LecturerID,
+		ClassCourse:     clr.ClassCourse,
+		TopicTags:       clr.TopicTags,
+		QuantityStudent: int64(clr.QuantityStudent),
+		CreatedAt:       timestamppb.New(clr.CreatedAt),
+		UpdatedAt:       timestamppb.New(clr.UpdatedAt),
+	}
+
+	resp := &classroompb.GetLecturerClassroomResponse{
+		Classroom: &clrResp,
+	}
+	return resp, nil
+}
+
 func validateAndConvertClassroom(pbClassroom *classroompb.ClassroomInput) (service.ClassroomInputSvc, error) {
 	if err := pbClassroom.Validate(); err != nil {
 		return service.ClassroomInputSvc{}, err

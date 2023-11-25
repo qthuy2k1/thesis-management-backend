@@ -15,6 +15,10 @@ type AttachmentInputSvc struct {
 	ExerciseID   *int
 	PostID       *int
 	AuthorID     string
+	Name         string
+	Type         string
+	Thumbnail    string
+	Size         int
 }
 
 // CreateClasroom creates a new attachment in db given by attachment model
@@ -26,6 +30,10 @@ func (s *AttachmentSvc) CreateAttachment(ctx context.Context, att AttachmentInpu
 		ExerciseID:   att.ExerciseID,
 		AuthorID:     att.AuthorID,
 		PostID:       att.PostID,
+		Name:         att.Name,
+		Type:         att.Type,
+		Thumbnail:    att.Thumbnail,
+		Size:         att.Size,
 	}
 	attRes, err := s.Repository.CreateAttachment(ctx, attRepo)
 	if err != nil {
@@ -44,6 +52,10 @@ func (s *AttachmentSvc) CreateAttachment(ctx context.Context, att AttachmentInpu
 		AuthorID:     attRes.AuthorID,
 		PostID:       att.PostID,
 		CreatedAt:    attRes.CreatedAt,
+		Name:         attRes.Name,
+		Type:         attRes.Type,
+		Thumbnail:    attRes.Thumbnail,
+		Size:         attRes.Size,
 	}, nil
 }
 
@@ -66,6 +78,10 @@ func (s *AttachmentSvc) GetAttachment(ctx context.Context, id int) (AttachmentOu
 		AuthorID:     att.AuthorID,
 		PostID:       att.PostID,
 		CreatedAt:    att.CreatedAt,
+		Name:         att.Name,
+		Type:         att.Type,
+		Thumbnail:    att.Thumbnail,
+		Size:         att.Size,
 	}, nil
 }
 
@@ -78,6 +94,9 @@ func (s *AttachmentSvc) UpdateAttachment(ctx context.Context, id int, attachment
 		ExerciseID:   attachment.ExerciseID,
 		AuthorID:     attachment.AuthorID,
 		PostID:       attachment.PostID,
+		Type:         attachment.Type,
+		Thumbnail:    attachment.Thumbnail,
+		Size:         attachment.Size,
 	}); err != nil {
 		if errors.Is(err, repository.ErrAttachmentNotFound) {
 			return ErrAttachmentNotFound
@@ -109,6 +128,10 @@ type AttachmentOutputSvc struct {
 	PostID       *int
 	AuthorID     string
 	CreatedAt    time.Time
+	Name         string
+	Type         string
+	Thumbnail    string
+	Size         int
 }
 
 // GetAttachment returns a list of attachments in db with filter
@@ -129,6 +152,10 @@ func (s *AttachmentSvc) GetAttachmentsOfExercise(ctx context.Context, exerciseID
 			AuthorID:     c.AuthorID,
 			PostID:       c.PostID,
 			CreatedAt:    c.CreatedAt,
+			Name:         c.Name,
+			Type:         c.Type,
+			Thumbnail:    c.Thumbnail,
+			Size:         c.Size,
 		})
 	}
 
@@ -153,6 +180,10 @@ func (s *AttachmentSvc) GetAttachmentsOfSubmission(ctx context.Context, submissi
 			AuthorID:     c.AuthorID,
 			PostID:       c.PostID,
 			CreatedAt:    c.CreatedAt,
+			Name:         c.Name,
+			Type:         c.Type,
+			Thumbnail:    c.Thumbnail,
+			Size:         c.Size,
 		})
 	}
 
@@ -177,6 +208,10 @@ func (s *AttachmentSvc) GetAttachmentsOfPost(ctx context.Context, postID int) ([
 			AuthorID:     c.AuthorID,
 			PostID:       c.PostID,
 			CreatedAt:    c.CreatedAt,
+			Name:         c.Name,
+			Type:         c.Type,
+			Thumbnail:    c.Thumbnail,
+			Size:         c.Size,
 		})
 	}
 

@@ -76,17 +76,21 @@ type AttachmentInputRepo struct {
 	ExerciseID   *int
 	PostID       *int
 	AuthorID     string
+	Name         string
+	Type         string
+	Thumbnail    string
+	Size         int
 }
 
 // CreateClasroom creates a new attachment in db given by attachment model
 func (r *AttachmentRepo) CreateAttachment(ctx context.Context, att AttachmentInputRepo) (AttachmentOutputRepo, error) {
-	result, err := QueryRowSQL(ctx, r.Database, "CreateAttachment", "INSERT INTO attachments (file_url, status, submission_id, exercise_id, author_id, post_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at", att.FileURL, att.Status, att.SubmissionID, att.ExerciseID, att.AuthorID, att.PostID)
+	result, err := QueryRowSQL(ctx, r.Database, "CreateAttachment", "INSERT INTO attachments (file_url, status, submission_id, exercise_id, author_id, post_id, name, type, thumbnail, size) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at, name, type, thumbnail, size", att.FileURL, att.Status, att.SubmissionID, att.ExerciseID, att.AuthorID, att.PostID, att.Name, att.Type, att.Thumbnail, att.Size)
 	if err != nil {
 		return AttachmentOutputRepo{}, err
 	}
 
 	var attachmentRes AttachmentOutputRepo
-	if err := result.Scan(&attachmentRes.ID, &attachmentRes.FileURL, &attachmentRes.Status, &attachmentRes.SubmissionID, &attachmentRes.ExerciseID, &attachmentRes.AuthorID, &attachmentRes.PostID, &attachmentRes.CreatedAt); err != nil {
+	if err := result.Scan(&attachmentRes.ID, &attachmentRes.FileURL, &attachmentRes.Status, &attachmentRes.SubmissionID, &attachmentRes.ExerciseID, &attachmentRes.AuthorID, &attachmentRes.PostID, &attachmentRes.CreatedAt, &attachmentRes.Name, &attachmentRes.Type, &attachmentRes.Thumbnail, &attachmentRes.Size); err != nil {
 		return AttachmentOutputRepo{}, err
 	}
 
@@ -102,17 +106,21 @@ type AttachmentOutputRepo struct {
 	PostID       *int
 	AuthorID     string
 	CreatedAt    time.Time
+	Name         string
+	Type         string
+	Thumbnail    string
+	Size         int
 }
 
 // GetAttachment returns a attachment in db given by id
 func (r *AttachmentRepo) GetAttachment(ctx context.Context, id int) (AttachmentOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetAttachment", "SELECT id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at FROM attachments WHERE id=$1", id)
+	row, err := QueryRowSQL(ctx, r.Database, "GetAttachment", "SELECT id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at, name, type, thumbnail, size FROM attachments WHERE id=$1", id)
 	if err != nil {
 		return AttachmentOutputRepo{}, err
 	}
 	attachment := AttachmentOutputRepo{}
 
-	if err = row.Scan(&attachment.ID, &attachment.FileURL, &attachment.Status, &attachment.SubmissionID, &attachment.ExerciseID, &attachment.AuthorID, &attachment.PostID, &attachment.CreatedAt); err != nil {
+	if err = row.Scan(&attachment.ID, &attachment.FileURL, &attachment.Status, &attachment.SubmissionID, &attachment.ExerciseID, &attachment.AuthorID, &attachment.PostID, &attachment.CreatedAt, &attachment.Name, &attachment.Type, &attachment.Thumbnail, &attachment.Size); err != nil {
 		if err == sql.ErrNoRows {
 			return AttachmentOutputRepo{}, ErrAttachmentNotFound
 		}
@@ -124,7 +132,7 @@ func (r *AttachmentRepo) GetAttachment(ctx context.Context, id int) (AttachmentO
 
 // UpdateAttachment updates the specified attachment by id
 func (r *AttachmentRepo) UpdateAttachment(ctx context.Context, id int, attachment AttachmentInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdateAttachment", "UPDATE attachments SET file_url=$2, status=$3, submission_id=$4, exercise_id=$5, author_id=$6 post_id=$7 WHERE id=$1", id, attachment.FileURL, attachment.Status, attachment.SubmissionID, attachment.ExerciseID, attachment.AuthorID, attachment.PostID)
+	result, err := ExecSQL(ctx, r.Database, "UpdateAttachment", "UPDATE attachments SET file_url=$2, status=$3, submission_id=$4, exercise_id=$5, author_id=$6, post_id=$7, name=$8, type=$9, thumbnail=$10, size=$11 WHERE id=$1", id, attachment.FileURL, attachment.Status, attachment.SubmissionID, attachment.ExerciseID, attachment.AuthorID, attachment.PostID, attachment.Name, attachment.Type, attachment.Thumbnail, attachment.Size)
 	if err != nil {
 		return err
 	}
@@ -152,7 +160,7 @@ func (r *AttachmentRepo) DeleteAttachment(ctx context.Context, id int) error {
 
 // GetAttachment returns a list of attachments of an exercise in db
 func (r *AttachmentRepo) GetAttachmentsOfExercise(ctx context.Context, exerciseID int) ([]AttachmentOutputRepo, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetAttachments", fmt.Sprintf("SELECT id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at FROM attachments WHERE exercise_id=%d", exerciseID))
+	rows, err := QuerySQL(ctx, r.Database, "GetAttachmentsOfExercise", fmt.Sprintf("SELECT id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at, name, type, thumbnail, size FROM attachments WHERE exercise_id=%d", exerciseID))
 	if err != nil {
 		return nil, err
 	}
@@ -171,6 +179,10 @@ func (r *AttachmentRepo) GetAttachmentsOfExercise(ctx context.Context, exerciseI
 			&attachment.AuthorID,
 			&attachment.PostID,
 			&attachment.CreatedAt,
+			&attachment.Name,
+			&attachment.Type,
+			&attachment.Thumbnail,
+			&attachment.Size,
 		)
 		if err != nil {
 			return nil, err
@@ -192,7 +204,7 @@ func (r *AttachmentRepo) GetAttachmentsOfExercise(ctx context.Context, exerciseI
 
 // GetAttachment returns a list of attachments of an exercise in db
 func (r *AttachmentRepo) GetAttachmentsOfSubmission(ctx context.Context, submissionID int) ([]AttachmentOutputRepo, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetAttachments", fmt.Sprintf("SELECT id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at FROM attachments WHERE submission_id=%d", submissionID))
+	rows, err := QuerySQL(ctx, r.Database, "GetAttachmentsOfSubmission", fmt.Sprintf("SELECT id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at, name, type, thumbnail, size FROM attachments WHERE submission_id=%d", submissionID))
 	if err != nil {
 		return nil, err
 	}
@@ -211,6 +223,10 @@ func (r *AttachmentRepo) GetAttachmentsOfSubmission(ctx context.Context, submiss
 			&attachment.AuthorID,
 			&attachment.PostID,
 			&attachment.CreatedAt,
+			&attachment.Name,
+			&attachment.Type,
+			&attachment.Thumbnail,
+			&attachment.Size,
 		)
 		if err != nil {
 			return nil, err
@@ -232,7 +248,7 @@ func (r *AttachmentRepo) GetAttachmentsOfSubmission(ctx context.Context, submiss
 
 // GetAttachment returns a list of attachments of an exercise in db
 func (r *AttachmentRepo) GetAttachmentsOfPost(ctx context.Context, postID int) ([]AttachmentOutputRepo, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetAttachments", fmt.Sprintf("SELECT id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at FROM attachments WHERE post_id=%d", postID))
+	rows, err := QuerySQL(ctx, r.Database, "GetAttachmentsOfPost", fmt.Sprintf("SELECT id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at, name, type, thumbnail, size FROM attachments WHERE post_id=%d", postID))
 	if err != nil {
 		return nil, err
 	}
@@ -251,6 +267,10 @@ func (r *AttachmentRepo) GetAttachmentsOfPost(ctx context.Context, postID int) (
 			&attachment.AuthorID,
 			&attachment.PostID,
 			&attachment.CreatedAt,
+			&attachment.Name,
+			&attachment.Type,
+			&attachment.Thumbnail,
+			&attachment.Size,
 		)
 		if err != nil {
 			return nil, err

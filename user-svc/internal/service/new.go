@@ -36,6 +36,7 @@ type IUserSvc interface {
 	GetAllMembersOfClassroom(ctx context.Context, classroomID int) ([]MemberOutputSvc, int, error)
 	// IsUserJoinedClassroom returns a member if exists
 	IsUserJoinedClassroom(ctx context.Context, userID string) (MemberOutputSvc, error)
+	GetUserMember(ctx context.Context, userID string) (MemberOutputSvc, error)
 
 	// CreateStudentDef creates a new student def in db given by student def model
 	CreateStudentDef(ctx context.Context, p StudentDefInputSvc) error

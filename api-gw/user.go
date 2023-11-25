@@ -90,6 +90,11 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 		log.Println("topic err: ", err)
 	}
 
+	class := res.GetUser().GetClass()
+	major := res.GetUser().GetMajor()
+	phone := res.GetUser().GetPhone()
+	password := res.GetUser().GetHashedPassword()
+
 	var topicRes *pb.TopicUserResponse
 	if topic != nil {
 		if topic.Topic != nil && topic.Response != nil {
@@ -99,18 +104,23 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 					Title:          topic.Topic.GetTitle(),
 					TypeTopic:      topic.Topic.GetTypeTopic(),
 					MemberQuantity: topic.Topic.GetMemberQuantity(),
-					Student:        nil,
-					MemberEmail:    topic.Topic.GetMemberEmail(),
-					Description:    topic.Topic.GetDescription(),
+					Student: &pb.UserResponse{
+						Id:             res.GetUser().Id,
+						Class:          &class,
+						Major:          &major,
+						Phone:          &phone,
+						PhotoSrc:       res.GetUser().GetPhotoSrc(),
+						Role:           res.GetUser().GetRole(),
+						Name:           res.GetUser().GetName(),
+						Email:          res.GetUser().GetEmail(),
+						HashedPassword: &password,
+					},
+					MemberEmail: topic.Topic.GetMemberEmail(),
+					Description: topic.Topic.GetDescription(),
 				}
 			}
 		}
 	}
-
-	class := res.GetUser().GetClass()
-	major := res.GetUser().GetMajor()
-	phone := res.GetUser().GetPhone()
-	password := res.GetUser().GetHashedPassword()
 
 	return &pb.GetUserResponse{
 		Response: &pb.CommonUserResponse{
@@ -206,37 +216,60 @@ func (u *userServiceGW) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (
 
 	var users []*pb.UserResponse
 	for _, us := range res.GetUsers() {
-		topic, err := u.topicClient.GetAllTopicsOfListUser(ctx, &topicSvcV1.GetAllTopicsOfListUserRequest{
-			UserID: []string{us.Id},
+		var isNil bool
+		topic, err := u.topicClient.GetTopicFromUser(ctx, &topicSvcV1.GetTopicFromUserRequest{
+			UserID: us.Id,
 		})
 		if err != nil {
-			return nil, err
+			isNil = true
+			log.Println(err)
 		}
 
-		var topicRes *pb.TopicUserResponse
-		if len(topic.Topic) > 0 {
-			topicRes = &pb.TopicUserResponse{
-				Id:             topic.Topic[0].GetId(),
-				Title:          topic.Topic[0].GetTitle(),
-				TypeTopic:      topic.Topic[0].GetTypeTopic(),
-				MemberQuantity: topic.Topic[0].GetMemberQuantity(),
-				Student:        nil,
-				MemberEmail:    topic.Topic[0].GetMemberEmail(),
-				Description:    topic.Topic[0].GetDescription(),
-			}
+		if isNil {
+			users = append(users, &pb.UserResponse{
+				Id:             us.Id,
+				Class:          us.Class,
+				Major:          us.Major,
+				Phone:          us.Phone,
+				PhotoSrc:       us.PhotoSrc,
+				Role:           us.Role,
+				Name:           us.Name,
+				Email:          us.Email,
+				HashedPassword: us.HashedPassword,
+				Topic:          nil,
+			})
+		} else {
+			users = append(users, &pb.UserResponse{
+				Id:             us.Id,
+				Class:          us.Class,
+				Major:          us.Major,
+				Phone:          us.Phone,
+				PhotoSrc:       us.PhotoSrc,
+				Role:           us.Role,
+				Name:           us.Name,
+				Email:          us.Email,
+				HashedPassword: us.HashedPassword,
+				Topic: &pb.TopicUserResponse{
+					Id:             topic.Topic.GetId(),
+					Title:          topic.Topic.GetTitle(),
+					TypeTopic:      topic.Topic.GetTypeTopic(),
+					MemberQuantity: topic.Topic.GetMemberQuantity(),
+					Student: &pb.UserResponse{
+						Id:             us.Id,
+						Class:          us.Class,
+						Major:          us.Major,
+						Phone:          us.Phone,
+						PhotoSrc:       us.PhotoSrc,
+						Role:           us.Role,
+						Name:           us.Name,
+						Email:          us.Email,
+						HashedPassword: us.HashedPassword,
+					},
+					MemberEmail: topic.Topic.GetMemberEmail(),
+					Description: topic.Topic.GetDescription(),
+				},
+			})
 		}
-		users = append(users, &pb.UserResponse{
-			Id:             us.Id,
-			Class:          us.Class,
-			Major:          us.Major,
-			Phone:          us.Phone,
-			PhotoSrc:       us.PhotoSrc,
-			Role:           us.Role,
-			Name:           us.Name,
-			Email:          us.Email,
-			HashedPassword: us.HashedPassword,
-			Topic:          topicRes,
-		})
 	}
 
 	return &pb.GetUsersResponse{

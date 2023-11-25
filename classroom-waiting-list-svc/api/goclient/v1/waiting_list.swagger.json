@@ -50,10 +50,6 @@
       "properties": {
         "isIn": {
           "type": "boolean"
-        },
-        "classroomID": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -82,6 +78,17 @@
       "properties": {
         "response": {
           "$ref": "#/definitions/v1CommonWaitingListResponse"
+        }
+      }
+    },
+    "v1GetWaitingListByUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonWaitingListResponse"
+        },
+        "waitingList": {
+          "$ref": "#/definitions/v1WaitingListResponse"
         }
       }
     },

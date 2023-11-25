@@ -10,6 +10,8 @@ import (
 )
 
 func Test_ClassroomService_CreateClassroom(t *testing.T) {
+	topicTags := "web"
+
 	type mockClassroomRepo struct {
 		input   repository.ClassroomInputRepo
 		err     error
@@ -28,7 +30,7 @@ func Test_ClassroomService_CreateClassroom(t *testing.T) {
 				Status:          "available",
 				LecturerID:      "123123",
 				ClassCourse:     "ABC",
-				TopicTags:       "web",
+				TopicTags:       &topicTags,
 				QuantityStudent: 20,
 			},
 			mockClassroomRepo: mockClassroomRepo{
@@ -39,7 +41,7 @@ func Test_ClassroomService_CreateClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 				},
 			},
@@ -63,6 +65,7 @@ func Test_ClassroomService_CreateClassroom(t *testing.T) {
 }
 
 func Test_ClassroomService_GetClassroom(t *testing.T) {
+	topicTags := "web"
 	myCreatedTime, err := time.Parse("2006-01-02T15:04:05.999999Z", "2023-05-11T09:01:53.102071Z")
 	assert.NoError(t, err)
 	myUpdatedTime, err := time.Parse("2006-01-02T15:04:05.999999Z", "2023-05-11T09:01:53.102071Z")
@@ -89,7 +92,7 @@ func Test_ClassroomService_GetClassroom(t *testing.T) {
 				Status:          "available",
 				LecturerID:      "123123",
 				ClassCourse:     "ABC",
-				TopicTags:       "web",
+				TopicTags:       &topicTags,
 				QuantityStudent: 20,
 				CreatedAt:       myCreatedTime,
 				UpdatedAt:       myUpdatedTime,
@@ -104,7 +107,7 @@ func Test_ClassroomService_GetClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 					CreatedAt:       myCreatedTime,
 					UpdatedAt:       myUpdatedTime,
@@ -190,6 +193,7 @@ func Test_ClassroomService_DeleteClassroom(t *testing.T) {
 }
 
 func Test_ClassroomService_UpdateClassroom(t *testing.T) {
+	topicTags := "web"
 	type mockClassroomRepo struct {
 		input       repository.ClassroomInputRepo
 		classroomID int
@@ -211,7 +215,7 @@ func Test_ClassroomService_UpdateClassroom(t *testing.T) {
 				Status:          "available",
 				LecturerID:      "123123",
 				ClassCourse:     "ABC",
-				TopicTags:       "web",
+				TopicTags:       &topicTags,
 				QuantityStudent: 20,
 			},
 			mockClassroomRepo: mockClassroomRepo{
@@ -223,7 +227,7 @@ func Test_ClassroomService_UpdateClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 				},
 			},
@@ -236,7 +240,7 @@ func Test_ClassroomService_UpdateClassroom(t *testing.T) {
 				Status:          "available",
 				LecturerID:      "123123",
 				ClassCourse:     "ABC",
-				TopicTags:       "web",
+				TopicTags:       &topicTags,
 				QuantityStudent: 20,
 			},
 			mockClassroomRepo: mockClassroomRepo{
@@ -248,7 +252,7 @@ func Test_ClassroomService_UpdateClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 				},
 				err: repository.ErrClassroomNotFound,
@@ -274,6 +278,7 @@ func Test_ClassroomService_UpdateClassroom(t *testing.T) {
 }
 
 func Test_ClassroomService_GetClassrooms(t *testing.T) {
+	topicTags := "web"
 	myCreatedTime, err := time.Parse("2006-01-02T15:04:05.999999Z", "2023-05-11T09:01:53.102071Z")
 	assert.NoError(t, err)
 	myUpdatedTime, err := time.Parse("2006-01-02T15:04:05.999999Z", "2023-05-11T09:01:53.102071Z")
@@ -309,7 +314,7 @@ func Test_ClassroomService_GetClassrooms(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 					CreatedAt:       myCreatedTime,
 					UpdatedAt:       myUpdatedTime,
@@ -321,7 +326,7 @@ func Test_ClassroomService_GetClassrooms(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 					CreatedAt:       myCreatedTime,
 					UpdatedAt:       myUpdatedTime,
@@ -331,11 +336,10 @@ func Test_ClassroomService_GetClassrooms(t *testing.T) {
 			mockClassroomRepo: mockClassroomRepo{
 				expCall: true,
 				filter: repository.ClassroomFilterRepo{
-					Limit:       5,
-					Page:        1,
-					TitleSearch: "",
-					SortColumn:  "id",
-					SortOrder:   "asc",
+					Limit:      5,
+					Page:       1,
+					SortColumn: "id",
+					SortOrder:  "asc",
 				},
 				count: 2,
 				output: []repository.ClassroomOutputRepo{
@@ -346,7 +350,7 @@ func Test_ClassroomService_GetClassrooms(t *testing.T) {
 						Status:          "available",
 						LecturerID:      "123123",
 						ClassCourse:     "ABC",
-						TopicTags:       "web",
+						TopicTags:       &topicTags,
 						QuantityStudent: 20,
 						CreatedAt:       myCreatedTime,
 						UpdatedAt:       myUpdatedTime,
@@ -358,7 +362,7 @@ func Test_ClassroomService_GetClassrooms(t *testing.T) {
 						Status:          "available",
 						LecturerID:      "123123",
 						ClassCourse:     "ABC",
-						TopicTags:       "web",
+						TopicTags:       &topicTags,
 						QuantityStudent: 20,
 						CreatedAt:       myCreatedTime,
 						UpdatedAt:       myUpdatedTime,
@@ -377,11 +381,10 @@ func Test_ClassroomService_GetClassrooms(t *testing.T) {
 			count: 0,
 			mockClassroomRepo: mockClassroomRepo{
 				filter: repository.ClassroomFilterRepo{
-					Limit:       1,
-					Page:        1000,
-					TitleSearch: "asdasd",
-					SortColumn:  "id",
-					SortOrder:   "asc",
+					Limit:      1,
+					Page:       1000,
+					SortColumn: "id",
+					SortOrder:  "asc",
 				},
 				count:   0,
 				expCall: true,

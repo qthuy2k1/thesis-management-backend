@@ -307,6 +307,10 @@ func local_request_WaitingListService_GetWaitingLists_0(ctx context.Context, mar
 
 }
 
+var (
+	filter_WaitingListService_CheckUserInWaitingListOfClassroom_0 = &utilities.DoubleArray{Encoding: map[string]int{"userID": 0}, Base: []int{1, 2, 0, 0}, Check: []int{0, 1, 2, 2}}
+)
+
 func request_WaitingListService_CheckUserInWaitingListOfClassroom_0(ctx context.Context, marshaler runtime.Marshaler, client WaitingListServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq CheckUserInWaitingListClassroomRequest
 	var metadata runtime.ServerMetadata
@@ -326,6 +330,13 @@ func request_WaitingListService_CheckUserInWaitingListOfClassroom_0(ctx context.
 	protoReq.UserID, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "userID", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_WaitingListService_CheckUserInWaitingListOfClassroom_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.CheckUserInWaitingListOfClassroom(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -352,6 +363,13 @@ func local_request_WaitingListService_CheckUserInWaitingListOfClassroom_0(ctx co
 	protoReq.UserID, err = runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "userID", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_WaitingListService_CheckUserInWaitingListOfClassroom_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := server.CheckUserInWaitingListOfClassroom(ctx, &protoReq)

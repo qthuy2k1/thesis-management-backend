@@ -43,6 +43,19 @@ service ClassroomService {
     }
 
     rpc CheckClassroomExists(CheckClassroomExistsRequest) returns (CheckClassroomExistsResponse){};
+
+
+    // rpc GetUserClassroom(GetUserClassroomRequest) returns (GetUserClassroomResponse) {
+    //     option (google.api.http) = {
+    //         get: "/api/class/auth/{userID}"
+    //     };
+    // }
+
+    rpc GetLecturerClassroom(GetLecturerClassroomRequest) returns (GetLecturerClassroomResponse) {
+        option (google.api.http) = {
+            get: "/api/class/auth/{userID}"
+        };
+    }
 }
 
 
@@ -181,3 +194,19 @@ message GetClassroomsResponse {
     int64 totalCount = 1 [(validate.rules).int64.gte = 0];
     repeated ClassroomResponse classrooms = 2;
 }
+
+message GetUserClassroomRequest {
+    string userID = 1;
+}
+
+message GetUserClassroomResponse {
+    ClassroomResponse classroom = 1;
+}
+
+message GetLecturerClassroomRequest {
+    string userID = 1;
+}
+
+message GetLecturerClassroomResponse {
+    ClassroomResponse classroom = 1;
+}		

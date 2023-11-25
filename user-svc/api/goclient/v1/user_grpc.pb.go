@@ -33,6 +33,7 @@ const (
 	UserService_GetMembers_FullMethodName                    = "/user.v1.UserService/GetMembers"
 	UserService_GetAllMembersOfClassroom_FullMethodName      = "/user.v1.UserService/GetAllMembersOfClassroom"
 	UserService_IsUserJoinedClassroom_FullMethodName         = "/user.v1.UserService/IsUserJoinedClassroom"
+	UserService_GetUserMember_FullMethodName                 = "/user.v1.UserService/GetUserMember"
 	UserService_CreateStudentDef_FullMethodName              = "/user.v1.UserService/CreateStudentDef"
 	UserService_GetStudentDef_FullMethodName                 = "/user.v1.UserService/GetStudentDef"
 	UserService_UpdateStudentDef_FullMethodName              = "/user.v1.UserService/UpdateStudentDef"
@@ -60,6 +61,7 @@ type UserServiceClient interface {
 	GetMembers(ctx context.Context, in *GetMembersRequest, opts ...grpc.CallOption) (*GetMembersResponse, error)
 	GetAllMembersOfClassroom(ctx context.Context, in *GetAllMembersOfClassroomRequest, opts ...grpc.CallOption) (*GetAllMembersOfClassroomResponse, error)
 	IsUserJoinedClassroom(ctx context.Context, in *IsUserJoinedClassroomRequest, opts ...grpc.CallOption) (*IsUserJoinedClassroomResponse, error)
+	GetUserMember(ctx context.Context, in *GetUserMemberRequest, opts ...grpc.CallOption) (*GetUserMemberResponse, error)
 	CreateStudentDef(ctx context.Context, in *CreateStudentDefRequest, opts ...grpc.CallOption) (*CreateStudentDefResponse, error)
 	GetStudentDef(ctx context.Context, in *GetStudentDefRequest, opts ...grpc.CallOption) (*GetStudentDefResponse, error)
 	UpdateStudentDef(ctx context.Context, in *UpdateStudentDefRequest, opts ...grpc.CallOption) (*UpdateStudentDefResponse, error)
@@ -203,6 +205,15 @@ func (c *userServiceClient) IsUserJoinedClassroom(ctx context.Context, in *IsUse
 	return out, nil
 }
 
+func (c *userServiceClient) GetUserMember(ctx context.Context, in *GetUserMemberRequest, opts ...grpc.CallOption) (*GetUserMemberResponse, error) {
+	out := new(GetUserMemberResponse)
+	err := c.cc.Invoke(ctx, UserService_GetUserMember_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) CreateStudentDef(ctx context.Context, in *CreateStudentDefRequest, opts ...grpc.CallOption) (*CreateStudentDefResponse, error) {
 	out := new(CreateStudentDefResponse)
 	err := c.cc.Invoke(ctx, UserService_CreateStudentDef_FullMethodName, in, out, opts...)
@@ -284,6 +295,7 @@ type UserServiceServer interface {
 	GetMembers(context.Context, *GetMembersRequest) (*GetMembersResponse, error)
 	GetAllMembersOfClassroom(context.Context, *GetAllMembersOfClassroomRequest) (*GetAllMembersOfClassroomResponse, error)
 	IsUserJoinedClassroom(context.Context, *IsUserJoinedClassroomRequest) (*IsUserJoinedClassroomResponse, error)
+	GetUserMember(context.Context, *GetUserMemberRequest) (*GetUserMemberResponse, error)
 	CreateStudentDef(context.Context, *CreateStudentDefRequest) (*CreateStudentDefResponse, error)
 	GetStudentDef(context.Context, *GetStudentDefRequest) (*GetStudentDefResponse, error)
 	UpdateStudentDef(context.Context, *UpdateStudentDefRequest) (*UpdateStudentDefResponse, error)
@@ -339,6 +351,9 @@ func (UnimplementedUserServiceServer) GetAllMembersOfClassroom(context.Context, 
 }
 func (UnimplementedUserServiceServer) IsUserJoinedClassroom(context.Context, *IsUserJoinedClassroomRequest) (*IsUserJoinedClassroomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsUserJoinedClassroom not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserMember(context.Context, *GetUserMemberRequest) (*GetUserMemberResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserMember not implemented")
 }
 func (UnimplementedUserServiceServer) CreateStudentDef(context.Context, *CreateStudentDefRequest) (*CreateStudentDefResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateStudentDef not implemented")
@@ -626,6 +641,24 @@ func _UserService_IsUserJoinedClassroom_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetUserMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserMember(ctx, req.(*GetUserMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_CreateStudentDef_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateStudentDefRequest)
 	if err := dec(in); err != nil {
@@ -814,6 +847,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IsUserJoinedClassroom",
 			Handler:    _UserService_IsUserJoinedClassroom_Handler,
+		},
+		{
+			MethodName: "GetUserMember",
+			Handler:    _UserService_GetUserMember_Handler,
 		},
 		{
 			MethodName: "CreateStudentDef",

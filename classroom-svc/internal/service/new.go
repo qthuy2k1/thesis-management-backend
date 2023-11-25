@@ -19,6 +19,7 @@ type IClassroomSvc interface {
 	DeleteClassroom(ctx context.Context, id int) error
 	// GetClassroom returns a list of classrooms in db with filter
 	GetClassrooms(ctx context.Context, filter ClassroomFilterSvc) ([]ClassroomOutputSvc, int, error)
+	GetLecturerClassroom(ctx context.Context, lecturerID string) (ClassroomOutputSvc, error)
 }
 
 type ClassroomSvc struct {

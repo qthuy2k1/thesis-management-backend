@@ -18,7 +18,9 @@ service ClassroomService {
 
     rpc GetClassrooms(GetClassroomsRequest) returns (GetClassroomsResponse) {}
 
-    rpc CheckClassroomExists(CheckClassroomExistsRequest) returns (CheckClassroomExistsResponse){};
+    rpc CheckClassroomExists(CheckClassroomExistsRequest) returns (CheckClassroomExistsResponse){}
+
+    rpc GetLecturerClassroom(GetLecturerClassroomRequest) returns (GetLecturerClassroomResponse){}
 }
 
 
@@ -143,4 +145,12 @@ message GetClassroomsResponse {
     CommonClassroomResponse response = 1;
     int64 totalCount = 2;
     repeated ClassroomResponse classrooms = 3;
+}
+
+message GetLecturerClassroomRequest {
+    string lecturerID = 1;
+}
+
+message GetLecturerClassroomResponse {
+    ClassroomResponse classroom = 1;
 }

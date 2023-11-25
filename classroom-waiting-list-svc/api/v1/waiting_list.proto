@@ -30,6 +30,8 @@ service WaitingListService {
     rpc CheckUserInWaitingListOfClassroom(CheckUserInWaitingListClassroomRequest) returns (CheckUserInWaitingListClassroomResponse) {}
 
     rpc GetWaitingLists(GetWaitingListsRequest) returns (GetWaitingListsResponse) {}
+
+    rpc GetWaitingListByUser(GetWaitingListByUserRequest) returns (GetWaitingListByUserResponse) {}
 }
 
 message CommonWaitingListResponse {
@@ -114,9 +116,19 @@ message GetWaitingListsResponse {
 // ====== CHECK USER IN WAITING LIST OF CLASSROOM ======
 message CheckUserInWaitingListClassroomRequest{
     string userID = 1;
+    int64 classroomID = 2;
 }
 
 message CheckUserInWaitingListClassroomResponse{
     bool isIn = 1;
-    int64 classroomID = 2;
+}
+
+
+message GetWaitingListByUserRequest {
+    string userID = 1;
+}
+
+message GetWaitingListByUserResponse {
+    CommonWaitingListResponse response = 1; 
+    WaitingListResponse waitingList = 2;
 }

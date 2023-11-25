@@ -87,7 +87,7 @@ func (s *CommentSvc) GetCommentsOfAPost(ctx context.Context, postID int) ([]Comm
 
 // GetComment returns a list of comments in db with filter
 func (s *CommentSvc) GetCommentsOfAExercise(ctx context.Context, exerciseID int) ([]CommentOutputSvc, error) {
-	commentsRepo, err := s.Repository.GetCommentsOfAPost(ctx, exerciseID)
+	commentsRepo, err := s.Repository.GetCommentsOfAExercise(ctx, exerciseID)
 	if err != nil {
 		return nil, err
 	}

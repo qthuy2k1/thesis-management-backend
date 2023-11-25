@@ -25,6 +25,7 @@ const (
 	MemberService_DeleteMember_FullMethodName             = "/api.user.v1.MemberService/DeleteMember"
 	MemberService_GetMembers_FullMethodName               = "/api.user.v1.MemberService/GetMembers"
 	MemberService_GetAllMembersOfClassroom_FullMethodName = "/api.user.v1.MemberService/GetAllMembersOfClassroom"
+	MemberService_GetUserMember_FullMethodName            = "/api.user.v1.MemberService/GetUserMember"
 )
 
 // MemberServiceClient is the client API for MemberService service.
@@ -37,6 +38,7 @@ type MemberServiceClient interface {
 	DeleteMember(ctx context.Context, in *DeleteMemberRequest, opts ...grpc.CallOption) (*DeleteMemberResponse, error)
 	GetMembers(ctx context.Context, in *GetMembersRequest, opts ...grpc.CallOption) (*GetMembersResponse, error)
 	GetAllMembersOfClassroom(ctx context.Context, in *GetAllMembersOfClassroomRequest, opts ...grpc.CallOption) (*GetAllMembersOfClassroomResponse, error)
+	GetUserMember(ctx context.Context, in *GetUserMemberRequest, opts ...grpc.CallOption) (*GetUserMemberResponse, error)
 }
 
 type memberServiceClient struct {
@@ -101,6 +103,15 @@ func (c *memberServiceClient) GetAllMembersOfClassroom(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *memberServiceClient) GetUserMember(ctx context.Context, in *GetUserMemberRequest, opts ...grpc.CallOption) (*GetUserMemberResponse, error) {
+	out := new(GetUserMemberResponse)
+	err := c.cc.Invoke(ctx, MemberService_GetUserMember_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MemberServiceServer is the server API for MemberService service.
 // All implementations must embed UnimplementedMemberServiceServer
 // for forward compatibility
@@ -111,6 +122,7 @@ type MemberServiceServer interface {
 	DeleteMember(context.Context, *DeleteMemberRequest) (*DeleteMemberResponse, error)
 	GetMembers(context.Context, *GetMembersRequest) (*GetMembersResponse, error)
 	GetAllMembersOfClassroom(context.Context, *GetAllMembersOfClassroomRequest) (*GetAllMembersOfClassroomResponse, error)
+	GetUserMember(context.Context, *GetUserMemberRequest) (*GetUserMemberResponse, error)
 	mustEmbedUnimplementedMemberServiceServer()
 }
 
@@ -135,6 +147,9 @@ func (UnimplementedMemberServiceServer) GetMembers(context.Context, *GetMembersR
 }
 func (UnimplementedMemberServiceServer) GetAllMembersOfClassroom(context.Context, *GetAllMembersOfClassroomRequest) (*GetAllMembersOfClassroomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllMembersOfClassroom not implemented")
+}
+func (UnimplementedMemberServiceServer) GetUserMember(context.Context, *GetUserMemberRequest) (*GetUserMemberResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserMember not implemented")
 }
 func (UnimplementedMemberServiceServer) mustEmbedUnimplementedMemberServiceServer() {}
 
@@ -257,6 +272,24 @@ func _MemberService_GetAllMembersOfClassroom_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MemberService_GetUserMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserMemberRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemberServiceServer).GetUserMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemberService_GetUserMember_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemberServiceServer).GetUserMember(ctx, req.(*GetUserMemberRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MemberService_ServiceDesc is the grpc.ServiceDesc for MemberService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -287,6 +320,10 @@ var MemberService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllMembersOfClassroom",
 			Handler:    _MemberService_GetAllMembersOfClassroom_Handler,
+		},
+		{
+			MethodName: "GetUserMember",
+			Handler:    _MemberService_GetUserMember_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

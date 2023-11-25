@@ -1,0 +1,40 @@
+#For creating Kubernetes Deployment in the Minikube cluster
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thesis-management-backend-upload
+  labels:
+    app: thesis-management-backend-upload
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: thesis-management-backend-upload
+  template:
+    metadata:
+      labels:
+        app: thesis-management-backend-upload 
+    spec:
+      containers:
+      - name: thesis-management-backend-upload
+        image: qthuy2k1/thesis-management-backend-upload
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8081
+      
+        
+
+---
+#For creating a Kubernetes Service in the Minikube cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: thesis-management-backend-upload-service
+spec:
+  selector:
+    app: thesis-management-backend-upload 
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 8081
+    targetPort: 8081

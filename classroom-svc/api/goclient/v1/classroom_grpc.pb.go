@@ -25,6 +25,7 @@ const (
 	ClassroomService_DeleteClassroom_FullMethodName      = "/classroom.v1.ClassroomService/DeleteClassroom"
 	ClassroomService_GetClassrooms_FullMethodName        = "/classroom.v1.ClassroomService/GetClassrooms"
 	ClassroomService_CheckClassroomExists_FullMethodName = "/classroom.v1.ClassroomService/CheckClassroomExists"
+	ClassroomService_GetLecturerClassroom_FullMethodName = "/classroom.v1.ClassroomService/GetLecturerClassroom"
 )
 
 // ClassroomServiceClient is the client API for ClassroomService service.
@@ -37,6 +38,7 @@ type ClassroomServiceClient interface {
 	DeleteClassroom(ctx context.Context, in *DeleteClassroomRequest, opts ...grpc.CallOption) (*DeleteClassroomResponse, error)
 	GetClassrooms(ctx context.Context, in *GetClassroomsRequest, opts ...grpc.CallOption) (*GetClassroomsResponse, error)
 	CheckClassroomExists(ctx context.Context, in *CheckClassroomExistsRequest, opts ...grpc.CallOption) (*CheckClassroomExistsResponse, error)
+	GetLecturerClassroom(ctx context.Context, in *GetLecturerClassroomRequest, opts ...grpc.CallOption) (*GetLecturerClassroomResponse, error)
 }
 
 type classroomServiceClient struct {
@@ -101,6 +103,15 @@ func (c *classroomServiceClient) CheckClassroomExists(ctx context.Context, in *C
 	return out, nil
 }
 
+func (c *classroomServiceClient) GetLecturerClassroom(ctx context.Context, in *GetLecturerClassroomRequest, opts ...grpc.CallOption) (*GetLecturerClassroomResponse, error) {
+	out := new(GetLecturerClassroomResponse)
+	err := c.cc.Invoke(ctx, ClassroomService_GetLecturerClassroom_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ClassroomServiceServer is the server API for ClassroomService service.
 // All implementations must embed UnimplementedClassroomServiceServer
 // for forward compatibility
@@ -111,6 +122,7 @@ type ClassroomServiceServer interface {
 	DeleteClassroom(context.Context, *DeleteClassroomRequest) (*DeleteClassroomResponse, error)
 	GetClassrooms(context.Context, *GetClassroomsRequest) (*GetClassroomsResponse, error)
 	CheckClassroomExists(context.Context, *CheckClassroomExistsRequest) (*CheckClassroomExistsResponse, error)
+	GetLecturerClassroom(context.Context, *GetLecturerClassroomRequest) (*GetLecturerClassroomResponse, error)
 	mustEmbedUnimplementedClassroomServiceServer()
 }
 
@@ -135,6 +147,9 @@ func (UnimplementedClassroomServiceServer) GetClassrooms(context.Context, *GetCl
 }
 func (UnimplementedClassroomServiceServer) CheckClassroomExists(context.Context, *CheckClassroomExistsRequest) (*CheckClassroomExistsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckClassroomExists not implemented")
+}
+func (UnimplementedClassroomServiceServer) GetLecturerClassroom(context.Context, *GetLecturerClassroomRequest) (*GetLecturerClassroomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLecturerClassroom not implemented")
 }
 func (UnimplementedClassroomServiceServer) mustEmbedUnimplementedClassroomServiceServer() {}
 
@@ -257,6 +272,24 @@ func _ClassroomService_CheckClassroomExists_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ClassroomService_GetLecturerClassroom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLecturerClassroomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClassroomServiceServer).GetLecturerClassroom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ClassroomService_GetLecturerClassroom_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClassroomServiceServer).GetLecturerClassroom(ctx, req.(*GetLecturerClassroomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ClassroomService_ServiceDesc is the grpc.ServiceDesc for ClassroomService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -287,6 +320,10 @@ var ClassroomService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckClassroomExists",
 			Handler:    _ClassroomService_CheckClassroomExists_Handler,
+		},
+		{
+			MethodName: "GetLecturerClassroom",
+			Handler:    _ClassroomService_GetLecturerClassroom_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

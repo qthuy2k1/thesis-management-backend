@@ -155,3 +155,23 @@ func (s *UserSvc) IsUserJoinedClassroom(ctx context.Context, userID string) (Mem
 		CreatedAt:   m.CreatedAt,
 	}, nil
 }
+
+// GetMember returns a member in db given by id
+func (s *UserSvc) GetUserMember(ctx context.Context, userID string) (MemberOutputSvc, error) {
+	m, err := s.Repository.GetUserMember(ctx, userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrMemberNotFound) {
+			return MemberOutputSvc{}, ErrMemberNotFound
+		}
+		return MemberOutputSvc{}, err
+	}
+
+	return MemberOutputSvc{
+		ID:          m.ID,
+		ClassroomID: m.ClassroomID,
+		MemberID:    m.MemberID,
+		Status:      m.Status,
+		IsDefense:   m.IsDefense,
+		CreatedAt:   m.CreatedAt,
+	}, nil
+}

@@ -244,3 +244,21 @@ func (r *ClassroomRepo) getCount(ctx context.Context) (int, error) {
 
 	return count, nil
 }
+
+// GetClassroom returns a classroom in db given by id
+func (r *ClassroomRepo) GetLecturerClassroom(ctx context.Context, lecturerID string) (ClassroomOutputRepo, error) {
+	row, err := QueryRowSQL(ctx, r.Database, "GetClassroom", fmt.Sprintf("SELECT id, status, lecturer_id, class_course, topic_tags, quantity_student, created_at, updated_at FROM classrooms WHERE lecturer_id = '%s'", lecturerID))
+	if err != nil {
+		return ClassroomOutputRepo{}, err
+	}
+	classroom := ClassroomOutputRepo{}
+
+	if err = row.Scan(&classroom.ID, &classroom.Status, &classroom.LecturerID, &classroom.ClassCourse, &classroom.TopicTags, &classroom.QuantityStudent, &classroom.CreatedAt, &classroom.UpdatedAt); err != nil {
+		if err == sql.ErrNoRows {
+			return ClassroomOutputRepo{}, ErrClassroomNotFound
+		}
+		return ClassroomOutputRepo{}, err
+	}
+
+	return classroom, nil
+}

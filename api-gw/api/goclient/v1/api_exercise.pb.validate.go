@@ -534,7 +534,27 @@ func (m *AttachmentExerciseInput) validate(all bool) error {
 
 	// no validation rules for FileURL
 
-	// no validation rules for Status
+	// no validation rules for AuthorID
+
+	// no validation rules for Name
+
+	// no validation rules for Size
+
+	// no validation rules for Type
+
+	// no validation rules for Thumbnail
+
+	if m.SubmissionID != nil {
+		// no validation rules for SubmissionID
+	}
+
+	if m.ExerciseID != nil {
+		// no validation rules for ExerciseID
+	}
+
+	if m.PostID != nil {
+		// no validation rules for PostID
+	}
 
 	if len(errors) > 0 {
 		return AttachmentExerciseInputMultiError(errors)
@@ -988,6 +1008,14 @@ func (m *AttachmentExerciseResponse) validate(all bool) error {
 			}
 		}
 	}
+
+	// no validation rules for Size
+
+	// no validation rules for MimeType
+
+	// no validation rules for Thumbnail
+
+	// no validation rules for FileName
 
 	if len(errors) > 0 {
 		return AttachmentExerciseResponseMultiError(errors)

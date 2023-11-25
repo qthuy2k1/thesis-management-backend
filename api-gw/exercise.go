@@ -10,6 +10,7 @@ import (
 	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
+	scheduleSvcV1 "github.com/qthuy2k1/thesis-management-backend/schedule-svc/api/goclient/v1"
 	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
@@ -23,9 +24,10 @@ type exerciseServiceGW struct {
 	userClient           userSvcV1.UserServiceClient
 	submissionClient     submissionSvcV1.SubmissionServiceClient
 	attachmentClient     attachmentSvcV1.AttachmentServiceClient
+	scheduleClient       scheduleSvcV1.ScheduleServiceClient
 }
 
-func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportStageClient rpsSvcV1.ReportingStageServiceClient, commentClient commentSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient, submissionClient submissionSvcV1.SubmissionServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient) *exerciseServiceGW {
+func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportStageClient rpsSvcV1.ReportingStageServiceClient, commentClient commentSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient, submissionClient submissionSvcV1.SubmissionServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient, scheduleClient scheduleSvcV1.ScheduleServiceClient) *exerciseServiceGW {
 	return &exerciseServiceGW{
 		exerciseClient:       exerciseClient,
 		classroomClient:      classroomClient,
@@ -34,6 +36,7 @@ func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, cla
 		userClient:           userClient,
 		submissionClient:     submissionClient,
 		attachmentClient:     attachmentClient,
+		scheduleClient:       scheduleClient,
 	}
 }
 
@@ -69,6 +72,13 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 		}, nil
 	}
 
+	_, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: req.Exercise.AuthorID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	res, err := u.exerciseClient.CreateExercise(ctx, &exerciseSvcV1.CreateExerciseRequest{
 		Exercise: &exerciseSvcV1.ExerciseInput{
 			Title:            req.GetExercise().Title,
@@ -84,13 +94,18 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 	}
 
 	var attCreated []int64
-	if req.Exercise.Attachments != nil && len(req.Exercise.Attachments) > 0 {
+	if len(req.Exercise.GetAttachments()) > 0 {
 		for _, att := range req.Exercise.Attachments {
 			attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
 				Attachment: &attachmentSvcV1.AttachmentInput{
-					FileURL: att.FileURL,
-					Status:  att.FileURL,
-					PostID:  &res.ExerciseID,
+					FileURL:    att.FileURL,
+					ExerciseID: &res.ExerciseID,
+					AuthorID:   req.Exercise.AuthorID,
+					Name:       att.Name,
+					Status:     "",
+					Type:       att.Type,
+					Thumbnail:  att.Thumbnail,
+					Size:       att.Size,
 				},
 			})
 			if err != nil {
@@ -136,30 +151,32 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 	}
 
 	var comments []*pb.CommentExerciseResponse
-	for _, c := range commentRes.GetComments() {
-		userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: c.UserID,
-		})
-		if err != nil {
-			return nil, err
-		}
+	if len(commentRes.Comments) > 0 {
+		for _, c := range commentRes.GetComments() {
+			userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+				Id: c.UserID,
+			})
+			if err != nil {
+				return nil, err
+			}
 
-		comments = append(comments, &pb.CommentExerciseResponse{
-			Id: c.Id,
-			User: &pb.AuthorExerciseResponse{
-				Id:       userRes.User.Id,
-				Class:    userRes.User.Class,
-				Major:    userRes.User.Major,
-				Phone:    userRes.User.Phone,
-				PhotoSrc: userRes.User.PhotoSrc,
-				Role:     userRes.User.Role,
-				Name:     userRes.User.Name,
-				Email:    userRes.User.Email,
-			},
-			ExerciseID: *c.ExerciseID,
-			Content:    c.Content,
-			CreatedAt:  c.CreatedAt,
-		})
+			comments = append(comments, &pb.CommentExerciseResponse{
+				Id: c.Id,
+				User: &pb.AuthorExerciseResponse{
+					Id:       userRes.User.Id,
+					Class:    userRes.User.Class,
+					Major:    userRes.User.Major,
+					Phone:    userRes.User.Phone,
+					PhotoSrc: userRes.User.PhotoSrc,
+					Role:     userRes.User.Role,
+					Name:     userRes.User.Name,
+					Email:    userRes.User.Email,
+				},
+				ExerciseID: *c.ExerciseID,
+				Content:    c.Content,
+				CreatedAt:  c.CreatedAt,
+			})
+		}
 	}
 
 	reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
@@ -207,6 +224,10 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 				Email:    author.User.Email,
 			},
 			CreatedAt: a.CreatedAt,
+			Size:      a.Size,
+			MimeType:  a.Type,
+			Thumbnail: a.Thumbnail,
+			FileName:  a.Name,
 		})
 	}
 
@@ -422,6 +443,10 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 					Email:    author.User.Email,
 				},
 				CreatedAt: a.CreatedAt,
+				Size:      a.Size,
+				MimeType:  a.Type,
+				Thumbnail: a.Thumbnail,
+				FileName:  a.Name,
 			})
 		}
 
@@ -570,6 +595,10 @@ func (u *exerciseServiceGW) GetAllExercisesOfClassroom(ctx context.Context, req 
 					Email:    author.User.Email,
 				},
 				CreatedAt: a.CreatedAt,
+				Size:      a.Size,
+				MimeType:  a.Type,
+				Thumbnail: a.Thumbnail,
+				FileName:  a.Name,
 			})
 		}
 
@@ -692,6 +721,10 @@ func (u *exerciseServiceGW) GetAllExercisesInReportingStage(ctx context.Context,
 					Email:    author.User.Email,
 				},
 				CreatedAt: a.CreatedAt,
+				Size:      a.Size,
+				MimeType:  a.Type,
+				Thumbnail: a.Thumbnail,
+				FileName:  a.Name,
 			})
 		}
 

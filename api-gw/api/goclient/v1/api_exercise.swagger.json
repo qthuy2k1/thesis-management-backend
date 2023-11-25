@@ -405,7 +405,32 @@
         "fileURL": {
           "type": "string"
         },
-        "status": {
+        "authorID": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "submissionID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "exerciseID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "postID": {
+          "type": "string",
+          "format": "int64"
+        },
+        "size": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "type": "string"
+        },
+        "thumbnail": {
           "type": "string"
         }
       }
@@ -429,6 +454,19 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "size": {
+          "type": "string",
+          "format": "int64"
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "thumbnail": {
+          "type": "string"
+        },
+        "fileName": {
+          "type": "string"
         }
       }
     },

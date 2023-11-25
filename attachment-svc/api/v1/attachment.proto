@@ -36,6 +36,10 @@ message AttachmentInput {
     optional int64 exerciseID = 4;
     optional int64 postID = 5;
     string authorID = 6;
+    string name = 7;
+    string type = 8;
+    string thumbnail = 9;
+    int64 size = 10;
 }
 
 
@@ -48,6 +52,10 @@ message AttachmentResponse {
     optional int64 postID = 6;
     string authorID = 7;
     google.protobuf.Timestamp created_at = 8;
+    string name = 9;
+    string type = 10;
+    string thumbnail = 11;
+    int64 size = 12;
 }
 
 

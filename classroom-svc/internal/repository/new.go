@@ -18,6 +18,7 @@ type IClassroomRepo interface {
 	DeleteClassroom(ctx context.Context, id int) error
 	// GetClassroom returns a list of classrooms in db with filter
 	GetClassrooms(ctx context.Context, filter ClassroomFilterRepo) ([]ClassroomOutputRepo, int, error)
+	GetLecturerClassroom(ctx context.Context, lecturerID string) (ClassroomOutputRepo, error)
 }
 
 type ClassroomRepo struct {

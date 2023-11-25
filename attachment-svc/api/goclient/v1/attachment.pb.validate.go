@@ -169,6 +169,14 @@ func (m *AttachmentInput) validate(all bool) error {
 
 	// no validation rules for AuthorID
 
+	// no validation rules for Name
+
+	// no validation rules for Type
+
+	// no validation rules for Thumbnail
+
+	// no validation rules for Size
+
 	if m.SubmissionID != nil {
 		// no validation rules for SubmissionID
 	}
@@ -317,6 +325,14 @@ func (m *AttachmentResponse) validate(all bool) error {
 			}
 		}
 	}
+
+	// no validation rules for Name
+
+	// no validation rules for Type
+
+	// no validation rules for Thumbnail
+
+	// no validation rules for Size
 
 	if m.SubmissionID != nil {
 		// no validation rules for SubmissionID

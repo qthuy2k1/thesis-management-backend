@@ -59,6 +59,19 @@ func (u *memberServiceGW) CreateMember(ctx context.Context, req *pb.CreateMember
 		return nil, err
 	}
 
+	wlt, err := u.waitingListClient.GetWaitingListByUser(ctx, &waitingListSvcV1.GetWaitingListByUserRequest{
+		UserID: req.Member.GetMemberID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := u.waitingListClient.DeleteWaitingList(ctx, &waitingListSvcV1.DeleteWaitingListRequest{
+		Id: wlt.WaitingList.Id,
+	}); err != nil {
+		return nil, err
+	}
+
 	return &pb.CreateMemberResponse{
 		Response: &pb.CommonMemberResponse{
 			StatusCode: res.GetResponse().StatusCode,
@@ -444,5 +457,77 @@ func (u *memberServiceGW) GetAllMembersOfClassroom(ctx context.Context, req *pb.
 	return &pb.GetAllMembersOfClassroomResponse{
 		TotalCount: res.GetTotalCount(),
 		Members:    members,
+	}, nil
+}
+
+func (u *memberServiceGW) GetUserMember(ctx context.Context, req *pb.GetUserMemberRequest) (*pb.GetUserMemberResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: req.UserID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	memberRes, err := u.userClient.GetUserMember(ctx, &userSvcV1.GetUserMemberRequest{
+		UserID: req.UserID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	classroomRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
+		Id: memberRes.GetMember().ClassroomID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: classroomRes.Classroom.LecturerID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetUserMemberResponse{
+		Member: &pb.MemberResponse{
+			Id: memberRes.Member.Id,
+			Classroom: &pb.ClassroomMemberResponse{
+				Id:     classroomRes.Classroom.Id,
+				Status: classroomRes.Classroom.Status,
+				Lecturer: &pb.UserMemberResponse{
+					Id:       lecturerRes.User.Id,
+					Class:    lecturerRes.User.Class,
+					Major:    lecturerRes.User.Major,
+					Phone:    lecturerRes.User.Phone,
+					PhotoSrc: lecturerRes.User.PhotoSrc,
+					Role:     lecturerRes.User.Role,
+					Name:     lecturerRes.User.Name,
+					Email:    lecturerRes.User.Email,
+				},
+				ClassCourse:     classroomRes.Classroom.ClassCourse,
+				TopicTags:       classroomRes.Classroom.TopicTags,
+				QuantityStudent: classroomRes.Classroom.QuantityStudent,
+				CreatedAt:       classroomRes.Classroom.CreatedAt,
+				UpdatedAt:       classroomRes.Classroom.UpdatedAt,
+			},
+			Member: &pb.UserMemberResponse{
+				Id:       userRes.User.Id,
+				Class:    userRes.User.Class,
+				Major:    userRes.User.Major,
+				Phone:    userRes.User.Phone,
+				PhotoSrc: userRes.User.PhotoSrc,
+				Role:     userRes.User.Role,
+				Name:     userRes.User.Name,
+				Email:    userRes.User.Email,
+			},
+			Status:          memberRes.Member.Status,
+			RegisterDefense: memberRes.Member.IsDefense,
+			CreatedAt:       memberRes.Member.CreatedAt,
+		},
 	}, nil
 }

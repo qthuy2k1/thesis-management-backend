@@ -26,6 +26,7 @@ const (
 	WaitingListService_GetWaitingListsOfClassroom_FullMethodName        = "/waitingList.v1.WaitingListService/GetWaitingListsOfClassroom"
 	WaitingListService_CheckUserInWaitingListOfClassroom_FullMethodName = "/waitingList.v1.WaitingListService/CheckUserInWaitingListOfClassroom"
 	WaitingListService_GetWaitingLists_FullMethodName                   = "/waitingList.v1.WaitingListService/GetWaitingLists"
+	WaitingListService_GetWaitingListByUser_FullMethodName              = "/waitingList.v1.WaitingListService/GetWaitingListByUser"
 )
 
 // WaitingListServiceClient is the client API for WaitingListService service.
@@ -39,6 +40,7 @@ type WaitingListServiceClient interface {
 	GetWaitingListsOfClassroom(ctx context.Context, in *GetWaitingListsOfClassroomRequest, opts ...grpc.CallOption) (*GetWaitingListsOfClassroomResponse, error)
 	CheckUserInWaitingListOfClassroom(ctx context.Context, in *CheckUserInWaitingListClassroomRequest, opts ...grpc.CallOption) (*CheckUserInWaitingListClassroomResponse, error)
 	GetWaitingLists(ctx context.Context, in *GetWaitingListsRequest, opts ...grpc.CallOption) (*GetWaitingListsResponse, error)
+	GetWaitingListByUser(ctx context.Context, in *GetWaitingListByUserRequest, opts ...grpc.CallOption) (*GetWaitingListByUserResponse, error)
 }
 
 type waitingListServiceClient struct {
@@ -112,6 +114,15 @@ func (c *waitingListServiceClient) GetWaitingLists(ctx context.Context, in *GetW
 	return out, nil
 }
 
+func (c *waitingListServiceClient) GetWaitingListByUser(ctx context.Context, in *GetWaitingListByUserRequest, opts ...grpc.CallOption) (*GetWaitingListByUserResponse, error) {
+	out := new(GetWaitingListByUserResponse)
+	err := c.cc.Invoke(ctx, WaitingListService_GetWaitingListByUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WaitingListServiceServer is the server API for WaitingListService service.
 // All implementations must embed UnimplementedWaitingListServiceServer
 // for forward compatibility
@@ -123,6 +134,7 @@ type WaitingListServiceServer interface {
 	GetWaitingListsOfClassroom(context.Context, *GetWaitingListsOfClassroomRequest) (*GetWaitingListsOfClassroomResponse, error)
 	CheckUserInWaitingListOfClassroom(context.Context, *CheckUserInWaitingListClassroomRequest) (*CheckUserInWaitingListClassroomResponse, error)
 	GetWaitingLists(context.Context, *GetWaitingListsRequest) (*GetWaitingListsResponse, error)
+	GetWaitingListByUser(context.Context, *GetWaitingListByUserRequest) (*GetWaitingListByUserResponse, error)
 	mustEmbedUnimplementedWaitingListServiceServer()
 }
 
@@ -150,6 +162,9 @@ func (UnimplementedWaitingListServiceServer) CheckUserInWaitingListOfClassroom(c
 }
 func (UnimplementedWaitingListServiceServer) GetWaitingLists(context.Context, *GetWaitingListsRequest) (*GetWaitingListsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWaitingLists not implemented")
+}
+func (UnimplementedWaitingListServiceServer) GetWaitingListByUser(context.Context, *GetWaitingListByUserRequest) (*GetWaitingListByUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetWaitingListByUser not implemented")
 }
 func (UnimplementedWaitingListServiceServer) mustEmbedUnimplementedWaitingListServiceServer() {}
 
@@ -290,6 +305,24 @@ func _WaitingListService_GetWaitingLists_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WaitingListService_GetWaitingListByUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetWaitingListByUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WaitingListServiceServer).GetWaitingListByUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WaitingListService_GetWaitingListByUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WaitingListServiceServer).GetWaitingListByUser(ctx, req.(*GetWaitingListByUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WaitingListService_ServiceDesc is the grpc.ServiceDesc for WaitingListService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -324,6 +357,10 @@ var WaitingListService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetWaitingLists",
 			Handler:    _WaitingListService_GetWaitingLists_Handler,
+		},
+		{
+			MethodName: "GetWaitingListByUser",
+			Handler:    _WaitingListService_GetWaitingListByUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

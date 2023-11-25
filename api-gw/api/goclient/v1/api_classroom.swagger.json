@@ -102,6 +102,36 @@
         ]
       }
     },
+    "/api/class/auth/{userID}": {
+      "get": {
+        "operationId": "ClassroomService_GetLecturerClassroom",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetLecturerClassroomResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClassroomService"
+        ]
+      }
+    },
     "/api/class/{id}": {
       "get": {
         "operationId": "ClassroomService_GetClassroom",
@@ -473,6 +503,14 @@
             "type": "object",
             "$ref": "#/definitions/v1ClassroomResponse"
           }
+        }
+      }
+    },
+    "v1GetLecturerClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "classroom": {
+          "$ref": "#/definitions/v1ClassroomResponse"
         }
       }
     },

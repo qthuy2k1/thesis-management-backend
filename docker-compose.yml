@@ -453,7 +453,25 @@ services:
     #   - thesis-commitee-db
     volumes:
       - .:/usr/src/app
-    
+
+  upload:
+    container_name: thesis-management-backend-upload-service
+    env_file:
+      - .env
+    build:
+      dockerfile: ./upload-svc/Dockerfile
+      context: .
+    image: qthuy2k1/thesis-management-backend-upload
+    networks:
+      mynet:
+    ports:
+      - "8081:8081"
+    tty: true
+    stdin_open: true
+    volumes:
+      - .:/usr/src/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     
   apigw-client:
     container_name: thesis-management-backend-apigw-client-service

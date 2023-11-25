@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package upload.v1;
+
+
+option go_package="github.com/qthuy2k1/thesis_management_backend/upload/api/v1";
+
+service UploadService {
+    rpc CreateExercise(CreateExerciseRequest) returns (CreateExerciseResponse) {}
+}
+
+
+message CreateExerciseRequest {
+    string title = 1;
+    string description = 2;
+    string classroomID = 3;
+    string deadline = 4;
+    string categoryID = 5;
+    string authorID = 6;
+    FileInfo fileInfo = 7;
+}
+
+message FileInfo {
+    string fileName = 1;
+    string thumbnail = 2;
+    int64 size = 3;
+    string mimeType = 4;
+}
+
+message CreateExerciseResponse {
+    string message = 1;
+}

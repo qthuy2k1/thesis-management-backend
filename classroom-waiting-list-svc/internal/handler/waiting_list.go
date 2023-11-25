@@ -185,16 +185,47 @@ func (h *WaitingListHdl) GetWaitingLists(ctx context.Context, req *waitingListpb
 }
 
 func (h *WaitingListHdl) CheckUserInWaitingListOfClassroom(ctx context.Context, req *waitingListpb.CheckUserInWaitingListClassroomRequest) (*waitingListpb.CheckUserInWaitingListClassroomResponse, error) {
-	isIn, classroomID, err := h.Service.CheckUserInWaitingListOfClassroom(ctx, req.GetUserID())
+	isIn, _, err := h.Service.CheckUserInWaitingListOfClassroom(ctx, req.GetUserID(), int(req.GetClassroomID()))
 	if err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
 	return &waitingListpb.CheckUserInWaitingListClassroomResponse{
-		IsIn:        isIn,
-		ClassroomID: int64(classroomID),
+		IsIn: isIn,
 	}, nil
+}
+
+// GetWaitingList returns a waitingList in db given by id
+func (h *WaitingListHdl) GetWaitingListByUser(ctx context.Context, req *waitingListpb.GetWaitingListByUserRequest) (*waitingListpb.GetWaitingListByUserResponse, error) {
+	log.Println("calling get waitingList...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+	wt, err := h.Service.GetWaitingListByUser(ctx, req.GetUserID())
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	pResp := waitingListpb.WaitingListResponse{
+		Id:          int64(wt.ID),
+		ClassroomID: int64(wt.ClassroomID),
+		UserID:      wt.UserID,
+		IsDefense:   wt.IsDefense,
+		Status:      wt.Status,
+		CreatedAt:   timestamppb.New(wt.CreatedAt),
+	}
+
+	resp := &waitingListpb.GetWaitingListByUserResponse{
+		Response: &waitingListpb.CommonWaitingListResponse{
+			StatusCode: 200,
+			Message:    "OK",
+		},
+		WaitingList: &pResp,
+	}
+	return resp, nil
 }
 
 func validateAndConvertWaitingList(pbWaitingList *waitingListpb.WaitingListInput) (service.WaitingListInputSvc, error) {

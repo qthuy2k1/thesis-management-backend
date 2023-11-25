@@ -2907,6 +2907,8 @@ func (m *CheckUserInWaitingListClassroomRequest) validate(all bool) error {
 
 	// no validation rules for UserID
 
+	// no validation rules for ClassroomID
+
 	if len(errors) > 0 {
 		return CheckUserInWaitingListClassroomRequestMultiError(errors)
 	}

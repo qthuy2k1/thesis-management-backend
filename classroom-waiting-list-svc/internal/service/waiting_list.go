@@ -137,11 +137,31 @@ func (s *WaitingListSvc) GetWaitingLists(ctx context.Context) ([]WaitingListOutp
 }
 
 // CheckUserInWaitingListOfClassroom returns a boolean indicating whether user is in waiting list
-func (s *WaitingListSvc) CheckUserInWaitingListOfClassroom(ctx context.Context, userID string) (bool, int, error) {
-	isIn, classroomID, err := s.Repository.CheckUserInWaitingListOfClassroom(ctx, userID)
+func (s *WaitingListSvc) CheckUserInWaitingListOfClassroom(ctx context.Context, userID string, classroomID int) (bool, int, error) {
+	isIn, err := s.Repository.IsWaitingListExists(ctx, classroomID, userID)
 	if err != nil {
 		return false, 0, err
 	}
 
 	return isIn, classroomID, nil
+}
+
+// GetWaitingList returns a waiting_list in db given by id
+func (s *WaitingListSvc) GetWaitingListByUser(ctx context.Context, userID string) (WaitingListOutputSvc, error) {
+	wt, err := s.Repository.GetWaitingListByUser(ctx, userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrWaitingListNotFound) {
+			return WaitingListOutputSvc{}, ErrWaitingListNotFound
+		}
+		return WaitingListOutputSvc{}, err
+	}
+
+	return WaitingListOutputSvc{
+		ID:          wt.ID,
+		ClassroomID: wt.ClassroomID,
+		UserID:      wt.UserID,
+		IsDefense:   wt.IsDefense,
+		Status:      wt.Status,
+		CreatedAt:   wt.CreatedAt,
+	}, nil
 }

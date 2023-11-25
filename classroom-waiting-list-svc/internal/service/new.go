@@ -18,9 +18,11 @@ type IWaitingListSvc interface {
 	// GetWaitingListsOfClassroom returns a list of waiting lists in a classroom
 	GetWaitingListsOfClassroom(ctx context.Context, classroomID int) ([]WaitingListOutputSvc, error)
 	// CheckUserInWaitingListOfClassroom returns a boolean indicating whether user is in waiting list
-	CheckUserInWaitingListOfClassroom(ctx context.Context, userID string) (bool, int, error)
+	CheckUserInWaitingListOfClassroom(ctx context.Context, userID string, classroomID int) (bool, int, error)
 	// GetWaitingList returns a list of waiting_lists in db
 	GetWaitingLists(ctx context.Context) ([]WaitingListOutputSvc, error)
+	// GetWaitingList returns a waiting_list in db given by id
+	GetWaitingListByUser(ctx context.Context, userID string) (WaitingListOutputSvc, error)
 }
 
 type WaitingListSvc struct {
