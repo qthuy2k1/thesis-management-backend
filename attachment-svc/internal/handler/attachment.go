@@ -27,6 +27,7 @@ func (h *AttachmentHdl) CreateAttachment(ctx context.Context, req *attachmentpb.
 
 	submissionID := int64(*att.SubmissionID)
 	exerciseID := int64(*att.ExerciseID)
+	postID := int64(*att.PostID)
 
 	resp := &attachmentpb.CreateAttachmentResponse{
 		Response: &attachmentpb.CommonAttachmentResponse{
@@ -41,6 +42,11 @@ func (h *AttachmentHdl) CreateAttachment(ctx context.Context, req *attachmentpb.
 			ExerciseID:   &exerciseID,
 			AuthorID:     attRes.AuthorID,
 			CreatedAt:    timestamppb.New(attRes.CreatedAt),
+			PostID:       &postID,
+			Name:         attRes.Name,
+			Type:         attRes.Type,
+			Thumbnail:    attRes.Thumbnail,
+			Size:         int64(attRes.Size),
 		},
 	}
 
@@ -62,6 +68,7 @@ func (h *AttachmentHdl) GetAttachment(ctx context.Context, req *attachmentpb.Get
 
 	submissionID := int64(*att.SubmissionID)
 	exerciseID := int64(*att.ExerciseID)
+	postID := int64(*att.PostID)
 
 	attResp := attachmentpb.AttachmentResponse{
 		Id:           int64(att.ID),
@@ -71,6 +78,11 @@ func (h *AttachmentHdl) GetAttachment(ctx context.Context, req *attachmentpb.Get
 		ExerciseID:   &exerciseID,
 		AuthorID:     att.AuthorID,
 		CreatedAt:    timestamppb.New(att.CreatedAt),
+		PostID:       &postID,
+		Name:         att.Name,
+		Type:         att.Type,
+		Thumbnail:    att.Thumbnail,
+		Size:         int64(att.Size),
 	}
 
 	resp := &attachmentpb.GetAttachmentResponse{
@@ -102,6 +114,11 @@ func (c *AttachmentHdl) UpdateAttachment(ctx context.Context, req *attachmentpb.
 		SubmissionID: att.SubmissionID,
 		ExerciseID:   att.ExerciseID,
 		AuthorID:     att.AuthorID,
+		PostID:       att.PostID,
+		Name:         att.Name,
+		Type:         att.Type,
+		Thumbnail:    att.Thumbnail,
+		Size:         att.Size,
 	}); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -152,6 +169,7 @@ func (h *AttachmentHdl) GetAttachmentsOfExercise(ctx context.Context, req *attac
 	for _, c := range atts {
 		submissionID := int64(*c.SubmissionID)
 		exerciseID := int64(*c.ExerciseID)
+		postID := int64(*c.PostID)
 
 		attsResp = append(attsResp, &attachmentpb.AttachmentResponse{
 			Id:           int64(c.ID),
@@ -161,6 +179,11 @@ func (h *AttachmentHdl) GetAttachmentsOfExercise(ctx context.Context, req *attac
 			ExerciseID:   &exerciseID,
 			AuthorID:     c.AuthorID,
 			CreatedAt:    timestamppb.New(c.CreatedAt),
+			PostID:       &postID,
+			Name:         c.Name,
+			Type:         c.Type,
+			Thumbnail:    c.Thumbnail,
+			Size:         int64(c.Size),
 		})
 	}
 
@@ -190,6 +213,7 @@ func (h *AttachmentHdl) GetAttachmentsOfSubmission(ctx context.Context, req *att
 	for _, c := range atts {
 		submissionID := int64(*c.SubmissionID)
 		exerciseID := int64(*c.ExerciseID)
+		postID := int64(*c.PostID)
 
 		attsResp = append(attsResp, &attachmentpb.AttachmentResponse{
 			Id:           int64(c.ID),
@@ -199,6 +223,11 @@ func (h *AttachmentHdl) GetAttachmentsOfSubmission(ctx context.Context, req *att
 			ExerciseID:   &exerciseID,
 			AuthorID:     c.AuthorID,
 			CreatedAt:    timestamppb.New(c.CreatedAt),
+			PostID:       &postID,
+			Name:         c.Name,
+			Type:         c.Type,
+			Thumbnail:    c.Thumbnail,
+			Size:         int64(c.Size),
 		})
 	}
 
@@ -239,6 +268,10 @@ func (h *AttachmentHdl) GetAttachmentsOfPost(ctx context.Context, req *attachmen
 			AuthorID:     c.AuthorID,
 			PostID:       &postID,
 			CreatedAt:    timestamppb.New(c.CreatedAt),
+			Name:         c.Name,
+			Type:         c.Type,
+			Thumbnail:    c.Thumbnail,
+			Size:         int64(c.Size),
 		})
 	}
 
@@ -278,5 +311,9 @@ func validateAndConvertAttachment(pbAttachment *attachmentpb.AttachmentInput) (s
 		ExerciseID:   &exerciseID,
 		PostID:       &postID,
 		AuthorID:     pbAttachment.AuthorID,
+		Name:         pbAttachment.Name,
+		Type:         pbAttachment.Type,
+		Thumbnail:    pbAttachment.Thumbnail,
+		Size:         int(pbAttachment.Size),
 	}, nil
 }

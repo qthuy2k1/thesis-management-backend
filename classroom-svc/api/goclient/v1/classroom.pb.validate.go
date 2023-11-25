@@ -2386,3 +2386,240 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetClassroomsResponseValidationError{}
+
+// Validate checks the field values on GetLecturerClassroomRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetLecturerClassroomRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetLecturerClassroomRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetLecturerClassroomRequestMultiError, or nil if none found.
+func (m *GetLecturerClassroomRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetLecturerClassroomRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for LecturerID
+
+	if len(errors) > 0 {
+		return GetLecturerClassroomRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetLecturerClassroomRequestMultiError is an error wrapping multiple
+// validation errors returned by GetLecturerClassroomRequest.ValidateAll() if
+// the designated constraints aren't met.
+type GetLecturerClassroomRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetLecturerClassroomRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetLecturerClassroomRequestMultiError) AllErrors() []error { return m }
+
+// GetLecturerClassroomRequestValidationError is the validation error returned
+// by GetLecturerClassroomRequest.Validate if the designated constraints
+// aren't met.
+type GetLecturerClassroomRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetLecturerClassroomRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetLecturerClassroomRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetLecturerClassroomRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetLecturerClassroomRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetLecturerClassroomRequestValidationError) ErrorName() string {
+	return "GetLecturerClassroomRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetLecturerClassroomRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetLecturerClassroomRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetLecturerClassroomRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetLecturerClassroomRequestValidationError{}
+
+// Validate checks the field values on GetLecturerClassroomResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetLecturerClassroomResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetLecturerClassroomResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetLecturerClassroomResponseMultiError, or nil if none found.
+func (m *GetLecturerClassroomResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetLecturerClassroomResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetClassroom()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetLecturerClassroomResponseValidationError{
+					field:  "Classroom",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetLecturerClassroomResponseValidationError{
+					field:  "Classroom",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetClassroom()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetLecturerClassroomResponseValidationError{
+				field:  "Classroom",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return GetLecturerClassroomResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetLecturerClassroomResponseMultiError is an error wrapping multiple
+// validation errors returned by GetLecturerClassroomResponse.ValidateAll() if
+// the designated constraints aren't met.
+type GetLecturerClassroomResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetLecturerClassroomResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetLecturerClassroomResponseMultiError) AllErrors() []error { return m }
+
+// GetLecturerClassroomResponseValidationError is the validation error returned
+// by GetLecturerClassroomResponse.Validate if the designated constraints
+// aren't met.
+type GetLecturerClassroomResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetLecturerClassroomResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetLecturerClassroomResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetLecturerClassroomResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetLecturerClassroomResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetLecturerClassroomResponseValidationError) ErrorName() string {
+	return "GetLecturerClassroomResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetLecturerClassroomResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetLecturerClassroomResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetLecturerClassroomResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetLecturerClassroomResponseValidationError{}

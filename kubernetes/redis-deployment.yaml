@@ -1,47 +1,47 @@
-#For creating Kubernetes Deployment in the Minikube cluster
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: thesis-management-backend-redis
-  labels:
-    app: thesis-management-backend-redis
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: thesis-management-backend-redis
-  template:
-    metadata:
-      labels:
-        app: thesis-management-backend-redis 
-    spec:
-      containers:
-      - name: thesis-management-backend-redis
-        image: qthuy2k1/thesis-management-backend-redis
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 9091
-        command:
-          - redis-server
-          - --save
-          - "60"
-          - "1"
-          - --loglevel
-          - warning
+# #For creating Kubernetes Deployment in the Minikube cluster
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: thesis-management-backend-redis
+#   labels:
+#     app: thesis-management-backend-redis
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: thesis-management-backend-redis
+#   template:
+#     metadata:
+#       labels:
+#         app: thesis-management-backend-redis 
+#     spec:
+#       containers:
+#       - name: thesis-management-backend-redis
+#         image: qthuy2k1/thesis-management-backend-redis
+#         imagePullPolicy: Always
+#         ports:
+#         - containerPort: 9091
+#         command:
+#           - redis-server
+#           - --save
+#           - "60"
+#           - "1"
+#           - --loglevel
+#           - warning
       
         
 
----
-#For creating a Kubernetes Service in the Minikube cluster
-apiVersion: v1
-kind: Service
-metadata:
-  name: thesis-management-backend-redis-service
-spec:
-  selector:
-    app: thesis-management-backend-redis 
-  type: ClusterIP
-  ports:
-  - protocol: TCP
-    port: 9091
-    targetPort: 9091
+# ---
+# #For creating a Kubernetes Service in the Minikube cluster
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: thesis-management-backend-redis-service
+# spec:
+#   selector:
+#     app: thesis-management-backend-redis 
+#   type: ClusterIP
+#   ports:
+#   - protocol: TCP
+#     port: 9091
+#     targetPort: 9091

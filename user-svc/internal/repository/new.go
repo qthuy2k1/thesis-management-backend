@@ -41,6 +41,7 @@ type IUserRepo interface {
 	GetAllMembersOfClassroom(ctx context.Context, classroomID int) ([]MemberOutputRepo, int, error)
 	// IsUserJoinedClassroom returns a member if exists
 	IsUserJoinedClassroom(ctx context.Context, userID string) (MemberOutputRepo, error)
+	GetUserMember(ctx context.Context, userID string) (MemberOutputRepo, error)
 
 	// CreateStudentDef creates a new member in db given by member model
 	CreateStudentDef(ctx context.Context, u StudentDefInputRepo) error

@@ -19,6 +19,9 @@ service ScheduleService {
     rpc CreateOrUpdatePointDef(CreateOrUpdatePointDefRequest) returns (CreateOrUpdatePointDefResponse) {}
 
     rpc GetAllPointDefs(GetAllPointDefsRequest) returns (GetAllPointDefsResponse) {}
+
+    rpc CreateAttachment(CreateAttachmentRequest) returns (CreateAttachmentResponse) {}
+    rpc GetAttachment(GetAttachmentRequest) returns (GetAttachmentResponse) {}
 }
 
 
@@ -161,4 +164,102 @@ message GetAllPointDefsRequest {
 
 message GetAllPointDefsResponse {
     repeated Point points = 1;
+}
+
+
+message AttachmentExerciseInput {
+    string fileURL = 1;
+    string status = 2;
+    string authorID = 3;
+}
+// ====== exercise ======
+message ExerciseInput {
+    string title = 1;
+    string description = 2;
+    ClassroomResponse classroom = 3;
+    string deadline = 4;
+    ReportingStageExerciseResponse categoryID = 5;
+    AuthorExerciseResponse authorID = 6;
+    repeated AttachmentExerciseInput attachments = 7;
+}
+
+message ExerciseResponse {
+    string id = 1;
+    string title = 2;
+    string description = 3;
+    ClassroomResponse classroomID = 4;
+    string deadline = 5;
+    ReportingStageExerciseResponse category = 6;
+    AuthorExerciseResponse author = 7;
+    google.protobuf.Timestamp createdAt = 8;
+    google.protobuf.Timestamp updatedAt = 9;
+    repeated AttachmentExerciseResponse attachments = 10;
+}
+
+message ClassroomResponse {
+    int64 id = 1;
+    string status = 4;
+    AuthorExerciseResponse lecturer = 5;
+    string classCourse = 6;
+    optional string topicTags = 7;
+    int64 quantityStudent = 8;
+    google.protobuf.Timestamp createdAt = 9;
+    google.protobuf.Timestamp updatedAt = 10;
+}
+
+
+
+message AttachmentExerciseResponse {
+    string id = 1;
+    string name = 2;
+    string src = 3;
+}
+
+message ReportingStageExerciseResponse {
+    int64 id = 1;
+    string label = 2;
+    string description = 3;   
+    string value = 4;
+}
+
+message AuthorExerciseResponse {
+    string id = 1;
+    optional string class = 2;
+    optional string major = 3;
+    optional string phone = 4;
+    string photoSrc = 5;
+    string role = 6;
+    string name = 7;
+    string email = 8;
+}
+
+message CreateExerciseRequest {
+   ExerciseInput exercise = 1; 
+}
+
+message CreateExerciseResponse {
+    string message = 1;
+}
+
+message CreateAttachmentRequest{
+    repeated string fileURL = 1;
+    string uid = 2;
+}
+
+message CreateAttachmentResponse {
+    repeated Attachment attachment = 1;
+}
+
+message Attachment{
+    string id = 1;
+    string name = 2; 
+    string src = 3;
+}
+
+message GetAttachmentRequest{
+    string id = 1;
+}
+
+message GetAttachmentResponse {
+    repeated Attachment attachments = 1;
 }

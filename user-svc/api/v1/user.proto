@@ -36,6 +36,8 @@ service UserService {
 
     rpc IsUserJoinedClassroom(IsUserJoinedClassroomRequest) returns (IsUserJoinedClassroomResponse) {}
 
+    rpc GetUserMember(GetUserMemberRequest) returns (GetUserMemberResponse) {}
+
 
     rpc CreateStudentDef(CreateStudentDefRequest) returns (CreateStudentDefResponse){}
     
@@ -335,4 +337,12 @@ message GetStudentDefByTimeSlotsIDRequest {
 
 message GetStudentDefByTimeSlotsIDResponse {
     StudentDefResponse studentDef = 1;
+}
+
+
+message GetUserMemberRequest {
+    string userID = 1;
+}
+message GetUserMemberResponse {
+    MemberResponse member = 1;
 }

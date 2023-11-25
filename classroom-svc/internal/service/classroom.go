@@ -163,3 +163,26 @@ func (s *ClassroomSvc) GetClassrooms(ctx context.Context, filter ClassroomFilter
 
 	return clrsSvc, count, nil
 }
+
+func (s *ClassroomSvc) GetLecturerClassroom(ctx context.Context, lecturerID string) (ClassroomOutputSvc, error) {
+	clr, err := s.Repository.GetLecturerClassroom(ctx, lecturerID)
+	if err != nil {
+		if errors.Is(err, repository.ErrClassroomNotFound) {
+			return ClassroomOutputSvc{}, ErrClassroomNotFound
+		}
+		return ClassroomOutputSvc{}, err
+	}
+
+	return ClassroomOutputSvc{
+		ID:              clr.ID,
+		Title:           clr.Title,
+		Description:     clr.Description,
+		Status:          clr.Status,
+		LecturerID:      clr.LecturerID,
+		ClassCourse:     clr.ClassCourse,
+		TopicTags:       clr.TopicTags,
+		QuantityStudent: clr.QuantityStudent,
+		CreatedAt:       clr.CreatedAt,
+		UpdatedAt:       clr.UpdatedAt,
+	}, nil
+}

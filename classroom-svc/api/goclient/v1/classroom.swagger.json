@@ -296,6 +296,14 @@
         }
       }
     },
+    "v1GetLecturerClassroomResponse": {
+      "type": "object",
+      "properties": {
+        "classroom": {
+          "$ref": "#/definitions/v1ClassroomResponse"
+        }
+      }
+    },
     "v1PostResponse": {
       "type": "object",
       "properties": {

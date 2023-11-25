@@ -466,7 +466,8 @@ func (u *waitingListServiceGW) CheckUserInWaitingListClassroom(ctx context.Conte
 	}
 
 	res, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
-		UserID: req.GetUserID(),
+		UserID:      req.GetUserID(),
+		ClassroomID: req.GetClassroomID(),
 	})
 	if err != nil {
 		return nil, err
@@ -474,7 +475,7 @@ func (u *waitingListServiceGW) CheckUserInWaitingListClassroom(ctx context.Conte
 
 	if res.IsIn {
 		clrRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
-			Id: res.GetClassroomID(),
+			Id: req.GetClassroomID(),
 		})
 		if err != nil {
 			return nil, err

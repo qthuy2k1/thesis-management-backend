@@ -68,6 +68,36 @@
         ]
       }
     },
+    "/api/member/auth/{userID}": {
+      "get": {
+        "operationId": "MemberService_GetUserMember",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetUserMemberResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MemberService"
+        ]
+      }
+    },
     "/api/member/class/{classroomID}": {
       "get": {
         "operationId": "MemberService_GetAllMembersOfClassroom",
@@ -353,6 +383,14 @@
             "type": "object",
             "$ref": "#/definitions/v1MemberResponse"
           }
+        }
+      }
+    },
+    "v1GetUserMemberResponse": {
+      "type": "object",
+      "properties": {
+        "member": {
+          "$ref": "#/definitions/v1MemberResponse"
         }
       }
     },

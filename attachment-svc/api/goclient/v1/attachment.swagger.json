@@ -68,6 +68,19 @@
         },
         "authorID": {
           "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "thumbnail": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string",
+          "format": "int64"
         }
       },
       "title": "====== POST ======"
@@ -103,6 +116,19 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "thumbnail": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

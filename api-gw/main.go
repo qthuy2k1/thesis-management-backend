@@ -16,7 +16,6 @@ import (
 	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
-	redisSvcV1 "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 	scheduleSvcV1 "github.com/qthuy2k1/thesis-management-backend/schedule-svc/api/goclient/v1"
 	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
@@ -169,14 +168,14 @@ func newScheduleSvcClient() (scheduleSvcV1.ScheduleServiceClient, error) {
 	return scheduleSvcV1.NewScheduleServiceClient(conn), nil
 }
 
-func newRedisSvcClient() (redisSvcV1.RedisServiceClient, error) {
-	conn, err := grpc.DialContext(context.TODO(), address["redisAddress"], grpc.WithInsecure())
-	if err != nil {
-		return nil, fmt.Errorf("redis client: %w", err)
-	}
+// func newRedisSvcClient() (redisSvcV1.RedisServiceClient, error) {
+// 	conn, err := grpc.DialContext(context.TODO(), address["redisAddress"], grpc.WithInsecure())
+// 	if err != nil {
+// 		return nil, fmt.Errorf("redis client: %w", err)
+// 	}
 
-	return redisSvcV1.NewRedisServiceClient(conn), nil
-}
+// 	return redisSvcV1.NewRedisServiceClient(conn), nil
+// }
 
 func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	log.Printf("APIGW service: method %q called\n", info.FullMethod)
@@ -312,9 +311,9 @@ func main() {
 	}
 	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
 
-	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient, rpsClient, userClient, topicClient))
+	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient, rpsClient, userClient, topicClient, waitingListClient))
 	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient, commentClient, userClient, attachmentClient))
-	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient, commentClient, userClient, submissionClient, attachmentClient))
+	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient, commentClient, userClient, submissionClient, attachmentClient, scheduleClient))
 	pb.RegisterReportingStageServiceServer(s, NewReportingStagesService(rpsClient))
 	pb.RegisterSubmissionServiceServer(s, NewSubmissionsService(submissionClient, classroomClient, exerciseClient, attachmentClient, userClient))
 	pb.RegisterUserServiceServer(s, NewUsersService(userClient, classroomClient, waitingListClient, topicClient))

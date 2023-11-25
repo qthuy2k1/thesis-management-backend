@@ -79,8 +79,16 @@ message SubmissionExerciseInput {
 
 message AttachmentExerciseInput {
     string fileURL = 1;
-    string status = 2;
+    string authorID = 2;
+    string name = 3;
+    optional int64 submissionID = 4;
+    optional int64 exerciseID = 5;
+    optional int64 postID = 6;
+    int64 size = 7;
+    string type = 8;
+    string thumbnail = 9;
 }
+
 
 message ExerciseResponse {
     int64 id = 1 [(validate.rules).int64.gte = 1];
@@ -111,6 +119,10 @@ message AttachmentExerciseResponse {
     string status = 3;
     AuthorExerciseResponse author = 6;
     google.protobuf.Timestamp created_at = 7;
+    int64 size = 8;
+    string mimeType = 9;
+    string thumbnail = 10;
+    string fileName = 11;
 }
 
 message ReportingStageExerciseResponse {

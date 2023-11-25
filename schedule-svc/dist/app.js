@@ -63,6 +63,7 @@ const protoLoader = __importStar(require("@grpc/proto-loader"));
 const GAController_1 = require("./src/controllers/GAController");
 const notificationController_1 = require("./src/controllers/notificationController");
 const pointDefController_1 = require("./src/controllers/pointDefController");
+const exerciseController_1 = require("./src/controllers/exerciseController");
 const PORT_PROTO = 9091;
 const PROTO_FILE = "./src/proto/schedule.proto";
 const packageDef = protoLoader.loadSync(path_1.default.resolve(__dirname, PROTO_FILE));
@@ -85,7 +86,7 @@ function getServer() {
             schedule.then((response) => {
                 res(null, {
                     id: response === null || response === void 0 ? void 0 : response.id,
-                    thesis: response === null || response === void 0 ? void 0 : response.thesis
+                    thesis: response === null || response === void 0 ? void 0 : response.thesis,
                 });
             });
         },
@@ -95,7 +96,7 @@ function getServer() {
             schedule.then((response) => {
                 callback(null, {
                     id: response === null || response === void 0 ? void 0 : response.id,
-                    thesis: response === null || response === void 0 ? void 0 : response.thesis
+                    thesis: response === null || response === void 0 ? void 0 : response.thesis,
                 });
             });
         },
@@ -105,7 +106,7 @@ function getServer() {
                 callback(null, {
                     notification: response === null || response === void 0 ? void 0 : response.notification,
                     message: response === null || response === void 0 ? void 0 : response.message,
-                    notifications: response === null || response === void 0 ? void 0 : response.notifications
+                    notifications: response === null || response === void 0 ? void 0 : response.notifications,
                 });
             });
         },
@@ -114,16 +115,34 @@ function getServer() {
             point.then((response) => {
                 callback(null, {
                     point: response,
-                    message: "PointDef has been created"
+                    message: "PointDef has been created",
                 });
             });
         },
         GetAllPointDefs: (req, callback) => {
             let points = pointDefController_1.PointDefController.getAllPointDef(req);
             callback(null, {
-                points: points
+                points: points,
             });
-        }
+        },
+        CreateAttachment: (req, callback) => {
+            let res = exerciseController_1.ExerciseController.createAttachment(req);
+            res.then((fileUrls) => {
+                callback(null, {
+                    message: "Success",
+                    fileUrls: fileUrls
+                });
+            });
+        },
+        GetExercise: (req, callback) => {
+            let exercise = exerciseController_1.ExerciseController.getAttachment(req);
+            exercise.then((response) => {
+                // console.log(response)
+                callback(null, {
+                    attachments: response,
+                });
+            });
+        },
     });
     return server;
 }

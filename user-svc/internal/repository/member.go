@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -195,6 +196,23 @@ func (r *UserRepo) GetAllMembersOfClassroom(ctx context.Context, classroomID int
 	}
 
 	return users, count, nil
+}
+
+func (r *UserRepo) GetUserMember(ctx context.Context, userID string) (MemberOutputRepo, error) {
+	row, err := QueryRowSQL(ctx, r.Database, "GetUserMember", fmt.Sprintf("SELECT id, classroom_id, member_id, status, is_defense, created_at FROM members WHERE member_id='%s'", userID))
+	if err != nil {
+		return MemberOutputRepo{}, nil
+	}
+
+	var member MemberOutputRepo
+	if err := row.Scan(&member.ID, &member.ClassroomID, &member.MemberID, &member.Status, &member.IsDefense, &member.CreatedAt); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return MemberOutputRepo{}, ErrMemberNotFound
+		}
+		return MemberOutputRepo{}, err
+	}
+
+	return member, nil
 }
 
 func (r *UserRepo) getMemberCount(ctx context.Context) (int, error) {

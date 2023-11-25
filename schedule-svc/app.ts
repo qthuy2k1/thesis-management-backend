@@ -41,7 +41,8 @@ import * as protoLoader from "@grpc/proto-loader";
 import { ProtoGrpcType } from "./src/proto/schedule";
 import { GAScheduleController } from "./src/controllers/GAController";
 import { notificationController } from "./src/controllers/notificationController";
-import { PointDefController} from "./src/controllers/pointDefController";
+import { PointDefController } from "./src/controllers/pointDefController";
+import { ExerciseController } from "./src/controllers/exerciseController";
 
 const PORT_PROTO = 9091;
 const PROTO_FILE = "./src/proto/schedule.proto";
@@ -75,7 +76,7 @@ function getServer() {
       schedule.then((response) => {
         res(null, {
           id: response?.id,
-          thesis: response?.thesis
+          thesis: response?.thesis,
         });
       });
     },
@@ -84,41 +85,58 @@ function getServer() {
       let schedule = GAScheduleController.getSchedule(req);
       schedule.then((response) => {
         callback(null, {
-            id: response?.id,
-            thesis: response?.thesis
+          id: response?.id,
+          thesis: response?.thesis,
         });
       });
     },
     CreateNotification: (req: any, callback: any) => {
-      let notis = notificationController.createNotification(req)
+      let notis = notificationController.createNotification(req);
 
       notis.then((response) => {
         callback(null, {
           notification: response?.notification,
           message: response?.message,
-          notifications: response?.notifications
-        })
-      })
+          notifications: response?.notifications,
+        });
+      });
     },
     CreateOrUpdatePointDef: (req: any, callback: any) => {
-      let point = PointDefController.createOrUpdatePointDef(req)
+      let point = PointDefController.createOrUpdatePointDef(req);
 
       point.then((response) => {
         callback(null, {
           point: response,
-          message: "PointDef has been created"
-        })
-      })
+          message: "PointDef has been created",
+        });
+      });
     },
     GetAllPointDefs: (req: any, callback: any) => {
-      let points = PointDefController.getAllPointDef(req)
+      let points = PointDefController.getAllPointDef(req);
 
       callback(null, {
-        points: points
+        points: points,
+      });
+    },
+    CreateAttachment: (req: any, callback: any) => {
+      let res = ExerciseController.createAttachment(req);
+
+      res.then((fileUrls) => {
+        callback(null, {
+        message: "Success",
+        fileUrls: fileUrls
+      });
       })
-
-    }
-
+    },
+    GetExercise: (req: any, callback: any) => {
+      let exercise = ExerciseController.getAttachment(req);
+      exercise.then((response) => {
+        // console.log(response)
+        callback(null, {
+          attachments: response,
+        });
+      });
+    },
   });
 
   return server;

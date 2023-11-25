@@ -2,6 +2,8 @@
 
 import type * as grpc from '@grpc/grpc-js'
 import type { MethodDefinition } from '@grpc/proto-loader'
+import type { CreateAttachmentRequest as _schedule_v1_CreateAttachmentRequest, CreateAttachmentRequest__Output as _schedule_v1_CreateAttachmentRequest__Output } from '../../schedule/v1/CreateAttachmentRequest';
+import type { CreateAttachmentResponse as _schedule_v1_CreateAttachmentResponse, CreateAttachmentResponse__Output as _schedule_v1_CreateAttachmentResponse__Output } from '../../schedule/v1/CreateAttachmentResponse';
 import type { CreateNotificationRequest as _schedule_v1_CreateNotificationRequest, CreateNotificationRequest__Output as _schedule_v1_CreateNotificationRequest__Output } from '../../schedule/v1/CreateNotificationRequest';
 import type { CreateNotificationResponse as _schedule_v1_CreateNotificationResponse, CreateNotificationResponse__Output as _schedule_v1_CreateNotificationResponse__Output } from '../../schedule/v1/CreateNotificationResponse';
 import type { CreateOrUpdatePointDefRequest as _schedule_v1_CreateOrUpdatePointDefRequest, CreateOrUpdatePointDefRequest__Output as _schedule_v1_CreateOrUpdatePointDefRequest__Output } from '../../schedule/v1/CreateOrUpdatePointDefRequest';
@@ -10,12 +12,23 @@ import type { CreateScheduleRequest as _schedule_v1_CreateScheduleRequest, Creat
 import type { CreateScheduleResponse as _schedule_v1_CreateScheduleResponse, CreateScheduleResponse__Output as _schedule_v1_CreateScheduleResponse__Output } from '../../schedule/v1/CreateScheduleResponse';
 import type { GetAllPointDefsRequest as _schedule_v1_GetAllPointDefsRequest, GetAllPointDefsRequest__Output as _schedule_v1_GetAllPointDefsRequest__Output } from '../../schedule/v1/GetAllPointDefsRequest';
 import type { GetAllPointDefsResponse as _schedule_v1_GetAllPointDefsResponse, GetAllPointDefsResponse__Output as _schedule_v1_GetAllPointDefsResponse__Output } from '../../schedule/v1/GetAllPointDefsResponse';
+import type { GetAttachmentRequest as _schedule_v1_GetAttachmentRequest, GetAttachmentRequest__Output as _schedule_v1_GetAttachmentRequest__Output } from '../../schedule/v1/GetAttachmentRequest';
+import type { GetAttachmentResponse as _schedule_v1_GetAttachmentResponse, GetAttachmentResponse__Output as _schedule_v1_GetAttachmentResponse__Output } from '../../schedule/v1/GetAttachmentResponse';
 import type { GetNotificationsRequest as _schedule_v1_GetNotificationsRequest, GetNotificationsRequest__Output as _schedule_v1_GetNotificationsRequest__Output } from '../../schedule/v1/GetNotificationsRequest';
 import type { GetNotificationsResponse as _schedule_v1_GetNotificationsResponse, GetNotificationsResponse__Output as _schedule_v1_GetNotificationsResponse__Output } from '../../schedule/v1/GetNotificationsResponse';
 import type { GetSchedulesRequest as _schedule_v1_GetSchedulesRequest, GetSchedulesRequest__Output as _schedule_v1_GetSchedulesRequest__Output } from '../../schedule/v1/GetSchedulesRequest';
 import type { GetSchedulesResponse as _schedule_v1_GetSchedulesResponse, GetSchedulesResponse__Output as _schedule_v1_GetSchedulesResponse__Output } from '../../schedule/v1/GetSchedulesResponse';
 
 export interface ScheduleServiceClient extends grpc.Client {
+  CreateAttachment(argument: _schedule_v1_CreateAttachmentRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_CreateAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  CreateAttachment(argument: _schedule_v1_CreateAttachmentRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_schedule_v1_CreateAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  CreateAttachment(argument: _schedule_v1_CreateAttachmentRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_CreateAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  CreateAttachment(argument: _schedule_v1_CreateAttachmentRequest, callback: grpc.requestCallback<_schedule_v1_CreateAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  createAttachment(argument: _schedule_v1_CreateAttachmentRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_CreateAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  createAttachment(argument: _schedule_v1_CreateAttachmentRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_schedule_v1_CreateAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  createAttachment(argument: _schedule_v1_CreateAttachmentRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_CreateAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  createAttachment(argument: _schedule_v1_CreateAttachmentRequest, callback: grpc.requestCallback<_schedule_v1_CreateAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  
   CreateNotification(argument: _schedule_v1_CreateNotificationRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_CreateNotificationResponse__Output>): grpc.ClientUnaryCall;
   CreateNotification(argument: _schedule_v1_CreateNotificationRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_schedule_v1_CreateNotificationResponse__Output>): grpc.ClientUnaryCall;
   CreateNotification(argument: _schedule_v1_CreateNotificationRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_CreateNotificationResponse__Output>): grpc.ClientUnaryCall;
@@ -52,6 +65,15 @@ export interface ScheduleServiceClient extends grpc.Client {
   getAllPointDefs(argument: _schedule_v1_GetAllPointDefsRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetAllPointDefsResponse__Output>): grpc.ClientUnaryCall;
   getAllPointDefs(argument: _schedule_v1_GetAllPointDefsRequest, callback: grpc.requestCallback<_schedule_v1_GetAllPointDefsResponse__Output>): grpc.ClientUnaryCall;
   
+  GetAttachment(argument: _schedule_v1_GetAttachmentRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  GetAttachment(argument: _schedule_v1_GetAttachmentRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_schedule_v1_GetAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  GetAttachment(argument: _schedule_v1_GetAttachmentRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  GetAttachment(argument: _schedule_v1_GetAttachmentRequest, callback: grpc.requestCallback<_schedule_v1_GetAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  getAttachment(argument: _schedule_v1_GetAttachmentRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  getAttachment(argument: _schedule_v1_GetAttachmentRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_schedule_v1_GetAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  getAttachment(argument: _schedule_v1_GetAttachmentRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  getAttachment(argument: _schedule_v1_GetAttachmentRequest, callback: grpc.requestCallback<_schedule_v1_GetAttachmentResponse__Output>): grpc.ClientUnaryCall;
+  
   GetNotifications(argument: _schedule_v1_GetNotificationsRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetNotificationsResponse__Output>): grpc.ClientUnaryCall;
   GetNotifications(argument: _schedule_v1_GetNotificationsRequest, metadata: grpc.Metadata, callback: grpc.requestCallback<_schedule_v1_GetNotificationsResponse__Output>): grpc.ClientUnaryCall;
   GetNotifications(argument: _schedule_v1_GetNotificationsRequest, options: grpc.CallOptions, callback: grpc.requestCallback<_schedule_v1_GetNotificationsResponse__Output>): grpc.ClientUnaryCall;
@@ -73,6 +95,8 @@ export interface ScheduleServiceClient extends grpc.Client {
 }
 
 export interface ScheduleServiceHandlers extends grpc.UntypedServiceImplementation {
+  CreateAttachment: grpc.handleUnaryCall<_schedule_v1_CreateAttachmentRequest__Output, _schedule_v1_CreateAttachmentResponse>;
+  
   CreateNotification: grpc.handleUnaryCall<_schedule_v1_CreateNotificationRequest__Output, _schedule_v1_CreateNotificationResponse>;
   
   CreateOrUpdatePointDef: grpc.handleUnaryCall<_schedule_v1_CreateOrUpdatePointDefRequest__Output, _schedule_v1_CreateOrUpdatePointDefResponse>;
@@ -81,6 +105,8 @@ export interface ScheduleServiceHandlers extends grpc.UntypedServiceImplementati
   
   GetAllPointDefs: grpc.handleUnaryCall<_schedule_v1_GetAllPointDefsRequest__Output, _schedule_v1_GetAllPointDefsResponse>;
   
+  GetAttachment: grpc.handleUnaryCall<_schedule_v1_GetAttachmentRequest__Output, _schedule_v1_GetAttachmentResponse>;
+  
   GetNotifications: grpc.handleUnaryCall<_schedule_v1_GetNotificationsRequest__Output, _schedule_v1_GetNotificationsResponse>;
   
   GetSchedules: grpc.handleUnaryCall<_schedule_v1_GetSchedulesRequest__Output, _schedule_v1_GetSchedulesResponse>;
@@ -88,10 +114,12 @@ export interface ScheduleServiceHandlers extends grpc.UntypedServiceImplementati
 }
 
 export interface ScheduleServiceDefinition extends grpc.ServiceDefinition {
+  CreateAttachment: MethodDefinition<_schedule_v1_CreateAttachmentRequest, _schedule_v1_CreateAttachmentResponse, _schedule_v1_CreateAttachmentRequest__Output, _schedule_v1_CreateAttachmentResponse__Output>
   CreateNotification: MethodDefinition<_schedule_v1_CreateNotificationRequest, _schedule_v1_CreateNotificationResponse, _schedule_v1_CreateNotificationRequest__Output, _schedule_v1_CreateNotificationResponse__Output>
   CreateOrUpdatePointDef: MethodDefinition<_schedule_v1_CreateOrUpdatePointDefRequest, _schedule_v1_CreateOrUpdatePointDefResponse, _schedule_v1_CreateOrUpdatePointDefRequest__Output, _schedule_v1_CreateOrUpdatePointDefResponse__Output>
   CreateSchedule: MethodDefinition<_schedule_v1_CreateScheduleRequest, _schedule_v1_CreateScheduleResponse, _schedule_v1_CreateScheduleRequest__Output, _schedule_v1_CreateScheduleResponse__Output>
   GetAllPointDefs: MethodDefinition<_schedule_v1_GetAllPointDefsRequest, _schedule_v1_GetAllPointDefsResponse, _schedule_v1_GetAllPointDefsRequest__Output, _schedule_v1_GetAllPointDefsResponse__Output>
+  GetAttachment: MethodDefinition<_schedule_v1_GetAttachmentRequest, _schedule_v1_GetAttachmentResponse, _schedule_v1_GetAttachmentRequest__Output, _schedule_v1_GetAttachmentResponse__Output>
   GetNotifications: MethodDefinition<_schedule_v1_GetNotificationsRequest, _schedule_v1_GetNotificationsResponse, _schedule_v1_GetNotificationsRequest__Output, _schedule_v1_GetNotificationsResponse__Output>
   GetSchedules: MethodDefinition<_schedule_v1_GetSchedulesRequest, _schedule_v1_GetSchedulesResponse, _schedule_v1_GetSchedulesRequest__Output, _schedule_v1_GetSchedulesResponse__Output>
 }

@@ -225,6 +225,13 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "classroomID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [

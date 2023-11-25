@@ -8,6 +8,7 @@ import (
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
+	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
 	reportingStageSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
@@ -23,9 +24,10 @@ type classroomServiceGW struct {
 	reportingStageClient reportingStageSvcV1.ReportingStageServiceClient
 	userClient           userSvcV1.UserServiceClient
 	topicClient          topicSvcV1.TopicServiceClient
+	waitingListClient    waitingListSvcV1.WaitingListServiceClient
 }
 
-func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, reportingStageClient reportingStageSvcV1.ReportingStageServiceClient, userClient userSvcV1.UserServiceClient, topicClient topicSvcV1.TopicServiceClient) *classroomServiceGW {
+func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, reportingStageClient reportingStageSvcV1.ReportingStageServiceClient, userClient userSvcV1.UserServiceClient, topicClient topicSvcV1.TopicServiceClient, waitingListClient waitingListSvcV1.WaitingListServiceClient) *classroomServiceGW {
 	return &classroomServiceGW{
 		classroomClient:      classroomClient,
 		postClient:           postClient,
@@ -33,6 +35,7 @@ func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient,
 		reportingStageClient: reportingStageClient,
 		userClient:           userClient,
 		topicClient:          topicClient,
+		waitingListClient:    waitingListClient,
 	}
 }
 
@@ -342,6 +345,23 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 		return nil, err
 	}
 
+	wltRes, err := u.waitingListClient.GetWaitingListsOfClassroom(ctx, &waitingListSvcV1.GetWaitingListsOfClassroomRequest{
+		ClassroomID: req.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// remove waiting list in the classroom was deleted
+	for _, l := range wltRes.WaitingLists {
+		_, err := u.waitingListClient.DeleteWaitingList(ctx, &waitingListSvcV1.DeleteWaitingListRequest{
+			Id: l.Id,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &pb.DeleteClassroomResponse{
 		Response: &pb.CommonClassroomResponse{
 			StatusCode: res.GetResponse().GetStatusCode(),
@@ -560,6 +580,97 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 		Classrooms: classrooms,
 	}, nil
 }
+
+func (u *classroomServiceGW) GetLecturerClassroom(ctx context.Context, req *pb.GetLecturerClassroomRequest) (*pb.GetLecturerClassroomResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	classroomRes, err := u.classroomClient.GetLecturerClassroom(ctx, &classroomSvcV1.GetLecturerClassroomRequest{
+		LecturerID: req.UserID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: req.UserID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetLecturerClassroomResponse{
+		Classroom: &pb.ClassroomResponse{
+			Id:     classroomRes.Classroom.Id,
+			Status: classroomRes.Classroom.Status,
+			Lecturer: &pb.AuthorClassroomResponse{
+				Id:       lecturerRes.User.Id,
+				Class:    lecturerRes.User.Class,
+				Major:    lecturerRes.User.Major,
+				Phone:    lecturerRes.User.Phone,
+				PhotoSrc: lecturerRes.User.PhotoSrc,
+				Role:     lecturerRes.User.Role,
+				Name:     lecturerRes.User.Name,
+				Email:    lecturerRes.User.Email,
+			},
+			ClassCourse:     classroomRes.Classroom.ClassCourse,
+			TopicTags:       classroomRes.Classroom.TopicTags,
+			QuantityStudent: classroomRes.Classroom.QuantityStudent,
+			CreatedAt:       classroomRes.Classroom.CreatedAt,
+			UpdatedAt:       classroomRes.Classroom.UpdatedAt,
+		},
+	}, nil
+}
+
+// func (u *classroomServiceGW) GetUserClassroom(ctx context.Context, req *pb.GetUserClassroomRequest) (*pb.GetUserClassroomResponse, error) {
+// 	if err := req.Validate(); err != nil {
+// 		return nil, err
+// 	}
+
+// 	memberRes, err := u.userClient.GetUserMember(ctx, &userSvcV1.GetUserMemberRequest{
+// 		UserID: req.UserID,
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	classroomRes, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
+// 		Id: memberRes.GetMember().ClassroomID,
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+// 		Id: classroomRes.Classroom.LecturerID,
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return &pb.GetUserClassroomResponse{
+// 		Classroom: &pb.ClassroomResponse{
+// 			Id:     classroomRes.Classroom.Id,
+// 			Status: classroomRes.Classroom.Status,
+// 			Lecturer: &pb.AuthorClassroomResponse{
+// 				Id:       lecturerRes.User.Id,
+// 				Class:    lecturerRes.User.Class,
+// 				Major:    lecturerRes.User.Major,
+// 				Phone:    lecturerRes.User.Phone,
+// 				PhotoSrc: lecturerRes.User.PhotoSrc,
+// 				Role:     lecturerRes.User.Role,
+// 				Name:     lecturerRes.User.Name,
+// 				Email:    lecturerRes.User.Email,
+// 			},
+// 			ClassCourse:     classroomRes.Classroom.ClassCourse,
+// 			TopicTags:       classroomRes.Classroom.TopicTags,
+// 			QuantityStudent: classroomRes.Classroom.QuantityStudent,
+// 			CreatedAt:       classroomRes.Classroom.CreatedAt,
+// 			UpdatedAt:       classroomRes.Classroom.UpdatedAt,
+// 		},
+// 	}, nil
+// }
 
 func stringInMap(s string, m map[string]string) bool {
 	for _, v := range m {

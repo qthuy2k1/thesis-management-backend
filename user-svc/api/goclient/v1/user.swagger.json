@@ -230,6 +230,14 @@
         }
       }
     },
+    "v1GetUserMemberResponse": {
+      "type": "object",
+      "properties": {
+        "member": {
+          "$ref": "#/definitions/v1MemberResponse"
+        }
+      }
+    },
     "v1GetUserResponse": {
       "type": "object",
       "properties": {

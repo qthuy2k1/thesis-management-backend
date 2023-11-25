@@ -15,6 +15,7 @@ import (
 )
 
 func Test_ClassroomHandler_CreateClassroom(t *testing.T) {
+	topicTags := ""
 	type mockClassroomSvc struct {
 		expCall  bool
 		clrInput service.ClassroomInputSvc
@@ -35,7 +36,7 @@ func Test_ClassroomHandler_CreateClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 				},
 			},
@@ -47,7 +48,7 @@ func Test_ClassroomHandler_CreateClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 				},
 			},
@@ -66,7 +67,7 @@ func Test_ClassroomHandler_CreateClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 				},
 			},
@@ -78,7 +79,7 @@ func Test_ClassroomHandler_CreateClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 				},
 				err: service.ErrClassroomExisted,
@@ -93,7 +94,7 @@ func Test_ClassroomHandler_CreateClassroom(t *testing.T) {
 		// 			Status:          "available",
 		// 			LecturerID:      "123123",
 		// 			ClassCourse:     "ABC",
-		// 			TopicTags:       "web",
+		// 			TopicTags:       &topicTags,
 		// 			QuantityStudent: 20,
 		// 		},
 		// 	},
@@ -111,7 +112,7 @@ func Test_ClassroomHandler_CreateClassroom(t *testing.T) {
 		// 			Status:          "available",
 		// 			LecturerID:      "123123",
 		// 			ClassCourse:     "ABC",
-		// 			TopicTags:       "web",
+		// 			TopicTags:       &topicTags,
 		// 			QuantityStudent: 0,
 		// 		},
 		// 	},
@@ -149,6 +150,7 @@ func Test_ClassroomHandler_CreateClassroom(t *testing.T) {
 }
 
 func Test_ClassroomHandler_GetClassroom(t *testing.T) {
+	topicTags := ""
 	myCreatedTime, err := time.Parse("2006-01-02T15:04:05.999999Z", "2023-05-11T09:01:53.102071Z")
 	assert.NoError(t, err)
 	myUpdatedTime, err := time.Parse("2006-01-02T15:04:05.999999Z", "2023-05-11T09:01:53.102071Z")
@@ -181,7 +183,7 @@ func Test_ClassroomHandler_GetClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 					CreatedAt:       myCreatedTime,
 					UpdatedAt:       myUpdatedTime,
@@ -199,7 +201,7 @@ func Test_ClassroomHandler_GetClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 					CreatedAt:       timestamppb.New(myCreatedTime),
 					UpdatedAt:       timestamppb.New(myUpdatedTime),
@@ -254,6 +256,7 @@ func Test_ClassroomHandler_GetClassroom(t *testing.T) {
 }
 
 func Test_ClassroomHandler_UpdateClassroom(t *testing.T) {
+	topicTags := ""
 	type mockClassroomCtrl struct {
 		expCall        bool
 		classroomID    int
@@ -276,7 +279,7 @@ func Test_ClassroomHandler_UpdateClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 				},
 			},
@@ -288,7 +291,7 @@ func Test_ClassroomHandler_UpdateClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 				},
 				classroomID: 1,
@@ -309,7 +312,7 @@ func Test_ClassroomHandler_UpdateClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 				},
 			},
@@ -322,7 +325,7 @@ func Test_ClassroomHandler_UpdateClassroom(t *testing.T) {
 					Status:          "available",
 					LecturerID:      "123123",
 					ClassCourse:     "ABC",
-					TopicTags:       "web",
+					TopicTags:       &topicTags,
 					QuantityStudent: 20,
 				},
 				err: service.ErrClassroomNotFound,
@@ -429,6 +432,7 @@ func Test_ClassroomHandler_DeleteClassroom(t *testing.T) {
 }
 
 func Test_ClassroomHandler_GetClassrooms(t *testing.T) {
+	topicTags := ""
 	myCreatedTime, err := time.Parse("2006-01-02 15:04:05.999999", "2023-06-02 09:08:36.046843")
 	assert.NoError(t, err)
 	myUpdatedTime, err := time.Parse("2006-01-02 15:04:05.999999", "2023-06-02 09:08:36.046843")
@@ -473,7 +477,7 @@ func Test_ClassroomHandler_GetClassrooms(t *testing.T) {
 						Status:          "available",
 						LecturerID:      "123123",
 						ClassCourse:     "ABC",
-						TopicTags:       "web",
+						TopicTags:       &topicTags,
 						QuantityStudent: 20,
 						CreatedAt:       myCreatedTime,
 						UpdatedAt:       myUpdatedTime,
@@ -485,7 +489,7 @@ func Test_ClassroomHandler_GetClassrooms(t *testing.T) {
 						Status:          "available",
 						LecturerID:      "123123",
 						ClassCourse:     "ABC",
-						TopicTags:       "web",
+						TopicTags:       &topicTags,
 						QuantityStudent: 20,
 						CreatedAt:       myCreatedTime,
 						UpdatedAt:       myUpdatedTime,
@@ -506,7 +510,7 @@ func Test_ClassroomHandler_GetClassrooms(t *testing.T) {
 						Status:          "available",
 						LecturerID:      "123123",
 						ClassCourse:     "ABC",
-						TopicTags:       "web",
+						TopicTags:       &topicTags,
 						QuantityStudent: 20,
 						CreatedAt:       timestamppb.New(myCreatedTime),
 						UpdatedAt:       timestamppb.New(myUpdatedTime),
@@ -518,7 +522,7 @@ func Test_ClassroomHandler_GetClassrooms(t *testing.T) {
 						Status:          "available",
 						LecturerID:      "123123",
 						ClassCourse:     "ABC",
-						TopicTags:       "web",
+						TopicTags:       &topicTags,
 						QuantityStudent: 20,
 						CreatedAt:       timestamppb.New(myCreatedTime),
 						UpdatedAt:       timestamppb.New(myUpdatedTime),
@@ -552,7 +556,7 @@ func Test_ClassroomHandler_GetClassrooms(t *testing.T) {
 						Status:          "available",
 						LecturerID:      "123123",
 						ClassCourse:     "ABC",
-						TopicTags:       "web",
+						TopicTags:       &topicTags,
 						QuantityStudent: 20,
 						CreatedAt:       myCreatedTime,
 						UpdatedAt:       myUpdatedTime,
@@ -573,7 +577,7 @@ func Test_ClassroomHandler_GetClassrooms(t *testing.T) {
 						Status:          "available",
 						LecturerID:      "123123",
 						ClassCourse:     "ABC",
-						TopicTags:       "web",
+						TopicTags:       &topicTags,
 						QuantityStudent: 20,
 						CreatedAt:       timestamppb.New(myCreatedTime),
 						UpdatedAt:       timestamppb.New(myUpdatedTime),

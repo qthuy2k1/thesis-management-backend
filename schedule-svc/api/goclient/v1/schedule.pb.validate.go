@@ -3320,3 +3320,1989 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetAllPointDefsResponseValidationError{}
+
+// Validate checks the field values on AttachmentExerciseInput with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AttachmentExerciseInput) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AttachmentExerciseInput with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AttachmentExerciseInputMultiError, or nil if none found.
+func (m *AttachmentExerciseInput) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AttachmentExerciseInput) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for FileURL
+
+	// no validation rules for Status
+
+	// no validation rules for AuthorID
+
+	if len(errors) > 0 {
+		return AttachmentExerciseInputMultiError(errors)
+	}
+
+	return nil
+}
+
+// AttachmentExerciseInputMultiError is an error wrapping multiple validation
+// errors returned by AttachmentExerciseInput.ValidateAll() if the designated
+// constraints aren't met.
+type AttachmentExerciseInputMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AttachmentExerciseInputMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AttachmentExerciseInputMultiError) AllErrors() []error { return m }
+
+// AttachmentExerciseInputValidationError is the validation error returned by
+// AttachmentExerciseInput.Validate if the designated constraints aren't met.
+type AttachmentExerciseInputValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AttachmentExerciseInputValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AttachmentExerciseInputValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AttachmentExerciseInputValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AttachmentExerciseInputValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AttachmentExerciseInputValidationError) ErrorName() string {
+	return "AttachmentExerciseInputValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AttachmentExerciseInputValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAttachmentExerciseInput.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AttachmentExerciseInputValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AttachmentExerciseInputValidationError{}
+
+// Validate checks the field values on ExerciseInput with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ExerciseInput) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ExerciseInput with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ExerciseInputMultiError, or
+// nil if none found.
+func (m *ExerciseInput) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ExerciseInput) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Title
+
+	// no validation rules for Description
+
+	if all {
+		switch v := interface{}(m.GetClassroom()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseInputValidationError{
+					field:  "Classroom",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseInputValidationError{
+					field:  "Classroom",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetClassroom()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseInputValidationError{
+				field:  "Classroom",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Deadline
+
+	if all {
+		switch v := interface{}(m.GetCategoryID()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseInputValidationError{
+					field:  "CategoryID",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseInputValidationError{
+					field:  "CategoryID",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCategoryID()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseInputValidationError{
+				field:  "CategoryID",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetAuthorID()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseInputValidationError{
+					field:  "AuthorID",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseInputValidationError{
+					field:  "AuthorID",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetAuthorID()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseInputValidationError{
+				field:  "AuthorID",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	for idx, item := range m.GetAttachments() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ExerciseInputValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ExerciseInputValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ExerciseInputValidationError{
+					field:  fmt.Sprintf("Attachments[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return ExerciseInputMultiError(errors)
+	}
+
+	return nil
+}
+
+// ExerciseInputMultiError is an error wrapping multiple validation errors
+// returned by ExerciseInput.ValidateAll() if the designated constraints
+// aren't met.
+type ExerciseInputMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ExerciseInputMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ExerciseInputMultiError) AllErrors() []error { return m }
+
+// ExerciseInputValidationError is the validation error returned by
+// ExerciseInput.Validate if the designated constraints aren't met.
+type ExerciseInputValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ExerciseInputValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ExerciseInputValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ExerciseInputValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ExerciseInputValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ExerciseInputValidationError) ErrorName() string { return "ExerciseInputValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ExerciseInputValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sExerciseInput.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ExerciseInputValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ExerciseInputValidationError{}
+
+// Validate checks the field values on ExerciseResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *ExerciseResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ExerciseResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ExerciseResponseMultiError, or nil if none found.
+func (m *ExerciseResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ExerciseResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Title
+
+	// no validation rules for Description
+
+	if all {
+		switch v := interface{}(m.GetClassroomID()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "ClassroomID",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "ClassroomID",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetClassroomID()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseResponseValidationError{
+				field:  "ClassroomID",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Deadline
+
+	if all {
+		switch v := interface{}(m.GetCategory()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "Category",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "Category",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCategory()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseResponseValidationError{
+				field:  "Category",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetAuthor()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "Author",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "Author",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetAuthor()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseResponseValidationError{
+				field:  "Author",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseResponseValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ExerciseResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ExerciseResponseValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	for idx, item := range m.GetAttachments() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ExerciseResponseValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ExerciseResponseValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ExerciseResponseValidationError{
+					field:  fmt.Sprintf("Attachments[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return ExerciseResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ExerciseResponseMultiError is an error wrapping multiple validation errors
+// returned by ExerciseResponse.ValidateAll() if the designated constraints
+// aren't met.
+type ExerciseResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ExerciseResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ExerciseResponseMultiError) AllErrors() []error { return m }
+
+// ExerciseResponseValidationError is the validation error returned by
+// ExerciseResponse.Validate if the designated constraints aren't met.
+type ExerciseResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ExerciseResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ExerciseResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ExerciseResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ExerciseResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ExerciseResponseValidationError) ErrorName() string { return "ExerciseResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ExerciseResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sExerciseResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ExerciseResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ExerciseResponseValidationError{}
+
+// Validate checks the field values on ClassroomResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *ClassroomResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ClassroomResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ClassroomResponseMultiError, or nil if none found.
+func (m *ClassroomResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ClassroomResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Status
+
+	if all {
+		switch v := interface{}(m.GetLecturer()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ClassroomResponseValidationError{
+					field:  "Lecturer",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ClassroomResponseValidationError{
+					field:  "Lecturer",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetLecturer()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ClassroomResponseValidationError{
+				field:  "Lecturer",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for ClassCourse
+
+	// no validation rules for QuantityStudent
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ClassroomResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ClassroomResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ClassroomResponseValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ClassroomResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ClassroomResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ClassroomResponseValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.TopicTags != nil {
+		// no validation rules for TopicTags
+	}
+
+	if len(errors) > 0 {
+		return ClassroomResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ClassroomResponseMultiError is an error wrapping multiple validation errors
+// returned by ClassroomResponse.ValidateAll() if the designated constraints
+// aren't met.
+type ClassroomResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ClassroomResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ClassroomResponseMultiError) AllErrors() []error { return m }
+
+// ClassroomResponseValidationError is the validation error returned by
+// ClassroomResponse.Validate if the designated constraints aren't met.
+type ClassroomResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ClassroomResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ClassroomResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ClassroomResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ClassroomResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ClassroomResponseValidationError) ErrorName() string {
+	return "ClassroomResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ClassroomResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sClassroomResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ClassroomResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ClassroomResponseValidationError{}
+
+// Validate checks the field values on AttachmentExerciseResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AttachmentExerciseResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AttachmentExerciseResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AttachmentExerciseResponseMultiError, or nil if none found.
+func (m *AttachmentExerciseResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AttachmentExerciseResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Name
+
+	// no validation rules for Src
+
+	if len(errors) > 0 {
+		return AttachmentExerciseResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// AttachmentExerciseResponseMultiError is an error wrapping multiple
+// validation errors returned by AttachmentExerciseResponse.ValidateAll() if
+// the designated constraints aren't met.
+type AttachmentExerciseResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AttachmentExerciseResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AttachmentExerciseResponseMultiError) AllErrors() []error { return m }
+
+// AttachmentExerciseResponseValidationError is the validation error returned
+// by AttachmentExerciseResponse.Validate if the designated constraints aren't met.
+type AttachmentExerciseResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AttachmentExerciseResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AttachmentExerciseResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AttachmentExerciseResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AttachmentExerciseResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AttachmentExerciseResponseValidationError) ErrorName() string {
+	return "AttachmentExerciseResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AttachmentExerciseResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAttachmentExerciseResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AttachmentExerciseResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AttachmentExerciseResponseValidationError{}
+
+// Validate checks the field values on ReportingStageExerciseResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ReportingStageExerciseResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ReportingStageExerciseResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ReportingStageExerciseResponseMultiError, or nil if none found.
+func (m *ReportingStageExerciseResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ReportingStageExerciseResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Label
+
+	// no validation rules for Description
+
+	// no validation rules for Value
+
+	if len(errors) > 0 {
+		return ReportingStageExerciseResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ReportingStageExerciseResponseMultiError is an error wrapping multiple
+// validation errors returned by ReportingStageExerciseResponse.ValidateAll()
+// if the designated constraints aren't met.
+type ReportingStageExerciseResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ReportingStageExerciseResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ReportingStageExerciseResponseMultiError) AllErrors() []error { return m }
+
+// ReportingStageExerciseResponseValidationError is the validation error
+// returned by ReportingStageExerciseResponse.Validate if the designated
+// constraints aren't met.
+type ReportingStageExerciseResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ReportingStageExerciseResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ReportingStageExerciseResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ReportingStageExerciseResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ReportingStageExerciseResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ReportingStageExerciseResponseValidationError) ErrorName() string {
+	return "ReportingStageExerciseResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ReportingStageExerciseResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sReportingStageExerciseResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ReportingStageExerciseResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ReportingStageExerciseResponseValidationError{}
+
+// Validate checks the field values on AuthorExerciseResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AuthorExerciseResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AuthorExerciseResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AuthorExerciseResponseMultiError, or nil if none found.
+func (m *AuthorExerciseResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthorExerciseResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for PhotoSrc
+
+	// no validation rules for Role
+
+	// no validation rules for Name
+
+	// no validation rules for Email
+
+	if m.Class != nil {
+		// no validation rules for Class
+	}
+
+	if m.Major != nil {
+		// no validation rules for Major
+	}
+
+	if m.Phone != nil {
+		// no validation rules for Phone
+	}
+
+	if len(errors) > 0 {
+		return AuthorExerciseResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// AuthorExerciseResponseMultiError is an error wrapping multiple validation
+// errors returned by AuthorExerciseResponse.ValidateAll() if the designated
+// constraints aren't met.
+type AuthorExerciseResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthorExerciseResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthorExerciseResponseMultiError) AllErrors() []error { return m }
+
+// AuthorExerciseResponseValidationError is the validation error returned by
+// AuthorExerciseResponse.Validate if the designated constraints aren't met.
+type AuthorExerciseResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthorExerciseResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AuthorExerciseResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AuthorExerciseResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AuthorExerciseResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AuthorExerciseResponseValidationError) ErrorName() string {
+	return "AuthorExerciseResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthorExerciseResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthorExerciseResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthorExerciseResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthorExerciseResponseValidationError{}
+
+// Validate checks the field values on CreateExerciseRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreateExerciseRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateExerciseRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateExerciseRequestMultiError, or nil if none found.
+func (m *CreateExerciseRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateExerciseRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetExercise()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CreateExerciseRequestValidationError{
+					field:  "Exercise",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CreateExerciseRequestValidationError{
+					field:  "Exercise",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetExercise()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateExerciseRequestValidationError{
+				field:  "Exercise",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return CreateExerciseRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateExerciseRequestMultiError is an error wrapping multiple validation
+// errors returned by CreateExerciseRequest.ValidateAll() if the designated
+// constraints aren't met.
+type CreateExerciseRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateExerciseRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateExerciseRequestMultiError) AllErrors() []error { return m }
+
+// CreateExerciseRequestValidationError is the validation error returned by
+// CreateExerciseRequest.Validate if the designated constraints aren't met.
+type CreateExerciseRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateExerciseRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateExerciseRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateExerciseRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateExerciseRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateExerciseRequestValidationError) ErrorName() string {
+	return "CreateExerciseRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateExerciseRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateExerciseRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateExerciseRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateExerciseRequestValidationError{}
+
+// Validate checks the field values on CreateExerciseResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreateExerciseResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateExerciseResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateExerciseResponseMultiError, or nil if none found.
+func (m *CreateExerciseResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateExerciseResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Message
+
+	if len(errors) > 0 {
+		return CreateExerciseResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateExerciseResponseMultiError is an error wrapping multiple validation
+// errors returned by CreateExerciseResponse.ValidateAll() if the designated
+// constraints aren't met.
+type CreateExerciseResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateExerciseResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateExerciseResponseMultiError) AllErrors() []error { return m }
+
+// CreateExerciseResponseValidationError is the validation error returned by
+// CreateExerciseResponse.Validate if the designated constraints aren't met.
+type CreateExerciseResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateExerciseResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateExerciseResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateExerciseResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateExerciseResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateExerciseResponseValidationError) ErrorName() string {
+	return "CreateExerciseResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateExerciseResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateExerciseResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateExerciseResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateExerciseResponseValidationError{}
+
+// Validate checks the field values on CreateAttachmentRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreateAttachmentRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateAttachmentRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateAttachmentRequestMultiError, or nil if none found.
+func (m *CreateAttachmentRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateAttachmentRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Uid
+
+	if len(errors) > 0 {
+		return CreateAttachmentRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateAttachmentRequestMultiError is an error wrapping multiple validation
+// errors returned by CreateAttachmentRequest.ValidateAll() if the designated
+// constraints aren't met.
+type CreateAttachmentRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateAttachmentRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateAttachmentRequestMultiError) AllErrors() []error { return m }
+
+// CreateAttachmentRequestValidationError is the validation error returned by
+// CreateAttachmentRequest.Validate if the designated constraints aren't met.
+type CreateAttachmentRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateAttachmentRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateAttachmentRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateAttachmentRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateAttachmentRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateAttachmentRequestValidationError) ErrorName() string {
+	return "CreateAttachmentRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateAttachmentRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateAttachmentRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateAttachmentRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateAttachmentRequestValidationError{}
+
+// Validate checks the field values on CreateAttachmentResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreateAttachmentResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateAttachmentResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateAttachmentResponseMultiError, or nil if none found.
+func (m *CreateAttachmentResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateAttachmentResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetAttachment() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, CreateAttachmentResponseValidationError{
+						field:  fmt.Sprintf("Attachment[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, CreateAttachmentResponseValidationError{
+						field:  fmt.Sprintf("Attachment[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return CreateAttachmentResponseValidationError{
+					field:  fmt.Sprintf("Attachment[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return CreateAttachmentResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateAttachmentResponseMultiError is an error wrapping multiple validation
+// errors returned by CreateAttachmentResponse.ValidateAll() if the designated
+// constraints aren't met.
+type CreateAttachmentResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateAttachmentResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateAttachmentResponseMultiError) AllErrors() []error { return m }
+
+// CreateAttachmentResponseValidationError is the validation error returned by
+// CreateAttachmentResponse.Validate if the designated constraints aren't met.
+type CreateAttachmentResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateAttachmentResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateAttachmentResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateAttachmentResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateAttachmentResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateAttachmentResponseValidationError) ErrorName() string {
+	return "CreateAttachmentResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateAttachmentResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateAttachmentResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateAttachmentResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateAttachmentResponseValidationError{}
+
+// Validate checks the field values on Attachment with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *Attachment) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Attachment with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in AttachmentMultiError, or
+// nil if none found.
+func (m *Attachment) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Attachment) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Name
+
+	// no validation rules for Src
+
+	if len(errors) > 0 {
+		return AttachmentMultiError(errors)
+	}
+
+	return nil
+}
+
+// AttachmentMultiError is an error wrapping multiple validation errors
+// returned by Attachment.ValidateAll() if the designated constraints aren't met.
+type AttachmentMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AttachmentMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AttachmentMultiError) AllErrors() []error { return m }
+
+// AttachmentValidationError is the validation error returned by
+// Attachment.Validate if the designated constraints aren't met.
+type AttachmentValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AttachmentValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AttachmentValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AttachmentValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AttachmentValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AttachmentValidationError) ErrorName() string { return "AttachmentValidationError" }
+
+// Error satisfies the builtin error interface
+func (e AttachmentValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAttachment.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AttachmentValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AttachmentValidationError{}
+
+// Validate checks the field values on GetAttachmentRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetAttachmentRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetAttachmentRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetAttachmentRequestMultiError, or nil if none found.
+func (m *GetAttachmentRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetAttachmentRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return GetAttachmentRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetAttachmentRequestMultiError is an error wrapping multiple validation
+// errors returned by GetAttachmentRequest.ValidateAll() if the designated
+// constraints aren't met.
+type GetAttachmentRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetAttachmentRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetAttachmentRequestMultiError) AllErrors() []error { return m }
+
+// GetAttachmentRequestValidationError is the validation error returned by
+// GetAttachmentRequest.Validate if the designated constraints aren't met.
+type GetAttachmentRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetAttachmentRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetAttachmentRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetAttachmentRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetAttachmentRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetAttachmentRequestValidationError) ErrorName() string {
+	return "GetAttachmentRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetAttachmentRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetAttachmentRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetAttachmentRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetAttachmentRequestValidationError{}
+
+// Validate checks the field values on GetAttachmentResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetAttachmentResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetAttachmentResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetAttachmentResponseMultiError, or nil if none found.
+func (m *GetAttachmentResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetAttachmentResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetAttachments() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetAttachmentResponseValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetAttachmentResponseValidationError{
+						field:  fmt.Sprintf("Attachments[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetAttachmentResponseValidationError{
+					field:  fmt.Sprintf("Attachments[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetAttachmentResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetAttachmentResponseMultiError is an error wrapping multiple validation
+// errors returned by GetAttachmentResponse.ValidateAll() if the designated
+// constraints aren't met.
+type GetAttachmentResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetAttachmentResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetAttachmentResponseMultiError) AllErrors() []error { return m }
+
+// GetAttachmentResponseValidationError is the validation error returned by
+// GetAttachmentResponse.Validate if the designated constraints aren't met.
+type GetAttachmentResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetAttachmentResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetAttachmentResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetAttachmentResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetAttachmentResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetAttachmentResponseValidationError) ErrorName() string {
+	return "GetAttachmentResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetAttachmentResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetAttachmentResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetAttachmentResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetAttachmentResponseValidationError{}

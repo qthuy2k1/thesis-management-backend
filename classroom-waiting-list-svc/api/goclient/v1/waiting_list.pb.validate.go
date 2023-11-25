@@ -1983,6 +1983,8 @@ func (m *CheckUserInWaitingListClassroomRequest) validate(all bool) error {
 
 	// no validation rules for UserID
 
+	// no validation rules for ClassroomID
+
 	if len(errors) > 0 {
 		return CheckUserInWaitingListClassroomRequestMultiError(errors)
 	}
@@ -2091,8 +2093,6 @@ func (m *CheckUserInWaitingListClassroomResponse) validate(all bool) error {
 
 	// no validation rules for IsIn
 
-	// no validation rules for ClassroomID
-
 	if len(errors) > 0 {
 		return CheckUserInWaitingListClassroomResponseMultiError(errors)
 	}
@@ -2174,3 +2174,269 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CheckUserInWaitingListClassroomResponseValidationError{}
+
+// Validate checks the field values on GetWaitingListByUserRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetWaitingListByUserRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetWaitingListByUserRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetWaitingListByUserRequestMultiError, or nil if none found.
+func (m *GetWaitingListByUserRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetWaitingListByUserRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserID
+
+	if len(errors) > 0 {
+		return GetWaitingListByUserRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetWaitingListByUserRequestMultiError is an error wrapping multiple
+// validation errors returned by GetWaitingListByUserRequest.ValidateAll() if
+// the designated constraints aren't met.
+type GetWaitingListByUserRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetWaitingListByUserRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetWaitingListByUserRequestMultiError) AllErrors() []error { return m }
+
+// GetWaitingListByUserRequestValidationError is the validation error returned
+// by GetWaitingListByUserRequest.Validate if the designated constraints
+// aren't met.
+type GetWaitingListByUserRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetWaitingListByUserRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetWaitingListByUserRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetWaitingListByUserRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetWaitingListByUserRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetWaitingListByUserRequestValidationError) ErrorName() string {
+	return "GetWaitingListByUserRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetWaitingListByUserRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetWaitingListByUserRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetWaitingListByUserRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetWaitingListByUserRequestValidationError{}
+
+// Validate checks the field values on GetWaitingListByUserResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetWaitingListByUserResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetWaitingListByUserResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetWaitingListByUserResponseMultiError, or nil if none found.
+func (m *GetWaitingListByUserResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetWaitingListByUserResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetResponse()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetWaitingListByUserResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetWaitingListByUserResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetWaitingListByUserResponseValidationError{
+				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetWaitingList()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetWaitingListByUserResponseValidationError{
+					field:  "WaitingList",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetWaitingListByUserResponseValidationError{
+					field:  "WaitingList",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetWaitingList()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetWaitingListByUserResponseValidationError{
+				field:  "WaitingList",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return GetWaitingListByUserResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetWaitingListByUserResponseMultiError is an error wrapping multiple
+// validation errors returned by GetWaitingListByUserResponse.ValidateAll() if
+// the designated constraints aren't met.
+type GetWaitingListByUserResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetWaitingListByUserResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetWaitingListByUserResponseMultiError) AllErrors() []error { return m }
+
+// GetWaitingListByUserResponseValidationError is the validation error returned
+// by GetWaitingListByUserResponse.Validate if the designated constraints
+// aren't met.
+type GetWaitingListByUserResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetWaitingListByUserResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetWaitingListByUserResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetWaitingListByUserResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetWaitingListByUserResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetWaitingListByUserResponseValidationError) ErrorName() string {
+	return "GetWaitingListByUserResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetWaitingListByUserResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetWaitingListByUserResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetWaitingListByUserResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetWaitingListByUserResponseValidationError{}

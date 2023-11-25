@@ -233,3 +233,32 @@ func validateAndConvertMember(pbMember *memberpb.MemberInput) (service.MemberInp
 		IsDefense:   pbMember.IsDefense,
 	}, nil
 }
+
+// GetMember returns a member in db given by id
+func (h *UserHdl) GetUserMember(ctx context.Context, req *memberpb.GetUserMemberRequest) (*memberpb.GetUserMemberResponse, error) {
+	log.Println("calling get member...")
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+	u, err := h.Service.GetUserMember(ctx, req.GetUserID())
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	pResp := memberpb.MemberResponse{
+		Id:          int64(u.ID),
+		ClassroomID: int64(u.ClassroomID),
+		MemberID:    u.MemberID,
+		Status:      u.Status,
+		IsDefense:   u.IsDefense,
+		CreatedAt:   timestamppb.New(u.CreatedAt),
+	}
+
+	resp := &memberpb.GetUserMemberResponse{
+		Member: &pResp,
+	}
+
+	return resp, nil
+}
