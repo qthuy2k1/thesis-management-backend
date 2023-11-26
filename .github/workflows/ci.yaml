@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ '1.18', 'oldstable', 'stable' ]
+        go: [ '1.21', 'stable' ]
     name: Run tests with Go ${{ matrix.go }}
     steps:
       - name: Check out code
