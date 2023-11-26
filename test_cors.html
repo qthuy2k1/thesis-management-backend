@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="root"></div>
+<script>
+  var req = new XMLHttpRequest();
+  req.open("GET", "http://qthuy2k1.shop/upload/exercise", false);
+  req.onload = function(event) {
+    if (req.readyState == 4 && req.status == 200)
+      document.getElementById("root").innerText = req.responseText;
+  };
+  req.send();
+</script>
+</body>
+</html>

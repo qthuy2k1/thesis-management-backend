@@ -159,6 +159,17 @@
         }
       }
     },
+    "v1GetSubmissionOfUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonSubmissionResponse"
+        },
+        "submission": {
+          "$ref": "#/definitions/v1SubmissionResponse"
+        }
+      }
+    },
     "v1GetSubmissionResponse": {
       "type": "object",
       "properties": {
@@ -185,13 +196,6 @@
         },
         "status": {
           "type": "string"
-        },
-        "attachmentID": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
         }
       },
       "title": "====== submission ======"
@@ -215,13 +219,6 @@
         },
         "status": {
           "type": "string"
-        },
-        "attachmentID": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
         }
       }
     },

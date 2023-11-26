@@ -83,14 +83,14 @@ type PostInputRepo struct {
 // CreatePost creates a new post in db given by post model
 func (r *PostRepo) CreatePost(ctx context.Context, p PostInputRepo) (PostOutputRepo, error) {
 	// check post exists
-	isExists, err := r.IsPostExists(ctx, p.Title, p.ClassroomID)
-	if err != nil {
-		return PostOutputRepo{}, err
-	}
+	// isExists, err := r.IsPostExists(ctx, p.Title, p.ClassroomID)
+	// if err != nil {
+	// 	return PostOutputRepo{}, err
+	// }
 
-	if isExists {
-		return PostOutputRepo{}, ErrPostExisted
-	}
+	// if isExists {
+	// 	return PostOutputRepo{}, ErrPostExisted
+	// }
 
 	row, err := QueryRowSQL(ctx, r.Database, "CreatePost", "INSERT INTO posts (title, content, classroom_id, reporting_stage_id, author_id) VALUES ($1, $2, $3, $4, $5) RETURNING id, title, content, classroom_id, reporting_stage_id, author_id, created_at, updated_at", p.Title, p.Content, p.ClassroomID, p.ReportingStageID, p.AuthorID)
 	if err != nil {

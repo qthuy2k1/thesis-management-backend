@@ -63,7 +63,18 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 		}, nil
 	}
 
-	var attResList []*attachmentSvcV1.AttachmentResponse
+	res, err := u.submissionClient.CreateSubmission(ctx, &submissionSvcV1.CreateSubmissionRequest{
+		Submission: &submissionSvcV1.SubmissionInput{
+			UserID:         req.GetSubmission().GetUserID(),
+			ExerciseID:     req.GetSubmission().GetExerciseID(),
+			SubmissionDate: req.GetSubmission().GetSubmissionDate(),
+			Status:         req.GetSubmission().GetStatus(),
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	var attIDList []int64
 	for _, attReq := range req.GetSubmission().GetAttachments() {
 		exerciseID := req.GetSubmission().GetExerciseID()
@@ -71,58 +82,30 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 		attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
 			Attachment: &attachmentSvcV1.AttachmentInput{
 				FileURL:      attReq.FileURL,
-				Status:       attReq.Status,
-				SubmissionID: nil,
+				Status:       "",
+				SubmissionID: &res.SubmissionID,
 				ExerciseID:   &exerciseID,
 				AuthorID:     req.GetSubmission().GetUserID(),
+				Name:         attReq.Name,
+				Type:         attReq.Type,
+				Thumbnail:    attReq.Thumbnail,
+				Size:         attReq.Size,
 			},
 		})
 		if err != nil {
-			return nil, err
-		}
-
-		attResList = append(attResList, attRes.GetAttachmentRes())
-		attIDList = append(attIDList, attRes.GetAttachmentRes().GetId())
-	}
-
-	res, err := u.submissionClient.CreateSubmission(ctx, &submissionSvcV1.CreateSubmissionRequest{
-		Submission: &submissionSvcV1.SubmissionInput{
-			UserID:         req.GetSubmission().GetUserID(),
-			ExerciseID:     req.GetSubmission().GetExerciseID(),
-			SubmissionDate: req.GetSubmission().GetSubmissionDate(),
-			Status:         req.GetSubmission().GetStatus(),
-			AttachmentID:   attIDList,
-		},
-	})
-	if err != nil {
-		// Rollback transaction
-		for _, attID := range attIDList {
-			_, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
-				Id: attID,
-			})
-			if err != nil {
-				return nil, err
+			// Rollback transaction
+			for _, attID := range attIDList {
+				_, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+					Id: attID,
+				})
+				if err != nil {
+					return nil, err
+				}
 			}
-		}
-		return nil, err
-	}
-
-	// Update the submission ID for attachment
-	for _, att := range attResList {
-		submissionID := res.GetSubmissionID()
-
-		if _, err = u.attachmentClient.UpdateAttachment(ctx, &attachmentSvcV1.UpdateAttachmentRequest{
-			Id: att.Id,
-			Attachment: &attachmentSvcV1.AttachmentInput{
-				FileURL:      att.FileURL,
-				Status:       att.Status,
-				SubmissionID: &submissionID,
-				ExerciseID:   att.ExerciseID,
-				AuthorID:     att.AuthorID,
-			},
-		}); err != nil {
 			return nil, err
 		}
+
+		attIDList = append(attIDList, attRes.GetAttachmentRes().GetId())
 	}
 
 	return &pb.CreateSubmissionResponse{
@@ -255,10 +238,33 @@ func (u *submissionServiceGW) GetAllSubmissionsOfExercise(ctx context.Context, r
 
 		var attachments []*pb.AttachmentSubmissionResponse
 		for _, a := range attRes.GetAttachments() {
+			author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+				Id: a.AuthorID,
+			})
+			if err != nil {
+				return nil, err
+			}
+
 			attachments = append(attachments, &pb.AttachmentSubmissionResponse{
 				Id:      a.Id,
 				FileURL: a.FileURL,
 				Status:  a.Status,
+				Author: &pb.AuthorSubmissionResponse{
+					Id:       author.GetUser().GetId(),
+					Class:    author.GetUser().Class,
+					Major:    author.GetUser().Major,
+					Phone:    author.GetUser().Phone,
+					PhotoSrc: author.GetUser().GetPhotoSrc(),
+					Role:     author.GetUser().GetRole(),
+					Name:     author.GetUser().GetName(),
+					Email:    author.GetUser().GetEmail(),
+					// HashedPassword: author.GetUser().HashedPassword,
+				},
+				CreatedAt: a.CreatedAt,
+				Size:      a.Size,
+				MimeType:  a.Type,
+				Thumbnail: a.Thumbnail,
+				FileName:  a.Name,
 			})
 		}
 
@@ -279,5 +285,74 @@ func (u *submissionServiceGW) GetAllSubmissionsOfExercise(ctx context.Context, r
 		},
 		TotalCount:  res.GetTotalCount(),
 		Submissions: submissions,
+	}, nil
+}
+func (u *submissionServiceGW) GetSubmissionOfUser(ctx context.Context, req *pb.GetSubmissionOfUserRequest) (*pb.GetSubmissionOfUserResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	res, err := u.submissionClient.GetSubmissionOfUser(ctx, &submissionSvcV1.GetSubmissionOfUserRequest{
+		UserID:     req.UserID,
+		ExerciseID: req.ExerciseID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	attRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+		SubmissionID: res.Submission.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var attachments []*pb.AttachmentSubmissionResponse
+	for _, a := range attRes.GetAttachments() {
+		author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+			Id: a.AuthorID,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		attachments = append(attachments, &pb.AttachmentSubmissionResponse{
+			Id:      a.Id,
+			FileURL: a.FileURL,
+			Status:  a.Status,
+			Author: &pb.AuthorSubmissionResponse{
+				Id:       author.GetUser().GetId(),
+				Class:    author.GetUser().Class,
+				Major:    author.GetUser().Major,
+				Phone:    author.GetUser().Phone,
+				PhotoSrc: author.GetUser().GetPhotoSrc(),
+				Role:     author.GetUser().GetRole(),
+				Name:     author.GetUser().GetName(),
+				Email:    author.GetUser().GetEmail(),
+				// HashedPassword: author.GetUser().HashedPassword,
+			},
+			CreatedAt: a.CreatedAt,
+			Size:      a.Size,
+			MimeType:  a.Type,
+			Thumbnail: a.Thumbnail,
+			FileName:  a.Name,
+		})
+	}
+
+	submission := &pb.SubmissionResponse{
+		Id:             res.Submission.Id,
+		UserID:         res.Submission.UserID,
+		ExerciseID:     res.Submission.ExerciseID,
+		SubmissionDate: res.Submission.SubmissionDate,
+		Status:         res.Submission.Status,
+		Attachments:    attachments,
+	}
+
+	return &pb.GetSubmissionOfUserResponse{
+		Response: &pb.CommonSubmissionResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+		Submission: submission,
 	}, nil
 }

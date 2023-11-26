@@ -98,23 +98,23 @@ func (_m *MockIClassroomRepo) GetClassrooms(ctx context.Context, filter Classroo
 	return r0, r1, r2
 }
 
-// IsClassroomExists provides a mock function with given fields: ctx, title
-func (_m *MockIClassroomRepo) IsClassroomExists(ctx context.Context, title string) (bool, error) {
-	ret := _m.Called(ctx, title)
+// GetLecturerClassroom provides a mock function with given fields: ctx, lecturerID
+func (_m *MockIClassroomRepo) GetLecturerClassroom(ctx context.Context, lecturerID string) (ClassroomOutputRepo, error) {
+	ret := _m.Called(ctx, lecturerID)
 
-	var r0 bool
+	var r0 ClassroomOutputRepo
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (bool, error)); ok {
-		return rf(ctx, title)
+	if rf, ok := ret.Get(0).(func(context.Context, string) (ClassroomOutputRepo, error)); ok {
+		return rf(ctx, lecturerID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) bool); ok {
-		r0 = rf(ctx, title)
+	if rf, ok := ret.Get(0).(func(context.Context, string) ClassroomOutputRepo); ok {
+		r0 = rf(ctx, lecturerID)
 	} else {
-		r0 = ret.Get(0).(bool)
+		r0 = ret.Get(0).(ClassroomOutputRepo)
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, title)
+		r1 = rf(ctx, lecturerID)
 	} else {
 		r1 = ret.Error(1)
 	}

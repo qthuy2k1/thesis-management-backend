@@ -289,7 +289,7 @@ func validateAndConvertExercise(pbExercise *exercisepb.ExerciseInput) (service.E
 		return service.ExerciseInputSvc{}, err
 	}
 
-	deadline, err := time.Parse("year:2006 month:1 day:2 hours:15 minutes:4 seconds:5", pbExercise.Deadline.String())
+	deadline, err := time.Parse("year:2006 month:1 day:2 hours:15 minutes:4", pbExercise.Deadline.String())
 
 	if err != nil {
 		return service.ExerciseInputSvc{}, err

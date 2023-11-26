@@ -3,6 +3,7 @@ syntax = "proto3";
 package api.submission.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 import "google/api/datetime.proto";
 import "validate/validate.proto";
 
@@ -40,6 +41,12 @@ service SubmissionService {
             get: "/api/submit/ex/{exerciseID}"
         };
     }
+
+    rpc GetSubmissionOfUser(GetSubmissionOfUserRequest) returns (GetSubmissionOfUserResponse){
+        option (google.api.http) = {
+            get: "/api/exercise/{exerciseID}/submit/{userID}"
+        };
+    }
 }
 
 message CommonSubmissionResponse {
@@ -59,10 +66,12 @@ message SubmissionInput {
 
 message AttachmentSubmissionInput {
     string fileURL = 1;
-    string status = 2;
-    int64 submissionID = 3;
-    int64 exerciseID = 4;
-    string authorID = 5;
+    string authorID = 2;
+    string name = 3;
+    int64 submissionID = 5;
+    int64 size = 7;
+    string type = 8;
+    string thumbnail = 9;
 }
 
 
@@ -79,6 +88,12 @@ message AttachmentSubmissionResponse {
     int64 id = 1;
     string fileURL = 2;
     string status = 3;
+    AuthorSubmissionResponse author = 6;
+    google.protobuf.Timestamp created_at = 7;
+    int64 size = 8;
+    string mimeType = 9;
+    string thumbnail = 10;
+    string fileName = 11;
 }
 
 message CreateSubmissionRequest {
@@ -129,4 +144,26 @@ message GetAllSubmissionsOfExerciseResponse {
     CommonSubmissionResponse response = 1 [(validate.rules).message = {required: true}];
     int64 totalCount = 2 [(validate.rules).int64.gte = 0];
     repeated SubmissionResponse submissions = 3;
+}
+
+message GetSubmissionOfUserRequest {
+    string userID = 1;
+    int64 exerciseID = 2;
+}
+
+message GetSubmissionOfUserResponse {
+    CommonSubmissionResponse response = 1 [(validate.rules).message = {required: true}];
+    SubmissionResponse submission = 2;
+}
+
+
+message AuthorSubmissionResponse {
+    string id = 1;
+    optional string class = 2 [(validate.rules).string = {min_len: 4, max_len: 10}];
+    optional string major = 3 [(validate.rules).string = {min_len: 2}];
+    optional string phone = 4 [(validate.rules).string = {min_len: 10, max_len: 11}];
+    string photoSrc = 5;
+    string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
+    string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
+    string email = 8 [(validate.rules).string.email = true];
 }

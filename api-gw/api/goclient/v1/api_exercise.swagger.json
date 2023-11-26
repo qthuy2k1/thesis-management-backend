@@ -411,15 +411,7 @@
         "name": {
           "type": "string"
         },
-        "submissionID": {
-          "type": "string",
-          "format": "int64"
-        },
         "exerciseID": {
-          "type": "string",
-          "format": "int64"
-        },
-        "postID": {
           "type": "string",
           "format": "int64"
         },

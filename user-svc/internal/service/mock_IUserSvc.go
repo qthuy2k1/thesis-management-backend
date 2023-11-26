@@ -358,6 +358,30 @@ func (_m *MockIUserSvc) GetUser(ctx context.Context, id string) (UserOutputSvc, 
 	return r0, r1
 }
 
+// GetUserMember provides a mock function with given fields: ctx, userID
+func (_m *MockIUserSvc) GetUserMember(ctx context.Context, userID string) (MemberOutputSvc, error) {
+	ret := _m.Called(ctx, userID)
+
+	var r0 MemberOutputSvc
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (MemberOutputSvc, error)); ok {
+		return rf(ctx, userID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) MemberOutputSvc); ok {
+		r0 = rf(ctx, userID)
+	} else {
+		r0 = ret.Get(0).(MemberOutputSvc)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, userID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetUsers provides a mock function with given fields: ctx
 func (_m *MockIUserSvc) GetUsers(ctx context.Context) ([]UserOutputSvc, int, error) {
 	ret := _m.Called(ctx)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
@@ -44,6 +45,9 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
+	log.Println("reqqqqqqqqqqqqqqqq", req.GetExercise())
+	log.Println("======================================================")
+
 	exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: req.GetExercise().ClassroomID})
 	if err != nil {
 		return nil, err
