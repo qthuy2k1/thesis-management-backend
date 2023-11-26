@@ -818,6 +818,14 @@ func (m *AttachmentPostResponse) validate(all bool) error {
 		}
 	}
 
+	// no validation rules for Size
+
+	// no validation rules for MimeType
+
+	// no validation rules for Thumbnail
+
+	// no validation rules for FileName
+
 	if len(errors) > 0 {
 		return AttachmentPostResponseMultiError(errors)
 	}
@@ -922,7 +930,17 @@ func (m *AttachmentPostInput) validate(all bool) error {
 
 	// no validation rules for FileURL
 
-	// no validation rules for Status
+	// no validation rules for AuthorID
+
+	// no validation rules for Name
+
+	// no validation rules for PostID
+
+	// no validation rules for Size
+
+	// no validation rules for Type
+
+	// no validation rules for Thumbnail
 
 	if len(errors) > 0 {
 		return AttachmentPostInputMultiError(errors)

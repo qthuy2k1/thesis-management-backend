@@ -259,27 +259,27 @@ proto-sche:
 	@echo "Done"
 
 
-proto-upload:
-	@echo "--> Generating gRPC clients for classroom API"
-	@protoc -I ./upload-svc/api/v1 \
-		--go_out ./upload-svc/api/goclient/v1 --go_opt paths=source_relative \
-	  	--go-grpc_out ./upload-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
-		--grpc-gateway_out ./upload-svc/api/goclient/v1 \
-		--grpc-gateway_opt logtostderr=true \
-		--grpc-gateway_opt paths=source_relative \
-		--grpc-gateway_opt generate_unbound_methods=true \
-  		--openapiv2_out ./upload-svc/api/goclient/v1 \
-    	--openapiv2_opt logtostderr=true \
-		--validate_out="lang=go,paths=source_relative:./upload-svc/api/goclient/v1" \
-		--experimental_allow_proto3_optional \
-		 upload.proto
-	@echo "Done"
+# proto-upload:
+# 	@echo "--> Generating gRPC clients for classroom API"
+# 	@protoc -I ./upload-svc/api/v1 \
+# 		--go_out ./upload-svc/api/goclient/v1 --go_opt paths=source_relative \
+# 	  	--go-grpc_out ./upload-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+# 		--grpc-gateway_out ./upload-svc/api/goclient/v1 \
+# 		--grpc-gateway_opt logtostderr=true \
+# 		--grpc-gateway_opt paths=source_relative \
+# 		--grpc-gateway_opt generate_unbound_methods=true \
+#   		--openapiv2_out ./upload-svc/api/goclient/v1 \
+#     	--openapiv2_opt logtostderr=true \
+# 		--validate_out="lang=go,paths=source_relative:./upload-svc/api/goclient/v1" \
+# 		--experimental_allow_proto3_optional \
+# 		 upload.proto
+# 	@echo "Done"
 
 
 
 
 
-proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-redis proto-comment proto-attachment proto-topic proto-authorization proto-commitee proto-sche proto-upload
+proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-redis proto-comment proto-attachment proto-topic proto-authorization proto-commitee proto-sche
 
 clean:
 	rm -rf ./out
@@ -388,9 +388,9 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-attachment:latest
 	docker push qthuy2k1/thesis-management-backend-topic:latest
 	docker push qthuy2k1/thesis-management-backend-authorization:latest
-	docker push qthuy2k1/thesis-management-backend-redis:latest
+	# docker push qthuy2k1/thesis-management-backend-redis:latest
 	docker push qthuy2k1/thesis-management-backend-upload:latest
-	# docker push qthuy2k1/thesis-management-backend-thesis-commitee:latest
+	docker push qthuy2k1/thesis-management-backend-thesis-commitee:latest
 
 	# DB
 	# docker push qthuy2k1/thesis-management-backend-classroom-db:latest
@@ -404,7 +404,7 @@ docker-push:
 	# docker push qthuy2k1/thesis-management-backend-attachment-db:latest
 	# docker push qthuy2k1/thesis-management-backend-topic-db:latest
 	# docker push qthuy2k1/thesis-management-backend-thesis-commitee-db:latest
-	docker push qthuy2k1/thesis-management-backend-redis-db:latest
+	# docker push qthuy2k1/thesis-management-backend-redis-db:latest
 
 
 migrate_all_up:
@@ -510,7 +510,8 @@ kuber-apply:
 	kubectl apply -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/schedule-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/redis-deployment.yaml --namespace thesis-management-backend
+	# kubectl apply -f kubernetes/redis-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/upload-deployment.yaml --namespace thesis-management-backend
 	# kubectl apply -f kubernetes/redis-db-deployment.yaml --namespace thesis-management-backend
 
 	kubectl apply -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
@@ -530,7 +531,7 @@ kuber-del:
 	kubectl delete -f kubernetes/submission-db-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/topic-db-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/user-db-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/redis-db-deployment.yaml --namespace thesis-management-backend
+	# kubectl delete -f kubernetes/redis-db-deployment.yaml --namespace thesis-management-backend
 
 	kubectl delete -f kubernetes/attachment-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/classroom-deployment.yaml --namespace thesis-management-backend
@@ -543,7 +544,8 @@ kuber-del:
 	kubectl delete -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/schedule-deployment.yaml --namespace thesis-management-backend
-	kubectl delete -f kubernetes/redis-deployment.yaml --namespace thesis-management-backend
+	# kubectl delete -f kubernetes/redis-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/upload-deployment.yaml --namespace thesis-management-backend
 
 	kubectl delete -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend

@@ -81,9 +81,7 @@ message AttachmentExerciseInput {
     string fileURL = 1;
     string authorID = 2;
     string name = 3;
-    optional int64 submissionID = 4;
-    optional int64 exerciseID = 5;
-    optional int64 postID = 6;
+    int64 exerciseID = 5;
     int64 size = 7;
     string type = 8;
     string thumbnail = 9;
@@ -103,15 +101,6 @@ message ExerciseResponse {
     repeated AttachmentExerciseResponse attachments = 10;
 }
 
-
-// message SubmissionExerciseResponse {
-//     int64 id = 1 [(validate.rules).int64.gte = 1];
-//     string userID = 2;
-//     int64 exerciseID = 3 [(validate.rules).int64.gte = 1];
-//     google.type.DateTime submission_date = 4;
-//     string status = 5 [(validate.rules).string = {min_len: 2}];
-//     repeated AttachmentExerciseResponse attachments = 6;
-// }
 
 message AttachmentExerciseResponse {
     int64 id = 1;

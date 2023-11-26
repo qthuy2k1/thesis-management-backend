@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
@@ -38,6 +39,8 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
+
+	log.Println(req.Post.Attachments)
 
 	exists, err := u.classroomClient.CheckClassroomExists(ctx, &classroomSvcV1.CheckClassroomExistsRequest{ClassroomID: req.GetPost().ClassroomID})
 	if err != nil {
@@ -83,16 +86,19 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 	var attCreated []int64
 	if req.Post.Attachments != nil && len(req.Post.Attachments) > 0 {
 		for _, att := range req.Post.Attachments {
-			postID := res.Post.Id
-
-			if _, err = u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
+			attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
 				Attachment: &attachmentSvcV1.AttachmentInput{
-					FileURL:  att.FileURL,
-					Status:   att.FileURL,
-					PostID:   &postID,
-					AuthorID: res.Post.AuthorID,
+					FileURL:   att.FileURL,
+					PostID:    &res.Post.Id,
+					AuthorID:  req.Post.AuthorID,
+					Name:      att.Name,
+					Status:    "",
+					Type:      att.Type,
+					Thumbnail: att.Thumbnail,
+					Size:      att.Size,
 				},
-			}); err != nil {
+			})
+			if err != nil {
 				if len(attCreated) > 0 {
 					for _, aErr := range attCreated {
 						if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
@@ -104,6 +110,8 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 				}
 				return nil, err
 			}
+
+			attCreated = append(attCreated, attRes.AttachmentRes.Id)
 		}
 	}
 
@@ -202,6 +210,10 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 				Email:    author.User.Email,
 			},
 			CreatedAt: a.CreatedAt,
+			Size:      a.Size,
+			MimeType:  a.Type,
+			Thumbnail: a.Thumbnail,
+			FileName:  a.Name,
 		})
 	}
 
@@ -415,6 +427,10 @@ func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (
 					Email:    author.User.Email,
 				},
 				CreatedAt: a.CreatedAt,
+				Size:      a.Size,
+				MimeType:  a.Type,
+				Thumbnail: a.Thumbnail,
+				FileName:  a.Name,
 			})
 		}
 
@@ -562,6 +578,10 @@ func (u *postServiceGW) GetAllPostsOfClassroom(ctx context.Context, req *pb.GetA
 					Email:    author.User.Email,
 				},
 				CreatedAt: a.CreatedAt,
+				Size:      a.Size,
+				MimeType:  a.Type,
+				Thumbnail: a.Thumbnail,
+				FileName:  a.Name,
 			})
 		}
 
@@ -686,6 +706,10 @@ func (u *postServiceGW) GetAllPostsInReportingStage(ctx context.Context, req *pb
 					Email:    author.User.Email,
 				},
 				CreatedAt: a.CreatedAt,
+				Size:      a.Size,
+				MimeType:  a.Type,
+				Thumbnail: a.Thumbnail,
+				FileName:  a.Name,
 			})
 		}
 

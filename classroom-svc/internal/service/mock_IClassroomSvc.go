@@ -122,6 +122,30 @@ func (_m *MockIClassroomSvc) GetClassrooms(ctx context.Context, filter Classroom
 	return r0, r1, r2
 }
 
+// GetLecturerClassroom provides a mock function with given fields: ctx, lecturerID
+func (_m *MockIClassroomSvc) GetLecturerClassroom(ctx context.Context, lecturerID string) (ClassroomOutputSvc, error) {
+	ret := _m.Called(ctx, lecturerID)
+
+	var r0 ClassroomOutputSvc
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (ClassroomOutputSvc, error)); ok {
+		return rf(ctx, lecturerID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) ClassroomOutputSvc); ok {
+		r0 = rf(ctx, lecturerID)
+	} else {
+		r0 = ret.Get(0).(ClassroomOutputSvc)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, lecturerID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateClassroom provides a mock function with given fields: ctx, id, classroom
 func (_m *MockIClassroomSvc) UpdateClassroom(ctx context.Context, id int, classroom ClassroomInputSvc) error {
 	ret := _m.Called(ctx, id, classroom)

@@ -16,6 +16,43 @@
     "application/json"
   ],
   "paths": {
+    "/api/exercise/{exerciseID}/submit/{userID}": {
+      "get": {
+        "operationId": "SubmissionService_GetSubmissionOfUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetSubmissionOfUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "exerciseID",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SubmissionService"
+        ]
+      }
+    },
     "/api/submit": {
       "post": {
         "operationId": "SubmissionService_CreateSubmission",
@@ -287,18 +324,24 @@
         "fileURL": {
           "type": "string"
         },
-        "status": {
+        "authorID": {
+          "type": "string"
+        },
+        "name": {
           "type": "string"
         },
         "submissionID": {
           "type": "string",
           "format": "int64"
         },
-        "exerciseID": {
+        "size": {
           "type": "string",
           "format": "int64"
         },
-        "authorID": {
+        "type": {
+          "type": "string"
+        },
+        "thumbnail": {
           "type": "string"
         }
       }
@@ -314,6 +357,55 @@
           "type": "string"
         },
         "status": {
+          "type": "string"
+        },
+        "author": {
+          "$ref": "#/definitions/v1AuthorSubmissionResponse"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "size": {
+          "type": "string",
+          "format": "int64"
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "thumbnail": {
+          "type": "string"
+        },
+        "fileName": {
+          "type": "string"
+        }
+      }
+    },
+    "v1AuthorSubmissionResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "class": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "photoSrc": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
           "type": "string"
         }
       }
@@ -370,6 +462,17 @@
             "type": "object",
             "$ref": "#/definitions/v1SubmissionResponse"
           }
+        }
+      }
+    },
+    "v1GetSubmissionOfUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonSubmissionResponse"
+        },
+        "submission": {
+          "$ref": "#/definitions/v1SubmissionResponse"
         }
       }
     },

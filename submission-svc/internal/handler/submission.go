@@ -54,7 +54,6 @@ func (c *SubmissionHdl) UpdateSubmission(ctx context.Context, req *submissionpb.
 		ExerciseID:     s.ExerciseID,
 		SubmissionDate: s.SubmissionDate,
 		Status:         s.Status,
-		AttachmentID:   s.AttachmentID,
 	}); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -103,10 +102,6 @@ func (h *SubmissionHdl) GetAllSubmissionsOfExercise(ctx context.Context, req *su
 
 	var ssResp []*submissionpb.SubmissionResponse
 	for _, s := range ss {
-		var attIDList []int64
-		for _, i := range s.AttachmentID {
-			attIDList = append(attIDList, int64(i))
-		}
 		ssResp = append(ssResp, &submissionpb.SubmissionResponse{
 			Id:         int64(s.ID),
 			UserID:     s.UserID,
@@ -119,8 +114,7 @@ func (h *SubmissionHdl) GetAllSubmissionsOfExercise(ctx context.Context, req *su
 				Minutes: int32(s.SubmissionDate.Minute()),
 				Seconds: int32(s.SubmissionDate.Second()),
 			},
-			Status:       s.Status,
-			AttachmentID: attIDList,
+			Status: s.Status,
 		})
 	}
 
@@ -131,6 +125,42 @@ func (h *SubmissionHdl) GetAllSubmissionsOfExercise(ctx context.Context, req *su
 		},
 		Submissions: ssResp,
 		TotalCount:  int64(count),
+	}, nil
+}
+
+func (h *SubmissionHdl) GetSubmissionsOfUser(ctx context.Context, req *submissionpb.GetSubmissionOfUserRequest) (*submissionpb.GetSubmissionOfUserResponse, error) {
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	s, err := h.Service.GetSubmissionOfUser(ctx, req.UserID, int(req.ExerciseID))
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	sResp := &submissionpb.SubmissionResponse{
+		Id:         int64(s.ID),
+		UserID:     s.UserID,
+		ExerciseID: int64(s.ExerciseID),
+		SubmissionDate: &datetime.DateTime{
+			Year:    int32(s.SubmissionDate.Year()),
+			Month:   int32(s.SubmissionDate.Minute()),
+			Day:     int32(s.SubmissionDate.Day()),
+			Hours:   int32(s.SubmissionDate.Hour()),
+			Minutes: int32(s.SubmissionDate.Minute()),
+			Seconds: int32(s.SubmissionDate.Second()),
+		},
+		Status: s.Status,
+	}
+
+	return &submissionpb.GetSubmissionOfUserResponse{
+		Response: &submissionpb.CommonSubmissionResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Submission: sResp,
 	}, nil
 }
 
@@ -145,16 +175,10 @@ func validateAndConvertSubmission(pbSubmission *submissionpb.SubmissionInput) (s
 		return service.SubmissionInputSvc{}, err
 	}
 
-	var attIntList []int
-	for _, i := range pbSubmission.AttachmentID {
-		attIntList = append(attIntList, int(i))
-	}
-
 	return service.SubmissionInputSvc{
 		UserID:         pbSubmission.UserID,
 		ExerciseID:     int(pbSubmission.ExerciseID),
 		SubmissionDate: submissionDate,
 		Status:         pbSubmission.Status,
-		AttachmentID:   attIntList,
 	}, nil
 }

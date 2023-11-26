@@ -15,6 +15,7 @@ type ISubmissionSvc interface {
 	DeleteSubmission(ctx context.Context, id int) error
 	// GetAllSubmissionsOfExercise returns a list of submissions in db
 	GetAllSubmissionsOfExercise(ctx context.Context, classroomID int) ([]SubmissionOutputSvc, int, error)
+	GetSubmissionOfUser(ctx context.Context, userID string, exerciseID int) (SubmissionOutputSvc, error)
 }
 
 type SubmissionSvc struct {

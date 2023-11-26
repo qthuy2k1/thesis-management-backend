@@ -95,11 +95,20 @@ message AttachmentPostResponse {
     string status = 3;
     AuthorPostResponse author = 6;
     google.protobuf.Timestamp created_at = 7;
+    int64 size = 8;
+    string mimeType = 9;
+    string thumbnail = 10;
+    string fileName = 11;
 }
 
 message AttachmentPostInput {
-    string fileURL = 2;
-    string status = 3;
+    string fileURL = 1;
+    string authorID = 2;
+    string name = 3;
+    int64 postID = 5;
+    int64 size = 7;
+    string type = 8;
+    string thumbnail = 9;
 }
 
 message AuthorPostResponse {

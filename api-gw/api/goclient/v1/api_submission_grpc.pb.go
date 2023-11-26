@@ -24,6 +24,7 @@ const (
 	SubmissionService_UpdateSubmission_FullMethodName            = "/api.submission.v1.SubmissionService/UpdateSubmission"
 	SubmissionService_DeleteSubmission_FullMethodName            = "/api.submission.v1.SubmissionService/DeleteSubmission"
 	SubmissionService_GetAllSubmissionsOfExercise_FullMethodName = "/api.submission.v1.SubmissionService/GetAllSubmissionsOfExercise"
+	SubmissionService_GetSubmissionOfUser_FullMethodName         = "/api.submission.v1.SubmissionService/GetSubmissionOfUser"
 )
 
 // SubmissionServiceClient is the client API for SubmissionService service.
@@ -35,6 +36,7 @@ type SubmissionServiceClient interface {
 	UpdateSubmission(ctx context.Context, in *UpdateSubmissionRequest, opts ...grpc.CallOption) (*UpdateSubmissionResponse, error)
 	DeleteSubmission(ctx context.Context, in *DeleteSubmissionRequest, opts ...grpc.CallOption) (*DeleteSubmissionResponse, error)
 	GetAllSubmissionsOfExercise(ctx context.Context, in *GetAllSubmissionsOfExerciseRequest, opts ...grpc.CallOption) (*GetAllSubmissionsOfExerciseResponse, error)
+	GetSubmissionOfUser(ctx context.Context, in *GetSubmissionOfUserRequest, opts ...grpc.CallOption) (*GetSubmissionOfUserResponse, error)
 }
 
 type submissionServiceClient struct {
@@ -90,6 +92,15 @@ func (c *submissionServiceClient) GetAllSubmissionsOfExercise(ctx context.Contex
 	return out, nil
 }
 
+func (c *submissionServiceClient) GetSubmissionOfUser(ctx context.Context, in *GetSubmissionOfUserRequest, opts ...grpc.CallOption) (*GetSubmissionOfUserResponse, error) {
+	out := new(GetSubmissionOfUserResponse)
+	err := c.cc.Invoke(ctx, SubmissionService_GetSubmissionOfUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SubmissionServiceServer is the server API for SubmissionService service.
 // All implementations must embed UnimplementedSubmissionServiceServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type SubmissionServiceServer interface {
 	UpdateSubmission(context.Context, *UpdateSubmissionRequest) (*UpdateSubmissionResponse, error)
 	DeleteSubmission(context.Context, *DeleteSubmissionRequest) (*DeleteSubmissionResponse, error)
 	GetAllSubmissionsOfExercise(context.Context, *GetAllSubmissionsOfExerciseRequest) (*GetAllSubmissionsOfExerciseResponse, error)
+	GetSubmissionOfUser(context.Context, *GetSubmissionOfUserRequest) (*GetSubmissionOfUserResponse, error)
 	mustEmbedUnimplementedSubmissionServiceServer()
 }
 
@@ -120,6 +132,9 @@ func (UnimplementedSubmissionServiceServer) DeleteSubmission(context.Context, *D
 }
 func (UnimplementedSubmissionServiceServer) GetAllSubmissionsOfExercise(context.Context, *GetAllSubmissionsOfExerciseRequest) (*GetAllSubmissionsOfExerciseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllSubmissionsOfExercise not implemented")
+}
+func (UnimplementedSubmissionServiceServer) GetSubmissionOfUser(context.Context, *GetSubmissionOfUserRequest) (*GetSubmissionOfUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSubmissionOfUser not implemented")
 }
 func (UnimplementedSubmissionServiceServer) mustEmbedUnimplementedSubmissionServiceServer() {}
 
@@ -224,6 +239,24 @@ func _SubmissionService_GetAllSubmissionsOfExercise_Handler(srv interface{}, ctx
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SubmissionService_GetSubmissionOfUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSubmissionOfUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SubmissionServiceServer).GetSubmissionOfUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SubmissionService_GetSubmissionOfUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SubmissionServiceServer).GetSubmissionOfUser(ctx, req.(*GetSubmissionOfUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SubmissionService_ServiceDesc is the grpc.ServiceDesc for SubmissionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +283,10 @@ var SubmissionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllSubmissionsOfExercise",
 			Handler:    _SubmissionService_GetAllSubmissionsOfExercise_Handler,
+		},
+		{
+			MethodName: "GetSubmissionOfUser",
+			Handler:    _SubmissionService_GetSubmissionOfUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -358,6 +358,30 @@ func (_m *MockIUserRepo) GetUser(ctx context.Context, id string) (UserOutputRepo
 	return r0, r1
 }
 
+// GetUserMember provides a mock function with given fields: ctx, userID
+func (_m *MockIUserRepo) GetUserMember(ctx context.Context, userID string) (MemberOutputRepo, error) {
+	ret := _m.Called(ctx, userID)
+
+	var r0 MemberOutputRepo
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (MemberOutputRepo, error)); ok {
+		return rf(ctx, userID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) MemberOutputRepo); ok {
+		r0 = rf(ctx, userID)
+	} else {
+		r0 = ret.Get(0).(MemberOutputRepo)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, userID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetUsers provides a mock function with given fields: ctx
 func (_m *MockIUserRepo) GetUsers(ctx context.Context) ([]UserOutputRepo, int, error) {
 	ret := _m.Called(ctx)

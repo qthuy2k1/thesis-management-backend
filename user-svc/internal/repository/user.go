@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"reflect"
 )
 
 func logger(err error, describe string, functionName string) {
@@ -200,8 +201,10 @@ func (r *UserRepo) GetUser(ctx context.Context, id string) (UserOutputRepo, erro
 		HashedPassword: hashedPassword,
 	}
 
-	if errCache := r.Redis.HSet(ctx, fmt.Sprintf("user:%s", id), userCache); errCache.Err() != nil {
-		return UserOutputRepo{}, errCache.Err()
+	if !isAnyFieldEmpty(userCache, "class", "major", "phone") {
+		if errCache := r.Redis.HSet(ctx, fmt.Sprintf("user:%s", id), userCache); errCache.Err() != nil {
+			return UserOutputRepo{}, errCache.Err()
+		}
 	}
 
 	return user, nil
@@ -397,4 +400,23 @@ func (r *UserRepo) getUserCount(ctx context.Context) (int, error) {
 	}
 
 	return count, nil
+}
+
+func isAnyFieldEmpty(myStruct UserRedis, fields ...string) bool {
+	// Get the reflect.Value of the struct
+	val := reflect.ValueOf(myStruct)
+
+	// Iterate over the specified fields
+	for _, fieldName := range fields {
+		// Find the field by name
+		field := val.FieldByName(fieldName)
+
+		// Check if the field exists and is empty
+		if field.IsValid() && field.String() == "" {
+			return true
+		}
+	}
+
+	// None of the specified fields are empty
+	return false
 }

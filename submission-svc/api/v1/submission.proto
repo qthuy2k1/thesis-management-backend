@@ -16,6 +16,7 @@ service SubmissionService {
     rpc DeleteSubmission(DeleteSubmissionRequest) returns (DeleteSubmissionResponse){ }
 
     rpc GetAllSubmissionsOfExercise(GetAllSubmissionsOfExerciseRequest) returns (GetAllSubmissionsOfExerciseResponse) {}
+    rpc GetSubmissionOfUser(GetSubmissionOfUserRequest) returns (GetSubmissionOfUserResponse){}
 }
 
 message CommonSubmissionResponse {
@@ -28,18 +29,16 @@ message CommonSubmissionResponse {
 message SubmissionInput {
     string userID = 1;
     int64 exerciseID = 2;
-    google.type.DateTime submission_date = 3;
+    google.type.DateTime submissionDate = 3;
     string status = 4;
-    repeated int64 attachmentID = 5;
 }
 
 message SubmissionResponse {
     int64 id = 1;
     string userID = 2;
     int64 exerciseID = 3;
-    google.type.DateTime submission_date = 4;
+    google.type.DateTime submissionDate = 4;
     string status = 5;
-    repeated int64 attachmentID = 6;
 }
 
 message CreateSubmissionRequest {
@@ -90,4 +89,15 @@ message GetAllSubmissionsOfExerciseResponse {
     CommonSubmissionResponse response = 1;
     int64 totalCount = 2;
     repeated SubmissionResponse submissions = 3;
+}
+
+message GetSubmissionOfUserRequest {
+    string userID = 1;
+    int64 exerciseID = 2;
+}
+
+
+message GetSubmissionOfUserResponse {
+    CommonSubmissionResponse response = 1;
+    SubmissionResponse submission = 2;
 }
