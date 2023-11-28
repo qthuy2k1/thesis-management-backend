@@ -109,9 +109,54 @@ func (r *UserRepo) CreateUser(ctx context.Context, u UserInputRepo) error {
 		return ErrUserExisted
 	}
 
-	if _, err := ExecSQL(ctx, r.Database, "CreateUser", "INSERT INTO users (id, class, major, phone, photo_src, role, name, email, hashed_password) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id", u.ID, u.Class, u.Major, u.Phone, u.PhotoSrc, u.Role, u.Name, u.Email, u.HashedPassword); err != nil {
+	row, err := QueryRowSQL(ctx, r.Database, "CreateUser", "INSERT INTO users (id, class, major, phone, photo_src, role, name, email, hashed_password) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id", u.ID, u.Class, u.Major, u.Phone, u.PhotoSrc, u.Role, u.Name, u.Email, u.HashedPassword)
+	if err != nil {
 		logger(err, "execute SQL statement", "CreateUser")
 		return err
+	}
+
+	var id string
+	if err := row.Scan(&id); err != nil {
+		return nil
+	}
+
+	// set cache
+	class := ""
+	if u.Class != nil {
+		class = *u.Class
+	}
+
+	phone := ""
+	if u.Phone != nil {
+		phone = *u.Phone
+	}
+
+	major := ""
+	if u.Major != nil {
+		major = *u.Major
+	}
+
+	hashedPassword := ""
+	if u.HashedPassword != nil {
+		hashedPassword = *u.HashedPassword
+	}
+
+	userCache := UserRedis{
+		ID:             id,
+		Class:          class,
+		Major:          major,
+		Phone:          phone,
+		PhotoSrc:       u.PhotoSrc,
+		Role:           u.Role,
+		Name:           u.Name,
+		Email:          u.Email,
+		HashedPassword: hashedPassword,
+	}
+
+	if !isAnyFieldEmpty(userCache, "class", "major", "phone") {
+		if errCache := r.Redis.HSet(ctx, fmt.Sprintf("user:%s", id), userCache); errCache.Err() != nil {
+			return errCache.Err()
+		}
 	}
 
 	return nil
@@ -139,17 +184,19 @@ func (r *UserRepo) GetUser(ctx context.Context, id string) (UserOutputRepo, erro
 			return UserOutputRepo{}, err
 		}
 
-		return UserOutputRepo{
-			ID:             userScan.ID,
-			Class:          &userScan.Class,
-			Major:          &userScan.Major,
-			Phone:          &userScan.Phone,
-			PhotoSrc:       userScan.PhotoSrc,
-			Role:           userScan.Role,
-			Name:           userScan.Name,
-			Email:          userScan.Email,
-			HashedPassword: &userScan.HashedPassword,
-		}, nil
+		if !isAnyFieldEmpty(userScan, "class", "major", "phone") {
+			return UserOutputRepo{
+				ID:             userScan.ID,
+				Class:          &userScan.Class,
+				Major:          &userScan.Major,
+				Phone:          &userScan.Phone,
+				PhotoSrc:       userScan.PhotoSrc,
+				Role:           userScan.Role,
+				Name:           userScan.Name,
+				Email:          userScan.Email,
+				HashedPassword: &userScan.HashedPassword,
+			}, nil
+		}
 	}
 
 	row, err := QueryRowSQL(ctx, r.Database, "GetUser", fmt.Sprintf("SELECT id, class, major, phone, photo_src, role, name, email, hashed_password FROM users WHERE id='%s'", id))
@@ -260,7 +307,7 @@ func (r *UserRepo) UpdateUser(ctx context.Context, id string, user UserInputRepo
 	}
 
 	userCache := UserRedis{
-		ID:             user.ID,
+		ID:             id,
 		Class:          class,
 		Major:          major,
 		Phone:          phone,
@@ -271,8 +318,10 @@ func (r *UserRepo) UpdateUser(ctx context.Context, id string, user UserInputRepo
 		HashedPassword: hashedPassword,
 	}
 
-	if errCache := r.Redis.HSet(ctx, fmt.Sprintf("user:%s", id), userCache); errCache.Err() != nil {
-		return errCache.Err()
+	if !isAnyFieldEmpty(userCache, "class", "major", "phone") {
+		if errCache := r.Redis.HSet(ctx, fmt.Sprintf("user:%s", id), userCache); errCache.Err() != nil {
+			return errCache.Err()
+		}
 	}
 
 	return nil
@@ -289,6 +338,10 @@ func (r *UserRepo) DeleteUser(ctx context.Context, id string) error {
 	if rowsAff, _ := result.RowsAffected(); rowsAff == 0 {
 		logger(ErrUserNotFound, "rows affected equal to 0", "DeleteUser")
 		return ErrUserNotFound
+	}
+
+	if errCache := r.Redis.Del(ctx, fmt.Sprintf("user:%s", id)); errCache.Err() != nil {
+		return errCache.Err()
 	}
 
 	return nil

@@ -2,11 +2,9 @@ package main
 
 import (
 	"context"
-	"errors"
 	"log"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
-	redisSvcV1 "github.com/qthuy2k1/thesis-management-backend/redis-svc/api/goclient/v1"
 	pointSvcV1 "github.com/qthuy2k1/thesis-management-backend/schedule-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
@@ -15,14 +13,12 @@ type pointServiceGW struct {
 	pb.UnimplementedPointServiceServer
 	pointClient pointSvcV1.ScheduleServiceClient
 	userClient  userSvcV1.UserServiceClient
-	redisClient redisSvcV1.RedisServiceClient
 }
 
-func NewPointsService(pointClient pointSvcV1.ScheduleServiceClient, userClient userSvcV1.UserServiceClient, redisClient redisSvcV1.RedisServiceClient) *pointServiceGW {
+func NewPointsService(pointClient pointSvcV1.ScheduleServiceClient, userClient userSvcV1.UserServiceClient) *pointServiceGW {
 	return &pointServiceGW{
 		pointClient: pointClient,
 		userClient:  userClient,
-		redisClient: redisClient,
 	}
 }
 
@@ -83,126 +79,18 @@ func (u *pointServiceGW) CreateOrUpdatePointDef(ctx context.Context, req *pb.Cre
 		return nil, err
 	}
 
-	redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
+	studentRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 		Id: req.Point.StudentID,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	var studentRes *userSvcV1.GetUserResponse
-	if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-		studentRes = &userSvcV1.GetUserResponse{
-			Response: &userSvcV1.CommonUserResponse{
-				StatusCode: 200,
-				Message:    "OK",
-			},
-			User: &userSvcV1.UserResponse{
-				Id:       redis.User.GetId(),
-				Class:    redis.User.Class,
-				Major:    redis.User.Major,
-				Phone:    redis.User.Phone,
-				PhotoSrc: redis.User.GetPhotoSrc(),
-				Role:     redis.User.GetRole(),
-				Name:     redis.User.GetName(),
-				Email:    redis.User.GetEmail(),
-			},
-		}
-	} else {
-		studentRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: req.Point.StudentID,
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if studentRes.Response.StatusCode != 200 {
-			return nil, errors.New("error getting user")
-		}
-
-		cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-			User: &redisSvcV1.User{
-				Id:             studentRes.User.GetId(),
-				Class:          studentRes.User.Class,
-				Major:          studentRes.User.Major,
-				Phone:          studentRes.User.Phone,
-				PhotoSrc:       studentRes.User.GetPhotoSrc(),
-				Role:           studentRes.User.GetRole(),
-				Name:           studentRes.User.GetName(),
-				Email:          studentRes.User.GetEmail(),
-				HashedPassword: studentRes.User.HashedPassword,
-			},
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		if cache.Response.StatusCode != 200 {
-			return nil, errors.New("error set user cache")
-		}
-	}
-
-	if studentRes.Response.StatusCode == 404 {
-		return nil, errors.New("user not found")
-	}
-
 	var assess []*pointSvcV1.AssessItem
 	for _, a := range req.Point.Assesses {
-		redis, err := u.redisClient.GetUser(ctx, &redisSvcV1.GetUserRequest{
-			Id: a.LecturerID,
-		})
+		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: a.LecturerID})
 		if err != nil {
 			return nil, err
-		}
-
-		var lecturerRes *userSvcV1.GetUserResponse
-		if redis.User != nil && redis.GetResponse().StatusCode == 200 {
-			lecturerRes = &userSvcV1.GetUserResponse{
-				Response: &userSvcV1.CommonUserResponse{
-					StatusCode: 200,
-					Message:    "OK",
-				},
-				User: &userSvcV1.UserResponse{
-					Id:       redis.User.GetId(),
-					Class:    redis.User.Class,
-					Major:    redis.User.Major,
-					Phone:    redis.User.Phone,
-					PhotoSrc: redis.User.GetPhotoSrc(),
-					Role:     redis.User.GetRole(),
-					Name:     redis.User.GetName(),
-					Email:    redis.User.GetEmail(),
-				},
-			}
-		} else {
-			lecturerRes, err = u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: a.LecturerID})
-			if err != nil {
-				return nil, err
-			}
-
-			if lecturerRes.Response.StatusCode != 200 {
-				return nil, errors.New("error getting user")
-			}
-
-			cache, err := u.redisClient.SetUser(ctx, &redisSvcV1.SetUserRequest{
-				User: &redisSvcV1.User{
-					Id:             lecturerRes.User.GetId(),
-					Class:          lecturerRes.User.Class,
-					Major:          lecturerRes.User.Major,
-					Phone:          lecturerRes.User.Phone,
-					PhotoSrc:       lecturerRes.User.GetPhotoSrc(),
-					Role:           lecturerRes.User.GetRole(),
-					Name:           lecturerRes.User.GetName(),
-					Email:          lecturerRes.User.GetEmail(),
-					HashedPassword: lecturerRes.User.HashedPassword,
-				},
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			if cache.Response.StatusCode != 200 {
-				return nil, errors.New("error set user cache")
-			}
 		}
 
 		assess = append(assess, &pointSvcV1.AssessItem{

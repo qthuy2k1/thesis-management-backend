@@ -3,12 +3,11 @@ package handler
 import (
 	"context"
 	"log"
-	"time"
 
 	submissionpb "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
 	service "github.com/qthuy2k1/thesis-management-backend/submission-svc/internal/service"
-	"google.golang.org/genproto/googleapis/type/datetime"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // CreateSubmission retrieves a submission request from gRPC-gateway and calls to the Service layer, then returns the response and status code.
@@ -50,10 +49,9 @@ func (c *SubmissionHdl) UpdateSubmission(ctx context.Context, req *submissionpb.
 	}
 
 	if err := c.Service.UpdateSubmission(ctx, int(req.GetId()), service.SubmissionInputSvc{
-		UserID:         s.UserID,
-		ExerciseID:     s.ExerciseID,
-		SubmissionDate: s.SubmissionDate,
-		Status:         s.Status,
+		UserID:     s.UserID,
+		ExerciseID: s.ExerciseID,
+		Status:     s.Status,
 	}); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
@@ -106,15 +104,9 @@ func (h *SubmissionHdl) GetAllSubmissionsOfExercise(ctx context.Context, req *su
 			Id:         int64(s.ID),
 			UserID:     s.UserID,
 			ExerciseID: int64(s.ExerciseID),
-			SubmissionDate: &datetime.DateTime{
-				Year:    int32(s.SubmissionDate.Year()),
-				Month:   int32(s.SubmissionDate.Minute()),
-				Day:     int32(s.SubmissionDate.Day()),
-				Hours:   int32(s.SubmissionDate.Hour()),
-				Minutes: int32(s.SubmissionDate.Minute()),
-				Seconds: int32(s.SubmissionDate.Second()),
-			},
-			Status: s.Status,
+			Status:     s.Status,
+			CreatedAt:  timestamppb.New(s.CreatedAt),
+			UpdatedAt:  timestamppb.New(s.UpdatedAt),
 		})
 	}
 
@@ -128,31 +120,28 @@ func (h *SubmissionHdl) GetAllSubmissionsOfExercise(ctx context.Context, req *su
 	}, nil
 }
 
-func (h *SubmissionHdl) GetSubmissionsOfUser(ctx context.Context, req *submissionpb.GetSubmissionOfUserRequest) (*submissionpb.GetSubmissionOfUserResponse, error) {
+func (h *SubmissionHdl) GetSubmissionOfUser(ctx context.Context, req *submissionpb.GetSubmissionOfUserRequest) (*submissionpb.GetSubmissionOfUserResponse, error) {
 	if err := req.Validate(); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
-	s, err := h.Service.GetSubmissionOfUser(ctx, req.UserID, int(req.ExerciseID))
+	ss, err := h.Service.GetSubmissionOfUser(ctx, req.UserID, int(req.ExerciseID))
 	if err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)
 	}
 
-	sResp := &submissionpb.SubmissionResponse{
-		Id:         int64(s.ID),
-		UserID:     s.UserID,
-		ExerciseID: int64(s.ExerciseID),
-		SubmissionDate: &datetime.DateTime{
-			Year:    int32(s.SubmissionDate.Year()),
-			Month:   int32(s.SubmissionDate.Minute()),
-			Day:     int32(s.SubmissionDate.Day()),
-			Hours:   int32(s.SubmissionDate.Hour()),
-			Minutes: int32(s.SubmissionDate.Minute()),
-			Seconds: int32(s.SubmissionDate.Second()),
-		},
-		Status: s.Status,
+	var ssResp []*submissionpb.SubmissionResponse
+	for _, s := range ss {
+		ssResp = append(ssResp, &submissionpb.SubmissionResponse{
+			Id:         int64(s.ID),
+			UserID:     s.UserID,
+			ExerciseID: int64(s.ExerciseID),
+			Status:     s.Status,
+			CreatedAt:  timestamppb.New(s.CreatedAt),
+			UpdatedAt:  timestamppb.New(s.UpdatedAt),
+		})
 	}
 
 	return &submissionpb.GetSubmissionOfUserResponse{
@@ -160,7 +149,7 @@ func (h *SubmissionHdl) GetSubmissionsOfUser(ctx context.Context, req *submissio
 			StatusCode: 200,
 			Message:    "Success",
 		},
-		Submission: sResp,
+		Submissions: ssResp,
 	}, nil
 }
 
@@ -169,16 +158,9 @@ func validateAndConvertSubmission(pbSubmission *submissionpb.SubmissionInput) (s
 		return service.SubmissionInputSvc{}, err
 	}
 
-	submissionDate, err := time.Parse("year:2006 month:1 day:2 hours:15 minutes:4 seconds:5", pbSubmission.SubmissionDate.String())
-
-	if err != nil {
-		return service.SubmissionInputSvc{}, err
-	}
-
 	return service.SubmissionInputSvc{
-		UserID:         pbSubmission.UserID,
-		ExerciseID:     int(pbSubmission.ExerciseID),
-		SubmissionDate: submissionDate,
-		Status:         pbSubmission.Status,
+		UserID:     pbSubmission.UserID,
+		ExerciseID: int(pbSubmission.ExerciseID),
+		Status:     pbSubmission.Status,
 	}, nil
 }

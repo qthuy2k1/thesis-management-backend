@@ -68,12 +68,21 @@ func main() {
 			r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 				w.Write([]byte("Test get server"))
 			})
+			r.Route("/{exerciseID}", func(r chi.Router) {
+				r.Put("/", client.updateExercise)
+			})
 		})
 		r.Route("/post", func(r chi.Router) {
 			r.Post("/", client.createPost)
+			r.Route("/{postID}", func(r chi.Router) {
+				r.Put("/", client.updatePost)
+			})
 		})
 		r.Route("/submit", func(r chi.Router) {
 			r.Post("/", client.createSubmission)
+			r.Route("/{submissionID}", func(r chi.Router) {
+				r.Put("/", client.updateSubmission)
+			})
 		})
 	})
 

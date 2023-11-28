@@ -14,7 +14,7 @@ type ISubmissionRepo interface {
 	DeleteSubmission(ctx context.Context, id int) error
 	// GetAllSubmissionsOfExercise returns all submission of the specified exercise given by exercise id
 	GetAllSubmissionsOfExercise(ctx context.Context, exerciseID int) ([]SubmissionOutputRepo, int, error)
-	GetSubmissionOfUser(ctx context.Context, userID string, exerciseID int) (SubmissionOutputRepo, error)
+	GetSubmissionOfUser(ctx context.Context, userID string, exerciseID int) ([]SubmissionOutputRepo, error)
 }
 
 type SubmissionRepo struct {

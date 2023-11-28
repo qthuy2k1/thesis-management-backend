@@ -9,19 +9,17 @@ import (
 )
 
 type SubmissionInputSvc struct {
-	UserID         string
-	ExerciseID     int
-	SubmissionDate time.Time
-	Status         string
+	UserID     string
+	ExerciseID int
+	Status     string
 }
 
 // CreateSubmission creates a new submission in db given by exercise model
 func (s *SubmissionSvc) CreateSubmission(ctx context.Context, submission SubmissionInputSvc) (int64, error) {
 	sRepo := repository.SubmissionInputRepo{
-		UserID:         submission.UserID,
-		ExerciseID:     submission.ExerciseID,
-		SubmissionDate: submission.SubmissionDate,
-		Status:         submission.Status,
+		UserID:     submission.UserID,
+		ExerciseID: submission.ExerciseID,
+		Status:     submission.Status,
 	}
 
 	id, err := s.Repository.CreateSubmission(ctx, sRepo)
@@ -38,10 +36,9 @@ func (s *SubmissionSvc) CreateSubmission(ctx context.Context, submission Submiss
 // UpdateSubmission updates the specified submission by id
 func (s *SubmissionSvc) UpdateSubmission(ctx context.Context, id int, submission SubmissionInputSvc) error {
 	if err := s.Repository.UpdateSubmission(ctx, id, repository.SubmissionInputRepo{
-		UserID:         submission.UserID,
-		ExerciseID:     submission.ExerciseID,
-		SubmissionDate: submission.SubmissionDate,
-		Status:         submission.Status,
+		UserID:     submission.UserID,
+		ExerciseID: submission.ExerciseID,
+		Status:     submission.Status,
 	}); err != nil {
 		if errors.Is(err, repository.ErrSubmissionNotFound) {
 			return ErrSubmissionNotFound
@@ -65,11 +62,12 @@ func (s *SubmissionSvc) DeleteSubmission(ctx context.Context, id int) error {
 }
 
 type SubmissionOutputSvc struct {
-	ID             int
-	UserID         string
-	ExerciseID     int
-	SubmissionDate time.Time
-	Status         string
+	ID         int
+	UserID     string
+	ExerciseID int
+	Status     string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 // GetAllSubmissionsOfExercise returns a list of submissions in a exercise in db
@@ -82,28 +80,35 @@ func (s *SubmissionSvc) GetAllSubmissionsOfExercise(ctx context.Context, exercis
 	var ssSvc []SubmissionOutputSvc
 	for _, submission := range sRepo {
 		ssSvc = append(ssSvc, SubmissionOutputSvc{
-			ID:             submission.ID,
-			UserID:         submission.UserID,
-			ExerciseID:     submission.ExerciseID,
-			SubmissionDate: submission.SubmissionDate,
-			Status:         submission.Status,
+			ID:         submission.ID,
+			UserID:     submission.UserID,
+			ExerciseID: submission.ExerciseID,
+			Status:     submission.Status,
+			CreatedAt:  submission.CreatedAt,
+			UpdatedAt:  submission.UpdatedAt,
 		})
 	}
 
 	return ssSvc, count, nil
 }
 
-func (s *SubmissionSvc) GetSubmissionOfUser(ctx context.Context, userID string, exerciseID int) (SubmissionOutputSvc, error) {
+func (s *SubmissionSvc) GetSubmissionOfUser(ctx context.Context, userID string, exerciseID int) ([]SubmissionOutputSvc, error) {
 	submission, err := s.Repository.GetSubmissionOfUser(ctx, userID, exerciseID)
 	if err != nil {
-		return SubmissionOutputSvc{}, err
+		return nil, err
 	}
 
-	return SubmissionOutputSvc{
-		ID:             submission.ID,
-		UserID:         submission.UserID,
-		ExerciseID:     submission.ExerciseID,
-		SubmissionDate: submission.SubmissionDate,
-		Status:         submission.Status,
-	}, nil
+	var ssSvc []SubmissionOutputSvc
+	for _, submission := range submission {
+		ssSvc = append(ssSvc, SubmissionOutputSvc{
+			ID:         submission.ID,
+			UserID:     submission.UserID,
+			ExerciseID: submission.ExerciseID,
+			Status:     submission.Status,
+			CreatedAt:  submission.CreatedAt,
+			UpdatedAt:  submission.UpdatedAt,
+		})
+	}
+
+	return ssSvc, nil
 }

@@ -22,10 +22,12 @@ func NewAuthorization() *Authorization {
 }
 
 func Authorize(ctx context.Context, req *authorizationpb.AuthorizeRequest) (*authorizationpb.AuthorizeResponse, error) {
+	log.Println("token:", req.Token)
+	log.Println("method:", req.Method)
 	opt := option.WithCredentialsFile("thesis-course-registration-firebase-adminsdk-9o94i-5c3c81a7b0.json")
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
-		log.Fatalf("error initializing app: %v\n", err)
+		return nil, err
 	}
 
 	auth, err := app.Auth(ctx)
@@ -47,11 +49,13 @@ func Authorize(ctx context.Context, req *authorizationpb.AuthorizeRequest) (*aut
 	jsonStr, err := json.Marshal(authToken.Claims)
 	if err != nil {
 		fmt.Println(err)
+		return nil, err
 	}
 
 	// Convert json string to struct
 	if err := json.Unmarshal(jsonStr, &user); err != nil {
 		fmt.Println(err)
+		return nil, err
 	}
 
 	log.Println(user)
@@ -60,7 +64,6 @@ func Authorize(ctx context.Context, req *authorizationpb.AuthorizeRequest) (*aut
 		accessibleRoles := accessibleRoles(*user.Role)
 		log.Println(accessibleRoles)
 
-		log.Println(req.Method)
 		for _, m := range accessibleRoles {
 			if m == req.Method {
 				return &authorizationpb.AuthorizeResponse{

@@ -26,8 +26,3 @@ jobs:
         run: |
           go version
           go test $(go list ./... | grep -v /vendor/) -coverprofile .coverage.txt
-    #   - name: Codecov
-    #     uses: codecov/codecov-action@v3
-    #     with:
-    #       flags: generic
-    #       name: generic

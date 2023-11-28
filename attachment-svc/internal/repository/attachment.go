@@ -160,7 +160,7 @@ func (r *AttachmentRepo) DeleteAttachment(ctx context.Context, id int) error {
 
 // GetAttachment returns a list of attachments of an exercise in db
 func (r *AttachmentRepo) GetAttachmentsOfExercise(ctx context.Context, exerciseID int) ([]AttachmentOutputRepo, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetAttachmentsOfExercise", fmt.Sprintf("SELECT id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at, name, type, thumbnail, size FROM attachments WHERE exercise_id=%d", exerciseID))
+	rows, err := QuerySQL(ctx, r.Database, "GetAttachmentsOfExercise", fmt.Sprintf("SELECT id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at, name, type, thumbnail, size FROM attachments WHERE exercise_id=%d AND submission_id=0", exerciseID))
 	if err != nil {
 		return nil, err
 	}

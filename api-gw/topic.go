@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	topicSvcV1 "github.com/qthuy2k1/thesis-management-backend/topic-svc/api/goclient/v1"
@@ -25,6 +26,8 @@ func (u *topicServiceGW) CreateTopic(ctx context.Context, req *pb.CreateTopicReq
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
+
+	log.Println("TOPIC", req)
 
 	studentRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.Topic.StudentID})
 	if err != nil {
