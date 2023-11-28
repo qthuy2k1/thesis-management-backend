@@ -167,35 +167,6 @@ func (m *SubmissionInput) validate(all bool) error {
 
 	// no validation rules for ExerciseID
 
-	if all {
-		switch v := interface{}(m.GetSubmissionDate()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, SubmissionInputValidationError{
-					field:  "SubmissionDate",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, SubmissionInputValidationError{
-					field:  "SubmissionDate",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetSubmissionDate()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return SubmissionInputValidationError{
-				field:  "SubmissionDate",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
 	// no validation rules for Status
 
 	if len(errors) > 0 {
@@ -304,12 +275,14 @@ func (m *SubmissionResponse) validate(all bool) error {
 
 	// no validation rules for ExerciseID
 
+	// no validation rules for Status
+
 	if all {
-		switch v := interface{}(m.GetSubmissionDate()).(type) {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, SubmissionResponseValidationError{
-					field:  "SubmissionDate",
+					field:  "CreatedAt",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -317,23 +290,50 @@ func (m *SubmissionResponse) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, SubmissionResponseValidationError{
-					field:  "SubmissionDate",
+					field:  "CreatedAt",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetSubmissionDate()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return SubmissionResponseValidationError{
-				field:  "SubmissionDate",
+				field:  "CreatedAt",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
 		}
 	}
 
-	// no validation rules for Status
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, SubmissionResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, SubmissionResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return SubmissionResponseValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return SubmissionResponseMultiError(errors)
@@ -1876,33 +1876,38 @@ func (m *GetSubmissionOfUserResponse) validate(all bool) error {
 		}
 	}
 
-	if all {
-		switch v := interface{}(m.GetSubmission()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, GetSubmissionOfUserResponseValidationError{
-					field:  "Submission",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
+	for idx, item := range m.GetSubmissions() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetSubmissionOfUserResponseValidationError{
+						field:  fmt.Sprintf("Submissions[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetSubmissionOfUserResponseValidationError{
+						field:  fmt.Sprintf("Submissions[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
 			}
-		case interface{ Validate() error }:
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				errors = append(errors, GetSubmissionOfUserResponseValidationError{
-					field:  "Submission",
+				return GetSubmissionOfUserResponseValidationError{
+					field:  fmt.Sprintf("Submissions[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
-				})
+				}
 			}
 		}
-	} else if v, ok := interface{}(m.GetSubmission()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return GetSubmissionOfUserResponseValidationError{
-				field:  "Submission",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
+
 	}
 
 	if len(errors) > 0 {

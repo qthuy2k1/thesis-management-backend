@@ -9,10 +9,9 @@ import (
 )
 
 type SubmissionInputRepo struct {
-	UserID         string
-	ExerciseID     int
-	SubmissionDate time.Time
-	Status         string
+	UserID     string
+	ExerciseID int
+	Status     string
 }
 
 // QueryRowSQL is a wrapper function that logs the SQL command before executing it.
@@ -78,7 +77,7 @@ func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, arg
 
 // CreateSubmission creates a new exercise in db given by exercise model
 func (r *SubmissionRepo) CreateSubmission(ctx context.Context, s SubmissionInputRepo) (int64, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "CreateSubmission", "INSERT INTO submissions (user_id, exercise_id, submission_date, status) VALUES ($1, $2, $3, $4) RETURNING id", s.UserID, s.ExerciseID, s.SubmissionDate, s.Status)
+	row, err := QueryRowSQL(ctx, r.Database, "CreateSubmission", "INSERT INTO submissions (user_id, exercise_id, status) VALUES ($1, $2, $3) RETURNING id", s.UserID, s.ExerciseID, s.Status)
 	if err != nil {
 		return 0, err
 	}
@@ -92,22 +91,23 @@ func (r *SubmissionRepo) CreateSubmission(ctx context.Context, s SubmissionInput
 }
 
 type SubmissionOutputRepo struct {
-	ID             int
-	UserID         string
-	ExerciseID     int
-	SubmissionDate time.Time
-	Status         string
+	ID         int
+	UserID     string
+	ExerciseID int
+	Status     string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 // GetSubmission returns a submission in db given by id
 func (r *SubmissionRepo) GetSubmission(ctx context.Context, id int) (SubmissionOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetSubmission", "SELECT id, user_id, exercise_id, submission_date, status FROM submissions WHERE id=$1", id)
+	row, err := QueryRowSQL(ctx, r.Database, "GetSubmission", "SELECT id, user_id, exercise_id, status, created_at, updated_at FROM submissions WHERE id=$1", id)
 	if err != nil {
 		return SubmissionOutputRepo{}, err
 	}
 
 	s := SubmissionOutputRepo{}
-	if err = row.Scan(&s.ID, &s.UserID, &s.ExerciseID, &s.SubmissionDate, &s.Status); err != nil {
+	if err = row.Scan(&s.ID, &s.UserID, &s.ExerciseID, &s.Status, &s.CreatedAt, &s.UpdatedAt); err != nil {
 		if err == sql.ErrNoRows {
 			return SubmissionOutputRepo{}, ErrSubmissionNotFound
 		}
@@ -119,7 +119,7 @@ func (r *SubmissionRepo) GetSubmission(ctx context.Context, id int) (SubmissionO
 
 // UpdateSubmission updates the specified submission by id
 func (r *SubmissionRepo) UpdateSubmission(ctx context.Context, id int, s SubmissionInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdateSubmission", "UPDATE submissions SET user_id=$2, exercise_id=$3, submission_date=$4, status=$5, attachment_id=$6 WHERE id=$1", id, s.UserID, s.ExerciseID, s.SubmissionDate, s.Status)
+	result, err := ExecSQL(ctx, r.Database, "UpdateSubmission", "UPDATE submissions SET user_id=$2, exercise_id=$3, status=$4, attachment_id=$5 WHERE id=$1", id, s.UserID, s.ExerciseID, s.Status)
 	if err != nil {
 		return err
 	}
@@ -146,7 +146,7 @@ func (r *SubmissionRepo) DeleteSubmission(ctx context.Context, id int) error {
 
 // GetAllSubmissionsOfExercise returns all submissions of the specified exercise given by exercise id
 func (r *SubmissionRepo) GetAllSubmissionsOfExercise(ctx context.Context, exerciseID int) ([]SubmissionOutputRepo, int, error) {
-	rows, err := QuerySQL(ctx, r.Database, "GetAllSubmissionsOfExercise", fmt.Sprintf("SELECT id, user_id, exercise_id, submission_date, status FROM submissions WHERE exercise_id=%d", exerciseID))
+	rows, err := QuerySQL(ctx, r.Database, "GetAllSubmissionsOfExercise", fmt.Sprintf("SELECT id, user_id, exercise_id, status, created_at, updated_at FROM submissions WHERE exercise_id=%d", exerciseID))
 	if err != nil {
 		return nil, 0, err
 	}
@@ -161,8 +161,9 @@ func (r *SubmissionRepo) GetAllSubmissionsOfExercise(ctx context.Context, exerci
 			&s.ID,
 			&s.UserID,
 			&s.ExerciseID,
-			&s.SubmissionDate,
 			&s.Status,
+			&s.CreatedAt,
+			&s.UpdatedAt,
 		)
 		if err != nil {
 			return nil, 0, err
@@ -183,21 +184,37 @@ func (r *SubmissionRepo) GetAllSubmissionsOfExercise(ctx context.Context, exerci
 	return submissions, count, nil
 }
 
-func (r *SubmissionRepo) GetSubmissionOfUser(ctx context.Context, userID string, exerciseID int) (SubmissionOutputRepo, error) {
-	row, err := QueryRowSQL(ctx, r.Database, "GetSubmissionOfUser", "SELECT id, user_id, exercise_id, submission_date, status FROM submissions WHERE user_id = $1 AND exercise_id = $2", userID, exerciseID)
+func (r *SubmissionRepo) GetSubmissionOfUser(ctx context.Context, userID string, exerciseID int) ([]SubmissionOutputRepo, error) {
+	rows, err := QuerySQL(ctx, r.Database, "GetSubmissionOfUser", "SELECT id, user_id, exercise_id, status, created_at, updated_at FROM submissions WHERE user_id = $1 AND exercise_id = $2", userID, exerciseID)
 	if err != nil {
-		return SubmissionOutputRepo{}, nil
+		return nil, err
 	}
 
-	var s SubmissionOutputRepo
-	if err = row.Scan(&s.ID, &s.UserID, &s.ExerciseID, &s.SubmissionDate, &s.Status); err != nil {
-		if err == sql.ErrNoRows {
-			return SubmissionOutputRepo{}, ErrSubmissionNotFound
+	// Iterate over the result rows and populate the submissions slice
+	var submissions []SubmissionOutputRepo
+
+	for rows.Next() {
+		s := SubmissionOutputRepo{}
+		err := rows.Scan(
+			&s.ID,
+			&s.UserID,
+			&s.ExerciseID,
+			&s.Status,
+			&s.CreatedAt,
+			&s.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
 		}
-		return SubmissionOutputRepo{}, err
+
+		submissions = append(submissions, s)
 	}
 
-	return s, nil
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return submissions, nil
 }
 
 func (r *SubmissionRepo) getCountInExercise(ctx context.Context, exerciseID int) (int, error) {

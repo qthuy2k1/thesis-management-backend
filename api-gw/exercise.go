@@ -155,7 +155,7 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 	}
 
 	var comments []*pb.CommentExerciseResponse
-	if len(commentRes.Comments) > 0 {
+	if len(commentRes.GetComments()) > 0 {
 		for _, c := range commentRes.GetComments() {
 			userRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 				Id: c.UserID,
@@ -205,7 +205,7 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 	}
 
 	var attachments []*pb.AttachmentExerciseResponse
-	for _, a := range attachment.Attachments {
+	for _, a := range attachment.GetAttachments() {
 		author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
 			Id: a.AuthorID,
 		})
@@ -314,6 +314,55 @@ func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateEx
 		return nil, err
 	}
 
+	attGetRes, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+		ExerciseID: req.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// delete old attachments
+	for _, a := range attGetRes.Attachments {
+		if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+			Id: a.Id,
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	// create new attachments
+	var attCreated []int64
+	if len(req.Exercise.GetAttachments()) > 0 {
+		for _, att := range req.Exercise.GetAttachments() {
+			attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
+				Attachment: &attachmentSvcV1.AttachmentInput{
+					FileURL:    att.FileURL,
+					ExerciseID: &req.Id,
+					AuthorID:   req.Exercise.AuthorID,
+					Name:       att.Name,
+					Status:     "",
+					Type:       att.Type,
+					Thumbnail:  att.Thumbnail,
+					Size:       att.Size,
+				},
+			})
+			if err != nil {
+				if len(attCreated) > 0 {
+					for _, aErr := range attCreated {
+						if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+							Id: aErr,
+						}); err != nil {
+							return nil, err
+						}
+					}
+				}
+				return nil, err
+			}
+
+			attCreated = append(attCreated, attRes.AttachmentRes.Id)
+		}
+	}
+
 	return &pb.UpdateExerciseResponse{
 		Response: &pb.CommonExerciseResponse{
 			StatusCode: res.GetResponse().StatusCode,
@@ -332,6 +381,51 @@ func (u *exerciseServiceGW) DeleteExercise(ctx context.Context, req *pb.DeleteEx
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	submissionRes, err := u.submissionClient.GetAllSubmissionsOfExercise(ctx, &submissionSvcV1.GetAllSubmissionsOfExerciseRequest{
+		ExerciseID: req.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, s := range submissionRes.GetSubmissions() {
+		if _, err := u.submissionClient.DeleteSubmission(ctx, &submissionSvcV1.DeleteSubmissionRequest{
+			Id: s.Id,
+		}); err != nil {
+			return nil, err
+		}
+
+		attSubRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+			SubmissionID: s.Id,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		for _, a := range attSubRes.GetAttachments() {
+			if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+				Id: a.Id,
+			}); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	attGetRes, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+		ExerciseID: req.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, a := range attGetRes.GetAttachments() {
+		if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+			Id: a.Id,
+		}); err != nil {
+			return nil, err
+		}
 	}
 
 	return &pb.DeleteExerciseResponse{

@@ -298,6 +298,55 @@ func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostReques
 		return nil, err
 	}
 
+	attGetRes, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+		PostID: req.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// delete old attachments
+	for _, a := range attGetRes.Attachments {
+		if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+			Id: a.Id,
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	// create new attachments
+	var attCreated []int64
+	if len(req.Post.GetAttachments()) > 0 {
+		for _, att := range req.Post.Attachments {
+			attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
+				Attachment: &attachmentSvcV1.AttachmentInput{
+					FileURL:   att.FileURL,
+					PostID:    &req.Id,
+					AuthorID:  req.Post.AuthorID,
+					Name:      att.Name,
+					Status:    "",
+					Type:      att.Type,
+					Thumbnail: att.Thumbnail,
+					Size:      att.Size,
+				},
+			})
+			if err != nil {
+				if len(attCreated) > 0 {
+					for _, aErr := range attCreated {
+						if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+							Id: aErr,
+						}); err != nil {
+							return nil, err
+						}
+					}
+				}
+				return nil, err
+			}
+
+			attCreated = append(attCreated, attRes.AttachmentRes.Id)
+		}
+	}
+
 	return &pb.UpdatePostResponse{
 		Response: &pb.CommonPostResponse{
 			StatusCode: res.GetResponse().StatusCode,
@@ -316,6 +365,21 @@ func (u *postServiceGW) DeletePost(ctx context.Context, req *pb.DeletePostReques
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	attGetRes, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+		PostID: req.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, a := range attGetRes.Attachments {
+		if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+			Id: a.Id,
+		}); err != nil {
+			return nil, err
+		}
 	}
 
 	return &pb.DeletePostResponse{

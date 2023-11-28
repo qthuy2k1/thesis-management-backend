@@ -196,6 +196,32 @@ func (u *userServiceGW) DeleteUser(ctx context.Context, req *pb.DeleteUserReques
 		return nil, err
 	}
 
+	memberGetRes, err := u.userClient.GetUserMember(ctx, &userSvcV1.GetUserMemberRequest{
+		UserID: req.GetId(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := u.userClient.DeleteMember(ctx, &userSvcV1.DeleteMemberRequest{
+		Id: memberGetRes.Member.Id,
+	}); err != nil {
+		return nil, err
+	}
+
+	topicGetRes, err := u.topicClient.GetTopicFromUser(ctx, &topicSvcV1.GetTopicFromUserRequest{
+		UserID: req.GetId(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := u.topicClient.DeleteTopic(ctx, &topicSvcV1.DeleteTopicRequest{
+		Id: topicGetRes.Topic.Id,
+	}); err != nil {
+		return nil, err
+	}
+
 	return &pb.DeleteUserResponse{
 		Response: &pb.CommonUserResponse{
 			StatusCode: res.GetResponse().StatusCode,

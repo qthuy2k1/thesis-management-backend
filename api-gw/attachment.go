@@ -79,9 +79,8 @@ func (u *attachmentServiceGW) GetAttachment(ctx context.Context, req *pb.GetAtta
 			FileURL: res.GetAttachment().GetFileURL(),
 			Status:  res.GetAttachment().GetStatus(),
 			Submission: &pb.SubmissionAttachmentResponse{
-				Id:             submissionRes.GetSubmission().GetId(),
-				SubmissionDate: submissionRes.GetSubmission().GetSubmissionDate(),
-				Status:         submissionRes.GetSubmission().GetStatus(),
+				Id:     submissionRes.GetSubmission().GetId(),
+				Status: submissionRes.GetSubmission().GetStatus(),
 			},
 			Author: &pb.AuthorAttachmentResponse{
 				Id:       authorRes.User.Id,

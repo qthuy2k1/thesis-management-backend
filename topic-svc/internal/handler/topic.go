@@ -49,7 +49,7 @@ func (h *TopicHdl) GetTopic(ctx context.Context, req *topicpb.GetTopicRequest) (
 	topicResp := topicpb.TopicResponse{
 		Id:             int64(topic.ID),
 		Title:          topic.Title,
-		TypeTopic:      topic.Title,
+		TypeTopic:      topic.TypeTopic,
 		MemberQuantity: int64(topic.MemberQuantity),
 		StudentID:      topic.StudentID,
 		MemberEmail:    topic.MemberEmail,
@@ -82,7 +82,7 @@ func (h *TopicHdl) GetTopicFromUser(ctx context.Context, req *topicpb.GetTopicFr
 	topicResp := topicpb.TopicResponse{
 		Id:             int64(topic.ID),
 		Title:          topic.Title,
-		TypeTopic:      topic.Title,
+		TypeTopic:      topic.TypeTopic,
 		MemberQuantity: int64(topic.MemberQuantity),
 		StudentID:      topic.StudentID,
 		MemberEmail:    topic.MemberEmail,
@@ -168,7 +168,7 @@ func (h *TopicHdl) GetTopics(ctx context.Context, req *topicpb.GetTopicsRequest)
 		tsResp = append(tsResp, &topicpb.TopicResponse{
 			Id:             int64(t.ID),
 			Title:          t.Title,
-			TypeTopic:      t.Title,
+			TypeTopic:      t.TypeTopic,
 			MemberQuantity: int64(t.MemberQuantity),
 			StudentID:      t.StudentID,
 			MemberEmail:    t.MemberEmail,
@@ -201,7 +201,7 @@ func (h *TopicHdl) GetAllTopicsOfListUser(ctx context.Context, req *topicpb.GetA
 		tsResp = append(tsResp, &topicpb.TopicResponse{
 			Id:             int64(t.ID),
 			Title:          t.Title,
-			TypeTopic:      t.Title,
+			TypeTopic:      t.TypeTopic,
 			MemberQuantity: int64(t.MemberQuantity),
 			StudentID:      t.StudentID,
 			MemberEmail:    t.MemberEmail,
@@ -219,6 +219,7 @@ func (h *TopicHdl) GetAllTopicsOfListUser(ctx context.Context, req *topicpb.GetA
 }
 
 func validateAndConvertTopic(pbTopic *topicpb.TopicInput) (repository.TopicInputRepo, error) {
+	log.Println("Topic service", pbTopic)
 	if err := pbTopic.Validate(); err != nil {
 		return repository.TopicInputRepo{}, err
 	}

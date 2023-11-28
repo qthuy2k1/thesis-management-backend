@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 
 	"google.golang.org/grpc"
 
@@ -39,7 +40,7 @@ var address = map[string]string{
 	"authorizationAddress":  "thesis-management-backend-authorization-service:9091",
 	"commiteeAddress":       "thesis-management-backend-thesis-commitee-service:9091",
 	"scheduleAddress":       "thesis-management-backend-schedule-service:9091",
-	"redisAddress":          "thesis-management-backend-redis-service:9091",
+	// "redisAddress":          "thesis-management-backend-redis-service:9091",
 }
 
 func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
@@ -186,31 +187,32 @@ func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, ha
 	return resp, err
 }
 
-// func authorize(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-// 	token, err := GetToken(ctx)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func authorize(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	log.Printf("APIGW service: method %q called\n", info.FullMethod)
+	token, err := GetToken(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-// 	authorizationClient, err := newAuthorizationSvcClient()
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	authorizationClient, err := newAuthorizationSvcClient()
+	if err != nil {
+		return nil, err
+	}
 
-// 	methodArr := strings.Split(info.FullMethod, "/")
-// 	if _, err := authorizationClient.Authorize(ctx, &authorizeSvcV1.AuthorizeRequest{
-// 		Token:  token,
-// 		Method: methodArr[2],
-// 	}); err != nil {
-// 		return nil, err
-// 	}
+	methodArr := strings.Split(info.FullMethod, "/")
+	if _, err := authorizationClient.Authorize(ctx, &authorizationSvcV1.AuthorizeRequest{
+		Token:  token,
+		Method: methodArr[2],
+	}); err != nil {
+		return nil, err
+	}
 
-// 	resp, err := handler(ctx, req)
-// 	if err != nil {
-// 		log.Printf("APIGW serivce: method %q failed: %s\n", info.FullMethod, err)
-// 	}
-// 	return resp, err
-// }
+	resp, err := handler(ctx, req)
+	if err != nil {
+		log.Printf("APIGW serivce: method %q failed: %s\n", info.FullMethod, err)
+	}
+	return resp, err
+}
 
 func main() {
 	fmt.Printf("APIGW service starting on %s", address["listenAddress"])
@@ -311,7 +313,7 @@ func main() {
 	}
 	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
 
-	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient, rpsClient, userClient, topicClient, waitingListClient))
+	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient, rpsClient, userClient, topicClient, waitingListClient, attachmentClient, submissionClient))
 	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient, commentClient, userClient, attachmentClient))
 	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient, commentClient, userClient, submissionClient, attachmentClient, scheduleClient))
 	pb.RegisterReportingStageServiceServer(s, NewReportingStagesService(rpsClient))

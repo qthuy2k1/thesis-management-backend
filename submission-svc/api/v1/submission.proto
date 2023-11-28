@@ -3,6 +3,7 @@ syntax = "proto3";
 package submission.v1;
 
 import "google/api/datetime.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package="github.com/qthuy2k1/thesis-management-backend/submission/api/v1";
 
@@ -29,16 +30,18 @@ message CommonSubmissionResponse {
 message SubmissionInput {
     string userID = 1;
     int64 exerciseID = 2;
-    google.type.DateTime submissionDate = 3;
-    string status = 4;
+    // google.type.DateTime submissionDate = 3;
+    string status = 3;
 }
 
 message SubmissionResponse {
     int64 id = 1;
     string userID = 2;
     int64 exerciseID = 3;
-    google.type.DateTime submissionDate = 4;
-    string status = 5;
+    // google.type.DateTime submissionDate = 4;
+    string status = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
 }
 
 message CreateSubmissionRequest {
@@ -99,5 +102,5 @@ message GetSubmissionOfUserRequest {
 
 message GetSubmissionOfUserResponse {
     CommonSubmissionResponse response = 1;
-    SubmissionResponse submission = 2;
+    repeated SubmissionResponse submissions = 2;
 }

@@ -47,6 +47,12 @@ func (u *memberServiceGW) CreateMember(ctx context.Context, req *pb.CreateMember
 		}
 	}
 
+	if _, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: req.Member.MemberID,
+	}); err != nil {
+		return nil, err
+	}
+
 	res, err := u.userClient.CreateMember(ctx, &userSvcV1.CreateMemberRequest{
 		Member: &userSvcV1.MemberInput{
 			ClassroomID: req.GetMember().ClassroomID,

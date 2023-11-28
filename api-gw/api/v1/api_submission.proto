@@ -57,9 +57,9 @@ message CommonSubmissionResponse {
 
 // ====== submission ======
 message SubmissionInput {
-    string userID = 1;
+    string authorID = 1;
     int64 exerciseID = 2 [(validate.rules).int64.gte = 1];
-    google.type.DateTime submission_date = 3;
+    // google.type.DateTime submission_date = 3;
     string status = 4 [(validate.rules).string = {min_len: 2}];
     repeated AttachmentSubmissionInput attachments = 5;
 }
@@ -77,11 +77,13 @@ message AttachmentSubmissionInput {
 
 message SubmissionResponse {
     int64 id = 1 [(validate.rules).int64.gte = 1];
-    string userID = 2;
+    string authorID = 2;
     int64 exerciseID = 3 [(validate.rules).int64.gte = 1];
-    google.type.DateTime submission_date = 4;
-    string status = 5 [(validate.rules).string = {min_len: 2}];
-    repeated AttachmentSubmissionResponse attachments = 6;
+    // google.type.DateTime submission_date = 4;
+    string status = 4 [(validate.rules).string = {min_len: 2}];
+    repeated AttachmentSubmissionResponse attachments = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
 }
 
 message AttachmentSubmissionResponse {
@@ -153,7 +155,7 @@ message GetSubmissionOfUserRequest {
 
 message GetSubmissionOfUserResponse {
     CommonSubmissionResponse response = 1 [(validate.rules).message = {required: true}];
-    SubmissionResponse submission = 2;
+    repeated SubmissionResponse submissions = 2;
 }
 
 

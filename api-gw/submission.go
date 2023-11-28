@@ -65,10 +65,9 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 
 	res, err := u.submissionClient.CreateSubmission(ctx, &submissionSvcV1.CreateSubmissionRequest{
 		Submission: &submissionSvcV1.SubmissionInput{
-			UserID:         req.GetSubmission().GetUserID(),
-			ExerciseID:     req.GetSubmission().GetExerciseID(),
-			SubmissionDate: req.GetSubmission().GetSubmissionDate(),
-			Status:         req.GetSubmission().GetStatus(),
+			UserID:     req.GetSubmission().GetUserID(),
+			ExerciseID: req.GetSubmission().GetExerciseID(),
+			Status:     req.GetSubmission().GetStatus(),
 		},
 	})
 	if err != nil {
@@ -148,52 +147,100 @@ func (u *submissionServiceGW) GetSubmission(ctx context.Context, req *pb.GetSubm
 			Message:    res.GetResponse().Message,
 		},
 		Submission: &pb.SubmissionResponse{
-			Id:             res.GetSubmission().GetId(),
-			UserID:         res.GetSubmission().GetUserID(),
-			ExerciseID:     res.GetSubmission().GetExerciseID(),
-			SubmissionDate: res.GetSubmission().GetSubmissionDate(),
-			Status:         res.GetSubmission().GetStatus(),
-			Attachments:    attachments,
+			Id:          res.GetSubmission().GetId(),
+			UserID:      res.GetSubmission().GetUserID(),
+			ExerciseID:  res.GetSubmission().GetExerciseID(),
+			Status:      res.GetSubmission().GetStatus(),
+			CreatedAt:   res.GetSubmission().CreatedAt,
+			UpdatedAt:   res.Submission.UpdatedAt,
+			Attachments: attachments,
 		},
 	}, nil
 }
 
-// func (u *submissionServiceGW) UpdateSubmission(ctx context.Context, req *pb.UpdateSubmissionRequest) (*pb.UpdateSubmissionResponse, error) {
-// 	exists, err := u.exerciseClient.GetExercise(ctx, &exerciseSvcV1.GetExerciseRequest{Id: req.GetSubmission().GetExerciseID()})
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (u *submissionServiceGW) UpdateSubmission(ctx context.Context, req *pb.UpdateSubmissionRequest) (*pb.UpdateSubmissionResponse, error) {
+	exists, err := u.exerciseClient.GetExercise(ctx, &exerciseSvcV1.GetExerciseRequest{Id: req.GetSubmission().GetExerciseID()})
+	if err != nil {
+		return nil, err
+	}
 
-// 	if exists.GetResponse().StatusCode == 404 {
-// 		return &pb.UpdateSubmissionResponse{
-// 			Response: &pb.CommonSubmissionResponse{
-// 				StatusCode: 404,
-// 				Message:    "Exercise does not exist",
-// 			},
-// 		}, nil
-// 	}
+	if exists.GetResponse().StatusCode == 404 {
+		return &pb.UpdateSubmissionResponse{
+			Response: &pb.CommonSubmissionResponse{
+				StatusCode: 404,
+				Message:    "Exercise does not exist",
+			},
+		}, nil
+	}
 
-// 	res, err := u.submissionClient.UpdateSubmission(ctx, &submissionSvcV1.UpdateSubmissionRequest{
-// 		Id: req.GetId(),
-// 		Submission: &submissionSvcV1.SubmissionInput{
-// 			UserID:         req.GetSubmission().GetUserID(),
-// 			ExerciseID:     req.GetSubmission().GetExerciseID(),
-// 			SubmissionDate: req.GetSubmission().GetSubmissionDate(),
-// 			Status:         req.GetSubmission().GetStatus(),
-// 			AttachmentID:   req.GetSubmission().GetAttachmentID(),
-// 		},
-// 	})
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	res, err := u.submissionClient.UpdateSubmission(ctx, &submissionSvcV1.UpdateSubmissionRequest{
+		Id: req.GetId(),
+		Submission: &submissionSvcV1.SubmissionInput{
+			UserID:     req.GetSubmission().GetUserID(),
+			ExerciseID: req.GetSubmission().GetExerciseID(),
+			Status:     req.GetSubmission().GetStatus(),
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
 
-// 	return &pb.UpdateSubmissionResponse{
-// 		Response: &pb.CommonSubmissionResponse{
-// 			StatusCode: res.GetResponse().StatusCode,
-// 			Message:    res.GetResponse().Message,
-// 		},
-// 	}, nil
-// }
+	attGetRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+		SubmissionID: req.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// delete old attachments
+	for _, a := range attGetRes.Attachments {
+		if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+			Id: a.Id,
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	// create new attachments
+	var attCreated []int64
+	if len(req.Submission.GetAttachments()) > 0 {
+		for _, att := range req.Submission.Attachments {
+			attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
+				Attachment: &attachmentSvcV1.AttachmentInput{
+					FileURL:    att.FileURL,
+					ExerciseID: &req.Id,
+					AuthorID:   req.Submission.UserID,
+					Name:       att.Name,
+					Status:     "",
+					Type:       att.Type,
+					Thumbnail:  att.Thumbnail,
+					Size:       att.Size,
+				},
+			})
+			if err != nil {
+				if len(attCreated) > 0 {
+					for _, aErr := range attCreated {
+						if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+							Id: aErr,
+						}); err != nil {
+							return nil, err
+						}
+					}
+				}
+				return nil, err
+			}
+
+			attCreated = append(attCreated, attRes.AttachmentRes.Id)
+		}
+	}
+
+	return &pb.UpdateSubmissionResponse{
+		Response: &pb.CommonSubmissionResponse{
+			StatusCode: res.GetResponse().StatusCode,
+			Message:    res.GetResponse().Message,
+		},
+	}, nil
+}
 
 func (u *submissionServiceGW) DeleteSubmission(ctx context.Context, req *pb.DeleteSubmissionRequest) (*pb.DeleteSubmissionResponse, error) {
 	if err := req.Validate(); err != nil {
@@ -205,6 +252,21 @@ func (u *submissionServiceGW) DeleteSubmission(ctx context.Context, req *pb.Dele
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	attGetRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+		SubmissionID: req.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, a := range attGetRes.Attachments {
+		if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+			Id: a.Id,
+		}); err != nil {
+			return nil, err
+		}
 	}
 
 	return &pb.DeleteSubmissionResponse{
@@ -269,12 +331,13 @@ func (u *submissionServiceGW) GetAllSubmissionsOfExercise(ctx context.Context, r
 		}
 
 		submissions = append(submissions, &pb.SubmissionResponse{
-			Id:             p.Id,
-			UserID:         p.UserID,
-			ExerciseID:     p.ExerciseID,
-			SubmissionDate: p.SubmissionDate,
-			Status:         p.Status,
-			Attachments:    attachments,
+			Id:          p.Id,
+			UserID:      p.UserID,
+			ExerciseID:  p.ExerciseID,
+			Status:      p.Status,
+			CreatedAt:   p.CreatedAt,
+			UpdatedAt:   p.UpdatedAt,
+			Attachments: attachments,
 		})
 	}
 
@@ -300,52 +363,56 @@ func (u *submissionServiceGW) GetSubmissionOfUser(ctx context.Context, req *pb.G
 		return nil, err
 	}
 
-	attRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
-		SubmissionID: res.Submission.Id,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	var attachments []*pb.AttachmentSubmissionResponse
-	for _, a := range attRes.GetAttachments() {
-		author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
-			Id: a.AuthorID,
+	var submissions []*pb.SubmissionResponse
+	for _, p := range res.GetSubmissions() {
+		attRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+			SubmissionID: p.Id,
 		})
 		if err != nil {
 			return nil, err
 		}
 
-		attachments = append(attachments, &pb.AttachmentSubmissionResponse{
-			Id:      a.Id,
-			FileURL: a.FileURL,
-			Status:  a.Status,
-			Author: &pb.AuthorSubmissionResponse{
-				Id:       author.GetUser().GetId(),
-				Class:    author.GetUser().Class,
-				Major:    author.GetUser().Major,
-				Phone:    author.GetUser().Phone,
-				PhotoSrc: author.GetUser().GetPhotoSrc(),
-				Role:     author.GetUser().GetRole(),
-				Name:     author.GetUser().GetName(),
-				Email:    author.GetUser().GetEmail(),
-				// HashedPassword: author.GetUser().HashedPassword,
-			},
-			CreatedAt: a.CreatedAt,
-			Size:      a.Size,
-			MimeType:  a.Type,
-			Thumbnail: a.Thumbnail,
-			FileName:  a.Name,
-		})
-	}
+		var attachments []*pb.AttachmentSubmissionResponse
+		for _, a := range attRes.GetAttachments() {
+			author, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+				Id: a.AuthorID,
+			})
+			if err != nil {
+				return nil, err
+			}
 
-	submission := &pb.SubmissionResponse{
-		Id:             res.Submission.Id,
-		UserID:         res.Submission.UserID,
-		ExerciseID:     res.Submission.ExerciseID,
-		SubmissionDate: res.Submission.SubmissionDate,
-		Status:         res.Submission.Status,
-		Attachments:    attachments,
+			attachments = append(attachments, &pb.AttachmentSubmissionResponse{
+				Id:      a.Id,
+				FileURL: a.FileURL,
+				Status:  a.Status,
+				Author: &pb.AuthorSubmissionResponse{
+					Id:       author.GetUser().GetId(),
+					Class:    author.GetUser().Class,
+					Major:    author.GetUser().Major,
+					Phone:    author.GetUser().Phone,
+					PhotoSrc: author.GetUser().GetPhotoSrc(),
+					Role:     author.GetUser().GetRole(),
+					Name:     author.GetUser().GetName(),
+					Email:    author.GetUser().GetEmail(),
+					// HashedPassword: author.GetUser().HashedPassword,
+				},
+				CreatedAt: a.CreatedAt,
+				Size:      a.Size,
+				MimeType:  a.Type,
+				Thumbnail: a.Thumbnail,
+				FileName:  a.Name,
+			})
+		}
+
+		submissions = append(submissions, &pb.SubmissionResponse{
+			Id:          p.Id,
+			UserID:      p.UserID,
+			ExerciseID:  p.ExerciseID,
+			Status:      p.Status,
+			CreatedAt:   p.CreatedAt,
+			UpdatedAt:   p.UpdatedAt,
+			Attachments: attachments,
+		})
 	}
 
 	return &pb.GetSubmissionOfUserResponse{
@@ -353,6 +420,6 @@ func (u *submissionServiceGW) GetSubmissionOfUser(ctx context.Context, req *pb.G
 			StatusCode: res.GetResponse().StatusCode,
 			Message:    res.GetResponse().Message,
 		},
-		Submission: submission,
+		Submissions: submissions,
 	}, nil
 }

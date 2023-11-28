@@ -7,11 +7,13 @@ import (
 	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
+	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
 	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
 	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
 	reportingStageSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
+	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
 	topicSvcV1 "github.com/qthuy2k1/thesis-management-backend/topic-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
@@ -25,9 +27,11 @@ type classroomServiceGW struct {
 	userClient           userSvcV1.UserServiceClient
 	topicClient          topicSvcV1.TopicServiceClient
 	waitingListClient    waitingListSvcV1.WaitingListServiceClient
+	attachmentClient     attachmentSvcV1.AttachmentServiceClient
+	submissionClient     submissionSvcV1.SubmissionServiceClient
 }
 
-func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, reportingStageClient reportingStageSvcV1.ReportingStageServiceClient, userClient userSvcV1.UserServiceClient, topicClient topicSvcV1.TopicServiceClient, waitingListClient waitingListSvcV1.WaitingListServiceClient) *classroomServiceGW {
+func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, reportingStageClient reportingStageSvcV1.ReportingStageServiceClient, userClient userSvcV1.UserServiceClient, topicClient topicSvcV1.TopicServiceClient, waitingListClient waitingListSvcV1.WaitingListServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient, submissionClient submissionSvcV1.SubmissionServiceClient) *classroomServiceGW {
 	return &classroomServiceGW{
 		classroomClient:      classroomClient,
 		postClient:           postClient,
@@ -36,6 +40,8 @@ func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient,
 		userClient:           userClient,
 		topicClient:          topicClient,
 		waitingListClient:    waitingListClient,
+		attachmentClient:     attachmentClient,
+		submissionClient:     submissionClient,
 	}
 }
 
@@ -353,12 +359,112 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 	}
 
 	// remove waiting list in the classroom was deleted
-	for _, l := range wltRes.WaitingLists {
+	for _, l := range wltRes.GetWaitingLists() {
 		_, err := u.waitingListClient.DeleteWaitingList(ctx, &waitingListSvcV1.DeleteWaitingListRequest{
 			Id: l.Id,
 		})
 		if err != nil {
 			return nil, err
+		}
+	}
+
+	exRes, err := u.exerciseClient.GetAllExercisesOfClassroom(ctx, &exerciseSvcV1.GetAllExercisesOfClassroomRequest{
+		Page:        1,
+		Limit:       99999,
+		TitleSearch: "",
+		SortColumn:  "id",
+		SortOrder:   "asc",
+		ClassroomID: req.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, e := range exRes.GetExercises() {
+		if _, err := u.exerciseClient.DeleteExercise(ctx, &exerciseSvcV1.DeleteExerciseRequest{
+			Id: e.Id,
+		}); err != nil {
+			return nil, err
+		}
+
+		submissionRes, err := u.submissionClient.GetAllSubmissionsOfExercise(ctx, &submissionSvcV1.GetAllSubmissionsOfExerciseRequest{
+			ExerciseID: e.Id,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		for _, s := range submissionRes.GetSubmissions() {
+			if _, err := u.submissionClient.DeleteSubmission(ctx, &submissionSvcV1.DeleteSubmissionRequest{
+				Id: s.Id,
+			}); err != nil {
+				return nil, err
+			}
+
+			attSubRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+				SubmissionID: s.Id,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			for _, a := range attSubRes.GetAttachments() {
+				if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+					Id: a.Id,
+				}); err != nil {
+					return nil, err
+				}
+			}
+		}
+
+		attGetRes, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+			ExerciseID: e.Id,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		for _, a := range attGetRes.GetAttachments() {
+			if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+				Id: a.Id,
+			}); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	postRes, err := u.postClient.GetAllPostsOfClassroom(ctx, &postSvcV1.GetAllPostsOfClassroomRequest{
+		Page:        1,
+		Limit:       99999,
+		TitleSearch: "",
+		SortColumn:  "id",
+		SortOrder:   "asc",
+		ClassroomID: req.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, p := range postRes.GetPosts() {
+		if _, err := u.postClient.DeletePost(ctx, &postSvcV1.DeletePostRequest{
+			Id: p.Id,
+		}); err != nil {
+			return nil, err
+		}
+
+		attGetRes, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+			PostID: p.Id,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		for _, a := range attGetRes.Attachments {
+			if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+				Id: a.Id,
+			}); err != nil {
+				return nil, err
+			}
 		}
 	}
 

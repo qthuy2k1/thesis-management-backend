@@ -1,5 +1,2 @@
 ALTER TABLE "submissions"
-ALTER COLUMN "user_id" TYPE VARCHAR;
-
-
-
+ALTER COLUMN "submission_date" timestamp;
