@@ -8,6 +8,6 @@ RUN source .env
 
 COPY ./exercise-svc/data/migrations /migrations
 
-COPY ./out /app/
+COPY ./out/exercise /app/
 
 ENTRYPOINT ./exercise

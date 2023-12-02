@@ -54,9 +54,13 @@ class PointDefModel {
         const { id, assesses, ...docRef } = point;
         const existingPointDef = await this.pointDoc.doc(id).get();
         if (!existingPointDef.exists) {
-            throw new Error("PointDef does not exist");
+            throw new Error("PointDef không tồn tại");
         }
-        const updatedAssesses = [...(_b = existingPointDef.data()) === null || _b === void 0 ? void 0 : _b.assesses, ...assesses];
+        const existingAssesses = ((_b = existingPointDef.data()) === null || _b === void 0 ? void 0 : _b.assesses) || [];
+        const updatedAssesses = [
+            ...existingAssesses.filter((item) => item.lecturer.id !== assesses[0].lecturer.id),
+            ...assesses,
+        ];
         await this.pointDoc
             .doc(id)
             .update({ ...docRef, assesses: updatedAssesses });
@@ -103,9 +107,11 @@ class PointDefModel {
         return null;
     }
     // GET ALL POINT DEFENSE
-    static async getAllPointDef() {
-        const docRef = await this.pointDoc.orderBy("createdAt", "desc").get();
-        return docRef.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    static async getAllPointDef(id) {
+        const docRef = await this.pointDoc.get();
+        return docRef.docs
+            .map((doc) => ({ id: doc.id, ...doc.data() }))
+            .filter((pointDef) => pointDef.assesses.some((assess) => assess.lecturer.id === id));
     }
     // DELETE POINT DEFENSE
     static async deletePointDef(id) {

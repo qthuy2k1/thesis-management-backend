@@ -8,6 +8,6 @@ RUN source .env
 
 COPY ./attachment-svc/data/migrations /migrations
 
-COPY ./out /app/
+COPY ./out/attachment /app/
 
 ENTRYPOINT ./attachment

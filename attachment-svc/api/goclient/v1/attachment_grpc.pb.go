@@ -26,6 +26,7 @@ const (
 	AttachmentService_GetAttachmentsOfExercise_FullMethodName   = "/attachment.v1.AttachmentService/GetAttachmentsOfExercise"
 	AttachmentService_GetAttachmentsOfSubmission_FullMethodName = "/attachment.v1.AttachmentService/GetAttachmentsOfSubmission"
 	AttachmentService_GetAttachmentsOfPost_FullMethodName       = "/attachment.v1.AttachmentService/GetAttachmentsOfPost"
+	AttachmentService_GetFinalFile_FullMethodName               = "/attachment.v1.AttachmentService/GetFinalFile"
 )
 
 // AttachmentServiceClient is the client API for AttachmentService service.
@@ -39,6 +40,7 @@ type AttachmentServiceClient interface {
 	GetAttachmentsOfExercise(ctx context.Context, in *GetAttachmentsOfExerciseRequest, opts ...grpc.CallOption) (*GetAttachmentsOfExerciseResponse, error)
 	GetAttachmentsOfSubmission(ctx context.Context, in *GetAttachmentsOfSubmissionRequest, opts ...grpc.CallOption) (*GetAttachmentsOfSubmissionResponse, error)
 	GetAttachmentsOfPost(ctx context.Context, in *GetAttachmentsOfPostRequest, opts ...grpc.CallOption) (*GetAttachmentsOfPostResponse, error)
+	GetFinalFile(ctx context.Context, in *GetFinalFileRequest, opts ...grpc.CallOption) (*GetFinalFileResponse, error)
 }
 
 type attachmentServiceClient struct {
@@ -112,6 +114,15 @@ func (c *attachmentServiceClient) GetAttachmentsOfPost(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *attachmentServiceClient) GetFinalFile(ctx context.Context, in *GetFinalFileRequest, opts ...grpc.CallOption) (*GetFinalFileResponse, error) {
+	out := new(GetFinalFileResponse)
+	err := c.cc.Invoke(ctx, AttachmentService_GetFinalFile_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AttachmentServiceServer is the server API for AttachmentService service.
 // All implementations must embed UnimplementedAttachmentServiceServer
 // for forward compatibility
@@ -123,6 +134,7 @@ type AttachmentServiceServer interface {
 	GetAttachmentsOfExercise(context.Context, *GetAttachmentsOfExerciseRequest) (*GetAttachmentsOfExerciseResponse, error)
 	GetAttachmentsOfSubmission(context.Context, *GetAttachmentsOfSubmissionRequest) (*GetAttachmentsOfSubmissionResponse, error)
 	GetAttachmentsOfPost(context.Context, *GetAttachmentsOfPostRequest) (*GetAttachmentsOfPostResponse, error)
+	GetFinalFile(context.Context, *GetFinalFileRequest) (*GetFinalFileResponse, error)
 	mustEmbedUnimplementedAttachmentServiceServer()
 }
 
@@ -150,6 +162,9 @@ func (UnimplementedAttachmentServiceServer) GetAttachmentsOfSubmission(context.C
 }
 func (UnimplementedAttachmentServiceServer) GetAttachmentsOfPost(context.Context, *GetAttachmentsOfPostRequest) (*GetAttachmentsOfPostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAttachmentsOfPost not implemented")
+}
+func (UnimplementedAttachmentServiceServer) GetFinalFile(context.Context, *GetFinalFileRequest) (*GetFinalFileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFinalFile not implemented")
 }
 func (UnimplementedAttachmentServiceServer) mustEmbedUnimplementedAttachmentServiceServer() {}
 
@@ -290,6 +305,24 @@ func _AttachmentService_GetAttachmentsOfPost_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AttachmentService_GetFinalFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFinalFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttachmentServiceServer).GetFinalFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttachmentService_GetFinalFile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttachmentServiceServer).GetFinalFile(ctx, req.(*GetFinalFileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AttachmentService_ServiceDesc is the grpc.ServiceDesc for AttachmentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -324,6 +357,10 @@ var AttachmentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAttachmentsOfPost",
 			Handler:    _AttachmentService_GetAttachmentsOfPost_Handler,
+		},
+		{
+			MethodName: "GetFinalFile",
+			Handler:    _AttachmentService_GetFinalFile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

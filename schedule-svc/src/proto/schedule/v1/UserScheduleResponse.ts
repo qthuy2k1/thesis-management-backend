@@ -10,6 +10,7 @@ export interface UserScheduleResponse {
   'role'?: (string);
   'name'?: (string);
   'email'?: (string);
+  '_class'?: "class";
   '_major'?: "major";
   '_phone'?: "phone";
 }

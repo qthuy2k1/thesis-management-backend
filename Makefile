@@ -279,7 +279,7 @@ proto-sche:
 
 
 
-proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-redis proto-comment proto-attachment proto-topic proto-authorization proto-commitee proto-sche
+proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-comment proto-attachment proto-topic proto-authorization proto-commitee proto-sche
 
 clean:
 	rm -rf ./out
@@ -300,7 +300,7 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/topic ./topic-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/authorization ./authorization-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/thesis-commitee ./thesis-commitee-svc
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/redis ./redis-svc
+	# CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/redis ./redis-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/upload ./upload-svc
 
 
@@ -388,7 +388,6 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend-attachment:latest
 	docker push qthuy2k1/thesis-management-backend-topic:latest
 	docker push qthuy2k1/thesis-management-backend-authorization:latest
-	# docker push qthuy2k1/thesis-management-backend-redis:latest
 	docker push qthuy2k1/thesis-management-backend-upload:latest
 	docker push qthuy2k1/thesis-management-backend-thesis-commitee:latest
 
@@ -510,9 +509,8 @@ kuber-apply:
 	kubectl apply -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/schedule-deployment.yaml --namespace thesis-management-backend
-	# kubectl apply -f kubernetes/redis-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/upload-deployment.yaml --namespace thesis-management-backend
-	# kubectl apply -f kubernetes/redis-db-deployment.yaml --namespace thesis-management-backend
+	kubectl apply -f kubernetes/authorization-deployment.yaml --namespace thesis-management-backend
 
 	kubectl apply -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend
@@ -531,7 +529,7 @@ kuber-del:
 	kubectl delete -f kubernetes/submission-db-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/topic-db-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/user-db-deployment.yaml --namespace thesis-management-backend
-	# kubectl delete -f kubernetes/redis-db-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/user-redis-db-deployment.yaml --namespace thesis-management-backend
 
 	kubectl delete -f kubernetes/attachment-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/classroom-deployment.yaml --namespace thesis-management-backend
@@ -544,8 +542,8 @@ kuber-del:
 	kubectl delete -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/schedule-deployment.yaml --namespace thesis-management-backend
-	# kubectl delete -f kubernetes/redis-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/upload-deployment.yaml --namespace thesis-management-backend
+	kubectl delete -f kubernetes/authorization-deployment.yaml --namespace thesis-management-backend
 
 	kubectl delete -f kubernetes/api-deployment.yaml --namespace thesis-management-backend
 	kubectl delete -f kubernetes/apigw-client-deployment.yaml --namespace thesis-management-backend

@@ -183,21 +183,17 @@ func (m *AttachmentInput) validate(all bool) error {
 
 	// no validation rules for FileURL
 
-	// no validation rules for Status
-
 	// no validation rules for AuthorID
 
-	if m.SubmissionID != nil {
-		// no validation rules for SubmissionID
-	}
+	// no validation rules for Name
 
-	if m.ExerciseID != nil {
-		// no validation rules for ExerciseID
-	}
+	// no validation rules for Size
 
-	if m.PostID != nil {
-		// no validation rules for PostID
-	}
+	// no validation rules for Type
+
+	// no validation rules for Thumbnail
+
+	// no validation rules for Status
 
 	if len(errors) > 0 {
 		return AttachmentInputMultiError(errors)
@@ -363,38 +359,13 @@ func (m *AttachmentResponse) validate(all bool) error {
 		}
 	}
 
-	if m.Submission != nil {
+	// no validation rules for Size
 
-		if all {
-			switch v := interface{}(m.GetSubmission()).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AttachmentResponseValidationError{
-						field:  "Submission",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AttachmentResponseValidationError{
-						field:  "Submission",
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(m.GetSubmission()).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AttachmentResponseValidationError{
-					field:  "Submission",
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
+	// no validation rules for MimeType
 
-	}
+	// no validation rules for Thumbnail
+
+	// no validation rules for FileName
 
 	if len(errors) > 0 {
 		return AttachmentResponseMultiError(errors)

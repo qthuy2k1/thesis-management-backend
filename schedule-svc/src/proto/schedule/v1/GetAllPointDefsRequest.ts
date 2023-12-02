@@ -2,7 +2,9 @@
 
 
 export interface GetAllPointDefsRequest {
+  'id'?: (string);
 }
 
 export interface GetAllPointDefsRequest__Output {
+  'id'?: (string);
 }

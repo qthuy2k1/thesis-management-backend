@@ -431,7 +431,7 @@
     "v1SubmissionInput": {
       "type": "object",
       "properties": {
-        "userID": {
+        "authorID": {
           "type": "string"
         },
         "exerciseID": {
@@ -459,7 +459,7 @@
           "type": "string",
           "format": "int64"
         },
-        "userID": {
+        "authorID": {
           "type": "string"
         },
         "exerciseID": {

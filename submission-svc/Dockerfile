@@ -9,6 +9,6 @@ RUN source .env
 
 COPY ./submission-svc/data/migrations /migrations
 
-COPY ./out /app/
+COPY ./out/submission /app/
 
 ENTRYPOINT ./submission

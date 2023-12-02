@@ -20,6 +20,8 @@ service AttachmentService {
     rpc GetAttachmentsOfSubmission(GetAttachmentsOfSubmissionRequest) returns (GetAttachmentsOfSubmissionResponse) {}
 
     rpc GetAttachmentsOfPost(GetAttachmentsOfPostRequest) returns (GetAttachmentsOfPostResponse) {}
+
+    rpc GetFinalFile(GetFinalFileRequest) returns (GetFinalFileResponse) {}
 }
 
 
@@ -137,4 +139,13 @@ message GetAttachmentsOfPostRequest {
 message GetAttachmentsOfPostResponse {
     CommonAttachmentResponse response = 1;
     repeated AttachmentResponse attachments = 3;
+}
+
+message GetFinalFileRequest {
+    string authorID = 1;
+}
+
+
+message GetFinalFileResponse {
+    AttachmentResponse attachment = 1;
 }

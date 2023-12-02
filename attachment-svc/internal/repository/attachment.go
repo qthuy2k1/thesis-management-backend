@@ -289,3 +289,21 @@ func (r *AttachmentRepo) GetAttachmentsOfPost(ctx context.Context, postID int) (
 
 	return attachments, nil
 }
+
+// GetAttachment returns a attachment in db given by id
+func (r *AttachmentRepo) GetFinalFile(ctx context.Context, userID string) (AttachmentOutputRepo, error) {
+	row, err := QueryRowSQL(ctx, r.Database, "GetAttachment", fmt.Sprintf("SELECT id, file_url, status, submission_id, exercise_id, author_id, post_id, created_at, name, type, thumbnail, size FROM attachments WHERE author_id='%s' AND submission_id=0 AND exercise_id=0 AND post_id=0", userID))
+	if err != nil {
+		return AttachmentOutputRepo{}, err
+	}
+	attachment := AttachmentOutputRepo{}
+
+	if err = row.Scan(&attachment.ID, &attachment.FileURL, &attachment.Status, &attachment.SubmissionID, &attachment.ExerciseID, &attachment.AuthorID, &attachment.PostID, &attachment.CreatedAt, &attachment.Name, &attachment.Type, &attachment.Thumbnail, &attachment.Size); err != nil {
+		if err == sql.ErrNoRows {
+			return AttachmentOutputRepo{}, ErrAttachmentNotFound
+		}
+		return AttachmentOutputRepo{}, err
+	}
+
+	return attachment, nil
+}

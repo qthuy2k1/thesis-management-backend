@@ -70,6 +70,12 @@ service UserService {
             get: "/api/auth/lecturer"
         };
     }
+
+    rpc GetUserAttachment(GetUserAttachmentRequest) returns (GetUserAttachmentResponse) {
+        option (google.api.http) = {
+            get: "/api/final-file/auth/{userID}"
+        };
+    }
 }
 
 message CommonUserResponse {
@@ -258,4 +264,51 @@ message GetAllLecturerResponse {
     CommonUserResponse response = 1;
     int64 totalCount = 2;
     repeated UserResponse lecturers = 3;
+}
+
+message AttachmentFinalFileRequest {
+    string fileURL = 1;
+    string status = 2;
+    string authorID = 6;
+    string name = 7;
+    string type = 8;
+    string thumbnail = 9;
+    int64 size = 10;
+}
+
+message AttachmentFinalFileResponse {
+    int64 id = 1;
+    string fileURL = 2;
+    string status = 3;
+    string authorID = 7;
+    google.protobuf.Timestamp created_at = 8;
+    string name = 9;
+    string type = 10;
+    string thumbnail = 11;
+    int64 size = 12;
+}
+
+message AttachmentFinalFileUserResponse {
+    int64 id = 1;
+    string fileURL = 2;
+    string status = 3;
+    google.protobuf.Timestamp created_at = 8;
+    string name = 9;
+    string type = 10;
+    string thumbnail = 11;
+    int64 size = 12;
+}
+
+message GetUserAttachmentRequest {
+    string userID = 1;
+}
+
+message FinalFile {
+    AttachmentFinalFileResponse attachment = 1;
+    UserResponse author = 2;
+}
+
+
+message GetUserAttachmentResponse {
+    FinalFile finalFile = 1;
 }

@@ -2508,3 +2508,238 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetAttachmentsOfPostResponseValidationError{}
+
+// Validate checks the field values on GetFinalFileRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetFinalFileRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetFinalFileRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetFinalFileRequestMultiError, or nil if none found.
+func (m *GetFinalFileRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetFinalFileRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for AuthorID
+
+	if len(errors) > 0 {
+		return GetFinalFileRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetFinalFileRequestMultiError is an error wrapping multiple validation
+// errors returned by GetFinalFileRequest.ValidateAll() if the designated
+// constraints aren't met.
+type GetFinalFileRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetFinalFileRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetFinalFileRequestMultiError) AllErrors() []error { return m }
+
+// GetFinalFileRequestValidationError is the validation error returned by
+// GetFinalFileRequest.Validate if the designated constraints aren't met.
+type GetFinalFileRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetFinalFileRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetFinalFileRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetFinalFileRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetFinalFileRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetFinalFileRequestValidationError) ErrorName() string {
+	return "GetFinalFileRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetFinalFileRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetFinalFileRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetFinalFileRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetFinalFileRequestValidationError{}
+
+// Validate checks the field values on GetFinalFileResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetFinalFileResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetFinalFileResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetFinalFileResponseMultiError, or nil if none found.
+func (m *GetFinalFileResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetFinalFileResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetAttachment()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetFinalFileResponseValidationError{
+					field:  "Attachment",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetFinalFileResponseValidationError{
+					field:  "Attachment",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetAttachment()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetFinalFileResponseValidationError{
+				field:  "Attachment",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return GetFinalFileResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetFinalFileResponseMultiError is an error wrapping multiple validation
+// errors returned by GetFinalFileResponse.ValidateAll() if the designated
+// constraints aren't met.
+type GetFinalFileResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetFinalFileResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetFinalFileResponseMultiError) AllErrors() []error { return m }
+
+// GetFinalFileResponseValidationError is the validation error returned by
+// GetFinalFileResponse.Validate if the designated constraints aren't met.
+type GetFinalFileResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetFinalFileResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetFinalFileResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetFinalFileResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetFinalFileResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetFinalFileResponseValidationError) ErrorName() string {
+	return "GetFinalFileResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetFinalFileResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetFinalFileResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetFinalFileResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetFinalFileResponseValidationError{}

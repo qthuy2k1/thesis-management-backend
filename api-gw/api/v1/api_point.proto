@@ -16,7 +16,7 @@ service PointService {
 
     rpc GetAllPointDef(GetAllPointDefRequest) returns (GetAllPointDefResponse) {
         option (google.api.http) = {
-            get: "/api/point"
+            get: "/api/point/{userID}"
         };
     }
 }
@@ -38,27 +38,27 @@ message UserPointResponse {
 message AssessItemResponse {
     string id = 1;
     UserPointResponse lecturer = 2;
-    int64 point = 3;
+    double point = 3;
     string comment = 4;
 }
 
 message AssessItemInput {
     string id = 1;
     string lecturerID = 2;
-    int64 point = 3;
+    double point = 3;
     string comment = 4;
-}
-
-message PointResponse {
-    string id = 1;
-    UserPointResponse student = 2;
-    repeated AssessItemResponse assesses = 3;
 }
 
 message Point {
     string id = 1;
     string studentID = 2;
     repeated AssessItemInput assesses = 3;
+}
+
+message PointResponse {
+    string id = 1;
+    UserPointResponse student = 2;
+    repeated AssessItemResponse assesses = 3;
 }
 
 message CreateOrUpdatePointDefRequest {
@@ -72,6 +72,7 @@ message CreateOrUpdatePointDefResponse {
 
 
 message GetAllPointDefRequest {
+    string userID = 1 ;
 }
 
 message GetAllPointDefResponse {

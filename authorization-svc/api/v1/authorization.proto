@@ -5,14 +5,25 @@ package authorization.v1;
 option go_package="github.com/qthuy2k1/thesis-management-backend/authorization/api/v1";
 
 service AuthorizationService {
+    rpc ExtractToken(ExtractTokenRequest) returns (ExtractTokenResponse){}
+
     rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse){}
 }
 
-message AuthorizeRequest {
+message ExtractTokenRequest {
     string token = 1;
-    string method = 2;
+}
+
+message ExtractTokenResponse {
+    string userID = 1;
+    string email = 2;
+}
+
+message AuthorizeRequest {
+    string method = 1;
+    string role = 2;
 }
 
 message AuthorizeResponse {
-    repeated string accessibleMethod = 1;
+    bool canAccess = 1;
 }

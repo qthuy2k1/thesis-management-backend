@@ -1,2 +1,2 @@
 ALTER TABLE "submissions"
-DROP COLUMN "submission_date";
+ADD COLUMN "submission_date" timestamp;

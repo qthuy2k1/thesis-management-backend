@@ -8,6 +8,6 @@ RUN source .env
 
 COPY ./comment-svc/data/migrations /migrations
 
-COPY ./out /app/
+COPY ./out/comment /app/
 
 ENTRYPOINT ./comment

@@ -19,13 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthorizationService_Authorize_FullMethodName = "/authorization.v1.AuthorizationService/Authorize"
+	AuthorizationService_ExtractToken_FullMethodName = "/authorization.v1.AuthorizationService/ExtractToken"
+	AuthorizationService_Authorize_FullMethodName    = "/authorization.v1.AuthorizationService/Authorize"
 )
 
 // AuthorizationServiceClient is the client API for AuthorizationService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthorizationServiceClient interface {
+	ExtractToken(ctx context.Context, in *ExtractTokenRequest, opts ...grpc.CallOption) (*ExtractTokenResponse, error)
 	Authorize(ctx context.Context, in *AuthorizeRequest, opts ...grpc.CallOption) (*AuthorizeResponse, error)
 }
 
@@ -35,6 +37,15 @@ type authorizationServiceClient struct {
 
 func NewAuthorizationServiceClient(cc grpc.ClientConnInterface) AuthorizationServiceClient {
 	return &authorizationServiceClient{cc}
+}
+
+func (c *authorizationServiceClient) ExtractToken(ctx context.Context, in *ExtractTokenRequest, opts ...grpc.CallOption) (*ExtractTokenResponse, error) {
+	out := new(ExtractTokenResponse)
+	err := c.cc.Invoke(ctx, AuthorizationService_ExtractToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *authorizationServiceClient) Authorize(ctx context.Context, in *AuthorizeRequest, opts ...grpc.CallOption) (*AuthorizeResponse, error) {
@@ -50,6 +61,7 @@ func (c *authorizationServiceClient) Authorize(ctx context.Context, in *Authoriz
 // All implementations must embed UnimplementedAuthorizationServiceServer
 // for forward compatibility
 type AuthorizationServiceServer interface {
+	ExtractToken(context.Context, *ExtractTokenRequest) (*ExtractTokenResponse, error)
 	Authorize(context.Context, *AuthorizeRequest) (*AuthorizeResponse, error)
 	mustEmbedUnimplementedAuthorizationServiceServer()
 }
@@ -58,6 +70,9 @@ type AuthorizationServiceServer interface {
 type UnimplementedAuthorizationServiceServer struct {
 }
 
+func (UnimplementedAuthorizationServiceServer) ExtractToken(context.Context, *ExtractTokenRequest) (*ExtractTokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ExtractToken not implemented")
+}
 func (UnimplementedAuthorizationServiceServer) Authorize(context.Context, *AuthorizeRequest) (*AuthorizeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authorize not implemented")
 }
@@ -72,6 +87,24 @@ type UnsafeAuthorizationServiceServer interface {
 
 func RegisterAuthorizationServiceServer(s grpc.ServiceRegistrar, srv AuthorizationServiceServer) {
 	s.RegisterService(&AuthorizationService_ServiceDesc, srv)
+}
+
+func _AuthorizationService_ExtractToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExtractTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthorizationServiceServer).ExtractToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthorizationService_ExtractToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthorizationServiceServer).ExtractToken(ctx, req.(*ExtractTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _AuthorizationService_Authorize_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -99,6 +132,10 @@ var AuthorizationService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "authorization.v1.AuthorizationService",
 	HandlerType: (*AuthorizationServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ExtractToken",
+			Handler:    _AuthorizationService_ExtractToken_Handler,
+		},
 		{
 			MethodName: "Authorize",
 			Handler:    _AuthorizationService_Authorize_Handler,

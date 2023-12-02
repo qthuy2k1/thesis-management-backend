@@ -284,6 +284,42 @@ func (h *AttachmentHdl) GetAttachmentsOfPost(ctx context.Context, req *attachmen
 	}, nil
 }
 
+func (h *AttachmentHdl) GetFinalFile(ctx context.Context, req *attachmentpb.GetFinalFileRequest) (*attachmentpb.GetFinalFileResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	att, err := h.Service.GetFinalFile(ctx, req.AuthorID)
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	submissionID := int64(*att.SubmissionID)
+	exerciseID := int64(*att.ExerciseID)
+	postID := int64(*att.PostID)
+
+	attResp := attachmentpb.AttachmentResponse{
+		Id:           int64(att.ID),
+		FileURL:      att.FileURL,
+		Status:       att.Status,
+		SubmissionID: &submissionID,
+		ExerciseID:   &exerciseID,
+		AuthorID:     att.AuthorID,
+		CreatedAt:    timestamppb.New(att.CreatedAt),
+		PostID:       &postID,
+		Name:         att.Name,
+		Type:         att.Type,
+		Thumbnail:    att.Thumbnail,
+		Size:         int64(att.Size),
+	}
+
+	resp := &attachmentpb.GetFinalFileResponse{
+		Attachment: &attResp,
+	}
+	return resp, nil
+}
+
 func validateAndConvertAttachment(pbAttachment *attachmentpb.AttachmentInput) (service.AttachmentInputSvc, error) {
 	if err := pbAttachment.Validate(); err != nil {
 		return service.AttachmentInputSvc{}, err

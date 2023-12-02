@@ -8,6 +8,6 @@ RUN source .env
 
 COPY ./thesis-commitee-svc/data/migrations /migrations
 
-COPY ./out /app/
+COPY ./out/thesis-commitee /app/
 
 ENTRYPOINT ./thesis-commitee

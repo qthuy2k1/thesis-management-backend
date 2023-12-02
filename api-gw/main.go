@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"strings"
 
 	"google.golang.org/grpc"
 
@@ -23,6 +22,8 @@ import (
 	commiteeSvcV1 "github.com/qthuy2k1/thesis-management-backend/thesis-commitee-svc/api/goclient/v1"
 	topicSvcV1 "github.com/qthuy2k1/thesis-management-backend/topic-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
+
+	service "github.com/qthuy2k1/thesis-management-backend/api-gw/service"
 )
 
 var address = map[string]string{
@@ -40,7 +41,6 @@ var address = map[string]string{
 	"authorizationAddress":  "thesis-management-backend-authorization-service:9091",
 	"commiteeAddress":       "thesis-management-backend-thesis-commitee-service:9091",
 	"scheduleAddress":       "thesis-management-backend-schedule-service:9091",
-	// "redisAddress":          "thesis-management-backend-redis-service:9091",
 }
 
 func newClassroomSvcClient() (classroomSvcV1.ClassroomServiceClient, error) {
@@ -187,33 +187,6 @@ func logger(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, ha
 	return resp, err
 }
 
-func authorize(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	log.Printf("APIGW service: method %q called\n", info.FullMethod)
-	token, err := GetToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	authorizationClient, err := newAuthorizationSvcClient()
-	if err != nil {
-		return nil, err
-	}
-
-	methodArr := strings.Split(info.FullMethod, "/")
-	if _, err := authorizationClient.Authorize(ctx, &authorizationSvcV1.AuthorizeRequest{
-		Token:  token,
-		Method: methodArr[2],
-	}); err != nil {
-		return nil, err
-	}
-
-	resp, err := handler(ctx, req)
-	if err != nil {
-		log.Printf("APIGW serivce: method %q failed: %s\n", info.FullMethod, err)
-	}
-	return resp, err
-}
-
 func main() {
 	fmt.Printf("APIGW service starting on %s", address["listenAddress"])
 
@@ -311,25 +284,27 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+	// s := grpc.NewServer(grpc.UnaryInterceptor(service.NewAuthorizationService(userClient, authorizationClient).Authorize))
 	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
 
-	pb.RegisterClassroomServiceServer(s, NewClassroomsService(classroomClient, postClient, exerciseClient, rpsClient, userClient, topicClient, waitingListClient, attachmentClient, submissionClient))
-	pb.RegisterPostServiceServer(s, NewPostsService(postClient, classroomClient, rpsClient, commentClient, userClient, attachmentClient))
-	pb.RegisterExerciseServiceServer(s, NewExercisesService(exerciseClient, classroomClient, rpsClient, commentClient, userClient, submissionClient, attachmentClient, scheduleClient))
-	pb.RegisterReportingStageServiceServer(s, NewReportingStagesService(rpsClient))
-	pb.RegisterSubmissionServiceServer(s, NewSubmissionsService(submissionClient, classroomClient, exerciseClient, attachmentClient, userClient))
-	pb.RegisterUserServiceServer(s, NewUsersService(userClient, classroomClient, waitingListClient, topicClient))
-	pb.RegisterWaitingListServiceServer(s, NewWaitingListsService(waitingListClient, classroomClient, userClient))
-	pb.RegisterCommentServiceServer(s, NewCommentsService(commentClient, postClient, exerciseClient, userClient))
-	pb.RegisterAttachmentServiceServer(s, NewAttachmentsService(attachmentClient, userClient, submissionClient))
-	pb.RegisterTopicServiceServer(s, NewTopicsService(topicClient, userClient))
-	pb.RegisterAuthorizationServiceServer(s, NewAuthorizationService(userClient, authorizationClient))
-	pb.RegisterMemberServiceServer(s, NewMembersService(userClient, classroomClient, waitingListClient))
-	pb.RegisterCommiteeServiceServer(s, NewCommiteesService(commiteeClient, userClient))
-	pb.RegisterRoomServiceServer(s, NewRoomsService(commiteeClient))
-	pb.RegisterStudentDefServiceServer(s, NewStudentDefsService(userClient))
-	pb.RegisterScheduleServiceServer(s, NewSchedulesService(scheduleClient, commiteeClient, userClient, thesisClient))
-	pb.RegisterNotificationServiceServer(s, NewNotificationsService(scheduleClient, userClient))
+	pb.RegisterClassroomServiceServer(s, service.NewClassroomsService(classroomClient, postClient, exerciseClient, rpsClient, userClient, topicClient, waitingListClient, attachmentClient, submissionClient))
+	pb.RegisterPostServiceServer(s, service.NewPostsService(postClient, classroomClient, rpsClient, commentClient, userClient, attachmentClient))
+	pb.RegisterExerciseServiceServer(s, service.NewExercisesService(exerciseClient, classroomClient, rpsClient, commentClient, userClient, submissionClient, attachmentClient, scheduleClient))
+	pb.RegisterReportingStageServiceServer(s, service.NewReportingStagesService(rpsClient))
+	pb.RegisterSubmissionServiceServer(s, service.NewSubmissionsService(submissionClient, classroomClient, exerciseClient, attachmentClient, userClient))
+	pb.RegisterUserServiceServer(s, service.NewUsersService(userClient, classroomClient, waitingListClient, topicClient, attachmentClient))
+	pb.RegisterWaitingListServiceServer(s, service.NewWaitingListsService(waitingListClient, classroomClient, userClient))
+	pb.RegisterCommentServiceServer(s, service.NewCommentsService(commentClient, postClient, exerciseClient, userClient))
+	pb.RegisterAttachmentServiceServer(s, service.NewAttachmentsService(attachmentClient, userClient, submissionClient))
+	pb.RegisterTopicServiceServer(s, service.NewTopicsService(topicClient, userClient))
+	pb.RegisterAuthorizationServiceServer(s, service.NewAuthorizationService(userClient, authorizationClient))
+	pb.RegisterMemberServiceServer(s, service.NewMembersService(userClient, classroomClient, waitingListClient))
+	pb.RegisterCommiteeServiceServer(s, service.NewCommiteesService(commiteeClient, userClient))
+	pb.RegisterRoomServiceServer(s, service.NewRoomsService(commiteeClient))
+	pb.RegisterStudentDefServiceServer(s, service.NewStudentDefsService(userClient))
+	pb.RegisterScheduleServiceServer(s, service.NewSchedulesService(scheduleClient, commiteeClient, userClient, thesisClient))
+	pb.RegisterNotificationServiceServer(s, service.NewNotificationsService(scheduleClient, userClient))
+	pb.RegisterPointServiceServer(s, service.NewPointsService(scheduleClient, userClient))
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
