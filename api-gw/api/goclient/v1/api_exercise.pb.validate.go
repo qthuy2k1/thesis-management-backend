@@ -546,6 +546,8 @@ func (m *AttachmentExerciseInput) validate(all bool) error {
 
 	// no validation rules for Thumbnail
 
+	// no validation rules for Status
+
 	if len(errors) > 0 {
 		return AttachmentExerciseInputMultiError(errors)
 	}

@@ -114,26 +114,10 @@ function getServer() {
     GetAllPointDefs: (req: any, callback: any) => {
       let points = PointDefController.getAllPointDef(req);
 
-      callback(null, {
-        points: points,
-      });
-    },
-    CreateAttachment: (req: any, callback: any) => {
-      let res = ExerciseController.createAttachment(req);
-
-      res.then((fileUrls) => {
+      points.then((response) => {
+        console.log(response)
         callback(null, {
-        message: "Success",
-        fileUrls: fileUrls
-      });
-      })
-    },
-    GetExercise: (req: any, callback: any) => {
-      let exercise = ExerciseController.getAttachment(req);
-      exercise.then((response) => {
-        // console.log(response)
-        callback(null, {
-          attachments: response,
+          points: response,
         });
       });
     },

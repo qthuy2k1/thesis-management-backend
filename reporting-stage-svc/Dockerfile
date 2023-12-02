@@ -9,6 +9,6 @@ RUN source .env
 
 COPY ./reporting-stage-svc/data/migrations /migrations
 
-COPY ./out /app/
+COPY ./out/reporting-stage /app/
 
 ENTRYPOINT ./reporting-stage

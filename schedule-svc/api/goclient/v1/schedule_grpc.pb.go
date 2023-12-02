@@ -25,8 +25,6 @@ const (
 	ScheduleService_CreateNotification_FullMethodName     = "/schedule.v1.ScheduleService/CreateNotification"
 	ScheduleService_CreateOrUpdatePointDef_FullMethodName = "/schedule.v1.ScheduleService/CreateOrUpdatePointDef"
 	ScheduleService_GetAllPointDefs_FullMethodName        = "/schedule.v1.ScheduleService/GetAllPointDefs"
-	ScheduleService_CreateAttachment_FullMethodName       = "/schedule.v1.ScheduleService/CreateAttachment"
-	ScheduleService_GetAttachment_FullMethodName          = "/schedule.v1.ScheduleService/GetAttachment"
 )
 
 // ScheduleServiceClient is the client API for ScheduleService service.
@@ -39,8 +37,6 @@ type ScheduleServiceClient interface {
 	CreateNotification(ctx context.Context, in *CreateNotificationRequest, opts ...grpc.CallOption) (*CreateNotificationResponse, error)
 	CreateOrUpdatePointDef(ctx context.Context, in *CreateOrUpdatePointDefRequest, opts ...grpc.CallOption) (*CreateOrUpdatePointDefResponse, error)
 	GetAllPointDefs(ctx context.Context, in *GetAllPointDefsRequest, opts ...grpc.CallOption) (*GetAllPointDefsResponse, error)
-	CreateAttachment(ctx context.Context, in *CreateAttachmentRequest, opts ...grpc.CallOption) (*CreateAttachmentResponse, error)
-	GetAttachment(ctx context.Context, in *GetAttachmentRequest, opts ...grpc.CallOption) (*GetAttachmentResponse, error)
 }
 
 type scheduleServiceClient struct {
@@ -105,24 +101,6 @@ func (c *scheduleServiceClient) GetAllPointDefs(ctx context.Context, in *GetAllP
 	return out, nil
 }
 
-func (c *scheduleServiceClient) CreateAttachment(ctx context.Context, in *CreateAttachmentRequest, opts ...grpc.CallOption) (*CreateAttachmentResponse, error) {
-	out := new(CreateAttachmentResponse)
-	err := c.cc.Invoke(ctx, ScheduleService_CreateAttachment_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *scheduleServiceClient) GetAttachment(ctx context.Context, in *GetAttachmentRequest, opts ...grpc.CallOption) (*GetAttachmentResponse, error) {
-	out := new(GetAttachmentResponse)
-	err := c.cc.Invoke(ctx, ScheduleService_GetAttachment_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // ScheduleServiceServer is the server API for ScheduleService service.
 // All implementations must embed UnimplementedScheduleServiceServer
 // for forward compatibility
@@ -133,8 +111,6 @@ type ScheduleServiceServer interface {
 	CreateNotification(context.Context, *CreateNotificationRequest) (*CreateNotificationResponse, error)
 	CreateOrUpdatePointDef(context.Context, *CreateOrUpdatePointDefRequest) (*CreateOrUpdatePointDefResponse, error)
 	GetAllPointDefs(context.Context, *GetAllPointDefsRequest) (*GetAllPointDefsResponse, error)
-	CreateAttachment(context.Context, *CreateAttachmentRequest) (*CreateAttachmentResponse, error)
-	GetAttachment(context.Context, *GetAttachmentRequest) (*GetAttachmentResponse, error)
 	mustEmbedUnimplementedScheduleServiceServer()
 }
 
@@ -159,12 +135,6 @@ func (UnimplementedScheduleServiceServer) CreateOrUpdatePointDef(context.Context
 }
 func (UnimplementedScheduleServiceServer) GetAllPointDefs(context.Context, *GetAllPointDefsRequest) (*GetAllPointDefsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllPointDefs not implemented")
-}
-func (UnimplementedScheduleServiceServer) CreateAttachment(context.Context, *CreateAttachmentRequest) (*CreateAttachmentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateAttachment not implemented")
-}
-func (UnimplementedScheduleServiceServer) GetAttachment(context.Context, *GetAttachmentRequest) (*GetAttachmentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAttachment not implemented")
 }
 func (UnimplementedScheduleServiceServer) mustEmbedUnimplementedScheduleServiceServer() {}
 
@@ -287,42 +257,6 @@ func _ScheduleService_GetAllPointDefs_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ScheduleService_CreateAttachment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateAttachmentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ScheduleServiceServer).CreateAttachment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ScheduleService_CreateAttachment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ScheduleServiceServer).CreateAttachment(ctx, req.(*CreateAttachmentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ScheduleService_GetAttachment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAttachmentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ScheduleServiceServer).GetAttachment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ScheduleService_GetAttachment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ScheduleServiceServer).GetAttachment(ctx, req.(*GetAttachmentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // ScheduleService_ServiceDesc is the grpc.ServiceDesc for ScheduleService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -353,14 +287,6 @@ var ScheduleService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllPointDefs",
 			Handler:    _ScheduleService_GetAllPointDefs_Handler,
-		},
-		{
-			MethodName: "CreateAttachment",
-			Handler:    _ScheduleService_CreateAttachment_Handler,
-		},
-		{
-			MethodName: "GetAttachment",
-			Handler:    _ScheduleService_GetAttachment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

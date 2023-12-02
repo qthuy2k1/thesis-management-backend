@@ -8,6 +8,6 @@ RUN source .env
 
 COPY ./topic-svc/data/migrations /migrations
 
-COPY ./out /app/
+COPY ./out/topic /app/
 
 ENTRYPOINT ./topic

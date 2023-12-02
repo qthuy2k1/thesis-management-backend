@@ -2,8 +2,8 @@ FROM alpine
 
 WORKDIR /app
 
-COPY ./out /app/
+COPY ./out/apigw /app/
 
-COPY ./api-gw /app/
+# COPY ./api-gw /app/
 
 ENTRYPOINT ./apigw

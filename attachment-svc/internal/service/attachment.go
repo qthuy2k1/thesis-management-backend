@@ -217,3 +217,28 @@ func (s *AttachmentSvc) GetAttachmentsOfPost(ctx context.Context, postID int) ([
 
 	return attsSvc, nil
 }
+
+func (s *AttachmentSvc) GetFinalFile(ctx context.Context, userID string) (AttachmentOutputSvc, error) {
+	att, err := s.Repository.GetFinalFile(ctx, userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrAttachmentNotFound) {
+			return AttachmentOutputSvc{}, ErrAttachmentNotFound
+		}
+		return AttachmentOutputSvc{}, err
+	}
+
+	return AttachmentOutputSvc{
+		ID:           att.ID,
+		FileURL:      att.FileURL,
+		Status:       att.Status,
+		SubmissionID: att.SubmissionID,
+		ExerciseID:   att.ExerciseID,
+		AuthorID:     att.AuthorID,
+		PostID:       att.PostID,
+		CreatedAt:    att.CreatedAt,
+		Name:         att.Name,
+		Type:         att.Type,
+		Thumbnail:    att.Thumbnail,
+		Size:         att.Size,
+	}, nil
+}

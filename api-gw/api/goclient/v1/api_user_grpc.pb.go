@@ -29,6 +29,7 @@ const (
 	UserService_UnsubscribeClassroom_FullMethodName         = "/api.user.v1.UserService/UnsubscribeClassroom"
 	UserService_UpdateBasicUser_FullMethodName              = "/api.user.v1.UserService/UpdateBasicUser"
 	UserService_GetAllLecturers_FullMethodName              = "/api.user.v1.UserService/GetAllLecturers"
+	UserService_GetUserAttachment_FullMethodName            = "/api.user.v1.UserService/GetUserAttachment"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -45,6 +46,7 @@ type UserServiceClient interface {
 	UnsubscribeClassroom(ctx context.Context, in *UnsubscribeClassroomRequest, opts ...grpc.CallOption) (*UnsubscribeClassroomResponse, error)
 	UpdateBasicUser(ctx context.Context, in *UpdateBasicUserRequest, opts ...grpc.CallOption) (*UpdateBasicUserResponse, error)
 	GetAllLecturers(ctx context.Context, in *GetAllLecturerRequest, opts ...grpc.CallOption) (*GetAllLecturerResponse, error)
+	GetUserAttachment(ctx context.Context, in *GetUserAttachmentRequest, opts ...grpc.CallOption) (*GetUserAttachmentResponse, error)
 }
 
 type userServiceClient struct {
@@ -145,6 +147,15 @@ func (c *userServiceClient) GetAllLecturers(ctx context.Context, in *GetAllLectu
 	return out, nil
 }
 
+func (c *userServiceClient) GetUserAttachment(ctx context.Context, in *GetUserAttachmentRequest, opts ...grpc.CallOption) (*GetUserAttachmentResponse, error) {
+	out := new(GetUserAttachmentResponse)
+	err := c.cc.Invoke(ctx, UserService_GetUserAttachment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -159,6 +170,7 @@ type UserServiceServer interface {
 	UnsubscribeClassroom(context.Context, *UnsubscribeClassroomRequest) (*UnsubscribeClassroomResponse, error)
 	UpdateBasicUser(context.Context, *UpdateBasicUserRequest) (*UpdateBasicUserResponse, error)
 	GetAllLecturers(context.Context, *GetAllLecturerRequest) (*GetAllLecturerResponse, error)
+	GetUserAttachment(context.Context, *GetUserAttachmentRequest) (*GetUserAttachmentResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -195,6 +207,9 @@ func (UnimplementedUserServiceServer) UpdateBasicUser(context.Context, *UpdateBa
 }
 func (UnimplementedUserServiceServer) GetAllLecturers(context.Context, *GetAllLecturerRequest) (*GetAllLecturerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllLecturers not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserAttachment(context.Context, *GetUserAttachmentRequest) (*GetUserAttachmentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserAttachment not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -389,6 +404,24 @@ func _UserService_GetAllLecturers_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetUserAttachment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserAttachmentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserAttachment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserAttachment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserAttachment(ctx, req.(*GetUserAttachmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -435,6 +468,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllLecturers",
 			Handler:    _UserService_GetAllLecturers_Handler,
+		},
+		{
+			MethodName: "GetUserAttachment",
+			Handler:    _UserService_GetUserAttachment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

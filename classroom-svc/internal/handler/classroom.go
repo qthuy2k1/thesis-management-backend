@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"log"
 
 	classroompb "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	service "github.com/qthuy2k1/thesis-management-backend/classroom-svc/internal/service"
@@ -137,6 +138,7 @@ func (h *ClassroomHdl) DeleteClassroom(ctx context.Context, req *classroompb.Del
 }
 
 func (h *ClassroomHdl) GetClassrooms(ctx context.Context, req *classroompb.GetClassroomsRequest) (*classroompb.GetClassroomsResponse, error) {
+	log.Println("123123")
 	if err := req.Validate(); err != nil {
 		code, err := convertCtrlError(err)
 		return nil, status.Errorf(code, "err: %v", err)

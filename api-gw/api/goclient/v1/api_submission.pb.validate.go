@@ -181,7 +181,7 @@ func (m *SubmissionInput) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for UserID
+	// no validation rules for AuthorID
 
 	if m.GetExerciseID() < 1 {
 		err := SubmissionInputValidationError{
@@ -466,7 +466,7 @@ func (m *SubmissionResponse) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for UserID
+	// no validation rules for AuthorID
 
 	if m.GetExerciseID() < 1 {
 		err := SubmissionResponseValidationError{

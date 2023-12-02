@@ -17,11 +17,22 @@ import (
 )
 
 type FileInfo struct {
-	FileName  string
-	Thumbnail string
-	Size      int64
-	MimeType  string
-	URL       string
+	Name      string `json:"name"`
+	Thumbnail string `json:"thumbnail"`
+	Size      int64  `json:"size"`
+	Type      string `json:"type"`
+	FileURL   string `json:"fileURL"`
+	AuthorID  string `json:"authorID"`
+	Status    string `json:"status"`
+}
+
+type Response struct {
+	Response BodyResponse `json:"response"`
+}
+
+type BodyResponse struct {
+	StatusCode string `json:"statusCode"`
+	Message    string `json:"message"`
 }
 
 // allowCORS allows Cross Origin Resoruce Sharing from any origin.
@@ -68,21 +79,25 @@ func main() {
 			r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 				w.Write([]byte("Test get server"))
 			})
-			r.Route("/{exerciseID}", func(r chi.Router) {
-				r.Put("/", client.updateExercise)
-			})
+			// r.Route("/{exerciseID}", func(r chi.Router) {
+			// 	r.Put("/", client.updateExercise)
+			// })
 		})
 		r.Route("/post", func(r chi.Router) {
 			r.Post("/", client.createPost)
-			r.Route("/{postID}", func(r chi.Router) {
-				r.Put("/", client.updatePost)
-			})
+			// r.Route("/{postID}", func(r chi.Router) {
+			// 	r.Put("/", client.updatePost)
+			// })
 		})
 		r.Route("/submit", func(r chi.Router) {
 			r.Post("/", client.createSubmission)
-			r.Route("/{submissionID}", func(r chi.Router) {
-				r.Put("/", client.updateSubmission)
-			})
+			// r.Route("/{submissionID}", func(r chi.Router) {
+			// 	r.Put("/", client.updateSubmission)
+			// })
+		})
+
+		r.Route("/final-file", func(r chi.Router) {
+			r.Post("/", client.createFinalFile)
 		})
 	})
 
@@ -98,6 +113,7 @@ type uploadServiceGW struct {
 	exerciseClient   pb.ExerciseServiceClient
 	postClient       pb.PostServiceClient
 	submissionClient pb.SubmissionServiceClient
+	attachmentClient pb.AttachmentServiceClient
 }
 
 func NewUploadService() *uploadServiceGW {
@@ -114,11 +130,13 @@ func NewUploadService() *uploadServiceGW {
 	exerciseClient := pb.NewExerciseServiceClient(conn)
 	postClient := pb.NewPostServiceClient(conn)
 	submissionClient := pb.NewSubmissionServiceClient(conn)
+	attachmentClient := pb.NewAttachmentServiceClient(conn)
 
 	return &uploadServiceGW{
 		// client:           client,
 		exerciseClient:   exerciseClient,
 		postClient:       postClient,
 		submissionClient: submissionClient,
+		attachmentClient: attachmentClient,
 	}
 }

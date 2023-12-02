@@ -294,6 +294,36 @@
         ]
       }
     },
+    "/api/final-file/auth/{userID}": {
+      "get": {
+        "operationId": "UserService_GetUserAttachment",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetUserAttachmentResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
     "/api/user/{id}/update-info": {
       "put": {
         "operationId": "UserService_UpdateBasicUser",
@@ -416,6 +446,41 @@
         }
       }
     },
+    "v1AttachmentFinalFileResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "fileURL": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "authorID": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "thumbnail": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "v1CheckStatusUserJoinClassroomResponse": {
       "type": "object",
       "properties": {
@@ -512,6 +577,17 @@
         }
       }
     },
+    "v1FinalFile": {
+      "type": "object",
+      "properties": {
+        "attachment": {
+          "$ref": "#/definitions/v1AttachmentFinalFileResponse"
+        },
+        "author": {
+          "$ref": "#/definitions/v1UserResponse"
+        }
+      }
+    },
     "v1GetAllLecturerResponse": {
       "type": "object",
       "properties": {
@@ -528,6 +604,14 @@
             "type": "object",
             "$ref": "#/definitions/v1UserResponse"
           }
+        }
+      }
+    },
+    "v1GetUserAttachmentResponse": {
+      "type": "object",
+      "properties": {
+        "finalFile": {
+          "$ref": "#/definitions/v1FinalFile"
         }
       }
     },

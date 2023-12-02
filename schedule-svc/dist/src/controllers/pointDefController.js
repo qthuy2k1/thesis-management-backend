@@ -5,14 +5,16 @@ const pointDefModel_1 = require("../models/pointDefModel");
 exports.PointDefController = {
     async createOrUpdatePointDef(req) {
         const point = req.request.point;
+        console.log(point.assesses);
+        // let input = {
+        // }
         try {
             return await pointDefModel_1.PointDefModel.createOrUpdatePointDef(point);
-            // res.status(200).json({ point, message: "PointDef has been created" });
         }
         catch (err) {
-            // res.status(400).json({ message: err });
             console.log(err);
         }
+        return;
     },
     async getPointDef(req, res) {
         const id = req.params.id;
@@ -47,7 +49,9 @@ exports.PointDefController = {
     },
     async getAllPointDef(req) {
         try {
-            const points = await pointDefModel_1.PointDefModel.getAllPointDef();
+            const id = req.request.id;
+            console.log(req.request);
+            const points = await pointDefModel_1.PointDefModel.getAllPointDef(id);
             if (!points) {
                 // res.status(404).json("PointDef is empty");
                 return;
@@ -58,20 +62,20 @@ exports.PointDefController = {
         catch (err) {
             console.error(err);
             // res.status(500);
+            return;
         }
     },
-    async updatePointDef(req, res) {
-        const point = req.body;
-        const id = req.params.id;
-        try {
-            await pointDefModel_1.PointDefModel.updatePointDef({ id, ...point });
-            res.status(200).json({ id, ...point });
-        }
-        catch (err) {
-            console.error(err);
-            res.status(500);
-        }
-    },
+    // async updatePointDef(req: Request): Promise<IPointDefObject[] | undef> {
+    //   const point = req.body;
+    //   const id = req.params.id;
+    //   try {
+    //     await PointDefModel.updatePointDef({ id, ...point });
+    //     res.status(200).json({ id, ...point });
+    //   } catch (err) {
+    //     console.error(err);
+    //     res.status(500);
+    //   }
+    // },
     async deletePointDef(req, res) {
         const id = req.params.id;
         try {

@@ -16,34 +16,20 @@ export interface ProtoGrpcType {
   schedule: {
     v1: {
       AssessItem: MessageTypeDefinition
-      Attachment: MessageTypeDefinition
-      AttachmentExerciseInput: MessageTypeDefinition
-      AttachmentExerciseResponse: MessageTypeDefinition
-      AuthorExerciseResponse: MessageTypeDefinition
-      ClassroomResponse: MessageTypeDefinition
-      CreateAttachmentRequest: MessageTypeDefinition
-      CreateAttachmentResponse: MessageTypeDefinition
-      CreateExerciseRequest: MessageTypeDefinition
-      CreateExerciseResponse: MessageTypeDefinition
       CreateNotificationRequest: MessageTypeDefinition
       CreateNotificationResponse: MessageTypeDefinition
       CreateOrUpdatePointDefRequest: MessageTypeDefinition
       CreateOrUpdatePointDefResponse: MessageTypeDefinition
       CreateScheduleRequest: MessageTypeDefinition
       CreateScheduleResponse: MessageTypeDefinition
-      ExerciseInput: MessageTypeDefinition
-      ExerciseResponse: MessageTypeDefinition
       GetAllPointDefsRequest: MessageTypeDefinition
       GetAllPointDefsResponse: MessageTypeDefinition
-      GetAttachmentRequest: MessageTypeDefinition
-      GetAttachmentResponse: MessageTypeDefinition
       GetNotificationsRequest: MessageTypeDefinition
       GetNotificationsResponse: MessageTypeDefinition
       GetSchedulesRequest: MessageTypeDefinition
       GetSchedulesResponse: MessageTypeDefinition
       Notification: MessageTypeDefinition
       Point: MessageTypeDefinition
-      ReportingStageExerciseResponse: MessageTypeDefinition
       RoomSchedule: MessageTypeDefinition
       Schedule: MessageTypeDefinition
       ScheduleResponse: MessageTypeDefinition

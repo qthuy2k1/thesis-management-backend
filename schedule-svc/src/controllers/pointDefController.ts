@@ -5,13 +5,18 @@ import { IPointDefObject } from "../interface/pointDef";
 export const PointDefController = {
   async createOrUpdatePointDef(req: any): Promise<IPointDefObject | undefined>{
     const point = req.request.point;
+
+    console.log(point.assesses)
+    
+    // let input = {
+
+    // }
     try {
       return await PointDefModel.createOrUpdatePointDef(point);
-      // res.status(200).json({ point, message: "PointDef has been created" });
     } catch (err) {
-      // res.status(400).json({ message: err });
       console.log(err);
     }
+    return
   },
 
   async getPointDef(req: Request, res: Response) {
@@ -47,30 +52,33 @@ export const PointDefController = {
 
   async getAllPointDef(req: any): Promise<IPointDefObject[] | undefined> {
     try {
-      const points = await PointDefModel.getAllPointDef();
+      const id = req.request.id;
+      const points = await PointDefModel.getAllPointDef(id);
       if (!points) {
         // res.status(404).json("PointDef is empty");
         return;
       }
       // res.status(200).json(points);
-      return points
+
+      return points;
     } catch (err) {
       console.error(err);
       // res.status(500);
+      return
     }
   },
 
-  async updatePointDef(req: Request, res: Response) {
-    const point = req.body;
-    const id = req.params.id;
-    try {
-      await PointDefModel.updatePointDef({ id, ...point });
-      res.status(200).json({ id, ...point });
-    } catch (err) {
-      console.error(err);
-      res.status(500);
-    }
-  },
+  // async updatePointDef(req: Request): Promise<IPointDefObject[] | undef> {
+  //   const point = req.body;
+  //   const id = req.params.id;
+  //   try {
+  //     await PointDefModel.updatePointDef({ id, ...point });
+  //     res.status(200).json({ id, ...point });
+  //   } catch (err) {
+  //     console.error(err);
+  //     res.status(500);
+  //   }
+  // },
 
   async deletePointDef(req: Request, res: Response) {
     const id = req.params.id;

@@ -55,40 +55,14 @@
           "$ref": "#/definitions/v1UserScheduleResponse"
         },
         "point": {
-          "type": "string",
-          "format": "int64"
+          "type": "number",
+          "format": "double"
         },
         "comment": {
           "type": "string"
         }
       },
       "title": "===========================\nPOINT"
-    },
-    "v1Attachment": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "src": {
-          "type": "string"
-        }
-      }
-    },
-    "v1CreateAttachmentResponse": {
-      "type": "object",
-      "properties": {
-        "attachment": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1Attachment"
-          }
-        }
-      }
     },
     "v1CreateNotificationResponse": {
       "type": "object",
@@ -143,18 +117,6 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1Point"
-          }
-        }
-      }
-    },
-    "v1GetAttachmentResponse": {
-      "type": "object",
-      "properties": {
-        "attachments": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1Attachment"
           }
         }
       }

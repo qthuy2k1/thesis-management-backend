@@ -35,6 +35,216 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on ExtractTokenRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ExtractTokenRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ExtractTokenRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ExtractTokenRequestMultiError, or nil if none found.
+func (m *ExtractTokenRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ExtractTokenRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Token
+
+	if len(errors) > 0 {
+		return ExtractTokenRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ExtractTokenRequestMultiError is an error wrapping multiple validation
+// errors returned by ExtractTokenRequest.ValidateAll() if the designated
+// constraints aren't met.
+type ExtractTokenRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ExtractTokenRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ExtractTokenRequestMultiError) AllErrors() []error { return m }
+
+// ExtractTokenRequestValidationError is the validation error returned by
+// ExtractTokenRequest.Validate if the designated constraints aren't met.
+type ExtractTokenRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ExtractTokenRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ExtractTokenRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ExtractTokenRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ExtractTokenRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ExtractTokenRequestValidationError) ErrorName() string {
+	return "ExtractTokenRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ExtractTokenRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sExtractTokenRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ExtractTokenRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ExtractTokenRequestValidationError{}
+
+// Validate checks the field values on ExtractTokenResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ExtractTokenResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ExtractTokenResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ExtractTokenResponseMultiError, or nil if none found.
+func (m *ExtractTokenResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ExtractTokenResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserID
+
+	// no validation rules for Email
+
+	if len(errors) > 0 {
+		return ExtractTokenResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ExtractTokenResponseMultiError is an error wrapping multiple validation
+// errors returned by ExtractTokenResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ExtractTokenResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ExtractTokenResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ExtractTokenResponseMultiError) AllErrors() []error { return m }
+
+// ExtractTokenResponseValidationError is the validation error returned by
+// ExtractTokenResponse.Validate if the designated constraints aren't met.
+type ExtractTokenResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ExtractTokenResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ExtractTokenResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ExtractTokenResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ExtractTokenResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ExtractTokenResponseValidationError) ErrorName() string {
+	return "ExtractTokenResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ExtractTokenResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sExtractTokenResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ExtractTokenResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ExtractTokenResponseValidationError{}
+
 // Validate checks the field values on AuthorizeRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, the
 // first error encountered is returned, or nil if there are no violations.
@@ -57,9 +267,9 @@ func (m *AuthorizeRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Token
-
 	// no validation rules for Method
+
+	// no validation rules for Role
 
 	if len(errors) > 0 {
 		return AuthorizeRequestMultiError(errors)
@@ -160,6 +370,8 @@ func (m *AuthorizeResponse) validate(all bool) error {
 	}
 
 	var errors []error
+
+	// no validation rules for CanAccess
 
 	if len(errors) > 0 {
 		return AuthorizeResponseMultiError(errors)

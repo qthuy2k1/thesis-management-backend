@@ -8,6 +8,6 @@ RUN source .env
 
 COPY ./post-svc/data/migrations /migrations
 
-COPY ./out /app/
+COPY ./out/post /app/
 
 ENTRYPOINT ./post

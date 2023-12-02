@@ -8,6 +8,6 @@ RUN source .env
 
 COPY ./classroom-waiting-list-svc/data/migrations /migrations
 
-COPY ./out /app/
+COPY ./out/classroom-waiting-list /app/
 
 ENTRYPOINT ./classroom-waiting-list

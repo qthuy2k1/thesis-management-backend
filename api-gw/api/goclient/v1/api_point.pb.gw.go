@@ -69,6 +69,23 @@ func request_PointService_GetAllPointDef_0(ctx context.Context, marshaler runtim
 	var protoReq GetAllPointDefRequest
 	var metadata runtime.ServerMetadata
 
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["userID"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "userID")
+	}
+
+	protoReq.UserID, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "userID", err)
+	}
+
 	msg, err := client.GetAllPointDef(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
@@ -77,6 +94,23 @@ func request_PointService_GetAllPointDef_0(ctx context.Context, marshaler runtim
 func local_request_PointService_GetAllPointDef_0(ctx context.Context, marshaler runtime.Marshaler, server PointServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetAllPointDefRequest
 	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["userID"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "userID")
+	}
+
+	protoReq.UserID, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "userID", err)
+	}
 
 	msg, err := server.GetAllPointDef(ctx, &protoReq)
 	return msg, metadata, err
@@ -122,7 +156,7 @@ func RegisterPointServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.point.v1.PointService/GetAllPointDef", runtime.WithHTTPPathPattern("/api/point"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/api.point.v1.PointService/GetAllPointDef", runtime.WithHTTPPathPattern("/api/point/{userID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -208,7 +242,7 @@ func RegisterPointServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.point.v1.PointService/GetAllPointDef", runtime.WithHTTPPathPattern("/api/point"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/api.point.v1.PointService/GetAllPointDef", runtime.WithHTTPPathPattern("/api/point/{userID}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -230,7 +264,7 @@ func RegisterPointServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 var (
 	pattern_PointService_CreateOrUpdatePointDef_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "point"}, ""))
 
-	pattern_PointService_GetAllPointDef_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "point"}, ""))
+	pattern_PointService_GetAllPointDef_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "point", "userID"}, ""))
 )
 
 var (

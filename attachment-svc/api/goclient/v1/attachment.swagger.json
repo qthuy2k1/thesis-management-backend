@@ -219,6 +219,14 @@
         }
       }
     },
+    "v1GetFinalFileResponse": {
+      "type": "object",
+      "properties": {
+        "attachment": {
+          "$ref": "#/definitions/v1AttachmentResponse"
+        }
+      }
+    },
     "v1UpdateAttachmentResponse": {
       "type": "object",
       "properties": {

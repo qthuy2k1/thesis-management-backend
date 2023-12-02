@@ -109,6 +109,7 @@ message AttachmentPostInput {
     int64 size = 7;
     string type = 8;
     string thumbnail = 9;
+    string status = 10;
 }
 
 message AuthorPostResponse {

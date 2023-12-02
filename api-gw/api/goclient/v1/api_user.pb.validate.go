@@ -4449,3 +4449,805 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetAllLecturerResponseValidationError{}
+
+// Validate checks the field values on AttachmentFinalFileRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AttachmentFinalFileRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AttachmentFinalFileRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AttachmentFinalFileRequestMultiError, or nil if none found.
+func (m *AttachmentFinalFileRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AttachmentFinalFileRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for FileURL
+
+	// no validation rules for Status
+
+	// no validation rules for AuthorID
+
+	// no validation rules for Name
+
+	// no validation rules for Type
+
+	// no validation rules for Thumbnail
+
+	// no validation rules for Size
+
+	if len(errors) > 0 {
+		return AttachmentFinalFileRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AttachmentFinalFileRequestMultiError is an error wrapping multiple
+// validation errors returned by AttachmentFinalFileRequest.ValidateAll() if
+// the designated constraints aren't met.
+type AttachmentFinalFileRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AttachmentFinalFileRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AttachmentFinalFileRequestMultiError) AllErrors() []error { return m }
+
+// AttachmentFinalFileRequestValidationError is the validation error returned
+// by AttachmentFinalFileRequest.Validate if the designated constraints aren't met.
+type AttachmentFinalFileRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AttachmentFinalFileRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AttachmentFinalFileRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AttachmentFinalFileRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AttachmentFinalFileRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AttachmentFinalFileRequestValidationError) ErrorName() string {
+	return "AttachmentFinalFileRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AttachmentFinalFileRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAttachmentFinalFileRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AttachmentFinalFileRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AttachmentFinalFileRequestValidationError{}
+
+// Validate checks the field values on AttachmentFinalFileResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AttachmentFinalFileResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AttachmentFinalFileResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AttachmentFinalFileResponseMultiError, or nil if none found.
+func (m *AttachmentFinalFileResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AttachmentFinalFileResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for FileURL
+
+	// no validation rules for Status
+
+	// no validation rules for AuthorID
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AttachmentFinalFileResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AttachmentFinalFileResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AttachmentFinalFileResponseValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Name
+
+	// no validation rules for Type
+
+	// no validation rules for Thumbnail
+
+	// no validation rules for Size
+
+	if len(errors) > 0 {
+		return AttachmentFinalFileResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// AttachmentFinalFileResponseMultiError is an error wrapping multiple
+// validation errors returned by AttachmentFinalFileResponse.ValidateAll() if
+// the designated constraints aren't met.
+type AttachmentFinalFileResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AttachmentFinalFileResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AttachmentFinalFileResponseMultiError) AllErrors() []error { return m }
+
+// AttachmentFinalFileResponseValidationError is the validation error returned
+// by AttachmentFinalFileResponse.Validate if the designated constraints
+// aren't met.
+type AttachmentFinalFileResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AttachmentFinalFileResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AttachmentFinalFileResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AttachmentFinalFileResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AttachmentFinalFileResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AttachmentFinalFileResponseValidationError) ErrorName() string {
+	return "AttachmentFinalFileResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AttachmentFinalFileResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAttachmentFinalFileResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AttachmentFinalFileResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AttachmentFinalFileResponseValidationError{}
+
+// Validate checks the field values on AttachmentFinalFileUserResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AttachmentFinalFileUserResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AttachmentFinalFileUserResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// AttachmentFinalFileUserResponseMultiError, or nil if none found.
+func (m *AttachmentFinalFileUserResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AttachmentFinalFileUserResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for FileURL
+
+	// no validation rules for Status
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AttachmentFinalFileUserResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AttachmentFinalFileUserResponseValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AttachmentFinalFileUserResponseValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Name
+
+	// no validation rules for Type
+
+	// no validation rules for Thumbnail
+
+	// no validation rules for Size
+
+	if len(errors) > 0 {
+		return AttachmentFinalFileUserResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// AttachmentFinalFileUserResponseMultiError is an error wrapping multiple
+// validation errors returned by AttachmentFinalFileUserResponse.ValidateAll()
+// if the designated constraints aren't met.
+type AttachmentFinalFileUserResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AttachmentFinalFileUserResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AttachmentFinalFileUserResponseMultiError) AllErrors() []error { return m }
+
+// AttachmentFinalFileUserResponseValidationError is the validation error
+// returned by AttachmentFinalFileUserResponse.Validate if the designated
+// constraints aren't met.
+type AttachmentFinalFileUserResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AttachmentFinalFileUserResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AttachmentFinalFileUserResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AttachmentFinalFileUserResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AttachmentFinalFileUserResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AttachmentFinalFileUserResponseValidationError) ErrorName() string {
+	return "AttachmentFinalFileUserResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AttachmentFinalFileUserResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAttachmentFinalFileUserResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AttachmentFinalFileUserResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AttachmentFinalFileUserResponseValidationError{}
+
+// Validate checks the field values on GetUserAttachmentRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetUserAttachmentRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetUserAttachmentRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetUserAttachmentRequestMultiError, or nil if none found.
+func (m *GetUserAttachmentRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetUserAttachmentRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserID
+
+	if len(errors) > 0 {
+		return GetUserAttachmentRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetUserAttachmentRequestMultiError is an error wrapping multiple validation
+// errors returned by GetUserAttachmentRequest.ValidateAll() if the designated
+// constraints aren't met.
+type GetUserAttachmentRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetUserAttachmentRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetUserAttachmentRequestMultiError) AllErrors() []error { return m }
+
+// GetUserAttachmentRequestValidationError is the validation error returned by
+// GetUserAttachmentRequest.Validate if the designated constraints aren't met.
+type GetUserAttachmentRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetUserAttachmentRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetUserAttachmentRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetUserAttachmentRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetUserAttachmentRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetUserAttachmentRequestValidationError) ErrorName() string {
+	return "GetUserAttachmentRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetUserAttachmentRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetUserAttachmentRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetUserAttachmentRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetUserAttachmentRequestValidationError{}
+
+// Validate checks the field values on FinalFile with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *FinalFile) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on FinalFile with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in FinalFileMultiError, or nil
+// if none found.
+func (m *FinalFile) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *FinalFile) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetAttachment()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, FinalFileValidationError{
+					field:  "Attachment",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, FinalFileValidationError{
+					field:  "Attachment",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetAttachment()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return FinalFileValidationError{
+				field:  "Attachment",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetAuthor()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, FinalFileValidationError{
+					field:  "Author",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, FinalFileValidationError{
+					field:  "Author",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetAuthor()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return FinalFileValidationError{
+				field:  "Author",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return FinalFileMultiError(errors)
+	}
+
+	return nil
+}
+
+// FinalFileMultiError is an error wrapping multiple validation errors returned
+// by FinalFile.ValidateAll() if the designated constraints aren't met.
+type FinalFileMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m FinalFileMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m FinalFileMultiError) AllErrors() []error { return m }
+
+// FinalFileValidationError is the validation error returned by
+// FinalFile.Validate if the designated constraints aren't met.
+type FinalFileValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e FinalFileValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e FinalFileValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e FinalFileValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e FinalFileValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e FinalFileValidationError) ErrorName() string { return "FinalFileValidationError" }
+
+// Error satisfies the builtin error interface
+func (e FinalFileValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sFinalFile.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = FinalFileValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = FinalFileValidationError{}
+
+// Validate checks the field values on GetUserAttachmentResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetUserAttachmentResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetUserAttachmentResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetUserAttachmentResponseMultiError, or nil if none found.
+func (m *GetUserAttachmentResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetUserAttachmentResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetFinalFile()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetUserAttachmentResponseValidationError{
+					field:  "FinalFile",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetUserAttachmentResponseValidationError{
+					field:  "FinalFile",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetFinalFile()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetUserAttachmentResponseValidationError{
+				field:  "FinalFile",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return GetUserAttachmentResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetUserAttachmentResponseMultiError is an error wrapping multiple validation
+// errors returned by GetUserAttachmentResponse.ValidateAll() if the
+// designated constraints aren't met.
+type GetUserAttachmentResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetUserAttachmentResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetUserAttachmentResponseMultiError) AllErrors() []error { return m }
+
+// GetUserAttachmentResponseValidationError is the validation error returned by
+// GetUserAttachmentResponse.Validate if the designated constraints aren't met.
+type GetUserAttachmentResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetUserAttachmentResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetUserAttachmentResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetUserAttachmentResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetUserAttachmentResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetUserAttachmentResponseValidationError) ErrorName() string {
+	return "GetUserAttachmentResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetUserAttachmentResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetUserAttachmentResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetUserAttachmentResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetUserAttachmentResponseValidationError{}

@@ -7,6 +7,6 @@ COPY ./upload-svc/token.json ./token.json
 
 # RUN source .env
 
-COPY ./out /app/
+COPY ./out/upload /app/
 
 ENTRYPOINT ./upload

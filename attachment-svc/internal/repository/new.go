@@ -20,6 +20,7 @@ type IAttachmentRepo interface {
 	GetAttachmentsOfSubmission(ctx context.Context, submissionID int) ([]AttachmentOutputRepo, error)
 	// GetAttachment returns a list of attachments of a submission in db
 	GetAttachmentsOfPost(ctx context.Context, postID int) ([]AttachmentOutputRepo, error)
+	GetFinalFile(ctx context.Context, userID string) (AttachmentOutputRepo, error)
 }
 
 type AttachmentRepo struct {

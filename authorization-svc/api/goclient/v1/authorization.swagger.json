@@ -48,11 +48,19 @@
     "v1AuthorizeResponse": {
       "type": "object",
       "properties": {
-        "accessibleMethod": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "canAccess": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1ExtractTokenResponse": {
+      "type": "object",
+      "properties": {
+        "userID": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
         }
       }
     }

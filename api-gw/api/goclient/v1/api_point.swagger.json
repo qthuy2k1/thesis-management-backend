@@ -17,26 +17,6 @@
   ],
   "paths": {
     "/api/point": {
-      "get": {
-        "operationId": "PointService_GetAllPointDef",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1GetAllPointDefResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "tags": [
-          "PointService"
-        ]
-      },
       "post": {
         "operationId": "PointService_CreateOrUpdatePointDef",
         "responses": {
@@ -61,6 +41,36 @@
             "schema": {
               "$ref": "#/definitions/v1CreateOrUpdatePointDefRequest"
             }
+          }
+        ],
+        "tags": [
+          "PointService"
+        ]
+      }
+    },
+    "/api/point/{userID}": {
+      "get": {
+        "operationId": "PointService_GetAllPointDef",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetAllPointDefResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [
@@ -108,8 +118,8 @@
           "type": "string"
         },
         "point": {
-          "type": "string",
-          "format": "int64"
+          "type": "number",
+          "format": "double"
         },
         "comment": {
           "type": "string"
@@ -126,8 +136,8 @@
           "$ref": "#/definitions/v1UserPointResponse"
         },
         "point": {
-          "type": "string",
-          "format": "int64"
+          "type": "number",
+          "format": "double"
         },
         "comment": {
           "type": "string"

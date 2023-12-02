@@ -2,6 +2,6 @@ FROM alpine
 
 WORKDIR /app
 
-COPY ./out /app/
+COPY ./out/apigw-client /app/
 
 ENTRYPOINT ./apigw-client

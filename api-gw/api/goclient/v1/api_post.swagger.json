@@ -361,6 +361,9 @@
         },
         "thumbnail": {
           "type": "string"
+        },
+        "status": {
+          "type": "string"
         }
       }
     },

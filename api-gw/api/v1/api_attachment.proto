@@ -53,11 +53,12 @@ message CommonAttachmentResponse {
 // ====== POST ======
 message AttachmentInput {
     string fileURL = 1;
-    string status = 2;
-    optional int64 submissionID = 3;
-    optional int64 exerciseID = 4;
-    optional int64 postID = 5;
-    string authorID = 6;
+    string authorID = 2;
+    string name = 3;
+    int64 size = 7;
+    string type = 8;
+    string thumbnail = 9;
+    string status = 10;
 }
 
 
@@ -65,9 +66,12 @@ message AttachmentResponse {
     int64 id = 1;
     string fileURL = 2;
     string status = 3;
-    optional SubmissionAttachmentResponse submission = 4; 
     AuthorAttachmentResponse author = 6;
     google.protobuf.Timestamp created_at = 7;
+    int64 size = 8;
+    string mimeType = 9;
+    string thumbnail = 10;
+    string fileName = 11;
 }
 
 message SubmissionAttachmentResponse {
