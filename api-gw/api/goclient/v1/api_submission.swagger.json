@@ -16,6 +16,36 @@
     "application/json"
   ],
   "paths": {
+    "/api/auth/{userID}/submit": {
+      "get": {
+        "operationId": "SubmissionService_GetSubmissionFromUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetSubmissionFromUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SubmissionService"
+        ]
+      }
+    },
     "/api/exercise/{exerciseID}/submit/{userID}": {
       "get": {
         "operationId": "SubmissionService_GetSubmissionOfUser",
@@ -392,6 +422,21 @@
         "totalCount": {
           "type": "string",
           "format": "int64"
+        },
+        "submissions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1SubmissionResponse"
+          }
+        }
+      }
+    },
+    "v1GetSubmissionFromUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonSubmissionResponse"
         },
         "submissions": {
           "type": "array",

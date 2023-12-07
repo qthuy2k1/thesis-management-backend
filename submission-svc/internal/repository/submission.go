@@ -119,7 +119,7 @@ func (r *SubmissionRepo) GetSubmission(ctx context.Context, id int) (SubmissionO
 
 // UpdateSubmission updates the specified submission by id
 func (r *SubmissionRepo) UpdateSubmission(ctx context.Context, id int, s SubmissionInputRepo) error {
-	result, err := ExecSQL(ctx, r.Database, "UpdateSubmission", "UPDATE submissions SET user_id=$2, exercise_id=$3, status=$4, attachment_id=$5 WHERE id=$1", id, s.UserID, s.ExerciseID, s.Status)
+	result, err := ExecSQL(ctx, r.Database, "UpdateSubmission", "UPDATE submissions SET user_id=$2, exercise_id=$3, status=$4 WHERE id=$1", id, s.UserID, s.ExerciseID, s.Status)
 	if err != nil {
 		return err
 	}
@@ -186,6 +186,39 @@ func (r *SubmissionRepo) GetAllSubmissionsOfExercise(ctx context.Context, exerci
 
 func (r *SubmissionRepo) GetSubmissionOfUser(ctx context.Context, userID string, exerciseID int) ([]SubmissionOutputRepo, error) {
 	rows, err := QuerySQL(ctx, r.Database, "GetSubmissionOfUser", "SELECT id, user_id, exercise_id, status, created_at, updated_at FROM submissions WHERE user_id = $1 AND exercise_id = $2", userID, exerciseID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Iterate over the result rows and populate the submissions slice
+	var submissions []SubmissionOutputRepo
+
+	for rows.Next() {
+		s := SubmissionOutputRepo{}
+		err := rows.Scan(
+			&s.ID,
+			&s.UserID,
+			&s.ExerciseID,
+			&s.Status,
+			&s.CreatedAt,
+			&s.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		submissions = append(submissions, s)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return submissions, nil
+}
+
+func (r *SubmissionRepo) GetAllSubmissionFromUser(ctx context.Context, userID string) ([]SubmissionOutputRepo, error) {
+	rows, err := QuerySQL(ctx, r.Database, "GetSubmissionOfUser", "SELECT id, user_id, exercise_id, status, created_at, updated_at FROM submissions WHERE user_id = $1 ", userID)
 	if err != nil {
 		return nil, err
 	}

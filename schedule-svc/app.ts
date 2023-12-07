@@ -102,25 +102,50 @@ function getServer() {
       });
     },
     CreateOrUpdatePointDef: (req: any, callback: any) => {
-      let point = PointDefController.createOrUpdatePointDef(req);
+      let res = PointDefController.createOrUpdatePointDef(req);
 
-      point.then((response) => {
+      res.then((point) => {
         callback(null, {
-          point: response,
+          point: point,
           message: "PointDef has been created",
         });
       });
     },
     GetAllPointDefs: (req: any, callback: any) => {
-      let points = PointDefController.getAllPointDef(req);
+      let res = PointDefController.getAllPointDef(req);
 
-      points.then((response) => {
-        console.log(response)
+      res.then((point) => {
+        console.log(point)
         callback(null, {
-          points: response,
+          point: point,
         });
       });
     },
+    UpdatePointDef: (req: any, callback: any) => {
+      let res = PointDefController.updatePointDef(req)
+
+      res.then((point) => {
+        console.log(point)
+        callback(null, {
+          point: point
+        })
+      }) 
+    },
+    DeletePointDef: (req: any, callback: any) => {
+      let res = PointDefController.deletePointDef(req)
+
+      res.then((isDelete) => {
+        if (isDelete) {
+          callback(null, {
+            message: "point has been deleted"
+          })
+        } else {
+          callback(null, {
+            message: "some error occurred"
+          })
+        }
+      })
+    }
   });
 
   return server;

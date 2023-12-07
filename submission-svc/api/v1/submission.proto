@@ -18,6 +18,8 @@ service SubmissionService {
 
     rpc GetAllSubmissionsOfExercise(GetAllSubmissionsOfExerciseRequest) returns (GetAllSubmissionsOfExerciseResponse) {}
     rpc GetSubmissionOfUser(GetSubmissionOfUserRequest) returns (GetSubmissionOfUserResponse){}
+
+    rpc GetSubmissionFromUser(GetSubmissionFromUserRequest) returns (GetSubmissionFromUserResponse){}
 }
 
 message CommonSubmissionResponse {
@@ -101,6 +103,15 @@ message GetSubmissionOfUserRequest {
 
 
 message GetSubmissionOfUserResponse {
+    CommonSubmissionResponse response = 1;
+    repeated SubmissionResponse submissions = 2;
+}
+
+message GetSubmissionFromUserRequest {
+    string userID = 1;
+}
+
+message GetSubmissionFromUserResponse {
     CommonSubmissionResponse response = 1;
     repeated SubmissionResponse submissions = 2;
 }

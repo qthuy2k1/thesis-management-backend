@@ -1990,3 +1990,274 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetSubmissionOfUserResponseValidationError{}
+
+// Validate checks the field values on GetSubmissionFromUserRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetSubmissionFromUserRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetSubmissionFromUserRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetSubmissionFromUserRequestMultiError, or nil if none found.
+func (m *GetSubmissionFromUserRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetSubmissionFromUserRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for UserID
+
+	if len(errors) > 0 {
+		return GetSubmissionFromUserRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetSubmissionFromUserRequestMultiError is an error wrapping multiple
+// validation errors returned by GetSubmissionFromUserRequest.ValidateAll() if
+// the designated constraints aren't met.
+type GetSubmissionFromUserRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetSubmissionFromUserRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetSubmissionFromUserRequestMultiError) AllErrors() []error { return m }
+
+// GetSubmissionFromUserRequestValidationError is the validation error returned
+// by GetSubmissionFromUserRequest.Validate if the designated constraints
+// aren't met.
+type GetSubmissionFromUserRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetSubmissionFromUserRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetSubmissionFromUserRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetSubmissionFromUserRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetSubmissionFromUserRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetSubmissionFromUserRequestValidationError) ErrorName() string {
+	return "GetSubmissionFromUserRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetSubmissionFromUserRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetSubmissionFromUserRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetSubmissionFromUserRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetSubmissionFromUserRequestValidationError{}
+
+// Validate checks the field values on GetSubmissionFromUserResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetSubmissionFromUserResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetSubmissionFromUserResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// GetSubmissionFromUserResponseMultiError, or nil if none found.
+func (m *GetSubmissionFromUserResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetSubmissionFromUserResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetResponse()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetSubmissionFromUserResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetSubmissionFromUserResponseValidationError{
+					field:  "Response",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetSubmissionFromUserResponseValidationError{
+				field:  "Response",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	for idx, item := range m.GetSubmissions() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetSubmissionFromUserResponseValidationError{
+						field:  fmt.Sprintf("Submissions[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetSubmissionFromUserResponseValidationError{
+						field:  fmt.Sprintf("Submissions[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetSubmissionFromUserResponseValidationError{
+					field:  fmt.Sprintf("Submissions[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return GetSubmissionFromUserResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetSubmissionFromUserResponseMultiError is an error wrapping multiple
+// validation errors returned by GetSubmissionFromUserResponse.ValidateAll()
+// if the designated constraints aren't met.
+type GetSubmissionFromUserResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetSubmissionFromUserResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetSubmissionFromUserResponseMultiError) AllErrors() []error { return m }
+
+// GetSubmissionFromUserResponseValidationError is the validation error
+// returned by GetSubmissionFromUserResponse.Validate if the designated
+// constraints aren't met.
+type GetSubmissionFromUserResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetSubmissionFromUserResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetSubmissionFromUserResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetSubmissionFromUserResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetSubmissionFromUserResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetSubmissionFromUserResponseValidationError) ErrorName() string {
+	return "GetSubmissionFromUserResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetSubmissionFromUserResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetSubmissionFromUserResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetSubmissionFromUserResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetSubmissionFromUserResponseValidationError{}

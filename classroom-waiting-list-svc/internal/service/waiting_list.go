@@ -37,6 +37,11 @@ func (s *WaitingListSvc) CreateWaitingList(ctx context.Context, wt WaitingListIn
 		if errors.Is(err, repository.ErrWaitingListExisted) {
 			return ErrWaitingListExisted
 		}
+
+		if errors.Is(err, repository.ErrWaitingListCreatedMoreThanTwo) {
+			return ErrWaitingListCreatedMoreThanTwo
+		}
+
 		return err
 	}
 

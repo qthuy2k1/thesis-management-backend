@@ -19,6 +19,10 @@ service ScheduleService {
     rpc CreateOrUpdatePointDef(CreateOrUpdatePointDefRequest) returns (CreateOrUpdatePointDefResponse) {}
 
     rpc GetAllPointDefs(GetAllPointDefsRequest) returns (GetAllPointDefsResponse) {}
+
+    rpc UpdatePointDef(UpdatePointDefRequest) returns (UpdatePointDefResponse) {}
+
+    rpc DeletePointDef(DeletePointDefRequest) returns (DeletePointDefResponse) {}
 }
 
 
@@ -161,7 +165,24 @@ message GetAllPointDefsRequest {
 }
 
 message GetAllPointDefsResponse {
-    repeated Point points = 1;
+    repeated Point point = 1;
+}
+
+message UpdatePointDefRequest {
+    string id = 1;
+    Point point = 2;
+}
+
+message UpdatePointDefResponse {
+    repeated Point point = 1;
+}
+
+message DeletePointDefRequest {
+    string id = 1;
+}
+
+message DeletePointDefResponse {
+    string message = 1;
 }
 
 

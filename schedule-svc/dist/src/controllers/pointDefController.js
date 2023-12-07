@@ -50,7 +50,6 @@ exports.PointDefController = {
     async getAllPointDef(req) {
         try {
             const id = req.request.id;
-            console.log(req.request);
             const points = await pointDefModel_1.PointDefModel.getAllPointDef(id);
             if (!points) {
                 // res.status(404).json("PointDef is empty");
@@ -65,30 +64,34 @@ exports.PointDefController = {
             return;
         }
     },
-    // async updatePointDef(req: Request): Promise<IPointDefObject[] | undef> {
-    //   const point = req.body;
-    //   const id = req.params.id;
-    //   try {
-    //     await PointDefModel.updatePointDef({ id, ...point });
-    //     res.status(200).json({ id, ...point });
-    //   } catch (err) {
-    //     console.error(err);
-    //     res.status(500);
-    //   }
-    // },
-    async deletePointDef(req, res) {
-        const id = req.params.id;
+    async updatePointDef(req) {
+        const point = req.request.point;
+        const id = req.request.id;
         try {
-            const points = await pointDefModel_1.PointDefModel.deletePointDef(id);
-            if (!points) {
-                res.status(404);
-                return false;
-            }
-            return res.status(200).json(points);
+            await pointDefModel_1.PointDefModel.updatePointDef({ id, ...point });
+            // res.status(200).json({ id, ...point });
+            return { id, ...point };
         }
         catch (err) {
             console.error(err);
-            res.status(500);
+            // res.status(500);
+        }
+    },
+    async deletePointDef(req) {
+        const id = req.request.id;
+        try {
+            const points = await pointDefModel_1.PointDefModel.deletePointDef(id);
+            if (!points) {
+                // res.status(404);
+                return false;
+            }
+            // return res.status(200).json(points);
+            return true;
+        }
+        catch (err) {
+            console.error(err);
+            // res.status(500);
+            return false;
         }
     },
 };

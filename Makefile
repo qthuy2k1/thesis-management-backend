@@ -345,33 +345,34 @@ docker-tag:
 	docker tag postgres qthuy2k1/thesis-management-backend-thesis-commitee-db:$(tag)
 
 
+# asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io
 docker-google-cloud-tag:
 	# APP
-	docker tag qthuy2k1/thesis-management-backend:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-apigw-client:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-apigw-client:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-classroom:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-classroom:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-post:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-post:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-exercise:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-exercise:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-reporting-stage:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-reporting-stage:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-submission:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-submission:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-classroom-waiting-list:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-waiting-list:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-comment:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-comment:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-attachment:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-attachment:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-topic:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-topic:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-authorization:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-authorization:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-user:$(tag) asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-user:$(tag)
+	docker tag qthuy2k1/thesis-management-backend:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-apigw-client:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-apigw-client:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-classroom:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-classroom:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-post:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-post:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-exercise:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-exercise:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-reporting-stage:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-reporting-stage:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-submission:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-submission:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-classroom-waiting-list:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-waiting-list:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-comment:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-comment:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-attachment:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-attachment:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-topic:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-topic:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-authorization:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-authorization:$(tag)
+	docker tag qthuy2k1/thesis-management-backend-user:$(tag) asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-user:$(tag)
 	
 	# DB
-	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-classroom-db:$(tag)
-	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-post-db:$(tag)
-	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-exercise-db:$(tag)
-	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-user-db:$(tag)
-	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-reporting-stage-db:$(tag)
-	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-submission-db:$(tag)
-	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-waiting-list-db:$(tag)
-	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-comment-db:$(tag)
-	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-attachment-db:$(tag)
-	docker tag postgres asia-southeast1-docker.pkg.dev/${PROJECT_ID}/thesis-course-registration/thesis-management-backend-topic-db:$(tag)
+	docker tag postgres asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-classroom-db:$(tag)
+	docker tag postgres asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-post-db:$(tag)
+	docker tag postgres asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-exercise-db:$(tag)
+	docker tag postgres asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-user-db:$(tag)
+	docker tag postgres asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-reporting-stage-db:$(tag)
+	docker tag postgres asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-submission-db:$(tag)
+	docker tag postgres asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-waiting-list-db:$(tag)
+	docker tag postgres asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-comment-db:$(tag)
+	docker tag postgres asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-attachment-db:$(tag)
+	docker tag postgres asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-topic-db:$(tag)
 
 docker-push:
 	# APP
@@ -405,6 +406,24 @@ docker-push:
 	# docker push qthuy2k1/thesis-management-backend-thesis-commitee-db:latest
 	# docker push qthuy2k1/thesis-management-backend-redis-db:latest
 
+
+docker-google-cloud-push:
+	# APP
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-apigw-client:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-classroom:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-post:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-exercise:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-user:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-reporting-stage:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-submission:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-classroom-waiting-list:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-comment:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-attachment:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-topic:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.iothesis-management-backend-authorization:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.iothesis-management-backend-upload:latest
+	docker push asia-docker.pkg.dev/thesis-course-registration/asia.gcr.io/thesis-management-backend-thesis-commitee:latest
 
 migrate_all_up:
 	docker run --rm -v $(PWD)/classroom-svc/data/migrations/:/migrations --network thesis-management-backend_mynet migrate/migrate -path=/migrations/ -database "postgres://postgres:root@classroom-db:5432/thesis_management_classrooms?sslmode=disable" up

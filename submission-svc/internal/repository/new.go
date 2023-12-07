@@ -15,6 +15,7 @@ type ISubmissionRepo interface {
 	// GetAllSubmissionsOfExercise returns all submission of the specified exercise given by exercise id
 	GetAllSubmissionsOfExercise(ctx context.Context, exerciseID int) ([]SubmissionOutputRepo, int, error)
 	GetSubmissionOfUser(ctx context.Context, userID string, exerciseID int) ([]SubmissionOutputRepo, error)
+	GetAllSubmissionFromUser(ctx context.Context, userID string) ([]SubmissionOutputRepo, error)
 }
 
 type SubmissionRepo struct {

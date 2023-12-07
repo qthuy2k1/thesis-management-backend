@@ -25,6 +25,8 @@ const (
 	ScheduleService_CreateNotification_FullMethodName     = "/schedule.v1.ScheduleService/CreateNotification"
 	ScheduleService_CreateOrUpdatePointDef_FullMethodName = "/schedule.v1.ScheduleService/CreateOrUpdatePointDef"
 	ScheduleService_GetAllPointDefs_FullMethodName        = "/schedule.v1.ScheduleService/GetAllPointDefs"
+	ScheduleService_UpdatePointDef_FullMethodName         = "/schedule.v1.ScheduleService/UpdatePointDef"
+	ScheduleService_DeletePointDef_FullMethodName         = "/schedule.v1.ScheduleService/DeletePointDef"
 )
 
 // ScheduleServiceClient is the client API for ScheduleService service.
@@ -37,6 +39,8 @@ type ScheduleServiceClient interface {
 	CreateNotification(ctx context.Context, in *CreateNotificationRequest, opts ...grpc.CallOption) (*CreateNotificationResponse, error)
 	CreateOrUpdatePointDef(ctx context.Context, in *CreateOrUpdatePointDefRequest, opts ...grpc.CallOption) (*CreateOrUpdatePointDefResponse, error)
 	GetAllPointDefs(ctx context.Context, in *GetAllPointDefsRequest, opts ...grpc.CallOption) (*GetAllPointDefsResponse, error)
+	UpdatePointDef(ctx context.Context, in *UpdatePointDefRequest, opts ...grpc.CallOption) (*UpdatePointDefResponse, error)
+	DeletePointDef(ctx context.Context, in *DeletePointDefRequest, opts ...grpc.CallOption) (*DeletePointDefResponse, error)
 }
 
 type scheduleServiceClient struct {
@@ -101,6 +105,24 @@ func (c *scheduleServiceClient) GetAllPointDefs(ctx context.Context, in *GetAllP
 	return out, nil
 }
 
+func (c *scheduleServiceClient) UpdatePointDef(ctx context.Context, in *UpdatePointDefRequest, opts ...grpc.CallOption) (*UpdatePointDefResponse, error) {
+	out := new(UpdatePointDefResponse)
+	err := c.cc.Invoke(ctx, ScheduleService_UpdatePointDef_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *scheduleServiceClient) DeletePointDef(ctx context.Context, in *DeletePointDefRequest, opts ...grpc.CallOption) (*DeletePointDefResponse, error) {
+	out := new(DeletePointDefResponse)
+	err := c.cc.Invoke(ctx, ScheduleService_DeletePointDef_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ScheduleServiceServer is the server API for ScheduleService service.
 // All implementations must embed UnimplementedScheduleServiceServer
 // for forward compatibility
@@ -111,6 +133,8 @@ type ScheduleServiceServer interface {
 	CreateNotification(context.Context, *CreateNotificationRequest) (*CreateNotificationResponse, error)
 	CreateOrUpdatePointDef(context.Context, *CreateOrUpdatePointDefRequest) (*CreateOrUpdatePointDefResponse, error)
 	GetAllPointDefs(context.Context, *GetAllPointDefsRequest) (*GetAllPointDefsResponse, error)
+	UpdatePointDef(context.Context, *UpdatePointDefRequest) (*UpdatePointDefResponse, error)
+	DeletePointDef(context.Context, *DeletePointDefRequest) (*DeletePointDefResponse, error)
 	mustEmbedUnimplementedScheduleServiceServer()
 }
 
@@ -135,6 +159,12 @@ func (UnimplementedScheduleServiceServer) CreateOrUpdatePointDef(context.Context
 }
 func (UnimplementedScheduleServiceServer) GetAllPointDefs(context.Context, *GetAllPointDefsRequest) (*GetAllPointDefsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllPointDefs not implemented")
+}
+func (UnimplementedScheduleServiceServer) UpdatePointDef(context.Context, *UpdatePointDefRequest) (*UpdatePointDefResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePointDef not implemented")
+}
+func (UnimplementedScheduleServiceServer) DeletePointDef(context.Context, *DeletePointDefRequest) (*DeletePointDefResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeletePointDef not implemented")
 }
 func (UnimplementedScheduleServiceServer) mustEmbedUnimplementedScheduleServiceServer() {}
 
@@ -257,6 +287,42 @@ func _ScheduleService_GetAllPointDefs_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ScheduleService_UpdatePointDef_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePointDefRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ScheduleServiceServer).UpdatePointDef(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ScheduleService_UpdatePointDef_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ScheduleServiceServer).UpdatePointDef(ctx, req.(*UpdatePointDefRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ScheduleService_DeletePointDef_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeletePointDefRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ScheduleServiceServer).DeletePointDef(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ScheduleService_DeletePointDef_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ScheduleServiceServer).DeletePointDef(ctx, req.(*DeletePointDefRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ScheduleService_ServiceDesc is the grpc.ServiceDesc for ScheduleService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -287,6 +353,14 @@ var ScheduleService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllPointDefs",
 			Handler:    _ScheduleService_GetAllPointDefs_Handler,
+		},
+		{
+			MethodName: "UpdatePointDef",
+			Handler:    _ScheduleService_UpdatePointDef_Handler,
+		},
+		{
+			MethodName: "DeletePointDef",
+			Handler:    _ScheduleService_DeletePointDef_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

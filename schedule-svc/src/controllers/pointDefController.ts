@@ -68,30 +68,34 @@ export const PointDefController = {
     }
   },
 
-  // async updatePointDef(req: Request): Promise<IPointDefObject[] | undef> {
-  //   const point = req.body;
-  //   const id = req.params.id;
-  //   try {
-  //     await PointDefModel.updatePointDef({ id, ...point });
-  //     res.status(200).json({ id, ...point });
-  //   } catch (err) {
-  //     console.error(err);
-  //     res.status(500);
-  //   }
-  // },
+  async updatePointDef(req: any): Promise<IPointDefObject[] | undefined> {
+    const point = req.request.point;
+    const id = req.request.id;
+    try {
+      await PointDefModel.updatePointDef({ id, ...point });
+      // res.status(200).json({ id, ...point });
 
-  async deletePointDef(req: Request, res: Response) {
-    const id = req.params.id;
+      return {id, ...point}
+    } catch (err) {
+      console.error(err);
+      // res.status(500);
+    }
+  },
+
+  async deletePointDef(req: any): Promise<boolean> {
+    const id = req.request.id;
     try {
       const points = await PointDefModel.deletePointDef(id);
       if (!points) {
-        res.status(404);
+        // res.status(404);
         return false;
       }
-      return res.status(200).json(points);
+      // return res.status(200).json(points);
+      return true
     } catch (err) {
       console.error(err);
-      res.status(500);
+      // res.status(500);
+      return false
     }
   },
 };

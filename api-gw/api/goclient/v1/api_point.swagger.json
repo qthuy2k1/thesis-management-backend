@@ -48,6 +48,76 @@
         ]
       }
     },
+    "/api/point/{id}": {
+      "delete": {
+        "operationId": "PointService_DeletePointDef",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeletePointDefResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PointService"
+        ]
+      },
+      "put": {
+        "operationId": "PointService_UpdatePointDef",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdatePointDefResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "point.id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "point.studentID",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PointService"
+        ]
+      }
+    },
     "/api/point/{userID}": {
       "get": {
         "operationId": "PointService_GetAllPointDef",
@@ -164,10 +234,18 @@
         }
       }
     },
+    "v1DeletePointDefResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "v1GetAllPointDefResponse": {
       "type": "object",
       "properties": {
-        "points": {
+        "point": {
           "type": "array",
           "items": {
             "type": "object",
@@ -208,6 +286,18 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1AssessItemResponse"
+          }
+        }
+      }
+    },
+    "v1UpdatePointDefResponse": {
+      "type": "object",
+      "properties": {
+        "point": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PointResponse"
           }
         }
       }

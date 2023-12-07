@@ -112,3 +112,24 @@ func (s *SubmissionSvc) GetSubmissionOfUser(ctx context.Context, userID string, 
 
 	return ssSvc, nil
 }
+
+func (s *SubmissionSvc) GetAllSubmissionFromUser(ctx context.Context, userID string) ([]SubmissionOutputSvc, error) {
+	submission, err := s.Repository.GetAllSubmissionFromUser(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var ssSvc []SubmissionOutputSvc
+	for _, submission := range submission {
+		ssSvc = append(ssSvc, SubmissionOutputSvc{
+			ID:         submission.ID,
+			UserID:     submission.UserID,
+			ExerciseID: submission.ExerciseID,
+			Status:     submission.Status,
+			CreatedAt:  submission.CreatedAt,
+			UpdatedAt:  submission.UpdatedAt,
+		})
+	}
+
+	return ssSvc, nil
+}

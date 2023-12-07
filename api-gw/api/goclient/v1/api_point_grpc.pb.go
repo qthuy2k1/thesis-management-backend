@@ -21,6 +21,8 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	PointService_CreateOrUpdatePointDef_FullMethodName = "/api.point.v1.PointService/CreateOrUpdatePointDef"
 	PointService_GetAllPointDef_FullMethodName         = "/api.point.v1.PointService/GetAllPointDef"
+	PointService_UpdatePointDef_FullMethodName         = "/api.point.v1.PointService/UpdatePointDef"
+	PointService_DeletePointDef_FullMethodName         = "/api.point.v1.PointService/DeletePointDef"
 )
 
 // PointServiceClient is the client API for PointService service.
@@ -29,6 +31,8 @@ const (
 type PointServiceClient interface {
 	CreateOrUpdatePointDef(ctx context.Context, in *CreateOrUpdatePointDefRequest, opts ...grpc.CallOption) (*CreateOrUpdatePointDefResponse, error)
 	GetAllPointDef(ctx context.Context, in *GetAllPointDefRequest, opts ...grpc.CallOption) (*GetAllPointDefResponse, error)
+	UpdatePointDef(ctx context.Context, in *UpdatePointDefRequest, opts ...grpc.CallOption) (*UpdatePointDefResponse, error)
+	DeletePointDef(ctx context.Context, in *DeletePointDefRequest, opts ...grpc.CallOption) (*DeletePointDefResponse, error)
 }
 
 type pointServiceClient struct {
@@ -57,12 +61,32 @@ func (c *pointServiceClient) GetAllPointDef(ctx context.Context, in *GetAllPoint
 	return out, nil
 }
 
+func (c *pointServiceClient) UpdatePointDef(ctx context.Context, in *UpdatePointDefRequest, opts ...grpc.CallOption) (*UpdatePointDefResponse, error) {
+	out := new(UpdatePointDefResponse)
+	err := c.cc.Invoke(ctx, PointService_UpdatePointDef_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *pointServiceClient) DeletePointDef(ctx context.Context, in *DeletePointDefRequest, opts ...grpc.CallOption) (*DeletePointDefResponse, error) {
+	out := new(DeletePointDefResponse)
+	err := c.cc.Invoke(ctx, PointService_DeletePointDef_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PointServiceServer is the server API for PointService service.
 // All implementations must embed UnimplementedPointServiceServer
 // for forward compatibility
 type PointServiceServer interface {
 	CreateOrUpdatePointDef(context.Context, *CreateOrUpdatePointDefRequest) (*CreateOrUpdatePointDefResponse, error)
 	GetAllPointDef(context.Context, *GetAllPointDefRequest) (*GetAllPointDefResponse, error)
+	UpdatePointDef(context.Context, *UpdatePointDefRequest) (*UpdatePointDefResponse, error)
+	DeletePointDef(context.Context, *DeletePointDefRequest) (*DeletePointDefResponse, error)
 	mustEmbedUnimplementedPointServiceServer()
 }
 
@@ -75,6 +99,12 @@ func (UnimplementedPointServiceServer) CreateOrUpdatePointDef(context.Context, *
 }
 func (UnimplementedPointServiceServer) GetAllPointDef(context.Context, *GetAllPointDefRequest) (*GetAllPointDefResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllPointDef not implemented")
+}
+func (UnimplementedPointServiceServer) UpdatePointDef(context.Context, *UpdatePointDefRequest) (*UpdatePointDefResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePointDef not implemented")
+}
+func (UnimplementedPointServiceServer) DeletePointDef(context.Context, *DeletePointDefRequest) (*DeletePointDefResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeletePointDef not implemented")
 }
 func (UnimplementedPointServiceServer) mustEmbedUnimplementedPointServiceServer() {}
 
@@ -125,6 +155,42 @@ func _PointService_GetAllPointDef_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PointService_UpdatePointDef_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePointDefRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PointServiceServer).UpdatePointDef(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PointService_UpdatePointDef_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PointServiceServer).UpdatePointDef(ctx, req.(*UpdatePointDefRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PointService_DeletePointDef_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeletePointDefRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PointServiceServer).DeletePointDef(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PointService_DeletePointDef_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PointServiceServer).DeletePointDef(ctx, req.(*DeletePointDefRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PointService_ServiceDesc is the grpc.ServiceDesc for PointService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,6 +205,14 @@ var PointService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllPointDef",
 			Handler:    _PointService_GetAllPointDef_Handler,
+		},
+		{
+			MethodName: "UpdatePointDef",
+			Handler:    _PointService_UpdatePointDef_Handler,
+		},
+		{
+			MethodName: "DeletePointDef",
+			Handler:    _PointService_DeletePointDef_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
