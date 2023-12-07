@@ -109,10 +109,18 @@
         }
       }
     },
+    "v1DeletePointDefResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "v1GetAllPointDefsResponse": {
       "type": "object",
       "properties": {
-        "points": {
+        "point": {
           "type": "array",
           "items": {
             "type": "object",
@@ -288,6 +296,18 @@
         },
         "timeSlot": {
           "$ref": "#/definitions/v1TimeSlot"
+        }
+      }
+    },
+    "v1UpdatePointDefResponse": {
+      "type": "object",
+      "properties": {
+        "point": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Point"
+          }
         }
       }
     },

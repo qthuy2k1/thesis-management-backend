@@ -47,6 +47,12 @@ service SubmissionService {
             get: "/api/exercise/{exerciseID}/submit/{userID}"
         };
     }
+
+    rpc GetSubmissionFromUser(GetSubmissionFromUserRequest) returns (GetSubmissionFromUserResponse){
+        option (google.api.http) = {
+            get: "/api/auth/{userID}/submit"
+        };
+    }
 }
 
 message CommonSubmissionResponse {
@@ -168,4 +174,13 @@ message AuthorSubmissionResponse {
     string role = 6 [(validate.rules).string = {in: ["teacher", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
+}
+
+message GetSubmissionFromUserRequest {
+    string userID = 1;
+}
+
+message GetSubmissionFromUserResponse {
+    CommonSubmissionResponse response = 1 [(validate.rules).message = {required: true}];
+    repeated SubmissionResponse submissions = 2;
 }

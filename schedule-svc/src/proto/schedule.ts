@@ -22,6 +22,8 @@ export interface ProtoGrpcType {
       CreateOrUpdatePointDefResponse: MessageTypeDefinition
       CreateScheduleRequest: MessageTypeDefinition
       CreateScheduleResponse: MessageTypeDefinition
+      DeletePointDefRequest: MessageTypeDefinition
+      DeletePointDefResponse: MessageTypeDefinition
       GetAllPointDefsRequest: MessageTypeDefinition
       GetAllPointDefsResponse: MessageTypeDefinition
       GetNotificationsRequest: MessageTypeDefinition
@@ -38,6 +40,8 @@ export interface ProtoGrpcType {
       Thesis: MessageTypeDefinition
       TimeSlot: MessageTypeDefinition
       TimeSlots: MessageTypeDefinition
+      UpdatePointDefRequest: MessageTypeDefinition
+      UpdatePointDefResponse: MessageTypeDefinition
       UserScheduleResponse: MessageTypeDefinition
     }
   }

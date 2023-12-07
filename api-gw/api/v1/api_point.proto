@@ -19,6 +19,18 @@ service PointService {
             get: "/api/point/{userID}"
         };
     }
+
+    rpc UpdatePointDef(UpdatePointDefRequest) returns (UpdatePointDefResponse) {
+        option (google.api.http) = {
+            put: "/api/point/{id}"
+        };
+    }
+
+    rpc DeletePointDef(DeletePointDefRequest) returns (DeletePointDefResponse) {
+        option (google.api.http) = {
+            delete: "/api/point/{id}"
+        };
+    }
 }
 
 
@@ -76,5 +88,22 @@ message GetAllPointDefRequest {
 }
 
 message GetAllPointDefResponse {
-    repeated PointResponse points = 1;
+    repeated PointResponse point = 1;
+}
+
+message UpdatePointDefRequest {
+    string id = 1;
+    Point point = 2;
+}
+
+message UpdatePointDefResponse {
+    repeated PointResponse point = 1;
+}
+
+message DeletePointDefRequest {
+    string id = 1;
+}
+
+message DeletePointDefResponse {
+    string message = 1;
 }

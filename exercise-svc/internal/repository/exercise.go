@@ -81,16 +81,6 @@ func ExecSQL(ctx context.Context, db *sql.DB, funcName string, query string, arg
 
 // CreateExercise creates a new exercise in db given by exercise model
 func (r *ExerciseRepo) CreateExercise(ctx context.Context, p ExerciseInputRepo) (int64, error) {
-	// check exercise exists
-	// isExists, err := r.IsExerciseExists(ctx, p.ClassroomID, p.Title)
-	// if err != nil {
-	// 	return 0, err
-	// }
-
-	// if isExists {
-	// 	return 0, ErrExerciseExisted
-	// }
-
 	row, err := QueryRowSQL(ctx, r.Database, "CreateExercise", "INSERT INTO exercises (title, content, classroom_id, deadline, reporting_stage_id, author_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", p.Title, p.Content, p.ClassroomID, p.Deadline, p.ReportingStageID, p.AuthorID)
 	if err != nil {
 		return 0, err

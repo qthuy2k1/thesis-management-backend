@@ -3211,7 +3211,7 @@ func (m *GetAllPointDefsResponse) validate(all bool) error {
 
 	var errors []error
 
-	for idx, item := range m.GetPoints() {
+	for idx, item := range m.GetPoint() {
 		_, _ = idx, item
 
 		if all {
@@ -3219,7 +3219,7 @@ func (m *GetAllPointDefsResponse) validate(all bool) error {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
 					errors = append(errors, GetAllPointDefsResponseValidationError{
-						field:  fmt.Sprintf("Points[%v]", idx),
+						field:  fmt.Sprintf("Point[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -3227,7 +3227,7 @@ func (m *GetAllPointDefsResponse) validate(all bool) error {
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
 					errors = append(errors, GetAllPointDefsResponseValidationError{
-						field:  fmt.Sprintf("Points[%v]", idx),
+						field:  fmt.Sprintf("Point[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -3236,7 +3236,7 @@ func (m *GetAllPointDefsResponse) validate(all bool) error {
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return GetAllPointDefsResponseValidationError{
-					field:  fmt.Sprintf("Points[%v]", idx),
+					field:  fmt.Sprintf("Point[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
@@ -3324,3 +3324,480 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetAllPointDefsResponseValidationError{}
+
+// Validate checks the field values on UpdatePointDefRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdatePointDefRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdatePointDefRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdatePointDefRequestMultiError, or nil if none found.
+func (m *UpdatePointDefRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdatePointDefRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if all {
+		switch v := interface{}(m.GetPoint()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdatePointDefRequestValidationError{
+					field:  "Point",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdatePointDefRequestValidationError{
+					field:  "Point",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPoint()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdatePointDefRequestValidationError{
+				field:  "Point",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return UpdatePointDefRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdatePointDefRequestMultiError is an error wrapping multiple validation
+// errors returned by UpdatePointDefRequest.ValidateAll() if the designated
+// constraints aren't met.
+type UpdatePointDefRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdatePointDefRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdatePointDefRequestMultiError) AllErrors() []error { return m }
+
+// UpdatePointDefRequestValidationError is the validation error returned by
+// UpdatePointDefRequest.Validate if the designated constraints aren't met.
+type UpdatePointDefRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdatePointDefRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdatePointDefRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdatePointDefRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdatePointDefRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdatePointDefRequestValidationError) ErrorName() string {
+	return "UpdatePointDefRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdatePointDefRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdatePointDefRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdatePointDefRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdatePointDefRequestValidationError{}
+
+// Validate checks the field values on UpdatePointDefResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdatePointDefResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdatePointDefResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdatePointDefResponseMultiError, or nil if none found.
+func (m *UpdatePointDefResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdatePointDefResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetPoint() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, UpdatePointDefResponseValidationError{
+						field:  fmt.Sprintf("Point[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, UpdatePointDefResponseValidationError{
+						field:  fmt.Sprintf("Point[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return UpdatePointDefResponseValidationError{
+					field:  fmt.Sprintf("Point[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return UpdatePointDefResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdatePointDefResponseMultiError is an error wrapping multiple validation
+// errors returned by UpdatePointDefResponse.ValidateAll() if the designated
+// constraints aren't met.
+type UpdatePointDefResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdatePointDefResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdatePointDefResponseMultiError) AllErrors() []error { return m }
+
+// UpdatePointDefResponseValidationError is the validation error returned by
+// UpdatePointDefResponse.Validate if the designated constraints aren't met.
+type UpdatePointDefResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdatePointDefResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdatePointDefResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdatePointDefResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdatePointDefResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdatePointDefResponseValidationError) ErrorName() string {
+	return "UpdatePointDefResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdatePointDefResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdatePointDefResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdatePointDefResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdatePointDefResponseValidationError{}
+
+// Validate checks the field values on DeletePointDefRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeletePointDefRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeletePointDefRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeletePointDefRequestMultiError, or nil if none found.
+func (m *DeletePointDefRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeletePointDefRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return DeletePointDefRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeletePointDefRequestMultiError is an error wrapping multiple validation
+// errors returned by DeletePointDefRequest.ValidateAll() if the designated
+// constraints aren't met.
+type DeletePointDefRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeletePointDefRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeletePointDefRequestMultiError) AllErrors() []error { return m }
+
+// DeletePointDefRequestValidationError is the validation error returned by
+// DeletePointDefRequest.Validate if the designated constraints aren't met.
+type DeletePointDefRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeletePointDefRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeletePointDefRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeletePointDefRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeletePointDefRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeletePointDefRequestValidationError) ErrorName() string {
+	return "DeletePointDefRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeletePointDefRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeletePointDefRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeletePointDefRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeletePointDefRequestValidationError{}
+
+// Validate checks the field values on DeletePointDefResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeletePointDefResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeletePointDefResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeletePointDefResponseMultiError, or nil if none found.
+func (m *DeletePointDefResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeletePointDefResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Message
+
+	if len(errors) > 0 {
+		return DeletePointDefResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeletePointDefResponseMultiError is an error wrapping multiple validation
+// errors returned by DeletePointDefResponse.ValidateAll() if the designated
+// constraints aren't met.
+type DeletePointDefResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeletePointDefResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeletePointDefResponseMultiError) AllErrors() []error { return m }
+
+// DeletePointDefResponseValidationError is the validation error returned by
+// DeletePointDefResponse.Validate if the designated constraints aren't met.
+type DeletePointDefResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeletePointDefResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeletePointDefResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeletePointDefResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeletePointDefResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeletePointDefResponseValidationError) ErrorName() string {
+	return "DeletePointDefResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeletePointDefResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeletePointDefResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeletePointDefResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeletePointDefResponseValidationError{}

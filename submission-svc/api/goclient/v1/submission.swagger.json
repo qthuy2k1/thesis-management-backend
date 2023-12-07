@@ -96,6 +96,21 @@
         }
       }
     },
+    "v1GetSubmissionFromUserResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "$ref": "#/definitions/v1CommonSubmissionResponse"
+        },
+        "submissions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1SubmissionResponse"
+          }
+        }
+      }
+    },
     "v1GetSubmissionOfUserResponse": {
       "type": "object",
       "properties": {

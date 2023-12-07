@@ -89,11 +89,34 @@ func (r *WaitingListRepo) CreateWaitingList(ctx context.Context, wt WaitingListI
 		return ErrWaitingListExisted
 	}
 
+	// check if user is have more than 2 waiting list
+	if err := r.checkUserCreatedMoreThanTwoWaitingList(ctx, wt.UserID); err != nil {
+		return err
+	}
+
 	if _, err := ExecSQL(ctx, r.Database, "CreateWaitingList", "INSERT INTO waiting_lists (classroom_id, user_id, is_defense, status) VALUES ($1, $2, $3, $4) RETURNING id", wt.ClassroomID, wt.UserID, wt.IsDefense, wt.Status); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (r *WaitingListRepo) checkUserCreatedMoreThanTwoWaitingList(ctx context.Context, userID string) error {
+	row, err := QueryRowSQL(ctx, r.Database, "checkUserHaveWaitingList", fmt.Sprintf("SELECT COUNT(*) FROM waiting_lists WHERE user_id = '%s'", userID))
+	if err != nil {
+		return err
+	}
+
+	var count int
+	if err := row.Scan(&count); err != nil {
+		return err
+	}
+
+	if count == 2 {
+		return ErrWaitingListCreatedMoreThanTwo
+	} else {
+		return nil
+	}
 }
 
 type WaitingListOutputRepo struct {

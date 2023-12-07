@@ -153,6 +153,39 @@ func (h *SubmissionHdl) GetSubmissionOfUser(ctx context.Context, req *submission
 	}, nil
 }
 
+func (h *SubmissionHdl) GetSubmissionFromUser(ctx context.Context, req *submissionpb.GetSubmissionFromUserRequest) (*submissionpb.GetSubmissionFromUserResponse, error) {
+	if err := req.Validate(); err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	ss, err := h.Service.GetAllSubmissionFromUser(ctx, req.UserID)
+	if err != nil {
+		code, err := convertCtrlError(err)
+		return nil, status.Errorf(code, "err: %v", err)
+	}
+
+	var ssResp []*submissionpb.SubmissionResponse
+	for _, s := range ss {
+		ssResp = append(ssResp, &submissionpb.SubmissionResponse{
+			Id:         int64(s.ID),
+			UserID:     s.UserID,
+			ExerciseID: int64(s.ExerciseID),
+			Status:     s.Status,
+			CreatedAt:  timestamppb.New(s.CreatedAt),
+			UpdatedAt:  timestamppb.New(s.UpdatedAt),
+		})
+	}
+
+	return &submissionpb.GetSubmissionFromUserResponse{
+		Response: &submissionpb.CommonSubmissionResponse{
+			StatusCode: 200,
+			Message:    "Success",
+		},
+		Submissions: ssResp,
+	}, nil
+}
+
 func validateAndConvertSubmission(pbSubmission *submissionpb.SubmissionInput) (service.SubmissionInputSvc, error) {
 	if err := pbSubmission.Validate(); err != nil {
 		return service.SubmissionInputSvc{}, err

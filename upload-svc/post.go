@@ -7,6 +7,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type PostInput struct {
@@ -138,114 +140,128 @@ func (u *uploadServiceGW) createPost(w http.ResponseWriter, r *http.Request) {
 	w.Write(body)
 }
 
-// func (u *uploadServiceGW) updatePost(w http.ResponseWriter, r *http.Request) {
-// 	log.Println("upload-service: updatePost is called")
-// 	// Parse the multipart form data
-// 	err := r.ParseMultipartForm(32 << 20) // Max file size: 32MB
-// 	if err != nil {
-// 		http.Error(w, "Failed to parse multipart form data", http.StatusBadRequest)
-// 		return
-// 	}
-// 	ctx := r.Context()
+func (u *uploadServiceGW) updatePost(w http.ResponseWriter, r *http.Request) {
+	log.Println("upload-service: updatePost is called")
+	// Parse the multipart form data
+	err := r.ParseMultipartForm(32 << 20) // Max file size: 32MB
+	if err != nil {
+		http.Error(w, "Failed to parse multipart form data", http.StatusBadRequest)
+		return
+	}
+	ctx := r.Context()
 
-// 	id, err := strconv.Atoi(chi.URLParam(r, "postID"))
-// 	if err != nil || id <= 0 {
-// 		log.Println("id err", err)
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
+	title := r.FormValue("title")
+	if title == "" {
+		http.Error(w, "Missing title", http.StatusBadRequest)
+		return
+	}
 
-// 	title := r.FormValue("title")
-// 	description := r.FormValue("description")
-// 	classroomID := r.FormValue("classroomID")
-// 	categoryID := r.FormValue("categoryID")
-// 	authorID := r.FormValue("authorID")
+	description := r.FormValue("description")
+	if description == "" {
+		http.Error(w, "Missing description", http.StatusBadRequest)
+		return
+	}
 
-// 	log.Println("id", id)
-// 	log.Println("title", title)
-// 	log.Println("descriptioon", description)
-// 	log.Println("classroomID", classroomID)
-// 	log.Println("categoryID", categoryID)
-// 	log.Println("authorID", authorID)
+	classroomID := r.FormValue("classroomID")
+	if classroomID == "" {
+		http.Error(w, "Invalid classroom id", http.StatusBadRequest)
+		return
+	}
 
-// 	// attachment
-// 	var attachments []*pb.AttachmentPostInput
-// 	fhs := r.MultipartForm.File["attachments"]
-// 	for _, fileHeader := range fhs {
-// 		file, err := fileHeader.Open()
-// 		if err != nil {
-// 			http.Error(w, err.Error(), http.StatusInternalServerError)
-// 			return
-// 		}
-// 		defer file.Close()
+	categoryID := r.FormValue("categoryID")
+	if categoryID == "" {
+		http.Error(w, "Invalid category id", http.StatusBadRequest)
+		return
+	}
 
-// 		driveFile, err := uploadFileToDrive(ctx, file, fileHeader)
-// 		if err != nil {
-// 			http.Error(w, err.Error(), http.StatusInternalServerError)
-// 			return
-// 		}
+	authorID := r.FormValue("authorID")
+	if authorID == "" {
+		http.Error(w, "Invalid author id", http.StatusBadRequest)
+		return
+	}
 
-// 		fileInfo := FileInfo{
-// 			FileName:  driveFile.Name,
-// 			Thumbnail: driveFile.ThumbnailLink,
-// 			Size:      driveFile.Size,
-// 			MimeType:  driveFile.MimeType,
-// 			URL:       driveFile.WebViewLink,
-// 		}
+	status := r.FormValue("status")
 
-// 		attachments = append(attachments, &pb.AttachmentPostInput{
-// 			FileURL:   fileInfo.URL,
-// 			AuthorID:  authorID,
-// 			Name:      fileInfo.FileName,
-// 			Size:      fileInfo.Size,
-// 			Type:      fileInfo.MimeType,
-// 			Thumbnail: fileInfo.Thumbnail,
-// 		})
-// 	}
+	postID := chi.URLParam(r, "postID")
 
-// 	classroomIDInt, err := strconv.Atoi(classroomID)
-// 	if err != nil {
-// 		log.Println("classroomID err", err)
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
+	// attachment
+	var attachments []FileInfo
+	fhs := r.MultipartForm.File["attachments"]
+	for _, fileHeader := range fhs {
+		file, err := fileHeader.Open()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer file.Close()
 
-// 	categoryIDInt, err := strconv.Atoi(categoryID)
-// 	if err != nil {
-// 		log.Println("categoryID err", err)
-// 		http.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
+		driveFile, err := uploadFileToDrive(ctx, file, fileHeader)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-// 	res, err := u.postClient.UpdatePost(ctx, &pb.UpdatePostRequest{
-// 		Id: int64(id),
-// 		Post: &pb.PostInput{
-// 			Title:       title,
-// 			Description: description,
-// 			ClassroomID: int64(classroomIDInt),
-// 			CategoryID:  int64(categoryIDInt),
-// 			AuthorID:    authorID,
-// 			Attachments: attachments,
-// 		},
-// 	})
-// 	if err != nil {
-// 		log.Println(err)
-// 		log.Println(res.GetResponse().GetMessage())
-// 		http.Error(w, err.Error()+"\n"+res.GetResponse().GetMessage(), int(res.GetResponse().GetStatusCode()))
-// 		return
-// 	}
+		attachments = append(attachments, FileInfo{
+			Name:      driveFile.Name,
+			Thumbnail: driveFile.ThumbnailLink,
+			Size:      driveFile.Size,
+			Type:      driveFile.MimeType,
+			FileURL:   driveFile.WebViewLink,
+			AuthorID:  authorID,
+			Status:    status,
+		})
+	}
 
-// 	response := map[string]interface{}{
-// 		"code":    res.Response.StatusCode,
-// 		"message": res.Response.Message,
-// 	}
-// 	jsonBytes, err := json.Marshal(response)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
+	postInput := PostInput{
+		Title:       title,
+		Description: description,
+		ClassroomID: classroomID,
+		CategoryID:  categoryID,
+		AuthorID:    authorID,
+		Attachments: attachments,
+	}
 
-// 	w.Header().Set("Content-Type", "application/json")
-// 	w.WriteHeader(int(res.Response.StatusCode))
-// 	w.Write(jsonBytes)
-// }
+	jsonBody, err := json.Marshal(map[string]PostInput{"post": postInput})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to marshal file info: %v", err), http.StatusInternalServerError)
+	}
+
+	url := "http://thesis-management-backend-apigw-client-service:8080/api/post/" + postID
+
+	log.Println(url)
+
+	bodyReader := bytes.NewReader(jsonBody)
+	req, err := http.NewRequest(http.MethodPut, url, bodyReader)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("make request to apigw client failed: %v", err), http.StatusBadGateway)
+		return
+	}
+	authorization := r.Header.Get("Authorization")
+	if authorization == "" {
+		http.Error(w, "Authorization is required", http.StatusMethodNotAllowed)
+		return
+	}
+
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Authorization", authorization)
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("make request to apigw client failed: %v", err), http.StatusBadGateway)
+		return
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var respBody Response
+	if err := json.Unmarshal(body, &respBody); err != nil {
+		http.Error(w, fmt.Sprintf("Failed to unmarshal response body: %v", err), http.StatusInternalServerError)
+	}
+
+	w.Write(body)
+}

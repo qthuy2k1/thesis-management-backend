@@ -33,9 +33,10 @@ func (u *pointServiceGW) GetAllPointDef(ctx context.Context, req *pb.GetAllPoint
 	if err != nil {
 		return nil, err
 	}
+	log.Println(res)
 
 	var pointRes []*pb.PointResponse
-	for _, t := range res.Points {
+	for _, t := range res.GetPoint() {
 		var assessItems []*pb.AssessItemResponse
 		for _, c := range t.Assesses {
 			assessItems = append(assessItems, &pb.AssessItemResponse{
@@ -72,7 +73,7 @@ func (u *pointServiceGW) GetAllPointDef(ctx context.Context, req *pb.GetAllPoint
 	}
 
 	return &pb.GetAllPointDefResponse{
-		Points: pointRes,
+		Point: pointRes,
 	}, nil
 }
 
@@ -170,4 +171,123 @@ func (u *pointServiceGW) CreateOrUpdatePointDef(ctx context.Context, req *pb.Cre
 		Message: res.Message,
 	}, nil
 
+}
+
+func (u *pointServiceGW) UpdatePointDef(ctx context.Context, req *pb.UpdatePointDefRequest) (*pb.UpdatePointDefResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	log.Println(req)
+
+	studentRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{
+		Id: req.GetPoint().GetStudentID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var assess []*pointSvcV1.AssessItem
+	for _, a := range req.Point.Assesses {
+		lecturerRes, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: a.LecturerID})
+		if err != nil {
+			return nil, err
+		}
+
+		assess = append(assess, &pointSvcV1.AssessItem{
+			Id: a.Id,
+			Lecturer: &pointSvcV1.UserScheduleResponse{
+				Id:       lecturerRes.User.Id,
+				Class:    lecturerRes.User.Class,
+				Major:    lecturerRes.User.Major,
+				Phone:    lecturerRes.User.Phone,
+				PhotoSrc: lecturerRes.User.PhotoSrc,
+				Role:     lecturerRes.User.Role,
+				Name:     lecturerRes.User.Name,
+				Email:    lecturerRes.User.Email,
+			},
+			Point:   a.Point,
+			Comment: a.Comment,
+		})
+	}
+
+	res, err := u.pointClient.UpdatePointDef(ctx, &pointSvcV1.UpdatePointDefRequest{
+		Point: &pointSvcV1.Point{
+			Id: req.GetPoint().Id,
+			Student: &pointSvcV1.UserScheduleResponse{
+				Id:       studentRes.User.Id,
+				Class:    studentRes.User.Class,
+				Major:    studentRes.User.Major,
+				Phone:    studentRes.User.Phone,
+				PhotoSrc: studentRes.User.PhotoSrc,
+				Role:     studentRes.User.Role,
+				Name:     studentRes.User.Name,
+				Email:    studentRes.User.Email,
+			},
+			Assesses: assess,
+		},
+	})
+	if err != nil {
+		log.Println("create error", err)
+		return nil, err
+	}
+
+	var pointRes []*pb.PointResponse
+	for _, t := range res.GetPoint() {
+		var assessItems []*pb.AssessItemResponse
+		for _, c := range t.Assesses {
+			assessItems = append(assessItems, &pb.AssessItemResponse{
+				Id: c.Id,
+				Lecturer: &pb.UserPointResponse{
+					Id:       c.Lecturer.GetId(),
+					Class:    c.Lecturer.Class,
+					Major:    c.Lecturer.Major,
+					Phone:    c.Lecturer.Phone,
+					PhotoSrc: c.Lecturer.GetPhotoSrc(),
+					Name:     c.Lecturer.GetName(),
+					Email:    c.Lecturer.GetEmail(),
+					Role:     c.Lecturer.GetRole(),
+				},
+				Point:   c.Point,
+				Comment: c.Comment,
+			})
+		}
+
+		pointRes = append(pointRes, &pb.PointResponse{
+			Id: t.Id,
+			Student: &pb.UserPointResponse{
+				Id:       t.Student.GetId(),
+				Class:    t.Student.Class,
+				Major:    t.Student.Major,
+				Phone:    t.Student.Phone,
+				PhotoSrc: t.Student.GetPhotoSrc(),
+				Name:     t.Student.GetName(),
+				Email:    t.Student.GetEmail(),
+				Role:     t.Student.GetRole(),
+			},
+			Assesses: assessItems,
+		})
+	}
+
+	return &pb.UpdatePointDefResponse{
+		Point: pointRes,
+	}, nil
+}
+
+func (u *pointServiceGW) DeletePointDef(ctx context.Context, req *pb.DeletePointDefRequest) (*pb.DeletePointDefResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+
+	res, err := u.pointClient.DeletePointDef(ctx, &pointSvcV1.DeletePointDefRequest{
+		Id: req.Id,
+	})
+	if err != nil {
+		log.Println("create error", err)
+		return nil, err
+	}
+
+	return &pb.DeletePointDefResponse{
+		Message: res.GetMessage(),
+	}, nil
 }
