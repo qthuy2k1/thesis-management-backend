@@ -5,17 +5,16 @@ import (
 	"log"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
-	topicSvcV1 "github.com/qthuy2k1/thesis-management-backend/topic-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
 type topicServiceGW struct {
 	pb.UnimplementedTopicServiceServer
-	topicClient topicSvcV1.TopicServiceClient
+	topicClient userSvcV1.TopicServiceClient
 	userClient  userSvcV1.UserServiceClient
 }
 
-func NewTopicsService(topicClient topicSvcV1.TopicServiceClient, userClient userSvcV1.UserServiceClient) *topicServiceGW {
+func NewTopicsService(topicClient userSvcV1.TopicServiceClient, userClient userSvcV1.UserServiceClient) *topicServiceGW {
 	return &topicServiceGW{
 		topicClient: topicClient,
 		userClient:  userClient,
@@ -43,8 +42,8 @@ func (u *topicServiceGW) CreateTopic(ctx context.Context, req *pb.CreateTopicReq
 		}, nil
 	}
 
-	res, err := u.topicClient.CreateTopic(ctx, &topicSvcV1.CreateTopicRequest{
-		Topic: &topicSvcV1.TopicInput{
+	res, err := u.topicClient.CreateTopic(ctx, &userSvcV1.CreateTopicRequest{
+		Topic: &userSvcV1.TopicInput{
 			Title:          req.GetTopic().GetTitle(),
 			TypeTopic:      req.GetTopic().GetTypeTopic(),
 			MemberQuantity: req.GetTopic().GetMemberQuantity(),
@@ -70,7 +69,7 @@ func (u *topicServiceGW) GetTopic(ctx context.Context, req *pb.GetTopicRequest) 
 		return nil, err
 	}
 
-	res, err := u.topicClient.GetTopicFromUser(ctx, &topicSvcV1.GetTopicFromUserRequest{UserID: req.StudentID})
+	res, err := u.topicClient.GetTopicFromUser(ctx, &userSvcV1.GetTopicFromUserRequest{UserID: req.StudentID})
 	if err != nil {
 		return nil, err
 	}
@@ -114,9 +113,9 @@ func (u *topicServiceGW) UpdateTopic(ctx context.Context, req *pb.UpdateTopicReq
 		return nil, err
 	}
 
-	res, err := u.topicClient.UpdateTopic(ctx, &topicSvcV1.UpdateTopicRequest{
+	res, err := u.topicClient.UpdateTopic(ctx, &userSvcV1.UpdateTopicRequest{
 		Id: req.GetId(),
-		Topic: &topicSvcV1.TopicInput{
+		Topic: &userSvcV1.TopicInput{
 			Title:          req.GetTopic().GetTitle(),
 			TypeTopic:      req.GetTopic().GetTypeTopic(),
 			MemberQuantity: req.GetTopic().GetMemberQuantity(),
@@ -142,7 +141,7 @@ func (u *topicServiceGW) DeleteTopic(ctx context.Context, req *pb.DeleteTopicReq
 		return nil, err
 	}
 
-	res, err := u.topicClient.DeleteTopic(ctx, &topicSvcV1.DeleteTopicRequest{
+	res, err := u.topicClient.DeleteTopic(ctx, &userSvcV1.DeleteTopicRequest{
 		Id: req.GetId(),
 	})
 	if err != nil {
@@ -162,7 +161,7 @@ func (u *topicServiceGW) GetTopics(ctx context.Context, req *pb.GetTopicsRequest
 		return nil, err
 	}
 
-	res, err := u.topicClient.GetTopics(ctx, &topicSvcV1.GetTopicsRequest{})
+	res, err := u.topicClient.GetTopics(ctx, &userSvcV1.GetTopicsRequest{})
 	if err != nil {
 		return nil, err
 	}

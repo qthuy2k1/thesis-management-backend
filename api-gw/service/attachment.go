@@ -5,23 +5,20 @@ import (
 	"log"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
-	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
-	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
+	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
 type attachmentServiceGW struct {
 	pb.UnimplementedAttachmentServiceServer
-	attachmentClient attachmentSvcV1.AttachmentServiceClient
-	userClient       userSvcV1.UserServiceClient
-	submissionClient submissionSvcV1.SubmissionServiceClient
+	classroomClient classroomSvcV1.AttachmentServiceClient
+	userClient      userSvcV1.UserServiceClient
 }
 
-func NewAttachmentsService(attachmentClient attachmentSvcV1.AttachmentServiceClient, userClient userSvcV1.UserServiceClient, submissionClient submissionSvcV1.SubmissionServiceClient) *attachmentServiceGW {
+func NewAttachmentsService(classroomClient classroomSvcV1.AttachmentServiceClient, userClient userSvcV1.UserServiceClient, submissionClient classroomSvcV1.SubmissionServiceClient) *attachmentServiceGW {
 	return &attachmentServiceGW{
-		attachmentClient: attachmentClient,
-		userClient:       userClient,
-		submissionClient: submissionClient,
+		classroomClient: classroomClient,
+		userClient:      userClient,
 	}
 }
 
@@ -31,8 +28,8 @@ func (u *attachmentServiceGW) CreateAttachment(ctx context.Context, req *pb.Crea
 		return nil, err
 	}
 
-	res, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
-		Attachment: &attachmentSvcV1.AttachmentInput{
+	res, err := u.classroomClient.CreateAttachment(ctx, &classroomSvcV1.CreateAttachmentRequest{
+		Attachment: &classroomSvcV1.AttachmentInput{
 			FileURL:   req.GetAttachment().GetFileURL(),
 			Status:    req.GetAttachment().GetStatus(),
 			AuthorID:  req.GetAttachment().GetAuthorID(),
@@ -59,7 +56,7 @@ func (u *attachmentServiceGW) GetAttachment(ctx context.Context, req *pb.GetAtta
 		return nil, err
 	}
 
-	res, err := u.attachmentClient.GetAttachment(ctx, &attachmentSvcV1.GetAttachmentRequest{Id: req.GetId()})
+	res, err := u.classroomClient.GetAttachment(ctx, &classroomSvcV1.GetAttachmentRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +91,7 @@ func (u *attachmentServiceGW) DeleteAttachment(ctx context.Context, req *pb.Dele
 		return nil, err
 	}
 
-	res, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+	res, err := u.classroomClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 		Id: req.GetId(),
 	})
 	if err != nil {
@@ -114,7 +111,7 @@ func (u *attachmentServiceGW) GetAttachmentsOfExercise(ctx context.Context, req 
 		return nil, err
 	}
 
-	res, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+	res, err := u.classroomClient.GetAttachmentsOfExercise(ctx, &classroomSvcV1.GetAttachmentsOfExerciseRequest{
 		ExerciseID: req.GetExerciseID(),
 	})
 	if err != nil {
@@ -141,7 +138,7 @@ func (u *attachmentServiceGW) GetAttachmentsOfExercise(ctx context.Context, req 
 // 		return nil, err
 // 	}
 
-// 	res, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+// 	res, err := u.classroomClient.GetAttachmentsOfPost(ctx, &classroomSvcV1.GetAttachmentsOfPostRequest{
 // 		PostID: req.GetPostID(),
 // 	})
 // 	if err != nil {

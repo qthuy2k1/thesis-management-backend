@@ -5,18 +5,19 @@ import (
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
-	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type waitingListServiceGW struct {
 	pb.UnimplementedWaitingListServiceServer
-	waitingListClient waitingListSvcV1.WaitingListServiceClient
+	waitingListClient classroomSvcV1.WaitingListServiceClient
 	classroomClient   classroomSvcV1.ClassroomServiceClient
 	userClient        userSvcV1.UserServiceClient
 }
 
-func NewWaitingListsService(waitingListClient waitingListSvcV1.WaitingListServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, userClient userSvcV1.UserServiceClient) *waitingListServiceGW {
+func NewWaitingListsService(waitingListClient classroomSvcV1.WaitingListServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, userClient userSvcV1.UserServiceClient) *waitingListServiceGW {
 	return &waitingListServiceGW{
 		waitingListClient: waitingListClient,
 		classroomClient:   classroomClient,
@@ -45,6 +46,24 @@ func (u *waitingListServiceGW) CreateWaitingList(ctx context.Context, req *pb.Cr
 		}, nil
 	}
 
+	clr, err := u.classroomClient.GetClassroom(ctx, &classroomSvcV1.GetClassroomRequest{
+		Id: req.GetWaitingList().GetClassroomID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	memberOfClr, err := u.userClient.GetAllMembersOfClassroom(ctx, &userSvcV1.GetAllMembersOfClassroomRequest{
+		ClassroomID: req.GetWaitingList().GetClassroomID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if memberOfClr.TotalCount >= clr.GetClassroom().QuantityStudent {
+		return nil, status.Errorf(codes.InvalidArgument, "classroom has reached maximum student capacity.")
+	}
+
 	userExists, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.GetWaitingList().GetMemberID()})
 	if err != nil {
 		return nil, err
@@ -59,7 +78,7 @@ func (u *waitingListServiceGW) CreateWaitingList(ctx context.Context, req *pb.Cr
 		}, nil
 	}
 
-	wtlExistRes, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
+	wtlExistRes, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &classroomSvcV1.CheckUserInWaitingListClassroomRequest{
 		UserID: req.GetWaitingList().GetMemberID(),
 	})
 	if err != nil {
@@ -75,8 +94,8 @@ func (u *waitingListServiceGW) CreateWaitingList(ctx context.Context, req *pb.Cr
 		}, nil
 	}
 
-	res, err := u.waitingListClient.CreateWaitingList(ctx, &waitingListSvcV1.CreateWaitingListRequest{
-		WaitingList: &waitingListSvcV1.WaitingListInput{
+	res, err := u.waitingListClient.CreateWaitingList(ctx, &classroomSvcV1.CreateWaitingListRequest{
+		WaitingList: &classroomSvcV1.WaitingListInput{
 			ClassroomID: req.GetWaitingList().GetClassroomID(),
 			UserID:      req.GetWaitingList().GetMemberID(),
 			IsDefense:   req.GetWaitingList().GetRegisterDefense(),
@@ -100,7 +119,7 @@ func (u *waitingListServiceGW) GetWaitingList(ctx context.Context, req *pb.GetWa
 		return nil, err
 	}
 
-	res, err := u.waitingListClient.GetWaitingList(ctx, &waitingListSvcV1.GetWaitingListRequest{Id: req.GetId()})
+	res, err := u.waitingListClient.GetWaitingList(ctx, &classroomSvcV1.GetWaitingListRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
 	}
@@ -202,7 +221,7 @@ func (u *waitingListServiceGW) UpdateWaitingList(ctx context.Context, req *pb.Up
 		}, nil
 	}
 
-	wtlExistRes, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
+	wtlExistRes, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &classroomSvcV1.CheckUserInWaitingListClassroomRequest{
 		UserID: req.GetWaitingList().GetMemberID(),
 	})
 	if err != nil {
@@ -217,9 +236,9 @@ func (u *waitingListServiceGW) UpdateWaitingList(ctx context.Context, req *pb.Up
 			},
 		}, nil
 	}
-	res, err := u.waitingListClient.UpdateWaitingList(ctx, &waitingListSvcV1.UpdateWaitingListRequest{
+	res, err := u.waitingListClient.UpdateWaitingList(ctx, &classroomSvcV1.UpdateWaitingListRequest{
 		Id: req.GetId(),
-		WaitingList: &waitingListSvcV1.WaitingListInput{
+		WaitingList: &classroomSvcV1.WaitingListInput{
 			ClassroomID: req.GetWaitingList().GetClassroomID(),
 			UserID:      req.GetWaitingList().GetMemberID(),
 			IsDefense:   req.GetWaitingList().GetRegisterDefense(),
@@ -243,7 +262,7 @@ func (u *waitingListServiceGW) DeleteWaitingList(ctx context.Context, req *pb.De
 		return nil, err
 	}
 
-	wtl, err := u.waitingListClient.GetWaitingList(ctx, &waitingListSvcV1.GetWaitingListRequest{
+	wtl, err := u.waitingListClient.GetWaitingList(ctx, &classroomSvcV1.GetWaitingListRequest{
 		Id: req.GetId(),
 	})
 	if err != nil {
@@ -259,7 +278,7 @@ func (u *waitingListServiceGW) DeleteWaitingList(ctx context.Context, req *pb.De
 		}, nil
 	}
 
-	res, err := u.waitingListClient.DeleteWaitingList(ctx, &waitingListSvcV1.DeleteWaitingListRequest{
+	res, err := u.waitingListClient.DeleteWaitingList(ctx, &classroomSvcV1.DeleteWaitingListRequest{
 		Id: req.GetId(),
 	})
 	if err != nil {
@@ -309,7 +328,7 @@ func (u *waitingListServiceGW) GetWaitingListsOfClassroom(ctx context.Context, r
 		return nil, err
 	}
 
-	res, err := u.waitingListClient.GetWaitingListsOfClassroom(ctx, &waitingListSvcV1.GetWaitingListsOfClassroomRequest{
+	res, err := u.waitingListClient.GetWaitingListsOfClassroom(ctx, &classroomSvcV1.GetWaitingListsOfClassroomRequest{
 		ClassroomID: req.GetClassroomID(),
 	})
 	if err != nil {
@@ -388,7 +407,7 @@ func (u *waitingListServiceGW) GetWaitingLists(ctx context.Context, req *pb.GetW
 		return nil, err
 	}
 
-	res, err := u.waitingListClient.GetWaitingLists(ctx, &waitingListSvcV1.GetWaitingListsRequest{})
+	res, err := u.waitingListClient.GetWaitingLists(ctx, &classroomSvcV1.GetWaitingListsRequest{})
 	if err != nil {
 		return nil, err
 	}
@@ -465,7 +484,7 @@ func (u *waitingListServiceGW) CheckUserInWaitingListClassroom(ctx context.Conte
 		return nil, err
 	}
 
-	res, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &waitingListSvcV1.CheckUserInWaitingListClassroomRequest{
+	res, err := u.waitingListClient.CheckUserInWaitingListOfClassroom(ctx, &classroomSvcV1.CheckUserInWaitingListClassroomRequest{
 		UserID:      req.GetUserID(),
 		ClassroomID: req.GetClassroomID(),
 	})

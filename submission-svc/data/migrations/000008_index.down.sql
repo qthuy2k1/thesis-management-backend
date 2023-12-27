@@ -1,1 +1,0 @@
-DROP INDEX submissions_execise_id;

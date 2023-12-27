@@ -1,1 +1,0 @@
-CREATE INDEX submissions_execise_id ON submissions(exercise_id);

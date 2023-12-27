@@ -4,15 +4,15 @@ import (
 	"context"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
-	reportingStageSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
+	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 )
 
 type reportingStageServiceGW struct {
 	pb.UnimplementedReportingStageServiceServer
-	reportingStageClient reportingStageSvcV1.ReportingStageServiceClient
+	reportingStageClient classroomSvcV1.ReportingStageServiceClient
 }
 
-func NewReportingStagesService(reportingStageClient reportingStageSvcV1.ReportingStageServiceClient) *reportingStageServiceGW {
+func NewReportingStagesService(reportingStageClient classroomSvcV1.ReportingStageServiceClient) *reportingStageServiceGW {
 	return &reportingStageServiceGW{
 		reportingStageClient: reportingStageClient,
 	}
@@ -23,8 +23,8 @@ func (u *reportingStageServiceGW) CreateReportingStage(ctx context.Context, req 
 		return nil, err
 	}
 
-	res, err := u.reportingStageClient.CreateReportingStage(ctx, &reportingStageSvcV1.CreateReportingStageRequest{
-		ReportingStage: &reportingStageSvcV1.ReportingStageInput{
+	res, err := u.reportingStageClient.CreateReportingStage(ctx, &classroomSvcV1.CreateReportingStageRequest{
+		ReportingStage: &classroomSvcV1.ReportingStageInput{
 			Label:       req.GetCategory().Label,
 			Description: req.GetCategory().Description,
 			Value:       req.GetCategory().Value,
@@ -47,7 +47,7 @@ func (u *reportingStageServiceGW) GetReportingStage(ctx context.Context, req *pb
 		return nil, err
 	}
 
-	res, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{Id: req.GetId()})
+	res, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
 	}
@@ -71,9 +71,9 @@ func (u *reportingStageServiceGW) UpdateReportingStage(ctx context.Context, req 
 		return nil, err
 	}
 
-	res, err := u.reportingStageClient.UpdateReportingStage(ctx, &reportingStageSvcV1.UpdateReportingStageRequest{
+	res, err := u.reportingStageClient.UpdateReportingStage(ctx, &classroomSvcV1.UpdateReportingStageRequest{
 		Id: req.GetId(),
-		ReportingStage: &reportingStageSvcV1.ReportingStageInput{
+		ReportingStage: &classroomSvcV1.ReportingStageInput{
 			Label:       req.GetCategory().Label,
 			Description: req.GetCategory().Description,
 			Value:       req.GetCategory().Value,
@@ -96,7 +96,7 @@ func (u *reportingStageServiceGW) DeleteReportingStage(ctx context.Context, req 
 		return nil, err
 	}
 
-	res, err := u.reportingStageClient.DeleteReportingStage(ctx, &reportingStageSvcV1.DeleteReportingStageRequest{
+	res, err := u.reportingStageClient.DeleteReportingStage(ctx, &classroomSvcV1.DeleteReportingStageRequest{
 		Id: req.GetId(),
 	})
 	if err != nil {
@@ -116,7 +116,7 @@ func (u *reportingStageServiceGW) GetReportingStages(ctx context.Context, req *p
 		return nil, err
 	}
 
-	res, err := u.reportingStageClient.GetReportingStages(ctx, &reportingStageSvcV1.GetReportingStagesRequest{})
+	res, err := u.reportingStageClient.GetReportingStages(ctx, &classroomSvcV1.GetReportingStagesRequest{})
 	if err != nil {
 		return nil, err
 	}

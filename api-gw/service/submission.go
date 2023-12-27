@@ -5,23 +5,20 @@ import (
 	"log"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
-	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
-	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
-	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
 type submissionServiceGW struct {
 	pb.UnimplementedSubmissionServiceServer
-	submissionClient submissionSvcV1.SubmissionServiceClient
+	submissionClient classroomSvcV1.SubmissionServiceClient
 	classroomClient  classroomSvcV1.ClassroomServiceClient
-	exerciseClient   exerciseSvcV1.ExerciseServiceClient
-	attachmentClient attachmentSvcV1.AttachmentServiceClient
+	exerciseClient   classroomSvcV1.ExerciseServiceClient
+	attachmentClient classroomSvcV1.AttachmentServiceClient
 	userClient       userSvcV1.UserServiceClient
 }
 
-func NewSubmissionsService(submissionClient submissionSvcV1.SubmissionServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient, userClient userSvcV1.UserServiceClient) *submissionServiceGW {
+func NewSubmissionsService(submissionClient classroomSvcV1.SubmissionServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, exerciseClient classroomSvcV1.ExerciseServiceClient, attachmentClient classroomSvcV1.AttachmentServiceClient, userClient userSvcV1.UserServiceClient) *submissionServiceGW {
 	return &submissionServiceGW{
 		submissionClient: submissionClient,
 		classroomClient:  classroomClient,
@@ -36,7 +33,7 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 		return nil, err
 	}
 
-	exerciseExists, err := u.exerciseClient.GetExercise(ctx, &exerciseSvcV1.GetExerciseRequest{Id: req.GetSubmission().GetExerciseID()})
+	exerciseExists, err := u.exerciseClient.GetExercise(ctx, &classroomSvcV1.GetExerciseRequest{Id: req.GetSubmission().GetExerciseID()})
 	if err != nil {
 		return nil, err
 	}
@@ -64,8 +61,8 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 		}, nil
 	}
 
-	res, err := u.submissionClient.CreateSubmission(ctx, &submissionSvcV1.CreateSubmissionRequest{
-		Submission: &submissionSvcV1.SubmissionInput{
+	res, err := u.submissionClient.CreateSubmission(ctx, &classroomSvcV1.CreateSubmissionRequest{
+		Submission: &classroomSvcV1.SubmissionInput{
 			UserID:     req.GetSubmission().GetAuthorID(),
 			ExerciseID: req.GetSubmission().GetExerciseID(),
 			Status:     req.GetSubmission().GetStatus(),
@@ -79,8 +76,8 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 	for _, attReq := range req.GetSubmission().GetAttachments() {
 		exerciseID := req.GetSubmission().GetExerciseID()
 
-		attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
-			Attachment: &attachmentSvcV1.AttachmentInput{
+		attRes, err := u.attachmentClient.CreateAttachment(ctx, &classroomSvcV1.CreateAttachmentRequest{
+			Attachment: &classroomSvcV1.AttachmentInput{
 				FileURL:      attReq.FileURL,
 				Status:       "",
 				SubmissionID: &res.SubmissionID,
@@ -95,7 +92,7 @@ func (u *submissionServiceGW) CreateSubmission(ctx context.Context, req *pb.Crea
 		if err != nil {
 			// Rollback transaction
 			for _, attID := range attIDList {
-				_, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+				_, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 					Id: attID,
 				})
 				if err != nil {
@@ -121,12 +118,12 @@ func (u *submissionServiceGW) GetSubmission(ctx context.Context, req *pb.GetSubm
 		return nil, err
 	}
 
-	res, err := u.submissionClient.GetSubmission(ctx, &submissionSvcV1.GetSubmissionRequest{Id: req.GetId()})
+	res, err := u.submissionClient.GetSubmission(ctx, &classroomSvcV1.GetSubmissionRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
 	}
 
-	attRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+	attRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &classroomSvcV1.GetAttachmentsOfSubmissionRequest{
 		SubmissionID: res.GetSubmission().GetId(),
 	})
 	if err != nil {
@@ -164,7 +161,7 @@ func (u *submissionServiceGW) UpdateSubmission(ctx context.Context, req *pb.Upda
 		return nil, err
 	}
 	log.Println(req)
-	exists, err := u.exerciseClient.GetExercise(ctx, &exerciseSvcV1.GetExerciseRequest{Id: req.GetSubmission().GetExerciseID()})
+	exists, err := u.exerciseClient.GetExercise(ctx, &classroomSvcV1.GetExerciseRequest{Id: req.GetSubmission().GetExerciseID()})
 	if err != nil {
 		return nil, err
 	}
@@ -178,9 +175,9 @@ func (u *submissionServiceGW) UpdateSubmission(ctx context.Context, req *pb.Upda
 		}, nil
 	}
 
-	res, err := u.submissionClient.UpdateSubmission(ctx, &submissionSvcV1.UpdateSubmissionRequest{
+	res, err := u.submissionClient.UpdateSubmission(ctx, &classroomSvcV1.UpdateSubmissionRequest{
 		Id: req.GetId(),
-		Submission: &submissionSvcV1.SubmissionInput{
+		Submission: &classroomSvcV1.SubmissionInput{
 			UserID:     req.GetSubmission().GetAuthorID(),
 			ExerciseID: req.GetSubmission().GetExerciseID(),
 			Status:     req.GetSubmission().GetStatus(),
@@ -190,7 +187,7 @@ func (u *submissionServiceGW) UpdateSubmission(ctx context.Context, req *pb.Upda
 		return nil, err
 	}
 
-	attGetRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+	attGetRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &classroomSvcV1.GetAttachmentsOfSubmissionRequest{
 		SubmissionID: req.Id,
 	})
 	if err != nil {
@@ -199,7 +196,7 @@ func (u *submissionServiceGW) UpdateSubmission(ctx context.Context, req *pb.Upda
 
 	// delete old attachments
 	for _, a := range attGetRes.Attachments {
-		if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+		if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 			Id: a.Id,
 		}); err != nil {
 			return nil, err
@@ -210,8 +207,8 @@ func (u *submissionServiceGW) UpdateSubmission(ctx context.Context, req *pb.Upda
 	var attCreated []int64
 	if len(req.Submission.GetAttachments()) > 0 {
 		for _, att := range req.Submission.Attachments {
-			attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
-				Attachment: &attachmentSvcV1.AttachmentInput{
+			attRes, err := u.attachmentClient.CreateAttachment(ctx, &classroomSvcV1.CreateAttachmentRequest{
+				Attachment: &classroomSvcV1.AttachmentInput{
 					FileURL:      att.FileURL,
 					ExerciseID:   &req.Submission.ExerciseID,
 					AuthorID:     req.Submission.AuthorID,
@@ -226,7 +223,7 @@ func (u *submissionServiceGW) UpdateSubmission(ctx context.Context, req *pb.Upda
 			if err != nil {
 				if len(attCreated) > 0 {
 					for _, aErr := range attCreated {
-						if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+						if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 							Id: aErr,
 						}); err != nil {
 							return nil, err
@@ -253,14 +250,14 @@ func (u *submissionServiceGW) DeleteSubmission(ctx context.Context, req *pb.Dele
 		return nil, err
 	}
 
-	res, err := u.submissionClient.DeleteSubmission(ctx, &submissionSvcV1.DeleteSubmissionRequest{
+	res, err := u.submissionClient.DeleteSubmission(ctx, &classroomSvcV1.DeleteSubmissionRequest{
 		Id: req.GetId(),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	attGetRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+	attGetRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &classroomSvcV1.GetAttachmentsOfSubmissionRequest{
 		SubmissionID: req.Id,
 	})
 	if err != nil {
@@ -268,7 +265,7 @@ func (u *submissionServiceGW) DeleteSubmission(ctx context.Context, req *pb.Dele
 	}
 
 	for _, a := range attGetRes.Attachments {
-		if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+		if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 			Id: a.Id,
 		}); err != nil {
 			return nil, err
@@ -288,7 +285,7 @@ func (u *submissionServiceGW) GetAllSubmissionsOfExercise(ctx context.Context, r
 		return nil, err
 	}
 
-	res, err := u.submissionClient.GetAllSubmissionsOfExercise(ctx, &submissionSvcV1.GetAllSubmissionsOfExerciseRequest{
+	res, err := u.submissionClient.GetAllSubmissionsOfExercise(ctx, &classroomSvcV1.GetAllSubmissionsOfExerciseRequest{
 		ExerciseID: req.GetExerciseID(),
 	})
 	if err != nil {
@@ -297,7 +294,7 @@ func (u *submissionServiceGW) GetAllSubmissionsOfExercise(ctx context.Context, r
 
 	var submissions []*pb.SubmissionResponse
 	for _, p := range res.GetSubmissions() {
-		attRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+		attRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &classroomSvcV1.GetAttachmentsOfSubmissionRequest{
 			SubmissionID: p.Id,
 		})
 		if err != nil {
@@ -361,7 +358,7 @@ func (u *submissionServiceGW) GetSubmissionOfUser(ctx context.Context, req *pb.G
 		return nil, err
 	}
 
-	res, err := u.submissionClient.GetSubmissionOfUser(ctx, &submissionSvcV1.GetSubmissionOfUserRequest{
+	res, err := u.submissionClient.GetSubmissionOfUser(ctx, &classroomSvcV1.GetSubmissionOfUserRequest{
 		UserID:     req.UserID,
 		ExerciseID: req.ExerciseID,
 	})
@@ -371,7 +368,7 @@ func (u *submissionServiceGW) GetSubmissionOfUser(ctx context.Context, req *pb.G
 
 	var submissions []*pb.SubmissionResponse
 	for _, p := range res.GetSubmissions() {
-		attRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+		attRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &classroomSvcV1.GetAttachmentsOfSubmissionRequest{
 			SubmissionID: p.Id,
 		})
 		if err != nil {
@@ -435,7 +432,7 @@ func (u *submissionServiceGW) GetSubmissionFromUser(ctx context.Context, req *pb
 		return nil, err
 	}
 
-	res, err := u.submissionClient.GetSubmissionFromUser(ctx, &submissionSvcV1.GetSubmissionFromUserRequest{
+	res, err := u.submissionClient.GetSubmissionFromUser(ctx, &classroomSvcV1.GetSubmissionFromUserRequest{
 		UserID: req.UserID,
 	})
 	if err != nil {
@@ -444,7 +441,7 @@ func (u *submissionServiceGW) GetSubmissionFromUser(ctx context.Context, req *pb
 
 	var submissions []*pb.SubmissionResponse
 	for _, p := range res.GetSubmissions() {
-		attRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+		attRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &classroomSvcV1.GetAttachmentsOfSubmissionRequest{
 			SubmissionID: p.Id,
 		})
 		if err != nil {

@@ -8,14 +8,7 @@ import (
 	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
-	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
-	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
-	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
-	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
-	reportingStageSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
-	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
-	topicSvcV1 "github.com/qthuy2k1/thesis-management-backend/topic-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -24,17 +17,17 @@ import (
 type classroomServiceGW struct {
 	pb.UnimplementedClassroomServiceServer
 	classroomClient      classroomSvcV1.ClassroomServiceClient
-	postClient           postSvcV1.PostServiceClient
-	exerciseClient       exerciseSvcV1.ExerciseServiceClient
-	reportingStageClient reportingStageSvcV1.ReportingStageServiceClient
+	postClient           classroomSvcV1.PostServiceClient
+	exerciseClient       classroomSvcV1.ExerciseServiceClient
+	reportingStageClient classroomSvcV1.ReportingStageServiceClient
 	userClient           userSvcV1.UserServiceClient
-	topicClient          topicSvcV1.TopicServiceClient
-	waitingListClient    waitingListSvcV1.WaitingListServiceClient
-	attachmentClient     attachmentSvcV1.AttachmentServiceClient
-	submissionClient     submissionSvcV1.SubmissionServiceClient
+	topicClient          userSvcV1.TopicServiceClient
+	waitingListClient    classroomSvcV1.WaitingListServiceClient
+	attachmentClient     classroomSvcV1.AttachmentServiceClient
+	submissionClient     classroomSvcV1.SubmissionServiceClient
 }
 
-func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, reportingStageClient reportingStageSvcV1.ReportingStageServiceClient, userClient userSvcV1.UserServiceClient, topicClient topicSvcV1.TopicServiceClient, waitingListClient waitingListSvcV1.WaitingListServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient, submissionClient submissionSvcV1.SubmissionServiceClient) *classroomServiceGW {
+func NewClassroomsService(classroomClient classroomSvcV1.ClassroomServiceClient, postClient classroomSvcV1.PostServiceClient, exerciseClient classroomSvcV1.ExerciseServiceClient, reportingStageClient classroomSvcV1.ReportingStageServiceClient, userClient userSvcV1.UserServiceClient, topicClient userSvcV1.TopicServiceClient, waitingListClient classroomSvcV1.WaitingListServiceClient, attachmentClient classroomSvcV1.AttachmentServiceClient, submissionClient classroomSvcV1.SubmissionServiceClient) *classroomServiceGW {
 	return &classroomServiceGW{
 		classroomClient:      classroomClient,
 		postClient:           postClient,
@@ -105,7 +98,7 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 		return nil, err
 	}
 
-	filter := &postSvcV1.GetAllPostsOfClassroomRequest{
+	filter := &classroomSvcV1.GetAllPostsOfClassroomRequest{
 		Page:        1,
 		Limit:       9999999,
 		TitleSearch: "",
@@ -124,7 +117,7 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 	}
 
 	// Get all posts of classroom
-	resPost, err := u.postClient.GetAllPostsOfClassroom(ctx, &postSvcV1.GetAllPostsOfClassroomRequest{
+	resPost, err := u.postClient.GetAllPostsOfClassroom(ctx, &classroomSvcV1.GetAllPostsOfClassroomRequest{
 		ClassroomID: res.GetClassroom().GetId(),
 		Page:        filter.Page,
 		Limit:       filter.Limit,
@@ -138,7 +131,7 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 
 	var postsAndExercises []*pb.PostsAndExercisesOfClassroom
 	for _, p := range resPost.GetPosts() {
-		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{
+		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{
 			Id: p.ReportingStageID,
 		})
 		if err != nil {
@@ -182,7 +175,7 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 	}
 
 	// Get all exercises of classroom
-	resExercise, err := u.exerciseClient.GetAllExercisesOfClassroom(ctx, &exerciseSvcV1.GetAllExercisesOfClassroomRequest{
+	resExercise, err := u.exerciseClient.GetAllExercisesOfClassroom(ctx, &classroomSvcV1.GetAllExercisesOfClassroomRequest{
 		ClassroomID: res.GetClassroom().GetId(),
 		Page:        filter.Page,
 		Limit:       filter.Limit,
@@ -195,7 +188,7 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 	}
 
 	for _, p := range resExercise.GetExercises() {
-		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{
+		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{
 			Id: p.ReportingStageID,
 		})
 		if err != nil {
@@ -264,7 +257,7 @@ func (u *classroomServiceGW) GetClassroom(ctx context.Context, req *pb.GetClassr
 		userListID = append(userListID, user.MemberID)
 	}
 
-	topicRes, err := u.topicClient.GetAllTopicsOfListUser(ctx, &topicSvcV1.GetAllTopicsOfListUserRequest{
+	topicRes, err := u.topicClient.GetAllTopicsOfListUser(ctx, &userSvcV1.GetAllTopicsOfListUserRequest{
 		UserID: userListID,
 	})
 	if err != nil {
@@ -360,7 +353,7 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 		return nil, err
 	}
 
-	wltRes, err := u.waitingListClient.GetWaitingListsOfClassroom(ctx, &waitingListSvcV1.GetWaitingListsOfClassroomRequest{
+	wltRes, err := u.waitingListClient.GetWaitingListsOfClassroom(ctx, &classroomSvcV1.GetWaitingListsOfClassroomRequest{
 		ClassroomID: req.Id,
 	})
 	if err != nil {
@@ -369,7 +362,7 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 
 	// remove waiting list in the classroom was deleted
 	for _, l := range wltRes.GetWaitingLists() {
-		_, err := u.waitingListClient.DeleteWaitingList(ctx, &waitingListSvcV1.DeleteWaitingListRequest{
+		_, err := u.waitingListClient.DeleteWaitingList(ctx, &classroomSvcV1.DeleteWaitingListRequest{
 			Id: l.Id,
 		})
 		if err != nil {
@@ -377,7 +370,7 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 		}
 	}
 
-	exRes, err := u.exerciseClient.GetAllExercisesOfClassroom(ctx, &exerciseSvcV1.GetAllExercisesOfClassroomRequest{
+	exRes, err := u.exerciseClient.GetAllExercisesOfClassroom(ctx, &classroomSvcV1.GetAllExercisesOfClassroomRequest{
 		Page:        1,
 		Limit:       99999,
 		TitleSearch: "",
@@ -390,13 +383,13 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 	}
 
 	for _, e := range exRes.GetExercises() {
-		if _, err := u.exerciseClient.DeleteExercise(ctx, &exerciseSvcV1.DeleteExerciseRequest{
+		if _, err := u.exerciseClient.DeleteExercise(ctx, &classroomSvcV1.DeleteExerciseRequest{
 			Id: e.Id,
 		}); err != nil {
 			return nil, err
 		}
 
-		submissionRes, err := u.submissionClient.GetAllSubmissionsOfExercise(ctx, &submissionSvcV1.GetAllSubmissionsOfExerciseRequest{
+		submissionRes, err := u.submissionClient.GetAllSubmissionsOfExercise(ctx, &classroomSvcV1.GetAllSubmissionsOfExerciseRequest{
 			ExerciseID: e.Id,
 		})
 		if err != nil {
@@ -404,13 +397,13 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 		}
 
 		for _, s := range submissionRes.GetSubmissions() {
-			if _, err := u.submissionClient.DeleteSubmission(ctx, &submissionSvcV1.DeleteSubmissionRequest{
+			if _, err := u.submissionClient.DeleteSubmission(ctx, &classroomSvcV1.DeleteSubmissionRequest{
 				Id: s.Id,
 			}); err != nil {
 				return nil, err
 			}
 
-			attSubRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+			attSubRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &classroomSvcV1.GetAttachmentsOfSubmissionRequest{
 				SubmissionID: s.Id,
 			})
 			if err != nil {
@@ -418,7 +411,7 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 			}
 
 			for _, a := range attSubRes.GetAttachments() {
-				if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+				if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 					Id: a.Id,
 				}); err != nil {
 					return nil, err
@@ -426,7 +419,7 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 			}
 		}
 
-		attGetRes, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+		attGetRes, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &classroomSvcV1.GetAttachmentsOfExerciseRequest{
 			ExerciseID: e.Id,
 		})
 		if err != nil {
@@ -434,7 +427,7 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 		}
 
 		for _, a := range attGetRes.GetAttachments() {
-			if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+			if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 				Id: a.Id,
 			}); err != nil {
 				return nil, err
@@ -442,7 +435,7 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 		}
 	}
 
-	postRes, err := u.postClient.GetAllPostsOfClassroom(ctx, &postSvcV1.GetAllPostsOfClassroomRequest{
+	postRes, err := u.postClient.GetAllPostsOfClassroom(ctx, &classroomSvcV1.GetAllPostsOfClassroomRequest{
 		Page:        1,
 		Limit:       99999,
 		TitleSearch: "",
@@ -455,13 +448,13 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 	}
 
 	for _, p := range postRes.GetPosts() {
-		if _, err := u.postClient.DeletePost(ctx, &postSvcV1.DeletePostRequest{
+		if _, err := u.postClient.DeletePost(ctx, &classroomSvcV1.DeletePostRequest{
 			Id: p.Id,
 		}); err != nil {
 			return nil, err
 		}
 
-		attGetRes, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+		attGetRes, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &classroomSvcV1.GetAttachmentsOfPostRequest{
 			PostID: p.Id,
 		})
 		if err != nil {
@@ -469,7 +462,7 @@ func (u *classroomServiceGW) DeleteClassroom(ctx context.Context, req *pb.Delete
 		}
 
 		for _, a := range attGetRes.Attachments {
-			if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+			if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 				Id: a.Id,
 			}); err != nil {
 				return nil, err
@@ -567,7 +560,7 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 	var classrooms []*pb.ClassroomResponse
 	for _, c := range res.GetClassrooms() {
 		// Get all posts of classroom
-		resPost, err := u.postClient.GetAllPostsOfClassroom(ctx, &postSvcV1.GetAllPostsOfClassroomRequest{
+		resPost, err := u.postClient.GetAllPostsOfClassroom(ctx, &classroomSvcV1.GetAllPostsOfClassroomRequest{
 			ClassroomID: c.GetId(),
 			Page:        filter.Page,
 			Limit:       filter.Limit,
@@ -581,7 +574,7 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 
 		var postsAndExercises []*pb.PostsAndExercisesOfClassroom
 		for _, p := range resPost.GetPosts() {
-			reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{
+			reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{
 				Id: p.ReportingStageID,
 			})
 			if err != nil {
@@ -621,7 +614,7 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 		}
 
 		// Get all exercises of classroom
-		resExercise, err := u.exerciseClient.GetAllExercisesOfClassroom(ctx, &exerciseSvcV1.GetAllExercisesOfClassroomRequest{
+		resExercise, err := u.exerciseClient.GetAllExercisesOfClassroom(ctx, &classroomSvcV1.GetAllExercisesOfClassroomRequest{
 			ClassroomID: c.GetId(),
 			Page:        filter.Page,
 			Limit:       filter.Limit,
@@ -634,7 +627,7 @@ func (u *classroomServiceGW) GetClassrooms(ctx context.Context, req *pb.GetClass
 		}
 
 		for _, p := range resExercise.GetExercises() {
-			reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &reportingStageSvcV1.GetReportingStageRequest{
+			reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{
 				Id: p.ReportingStageID,
 			})
 			if err != nil {

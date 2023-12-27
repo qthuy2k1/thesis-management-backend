@@ -1,2 +1,0 @@
-ALTER TABLE "posts"
-ALTER COLUMN "author_id" TYPE INTEGER;

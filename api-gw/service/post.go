@@ -6,25 +6,21 @@ import (
 	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
-	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
-	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
-	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
-	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
 type postServiceGW struct {
 	pb.UnimplementedPostServiceServer
-	postClient           postSvcV1.PostServiceClient
+	postClient           classroomSvcV1.PostServiceClient
 	classroomClient      classroomSvcV1.ClassroomServiceClient
-	reportingStageClient rpsSvcV1.ReportingStageServiceClient
-	commentClient        commentSvcV1.CommentServiceClient
+	reportingStageClient classroomSvcV1.ReportingStageServiceClient
+	commentClient        userSvcV1.CommentServiceClient
 	userClient           userSvcV1.UserServiceClient
-	attachmentClient     attachmentSvcV1.AttachmentServiceClient
+	attachmentClient     classroomSvcV1.AttachmentServiceClient
 }
 
-func NewPostsService(postClient postSvcV1.PostServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportingStageClient rpsSvcV1.ReportingStageServiceClient, commentCLient commentSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient) *postServiceGW {
+func NewPostsService(postClient classroomSvcV1.PostServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportingStageClient classroomSvcV1.ReportingStageServiceClient, commentCLient userSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient, attachmentClient classroomSvcV1.AttachmentServiceClient) *postServiceGW {
 	return &postServiceGW{
 		postClient:           postClient,
 		classroomClient:      classroomClient,
@@ -56,7 +52,7 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 		}, nil
 	}
 
-	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetPost().GetCategoryID()})
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{Id: req.GetPost().GetCategoryID()})
 	if err != nil {
 		return nil, err
 	}
@@ -70,8 +66,8 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 		}, nil
 	}
 
-	res, err := u.postClient.CreatePost(ctx, &postSvcV1.CreatePostRequest{
-		Post: &postSvcV1.PostInput{
+	res, err := u.postClient.CreatePost(ctx, &classroomSvcV1.CreatePostRequest{
+		Post: &classroomSvcV1.PostInput{
 			Title:            req.GetPost().Title,
 			Content:          req.GetPost().Description,
 			ClassroomID:      req.GetPost().ClassroomID,
@@ -86,8 +82,8 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 	var attCreated []int64
 	if req.Post.Attachments != nil && len(req.Post.Attachments) > 0 {
 		for _, att := range req.Post.Attachments {
-			attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
-				Attachment: &attachmentSvcV1.AttachmentInput{
+			attRes, err := u.attachmentClient.CreateAttachment(ctx, &classroomSvcV1.CreateAttachmentRequest{
+				Attachment: &classroomSvcV1.AttachmentInput{
 					FileURL:   att.FileURL,
 					PostID:    &res.Post.Id,
 					AuthorID:  req.Post.AuthorID,
@@ -101,7 +97,7 @@ func (u *postServiceGW) CreatePost(ctx context.Context, req *pb.CreatePostReques
 			if err != nil {
 				if len(attCreated) > 0 {
 					for _, aErr := range attCreated {
-						if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+						if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 							Id: aErr,
 						}); err != nil {
 							return nil, err
@@ -128,12 +124,12 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 		return nil, err
 	}
 
-	res, err := u.postClient.GetPost(ctx, &postSvcV1.GetPostRequest{Id: req.GetId()})
+	res, err := u.postClient.GetPost(ctx, &classroomSvcV1.GetPostRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
 	}
 
-	commentRes, err := u.commentClient.GetCommentsOfAPost(ctx, &commentSvcV1.GetCommentsOfAPostRequest{
+	commentRes, err := u.commentClient.GetCommentsOfAPost(ctx, &userSvcV1.GetCommentsOfAPostRequest{
 		PostID: req.GetId(),
 	})
 	if err != nil {
@@ -167,7 +163,7 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 		})
 	}
 
-	reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
+	reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{
 		Id: res.Post.ReportingStageID,
 	})
 	if err != nil {
@@ -179,7 +175,7 @@ func (u *postServiceGW) GetPost(ctx context.Context, req *pb.GetPostRequest) (*p
 		return nil, err
 	}
 
-	attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+	attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &classroomSvcV1.GetAttachmentsOfPostRequest{
 		PostID: res.Post.Id,
 	})
 	if err != nil {
@@ -256,7 +252,7 @@ func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostReques
 		return nil, err
 	}
 
-	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetPost().GetCategoryID()})
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{Id: req.GetPost().GetCategoryID()})
 	if err != nil {
 		return nil, err
 	}
@@ -284,9 +280,9 @@ func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostReques
 		}, nil
 	}
 
-	res, err := u.postClient.UpdatePost(ctx, &postSvcV1.UpdatePostRequest{
+	res, err := u.postClient.UpdatePost(ctx, &classroomSvcV1.UpdatePostRequest{
 		Id: req.GetId(),
-		Post: &postSvcV1.PostInput{
+		Post: &classroomSvcV1.PostInput{
 			Title:            req.GetPost().Title,
 			Content:          req.GetPost().Description,
 			ClassroomID:      req.GetPost().ClassroomID,
@@ -298,7 +294,7 @@ func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostReques
 		return nil, err
 	}
 
-	attGetRes, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+	attGetRes, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &classroomSvcV1.GetAttachmentsOfPostRequest{
 		PostID: req.Id,
 	})
 	if err != nil {
@@ -307,7 +303,7 @@ func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostReques
 
 	// delete old attachments
 	for _, a := range attGetRes.Attachments {
-		if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+		if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 			Id: a.Id,
 		}); err != nil {
 			return nil, err
@@ -318,8 +314,8 @@ func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostReques
 	var attCreated []int64
 	if len(req.Post.GetAttachments()) > 0 {
 		for _, att := range req.Post.Attachments {
-			attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
-				Attachment: &attachmentSvcV1.AttachmentInput{
+			attRes, err := u.attachmentClient.CreateAttachment(ctx, &classroomSvcV1.CreateAttachmentRequest{
+				Attachment: &classroomSvcV1.AttachmentInput{
 					FileURL:   att.FileURL,
 					PostID:    &req.Id,
 					AuthorID:  req.Post.AuthorID,
@@ -333,7 +329,7 @@ func (u *postServiceGW) UpdatePost(ctx context.Context, req *pb.UpdatePostReques
 			if err != nil {
 				if len(attCreated) > 0 {
 					for _, aErr := range attCreated {
-						if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+						if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 							Id: aErr,
 						}); err != nil {
 							return nil, err
@@ -360,14 +356,14 @@ func (u *postServiceGW) DeletePost(ctx context.Context, req *pb.DeletePostReques
 		return nil, err
 	}
 
-	res, err := u.postClient.DeletePost(ctx, &postSvcV1.DeletePostRequest{
+	res, err := u.postClient.DeletePost(ctx, &classroomSvcV1.DeletePostRequest{
 		Id: req.GetId(),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	attGetRes, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+	attGetRes, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &classroomSvcV1.GetAttachmentsOfPostRequest{
 		PostID: req.Id,
 	})
 	if err != nil {
@@ -375,7 +371,7 @@ func (u *postServiceGW) DeletePost(ctx context.Context, req *pb.DeletePostReques
 	}
 
 	for _, a := range attGetRes.Attachments {
-		if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+		if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 			Id: a.Id,
 		}); err != nil {
 			return nil, err
@@ -435,7 +431,7 @@ func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (
 		sortOrder = "desc"
 	}
 
-	res, err := u.postClient.GetPosts(ctx, &postSvcV1.GetPostsRequest{
+	res, err := u.postClient.GetPosts(ctx, &classroomSvcV1.GetPostsRequest{
 		Limit:       limit,
 		Page:        page,
 		TitleSearch: titleSearch,
@@ -448,7 +444,7 @@ func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (
 
 	var posts []*pb.PostResponse
 	for _, p := range res.GetPosts() {
-		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
+		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{
 			Id: p.ReportingStageID,
 		})
 		if err != nil {
@@ -460,7 +456,7 @@ func (u *postServiceGW) GetPosts(ctx context.Context, req *pb.GetPostsRequest) (
 			return nil, err
 		}
 
-		attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+		attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &classroomSvcV1.GetAttachmentsOfPostRequest{
 			PostID: p.Id,
 		})
 		if err != nil {
@@ -585,7 +581,7 @@ func (u *postServiceGW) GetAllPostsOfClassroom(ctx context.Context, req *pb.GetA
 		classroomID = req.GetClassroomID()
 	}
 
-	res, err := u.postClient.GetAllPostsOfClassroom(ctx, &postSvcV1.GetAllPostsOfClassroomRequest{
+	res, err := u.postClient.GetAllPostsOfClassroom(ctx, &classroomSvcV1.GetAllPostsOfClassroomRequest{
 		Limit:       limit,
 		Page:        page,
 		TitleSearch: titleSearch,
@@ -599,7 +595,7 @@ func (u *postServiceGW) GetAllPostsOfClassroom(ctx context.Context, req *pb.GetA
 
 	var posts []*pb.PostResponse
 	for _, p := range res.GetPosts() {
-		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
+		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{
 			Id: p.ReportingStageID,
 		})
 		if err != nil {
@@ -611,7 +607,7 @@ func (u *postServiceGW) GetAllPostsOfClassroom(ctx context.Context, req *pb.GetA
 			return nil, err
 		}
 
-		attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+		attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &classroomSvcV1.GetAttachmentsOfPostRequest{
 			PostID: p.Id,
 		})
 		if err != nil {
@@ -707,7 +703,7 @@ func (u *postServiceGW) GetAllPostsInReportingStage(ctx context.Context, req *pb
 		}, nil
 	}
 
-	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{
 		Id: req.GetCategoryID(),
 	})
 	if err != nil {
@@ -723,7 +719,7 @@ func (u *postServiceGW) GetAllPostsInReportingStage(ctx context.Context, req *pb
 		}, nil
 	}
 
-	res, err := u.postClient.GetAllPostsInReportingStage(ctx, &postSvcV1.GetAllPostsInReportingStageRequest{
+	res, err := u.postClient.GetAllPostsInReportingStage(ctx, &classroomSvcV1.GetAllPostsInReportingStageRequest{
 		ClassroomID:      req.GetClassroomID(),
 		ReportingStageID: req.GetCategoryID(),
 	})
@@ -739,7 +735,7 @@ func (u *postServiceGW) GetAllPostsInReportingStage(ctx context.Context, req *pb
 			return nil, err
 		}
 
-		attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &attachmentSvcV1.GetAttachmentsOfPostRequest{
+		attachment, err := u.attachmentClient.GetAttachmentsOfPost(ctx, &classroomSvcV1.GetAttachmentsOfPostRequest{
 			PostID: p.Id,
 		})
 		if err != nil {

@@ -555,21 +555,6 @@ func (m *UserResponse) validate(all bool) error {
 
 	}
 
-	if m.HashedPassword != nil {
-
-		if utf8.RuneCountInString(m.GetHashedPassword()) < 2 {
-			err := UserResponseValidationError{
-				field:  "HashedPassword",
-				reason: "value length must be at least 2 runes",
-			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
-		}
-
-	}
-
 	if len(errors) > 0 {
 		return UserResponseMultiError(errors)
 	}
