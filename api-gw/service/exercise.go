@@ -5,29 +5,24 @@ import (
 	"strings"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
-	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
-	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
-	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
-	rpsSvcV1 "github.com/qthuy2k1/thesis-management-backend/reporting-stage-svc/api/goclient/v1"
 	scheduleSvcV1 "github.com/qthuy2k1/thesis-management-backend/schedule-svc/api/goclient/v1"
-	submissionSvcV1 "github.com/qthuy2k1/thesis-management-backend/submission-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
 type exerciseServiceGW struct {
 	pb.UnimplementedExerciseServiceServer
-	exerciseClient       exerciseSvcV1.ExerciseServiceClient
+	exerciseClient       classroomSvcV1.ExerciseServiceClient
 	classroomClient      classroomSvcV1.ClassroomServiceClient
-	reportingStageClient rpsSvcV1.ReportingStageServiceClient
-	commentClient        commentSvcV1.CommentServiceClient
+	reportingStageClient classroomSvcV1.ReportingStageServiceClient
+	commentClient        userSvcV1.CommentServiceClient
 	userClient           userSvcV1.UserServiceClient
-	submissionClient     submissionSvcV1.SubmissionServiceClient
-	attachmentClient     attachmentSvcV1.AttachmentServiceClient
+	submissionClient     classroomSvcV1.SubmissionServiceClient
+	attachmentClient     classroomSvcV1.AttachmentServiceClient
 	scheduleClient       scheduleSvcV1.ScheduleServiceClient
 }
 
-func NewExercisesService(exerciseClient exerciseSvcV1.ExerciseServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportStageClient rpsSvcV1.ReportingStageServiceClient, commentClient commentSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient, submissionClient submissionSvcV1.SubmissionServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient, scheduleClient scheduleSvcV1.ScheduleServiceClient) *exerciseServiceGW {
+func NewExercisesService(exerciseClient classroomSvcV1.ExerciseServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, reportStageClient classroomSvcV1.ReportingStageServiceClient, commentClient userSvcV1.CommentServiceClient, userClient userSvcV1.UserServiceClient, submissionClient classroomSvcV1.SubmissionServiceClient, attachmentClient classroomSvcV1.AttachmentServiceClient, scheduleClient scheduleSvcV1.ScheduleServiceClient) *exerciseServiceGW {
 	return &exerciseServiceGW{
 		exerciseClient:       exerciseClient,
 		classroomClient:      classroomClient,
@@ -59,7 +54,7 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 		}, nil
 	}
 
-	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetExercise().GetCategoryID()})
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{Id: req.GetExercise().GetCategoryID()})
 	if err != nil {
 		return nil, err
 	}
@@ -80,8 +75,8 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 		return nil, err
 	}
 
-	res, err := u.exerciseClient.CreateExercise(ctx, &exerciseSvcV1.CreateExerciseRequest{
-		Exercise: &exerciseSvcV1.ExerciseInput{
+	res, err := u.exerciseClient.CreateExercise(ctx, &classroomSvcV1.CreateExerciseRequest{
+		Exercise: &classroomSvcV1.ExerciseInput{
 			Title:            req.GetExercise().Title,
 			Content:          req.GetExercise().Description,
 			ClassroomID:      req.GetExercise().ClassroomID,
@@ -97,8 +92,8 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 	var attCreated []int64
 	if len(req.Exercise.GetAttachments()) > 0 {
 		for _, att := range req.Exercise.Attachments {
-			attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
-				Attachment: &attachmentSvcV1.AttachmentInput{
+			attRes, err := u.attachmentClient.CreateAttachment(ctx, &classroomSvcV1.CreateAttachmentRequest{
+				Attachment: &classroomSvcV1.AttachmentInput{
 					FileURL:    att.FileURL,
 					ExerciseID: &res.ExerciseID,
 					AuthorID:   req.Exercise.AuthorID,
@@ -112,7 +107,7 @@ func (u *exerciseServiceGW) CreateExercise(ctx context.Context, req *pb.CreateEx
 			if err != nil {
 				if len(attCreated) > 0 {
 					for _, aErr := range attCreated {
-						if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+						if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 							Id: aErr,
 						}); err != nil {
 							return nil, err
@@ -139,12 +134,12 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 		return nil, err
 	}
 
-	res, err := u.exerciseClient.GetExercise(ctx, &exerciseSvcV1.GetExerciseRequest{Id: req.GetId()})
+	res, err := u.exerciseClient.GetExercise(ctx, &classroomSvcV1.GetExerciseRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
 	}
 
-	commentRes, err := u.commentClient.GetCommentsOfAExercise(ctx, &commentSvcV1.GetCommentsOfAExerciseRequest{
+	commentRes, err := u.commentClient.GetCommentsOfAExercise(ctx, &userSvcV1.GetCommentsOfAExerciseRequest{
 		ExerciseID: req.GetId(),
 	})
 	if err != nil {
@@ -180,7 +175,7 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 		}
 	}
 
-	reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
+	reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{
 		Id: res.Exercise.ReportingStageID,
 	})
 	if err != nil {
@@ -194,7 +189,7 @@ func (u *exerciseServiceGW) GetExercise(ctx context.Context, req *pb.GetExercise
 		return nil, err
 	}
 
-	attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+	attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &classroomSvcV1.GetAttachmentsOfExerciseRequest{
 		ExerciseID: res.Exercise.Id,
 	})
 	if err != nil {
@@ -268,7 +263,7 @@ func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateEx
 		return nil, err
 	}
 
-	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{Id: req.GetExercise().GetCategoryID()})
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{Id: req.GetExercise().GetCategoryID()})
 	if err != nil {
 		return nil, err
 	}
@@ -296,9 +291,9 @@ func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateEx
 		}, nil
 	}
 
-	res, err := u.exerciseClient.UpdateExercise(ctx, &exerciseSvcV1.UpdateExerciseRequest{
+	res, err := u.exerciseClient.UpdateExercise(ctx, &classroomSvcV1.UpdateExerciseRequest{
 		Id: req.GetId(),
-		Exercise: &exerciseSvcV1.ExerciseInput{
+		Exercise: &classroomSvcV1.ExerciseInput{
 			Title:            req.GetExercise().Title,
 			Content:          req.GetExercise().Description,
 			ClassroomID:      req.GetExercise().ClassroomID,
@@ -311,7 +306,7 @@ func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateEx
 		return nil, err
 	}
 
-	attGetRes, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+	attGetRes, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &classroomSvcV1.GetAttachmentsOfExerciseRequest{
 		ExerciseID: req.Id,
 	})
 	if err != nil {
@@ -320,7 +315,7 @@ func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateEx
 
 	// delete old attachments
 	for _, a := range attGetRes.Attachments {
-		if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+		if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 			Id: a.Id,
 		}); err != nil {
 			return nil, err
@@ -331,8 +326,8 @@ func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateEx
 	var attCreated []int64
 	if len(req.Exercise.GetAttachments()) > 0 {
 		for _, att := range req.Exercise.GetAttachments() {
-			attRes, err := u.attachmentClient.CreateAttachment(ctx, &attachmentSvcV1.CreateAttachmentRequest{
-				Attachment: &attachmentSvcV1.AttachmentInput{
+			attRes, err := u.attachmentClient.CreateAttachment(ctx, &classroomSvcV1.CreateAttachmentRequest{
+				Attachment: &classroomSvcV1.AttachmentInput{
 					FileURL:    att.FileURL,
 					ExerciseID: &req.Id,
 					AuthorID:   req.Exercise.AuthorID,
@@ -346,7 +341,7 @@ func (u *exerciseServiceGW) UpdateExercise(ctx context.Context, req *pb.UpdateEx
 			if err != nil {
 				if len(attCreated) > 0 {
 					for _, aErr := range attCreated {
-						if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+						if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 							Id: aErr,
 						}); err != nil {
 							return nil, err
@@ -373,14 +368,14 @@ func (u *exerciseServiceGW) DeleteExercise(ctx context.Context, req *pb.DeleteEx
 		return nil, err
 	}
 
-	res, err := u.exerciseClient.DeleteExercise(ctx, &exerciseSvcV1.DeleteExerciseRequest{
+	res, err := u.exerciseClient.DeleteExercise(ctx, &classroomSvcV1.DeleteExerciseRequest{
 		Id: req.GetId(),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	submissionRes, err := u.submissionClient.GetAllSubmissionsOfExercise(ctx, &submissionSvcV1.GetAllSubmissionsOfExerciseRequest{
+	submissionRes, err := u.submissionClient.GetAllSubmissionsOfExercise(ctx, &classroomSvcV1.GetAllSubmissionsOfExerciseRequest{
 		ExerciseID: req.Id,
 	})
 	if err != nil {
@@ -388,13 +383,13 @@ func (u *exerciseServiceGW) DeleteExercise(ctx context.Context, req *pb.DeleteEx
 	}
 
 	for _, s := range submissionRes.GetSubmissions() {
-		if _, err := u.submissionClient.DeleteSubmission(ctx, &submissionSvcV1.DeleteSubmissionRequest{
+		if _, err := u.submissionClient.DeleteSubmission(ctx, &classroomSvcV1.DeleteSubmissionRequest{
 			Id: s.Id,
 		}); err != nil {
 			return nil, err
 		}
 
-		attSubRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &attachmentSvcV1.GetAttachmentsOfSubmissionRequest{
+		attSubRes, err := u.attachmentClient.GetAttachmentsOfSubmission(ctx, &classroomSvcV1.GetAttachmentsOfSubmissionRequest{
 			SubmissionID: s.Id,
 		})
 		if err != nil {
@@ -402,7 +397,7 @@ func (u *exerciseServiceGW) DeleteExercise(ctx context.Context, req *pb.DeleteEx
 		}
 
 		for _, a := range attSubRes.GetAttachments() {
-			if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+			if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 				Id: a.Id,
 			}); err != nil {
 				return nil, err
@@ -410,7 +405,7 @@ func (u *exerciseServiceGW) DeleteExercise(ctx context.Context, req *pb.DeleteEx
 		}
 	}
 
-	attGetRes, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+	attGetRes, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &classroomSvcV1.GetAttachmentsOfExerciseRequest{
 		ExerciseID: req.Id,
 	})
 	if err != nil {
@@ -418,7 +413,7 @@ func (u *exerciseServiceGW) DeleteExercise(ctx context.Context, req *pb.DeleteEx
 	}
 
 	for _, a := range attGetRes.GetAttachments() {
-		if _, err := u.attachmentClient.DeleteAttachment(ctx, &attachmentSvcV1.DeleteAttachmentRequest{
+		if _, err := u.attachmentClient.DeleteAttachment(ctx, &classroomSvcV1.DeleteAttachmentRequest{
 			Id: a.Id,
 		}); err != nil {
 			return nil, err
@@ -480,7 +475,7 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 		sortOrder = "desc"
 	}
 
-	res, err := u.exerciseClient.GetExercises(ctx, &exerciseSvcV1.GetExercisesRequest{
+	res, err := u.exerciseClient.GetExercises(ctx, &classroomSvcV1.GetExercisesRequest{
 		Limit:       limit,
 		Page:        page,
 		TitleSearch: titleSearch,
@@ -493,7 +488,7 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 
 	var exercises []*pb.ExerciseResponse
 	for _, e := range res.GetExercises() {
-		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
+		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{
 			Id: e.ReportingStageID,
 		})
 		if err != nil {
@@ -507,7 +502,7 @@ func (u *exerciseServiceGW) GetExercises(ctx context.Context, req *pb.GetExercis
 			return nil, err
 		}
 
-		attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+		attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &classroomSvcV1.GetAttachmentsOfExerciseRequest{
 			ExerciseID: e.Id,
 		})
 		if err != nil {
@@ -631,7 +626,7 @@ func (u *exerciseServiceGW) GetAllExercisesOfClassroom(ctx context.Context, req 
 		classroomID = req.GetClassroomID()
 	}
 
-	res, err := u.exerciseClient.GetAllExercisesOfClassroom(ctx, &exerciseSvcV1.GetAllExercisesOfClassroomRequest{
+	res, err := u.exerciseClient.GetAllExercisesOfClassroom(ctx, &classroomSvcV1.GetAllExercisesOfClassroomRequest{
 		Limit:       limit,
 		Page:        page,
 		TitleSearch: titleSearch,
@@ -645,7 +640,7 @@ func (u *exerciseServiceGW) GetAllExercisesOfClassroom(ctx context.Context, req 
 
 	var exercises []*pb.ExerciseResponse
 	for _, p := range res.GetExercises() {
-		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
+		reportingStageRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{
 			Id: p.ReportingStageID,
 		})
 		if err != nil {
@@ -659,7 +654,7 @@ func (u *exerciseServiceGW) GetAllExercisesOfClassroom(ctx context.Context, req 
 			return nil, err
 		}
 
-		attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+		attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &classroomSvcV1.GetAttachmentsOfExerciseRequest{
 			ExerciseID: p.Id,
 		})
 		if err != nil {
@@ -752,7 +747,7 @@ func (u *exerciseServiceGW) GetAllExercisesInReportingStage(ctx context.Context,
 		}, nil
 	}
 
-	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &rpsSvcV1.GetReportingStageRequest{
+	rpsRes, err := u.reportingStageClient.GetReportingStage(ctx, &classroomSvcV1.GetReportingStageRequest{
 		Id: req.GetCategoryID(),
 	})
 	if err != nil {
@@ -768,7 +763,7 @@ func (u *exerciseServiceGW) GetAllExercisesInReportingStage(ctx context.Context,
 		}, nil
 	}
 
-	res, err := u.exerciseClient.GetAllExercisesInReportingStage(ctx, &exerciseSvcV1.GetAllExercisesInReportingStageRequest{
+	res, err := u.exerciseClient.GetAllExercisesInReportingStage(ctx, &classroomSvcV1.GetAllExercisesInReportingStageRequest{
 		ClassroomID:      req.GetClassroomID(),
 		ReportingStageID: req.GetCategoryID(),
 	})
@@ -785,7 +780,7 @@ func (u *exerciseServiceGW) GetAllExercisesInReportingStage(ctx context.Context,
 			return nil, err
 		}
 
-		attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &attachmentSvcV1.GetAttachmentsOfExerciseRequest{
+		attachment, err := u.attachmentClient.GetAttachmentsOfExercise(ctx, &classroomSvcV1.GetAttachmentsOfExerciseRequest{
 			ExerciseID: p.Id,
 		})
 		if err != nil {

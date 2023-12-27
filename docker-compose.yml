@@ -19,42 +19,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
   
-  post-db:
-    image: postgres:alpine
-    container_name: thesis-management-backend-post-db-service
-    networks:
-      mynet:
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: thesis_management_posts
-    ports:
-      - "5434:5432"
-    volumes:
-      - post-db:/var/lib/postgresql/data
-      - ./script/post/init-database-post.sql:/docker-entrypoint-initdb.d/init-database.sql
-    restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway" 
-
-  exercise-db:
-    image: postgres:alpine
-    container_name: thesis-management-backend-exercise-db-service
-    networks:
-      mynet:
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: thesis_management_exercises
-    ports:
-      - "5435:5432"
-    volumes:
-      - exercise-db:/var/lib/postgresql/data
-      - ./script/exercise/init-database-exercise.sql:/docker-entrypoint-initdb.d/init-database.sql
-    restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
   user-db:
     image: postgres:alpine
     container_name: thesis-management-backend-user-db-service
@@ -73,113 +37,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  reporting-stage-db:
-    image: postgres:alpine
-    container_name: thesis-management-backend-reporting-stage-db-service
-    networks:
-      mynet:
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: thesis_management_reporting_stages
-    ports:
-      - "5437:5432"
-    volumes:
-      - reporting-stage-db:/var/lib/postgresql/data
-      - ./script/reporting-stage/init-database-reporting-stage.sql:/docker-entrypoint-initdb.d/init-database.sql
-    restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
-  submission-db:
-    image: postgres:alpine
-    container_name: thesis-management-backend-submission-db-service
-    networks:
-      mynet:
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: thesis_management_submissions
-    ports:
-      - "5438:5432"
-    volumes:
-      - submission-db:/var/lib/postgresql/data
-      - ./script/submission/init-database-submission.sql:/docker-entrypoint-initdb.d/init-database.sql
-    restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  classroom-waiting-list-db:
-    image: postgres:alpine
-    container_name: thesis-management-backend-classroom-waiting-list-db-service
-    networks:
-      mynet:
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: thesis_management_waiting_lists
-    ports:
-      - "5439:5432"
-    volumes:
-      - classroom-waiting-list-db:/var/lib/postgresql/data
-      - ./script/waiting-list/init-database-waiting-list.sql:/docker-entrypoint-initdb.d/init-database.sql
-    restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  comment-db:
-    image: postgres:alpine
-    container_name: thesis-management-backend-comment-db-service
-    networks:
-      mynet:
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: thesis_management_comments
-    ports:
-      - "5440:5432"
-    volumes:
-      - comment-db:/var/lib/postgresql/data
-      - ./script/comment/init-database-comment.sql:/docker-entrypoint-initdb.d/init-database.sql
-    restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  attachment-db:
-    image: postgres:alpine
-    container_name: thesis-management-backend-attachment-db-service
-    networks:
-      mynet:
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: thesis_management_attachments
-    ports:
-      - "5441:5432"
-    volumes:
-      - attachment-db:/var/lib/postgresql/data
-      - ./script/attachment/init-database-attachment.sql:/docker-entrypoint-initdb.d/init-database.sql
-    restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  topic-db:
-    image: postgres:alpine
-    container_name: thesis-management-backend-topic-db-service
-    networks:
-      mynet:
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: thesis_management_topics
-    ports:
-      - "5442:5432"
-    volumes:
-      - topic-db:/var/lib/postgresql/data
-      - ./script/topic/init-database-topic.sql:/docker-entrypoint-initdb.d/init-database.sql
-    restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   thesis-commitee-db:
     image: postgres:alpine
@@ -268,32 +126,7 @@ services:
     volumes:
       - .:/usr/src/app
 
-  post:
-    container_name: thesis-management-backend-post-service
-    build:
-      dockerfile: ./post-svc/Dockerfile
-      context: .
-    image: qthuy2k1/thesis-management-backend-post
-    networks:
-      mynet:
-    depends_on:
-      - post-db
-    volumes:
-      - .:/usr/src/app
-
-  exercise:
-    container_name: thesis-management-backend-exercise-service
-    build:
-      dockerfile: ./exercise-svc/Dockerfile
-      context: .
-    image: qthuy2k1/thesis-management-backend-exercise
-    networks:
-      mynet:
-    depends_on:
-      - exercise-db
-    volumes:
-      - .:/usr/src/app
-    
+ 
   user:
     container_name: thesis-management-backend-user-service
     env_file:
@@ -309,98 +142,6 @@ services:
     volumes:
       - .:/usr/src/app
 
-  reporting-stage:
-    container_name: thesis-management-backend-reporting-stage-service
-    env_file:
-      - .env
-    build:
-      dockerfile: ./reporting-stage-svc/Dockerfile
-      context: .
-    image: qthuy2k1/thesis-management-backend-reporting-stage
-    networks:
-      mynet:
-    depends_on:
-      - reporting-stage-db
-    volumes:
-      - .:/usr/src/app
-
-  submission:
-    container_name: thesis-management-backend-submission-service
-    env_file:
-      - .env
-    build:
-      dockerfile: ./submission-svc/Dockerfile
-      context: .
-      args:
-        - image_name=submission
-    image: qthuy2k1/thesis-management-backend-submission
-    networks:
-      mynet:
-    depends_on:
-      - submission-db
-    volumes:
-      - .:/usr/src/app
-
-  classroom-waiting-list:
-    container_name: thesis-management-backend-classroom-waiting-list-service
-    env_file:
-      - .env
-    build:
-      dockerfile: ./classroom-waiting-list-svc/Dockerfile
-      context: .
-    image: qthuy2k1/thesis-management-backend-classroom-waiting-list
-    networks:
-      mynet:
-    depends_on:
-      - classroom-waiting-list-db
-    volumes:
-      - .:/usr/src/app
-
-  comment:
-    container_name: thesis-management-backend-comment-service
-    env_file:
-      - .env
-    build:
-      dockerfile: ./comment-svc/Dockerfile
-      context: .
-    image: qthuy2k1/thesis-management-backend-comment
-    networks:
-      mynet:
-    depends_on:
-      - comment-db
-    volumes:
-      - .:/usr/src/app
-
-  attachment:
-    container_name: thesis-management-backend-attachment-service
-
-    env_file:
-      - .env
-    build:
-      dockerfile: ./attachment-svc/Dockerfile
-      context: .
-    image: qthuy2k1/thesis-management-backend-attachment
-    networks:
-      mynet:
-    depends_on:
-      - attachment-db
-    volumes:
-      - .:/usr/src/app
-
-  topic:
-    container_name: thesis-management-backend-topic-service
-    env_file:
-      - .env
-    build:
-      dockerfile: ./topic-svc/Dockerfile
-      context: .
-    image: qthuy2k1/thesis-management-backend-topic
-    networks:
-      mynet:
-    depends_on:
-      - topic-db
-    volumes:
-      - .:/usr/src/app
 
   authorization:
     container_name: thesis-management-backend-authorization-service
@@ -490,14 +231,7 @@ services:
     links:
       - api
       - classroom
-      - post
       - user
-      - reporting-stage
-      - submission
-      - classroom-waiting-list
-      - comment
-      - attachment
-      - topic
       - authorization
       - thesis-commitee
     extra_hosts:
@@ -505,15 +239,7 @@ services:
 
 volumes:
   classroom-db:
-  post-db:
-  exercise-db:
   user-db:
-  reporting-stage-db:
-  submission-db:
-  classroom-waiting-list-db:
-  comment-db:
-  attachment-db:
-  topic-db:
   thesis-commitee-db:
   cache:
 networks:

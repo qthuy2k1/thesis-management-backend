@@ -15,6 +15,10 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+type UserContext string
+
+const USER_CONTEXT UserContext = "user"
+
 type authServiceGW struct {
 	pb.UnimplementedAuthorizationServiceServer
 	userClient          userSvcV1.UserServiceClient
@@ -70,6 +74,9 @@ func (u *authServiceGW) Authorize(ctx context.Context, req interface{}, info *gr
 		log.Println("authorize: GetUser", err)
 	}
 
+	// Add user data to the context.
+	ctx = context.WithValue(ctx, USER_CONTEXT, user)
+
 	auth, err := u.authorizationClient.Authorize(ctx, &authorizeSvcV1.AuthorizeRequest{
 		Method: methodArr[2],
 		Role:   user.GetUser().GetRole(),
@@ -87,4 +94,9 @@ func (u *authServiceGW) Authorize(ctx context.Context, req interface{}, info *gr
 		log.Printf("APIGW serivce: method %q failed: %s\n", info.FullMethod, err)
 	}
 	return resp, err
+}
+
+// hasRequiredRole checks if the user has the required role.
+func hasRequiredRole(role string, requiredRole string) bool {
+	return role == requiredRole
 }

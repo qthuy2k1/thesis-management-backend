@@ -106,7 +106,6 @@ message UserResponse {
     string role = 6 [(validate.rules).string = {in: ["lecturer", "student", "admin"]}];
     string name = 7 [(validate.rules).string = {min_len: 2, max_len: 200}];
     string email = 8 [(validate.rules).string.email = true];
-    optional string hashedPassword = 9 [(validate.rules).string = {min_len: 2}];
     TopicUserResponse topic = 10;
 }
 

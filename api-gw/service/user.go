@@ -6,10 +6,7 @@ import (
 	"log"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
-	attachmentSvcV1 "github.com/qthuy2k1/thesis-management-backend/attachment-svc/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
-	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
-	topicSvcV1 "github.com/qthuy2k1/thesis-management-backend/topic-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -21,12 +18,12 @@ type userServiceGW struct {
 	pb.UnimplementedUserServiceServer
 	userClient        userSvcV1.UserServiceClient
 	classroomClient   classroomSvcV1.ClassroomServiceClient
-	waitingListClient waitingListSvcV1.WaitingListServiceClient
-	topicClient       topicSvcV1.TopicServiceClient
-	attachmentClient  attachmentSvcV1.AttachmentServiceClient
+	waitingListClient classroomSvcV1.WaitingListServiceClient
+	topicClient       userSvcV1.TopicServiceClient
+	attachmentClient  classroomSvcV1.AttachmentServiceClient
 }
 
-func NewUsersService(userClient userSvcV1.UserServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, waitingListClient waitingListSvcV1.WaitingListServiceClient, topicClient topicSvcV1.TopicServiceClient, attachmentClient attachmentSvcV1.AttachmentServiceClient) *userServiceGW {
+func NewUsersService(userClient userSvcV1.UserServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, waitingListClient classroomSvcV1.WaitingListServiceClient, topicClient userSvcV1.TopicServiceClient, attachmentClient classroomSvcV1.AttachmentServiceClient) *userServiceGW {
 	return &userServiceGW{
 		userClient:        userClient,
 		classroomClient:   classroomClient,
@@ -84,12 +81,22 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 		return nil, err
 	}
 
+	user, ok := ctx.Value("user").(*pb.UserResponse)
+	if !ok {
+		return nil, status.Errorf(codes.Internal, "User not found in context")
+	}
+
+	// Check if the user has the required role to update user data.
+	if !hasRequiredRole(user.Role, "admin") {
+		return nil, status.Errorf(codes.PermissionDenied, "Insufficient privileges to update user")
+	}
+
 	res, err := u.userClient.GetUser(ctx, &userSvcV1.GetUserRequest{Id: req.GetId()})
 	if err != nil {
 		return nil, err
 	}
 
-	topic, err := u.topicClient.GetTopicFromUser(ctx, &topicSvcV1.GetTopicFromUserRequest{
+	topic, err := u.topicClient.GetTopicFromUser(ctx, &userSvcV1.GetTopicFromUserRequest{
 		UserID: res.User.Id,
 	})
 	if err != nil {
@@ -99,7 +106,6 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 	class := res.GetUser().GetClass()
 	major := res.GetUser().GetMajor()
 	phone := res.GetUser().GetPhone()
-	password := res.GetUser().GetHashedPassword()
 
 	var topicRes *pb.TopicUserResponse
 	if topic != nil {
@@ -111,15 +117,14 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 					TypeTopic:      topic.Topic.GetTypeTopic(),
 					MemberQuantity: topic.Topic.GetMemberQuantity(),
 					Student: &pb.UserResponse{
-						Id:             res.GetUser().Id,
-						Class:          &class,
-						Major:          &major,
-						Phone:          &phone,
-						PhotoSrc:       res.GetUser().GetPhotoSrc(),
-						Role:           res.GetUser().GetRole(),
-						Name:           res.GetUser().GetName(),
-						Email:          res.GetUser().GetEmail(),
-						HashedPassword: &password,
+						Id:       res.GetUser().Id,
+						Class:    &class,
+						Major:    &major,
+						Phone:    &phone,
+						PhotoSrc: res.GetUser().GetPhotoSrc(),
+						Role:     res.GetUser().GetRole(),
+						Name:     res.GetUser().GetName(),
+						Email:    res.GetUser().GetEmail(),
 					},
 					MemberEmail: topic.Topic.GetMemberEmail(),
 					Description: topic.Topic.GetDescription(),
@@ -134,16 +139,15 @@ func (u *userServiceGW) GetUser(ctx context.Context, req *pb.GetUserRequest) (*p
 			Message:    res.GetResponse().Message,
 		},
 		User: &pb.UserResponse{
-			Id:             res.GetUser().Id,
-			Class:          &class,
-			Major:          &major,
-			Phone:          &phone,
-			PhotoSrc:       res.GetUser().GetPhotoSrc(),
-			Role:           res.GetUser().GetRole(),
-			Name:           res.GetUser().GetName(),
-			Email:          res.GetUser().GetEmail(),
-			HashedPassword: &password,
-			Topic:          topicRes,
+			Id:       res.GetUser().Id,
+			Class:    &class,
+			Major:    &major,
+			Phone:    &phone,
+			PhotoSrc: res.GetUser().GetPhotoSrc(),
+			Role:     res.GetUser().GetRole(),
+			Name:     res.GetUser().GetName(),
+			Email:    res.GetUser().GetEmail(),
+			Topic:    topicRes,
 		},
 	}, nil
 }
@@ -218,7 +222,7 @@ func (u *userServiceGW) DeleteUser(ctx context.Context, req *pb.DeleteUserReques
 		}
 	}
 
-	topicGetRes, err := u.topicClient.GetTopicFromUser(ctx, &topicSvcV1.GetTopicFromUserRequest{
+	topicGetRes, err := u.topicClient.GetTopicFromUser(ctx, &userSvcV1.GetTopicFromUserRequest{
 		UserID: req.GetId(),
 	})
 	if err != nil {
@@ -226,7 +230,7 @@ func (u *userServiceGW) DeleteUser(ctx context.Context, req *pb.DeleteUserReques
 	}
 
 	if topicGetRes.GetTopic() != nil {
-		if _, err := u.topicClient.DeleteTopic(ctx, &topicSvcV1.DeleteTopicRequest{
+		if _, err := u.topicClient.DeleteTopic(ctx, &userSvcV1.DeleteTopicRequest{
 			Id: topicGetRes.Topic.Id,
 		}); err != nil {
 			log.Println("err delete topic from delete user", err)
@@ -255,7 +259,7 @@ func (u *userServiceGW) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (
 	var users []*pb.UserResponse
 	for _, us := range res.GetUsers() {
 		var isNil bool
-		topic, err := u.topicClient.GetTopicFromUser(ctx, &topicSvcV1.GetTopicFromUserRequest{
+		topic, err := u.topicClient.GetTopicFromUser(ctx, &userSvcV1.GetTopicFromUserRequest{
 			UserID: us.Id,
 		})
 		if err != nil {
@@ -265,43 +269,40 @@ func (u *userServiceGW) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (
 
 		if isNil {
 			users = append(users, &pb.UserResponse{
-				Id:             us.Id,
-				Class:          us.Class,
-				Major:          us.Major,
-				Phone:          us.Phone,
-				PhotoSrc:       us.PhotoSrc,
-				Role:           us.Role,
-				Name:           us.Name,
-				Email:          us.Email,
-				HashedPassword: us.HashedPassword,
-				Topic:          nil,
+				Id:       us.Id,
+				Class:    us.Class,
+				Major:    us.Major,
+				Phone:    us.Phone,
+				PhotoSrc: us.PhotoSrc,
+				Role:     us.Role,
+				Name:     us.Name,
+				Email:    us.Email,
+				Topic:    nil,
 			})
 		} else {
 			users = append(users, &pb.UserResponse{
-				Id:             us.Id,
-				Class:          us.Class,
-				Major:          us.Major,
-				Phone:          us.Phone,
-				PhotoSrc:       us.PhotoSrc,
-				Role:           us.Role,
-				Name:           us.Name,
-				Email:          us.Email,
-				HashedPassword: us.HashedPassword,
+				Id:       us.Id,
+				Class:    us.Class,
+				Major:    us.Major,
+				Phone:    us.Phone,
+				PhotoSrc: us.PhotoSrc,
+				Role:     us.Role,
+				Name:     us.Name,
+				Email:    us.Email,
 				Topic: &pb.TopicUserResponse{
 					Id:             topic.Topic.GetId(),
 					Title:          topic.Topic.GetTitle(),
 					TypeTopic:      topic.Topic.GetTypeTopic(),
 					MemberQuantity: topic.Topic.GetMemberQuantity(),
 					Student: &pb.UserResponse{
-						Id:             us.Id,
-						Class:          us.Class,
-						Major:          us.Major,
-						Phone:          us.Phone,
-						PhotoSrc:       us.PhotoSrc,
-						Role:           us.Role,
-						Name:           us.Name,
-						Email:          us.Email,
-						HashedPassword: us.HashedPassword,
+						Id:       us.Id,
+						Class:    us.Class,
+						Major:    us.Major,
+						Phone:    us.Phone,
+						PhotoSrc: us.PhotoSrc,
+						Role:     us.Role,
+						Name:     us.Name,
+						Email:    us.Email,
 					},
 					MemberEmail: topic.Topic.GetMemberEmail(),
 					Description: topic.Topic.GetDescription(),
@@ -440,15 +441,14 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 						Description: clrRes.GetClassroom().GetDescription(),
 						Status:      clrRes.GetClassroom().GetStatus(),
 						Lecturer: &pb.UserResponse{
-							Class:          lecturerRes.User.Class,
-							Major:          lecturerRes.User.Major,
-							Phone:          lecturerRes.User.Phone,
-							PhotoSrc:       lecturerRes.User.PhotoSrc,
-							Role:           lecturerRes.User.Role,
-							Name:           lecturerRes.User.Name,
-							Email:          lecturerRes.User.Email,
-							Id:             lecturerRes.User.Id,
-							HashedPassword: lecturerRes.User.HashedPassword,
+							Class:    lecturerRes.User.Class,
+							Major:    lecturerRes.User.Major,
+							Phone:    lecturerRes.User.Phone,
+							PhotoSrc: lecturerRes.User.PhotoSrc,
+							Role:     lecturerRes.User.Role,
+							Name:     lecturerRes.User.Name,
+							Email:    lecturerRes.User.Email,
+							Id:       lecturerRes.User.Id,
 						},
 						ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
 						TopicTags:       &topicTags,
@@ -457,15 +457,14 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 						UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
 					},
 					Member: &pb.UserResponse{
-						Class:          userRes.User.Class,
-						Major:          userRes.User.Major,
-						Phone:          userRes.User.Phone,
-						PhotoSrc:       userRes.User.PhotoSrc,
-						Role:           userRes.User.Role,
-						Name:           userRes.User.Name,
-						Email:          userRes.User.Email,
-						Id:             userRes.User.Id,
-						HashedPassword: userRes.User.HashedPassword,
+						Class:    userRes.User.Class,
+						Major:    userRes.User.Major,
+						Phone:    userRes.User.Phone,
+						PhotoSrc: userRes.User.PhotoSrc,
+						Role:     userRes.User.Role,
+						Name:     userRes.User.Name,
+						Email:    userRes.User.Email,
+						Id:       userRes.User.Id,
 					},
 					Status:    memberRes.GetMember().Status,
 					IsDefense: memberRes.GetMember().IsDefense,
@@ -475,12 +474,12 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 			Status: "SUBSCRIBED",
 		}, nil
 	} else {
-		wlt, err := u.waitingListClient.GetWaitingLists(ctx, &waitingListSvcV1.GetWaitingListsRequest{})
+		wlt, err := u.waitingListClient.GetWaitingLists(ctx, &classroomSvcV1.GetWaitingListsRequest{})
 		if err != nil {
 			return nil, err
 		}
 
-		var userInWLT []*waitingListSvcV1.WaitingListResponse
+		var userInWLT []*classroomSvcV1.WaitingListResponse
 		for _, w := range wlt.WaitingLists {
 			if w.UserID == userRes.User.Id {
 				userInWLT = append(userInWLT, w)
@@ -516,15 +515,14 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 						Description: clrRes.GetClassroom().GetDescription(),
 						Status:      clrRes.GetClassroom().GetStatus(),
 						Lecturer: &pb.UserResponse{
-							Class:          lecturerRes.User.Class,
-							Major:          lecturerRes.User.Major,
-							Phone:          lecturerRes.User.Phone,
-							PhotoSrc:       lecturerRes.User.PhotoSrc,
-							Role:           lecturerRes.User.Role,
-							Name:           lecturerRes.User.Name,
-							Email:          lecturerRes.User.Email,
-							Id:             lecturerRes.User.Id,
-							HashedPassword: lecturerRes.User.HashedPassword,
+							Class:    lecturerRes.User.Class,
+							Major:    lecturerRes.User.Major,
+							Phone:    lecturerRes.User.Phone,
+							PhotoSrc: lecturerRes.User.PhotoSrc,
+							Role:     lecturerRes.User.Role,
+							Name:     lecturerRes.User.Name,
+							Email:    lecturerRes.User.Email,
+							Id:       lecturerRes.User.Id,
 						},
 						ClassCourse:     clrRes.GetClassroom().GetClassCourse(),
 						TopicTags:       &topicTags,
@@ -533,15 +531,14 @@ func (u *userServiceGW) CheckStatusUserJoinClassroom(ctx context.Context, req *p
 						UpdatedAt:       clrRes.GetClassroom().GetUpdatedAt(),
 					},
 					Member: &pb.UserResponse{
-						Class:          userRes.User.Class,
-						Major:          userRes.User.Major,
-						Phone:          userRes.User.Phone,
-						PhotoSrc:       userRes.User.PhotoSrc,
-						Role:           userRes.User.Role,
-						Name:           userRes.User.Name,
-						Email:          userRes.User.Email,
-						Id:             userRes.User.Id,
-						HashedPassword: userRes.User.HashedPassword,
+						Class:    userRes.User.Class,
+						Major:    userRes.User.Major,
+						Phone:    userRes.User.Phone,
+						PhotoSrc: userRes.User.PhotoSrc,
+						Role:     userRes.User.Role,
+						Name:     userRes.User.Name,
+						Email:    userRes.User.Email,
+						Id:       userRes.User.Id,
 					},
 					Status:    m.Status,
 					IsDefense: m.IsDefense,
@@ -627,7 +624,7 @@ func (u *userServiceGW) GetAllLecturers(ctx context.Context, req *pb.GetAllLectu
 
 	var lecturers []*pb.UserResponse
 	for _, l := range res.GetLecturers() {
-		topic, err := u.topicClient.GetAllTopicsOfListUser(ctx, &topicSvcV1.GetAllTopicsOfListUserRequest{
+		topic, err := u.topicClient.GetAllTopicsOfListUser(ctx, &userSvcV1.GetAllTopicsOfListUserRequest{
 			UserID: []string{l.Id},
 		})
 		if err != nil {
@@ -647,16 +644,15 @@ func (u *userServiceGW) GetAllLecturers(ctx context.Context, req *pb.GetAllLectu
 			}
 		}
 		lecturers = append(lecturers, &pb.UserResponse{
-			Id:             l.Id,
-			Class:          l.Class,
-			Major:          l.Major,
-			Phone:          l.Phone,
-			PhotoSrc:       l.PhotoSrc,
-			Role:           l.Role,
-			Name:           l.Name,
-			Email:          l.Email,
-			HashedPassword: l.HashedPassword,
-			Topic:          topicRes,
+			Id:       l.Id,
+			Class:    l.Class,
+			Major:    l.Major,
+			Phone:    l.Phone,
+			PhotoSrc: l.PhotoSrc,
+			Role:     l.Role,
+			Name:     l.Name,
+			Email:    l.Email,
+			Topic:    topicRes,
 		})
 	}
 
@@ -703,7 +699,7 @@ func (u *userServiceGW) GetUserAttachment(ctx context.Context, req *pb.GetUserAt
 		return nil, err
 	}
 
-	att, err := u.attachmentClient.GetFinalFile(ctx, &attachmentSvcV1.GetFinalFileRequest{
+	att, err := u.attachmentClient.GetFinalFile(ctx, &classroomSvcV1.GetFinalFileRequest{
 		AuthorID: user.GetUser().GetId(),
 	})
 	if err != nil {
@@ -713,15 +709,14 @@ func (u *userServiceGW) GetUserAttachment(ctx context.Context, req *pb.GetUserAt
 				FinalFile: &pb.FinalFile{
 					Attachment: nil,
 					Author: &pb.UserResponse{
-						Id:             user.GetUser().Id,
-						Class:          user.GetUser().Class,
-						Major:          user.GetUser().Major,
-						Phone:          user.GetUser().Phone,
-						PhotoSrc:       user.GetUser().PhotoSrc,
-						Role:           user.GetUser().Role,
-						Name:           user.GetUser().Name,
-						Email:          user.GetUser().Email,
-						HashedPassword: user.GetUser().HashedPassword,
+						Id:       user.GetUser().Id,
+						Class:    user.GetUser().Class,
+						Major:    user.GetUser().Major,
+						Phone:    user.GetUser().Phone,
+						PhotoSrc: user.GetUser().PhotoSrc,
+						Role:     user.GetUser().Role,
+						Name:     user.GetUser().Name,
+						Email:    user.GetUser().Email,
 					},
 				},
 			}, nil
@@ -733,15 +728,14 @@ func (u *userServiceGW) GetUserAttachment(ctx context.Context, req *pb.GetUserAt
 			FinalFile: &pb.FinalFile{
 				Attachment: nil,
 				Author: &pb.UserResponse{
-					Id:             user.GetUser().Id,
-					Class:          user.GetUser().Class,
-					Major:          user.GetUser().Major,
-					Phone:          user.GetUser().Phone,
-					PhotoSrc:       user.GetUser().PhotoSrc,
-					Role:           user.GetUser().Role,
-					Name:           user.GetUser().Name,
-					Email:          user.GetUser().Email,
-					HashedPassword: user.GetUser().HashedPassword,
+					Id:       user.GetUser().Id,
+					Class:    user.GetUser().Class,
+					Major:    user.GetUser().Major,
+					Phone:    user.GetUser().Phone,
+					PhotoSrc: user.GetUser().PhotoSrc,
+					Role:     user.GetUser().Role,
+					Name:     user.GetUser().Name,
+					Email:    user.GetUser().Email,
 				},
 			},
 		}, nil
@@ -760,15 +754,14 @@ func (u *userServiceGW) GetUserAttachment(ctx context.Context, req *pb.GetUserAt
 				CreatedAt: att.GetAttachment().CreatedAt,
 			},
 			Author: &pb.UserResponse{
-				Id:             user.GetUser().Id,
-				Class:          user.GetUser().Class,
-				Major:          user.GetUser().Major,
-				Phone:          user.GetUser().Phone,
-				PhotoSrc:       user.GetUser().PhotoSrc,
-				Role:           user.GetUser().Role,
-				Name:           user.GetUser().Name,
-				Email:          user.GetUser().Email,
-				HashedPassword: user.GetUser().HashedPassword,
+				Id:       user.GetUser().Id,
+				Class:    user.GetUser().Class,
+				Major:    user.GetUser().Major,
+				Phone:    user.GetUser().Phone,
+				PhotoSrc: user.GetUser().PhotoSrc,
+				Role:     user.GetUser().Role,
+				Name:     user.GetUser().Name,
+				Email:    user.GetUser().Email,
 			},
 		},
 	}, nil

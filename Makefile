@@ -46,72 +46,9 @@ proto-classroom:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./classroom-svc/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 classroom.proto
+		 attachment.proto classroom.proto exercise.proto post.proto reporting_stage.proto submission.proto waiting_list.proto
 	@echo "Done"
 
-proto-post:
-	@echo "--> Generating gRPC clients for post API"
-	@protoc -I ./post-svc/api/v1 \
-		--go_out ./post-svc/api/goclient/v1 --go_opt paths=source_relative \
-	  	--go-grpc_out ./post-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
-		--grpc-gateway_out ./post-svc/api/goclient/v1 \
-		--grpc-gateway_opt logtostderr=true \
-		--grpc-gateway_opt paths=source_relative \
-		--grpc-gateway_opt generate_unbound_methods=true \
-  		--openapiv2_out ./post-svc/api/goclient/v1 \
-    	--openapiv2_opt logtostderr=true \
-		--validate_out="lang=go,paths=source_relative:./post-svc/api/goclient/v1" \
-		--experimental_allow_proto3_optional \
-		 post.proto
-	@echo "Done"
-
-proto-exercise:
-	@echo "--> Generating gRPC clients for exercise API"
-	@protoc -I ./exercise-svc/api/v1 \
-		--go_out ./exercise-svc/api/goclient/v1 --go_opt paths=source_relative \
-	  	--go-grpc_out ./exercise-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
-		--grpc-gateway_out ./exercise-svc/api/goclient/v1 \
-		--grpc-gateway_opt logtostderr=true \
-		--grpc-gateway_opt paths=source_relative \
-		--grpc-gateway_opt generate_unbound_methods=true \
-  		--openapiv2_out ./exercise-svc/api/goclient/v1 \
-    	--openapiv2_opt logtostderr=true \
-		--validate_out="lang=go,paths=source_relative:./exercise-svc/api/goclient/v1" \
-		--experimental_allow_proto3_optional \
-		 exercise.proto
-	@echo "Done"
-
-proto-reporting-stage:
-	@echo "--> Generating gRPC clients for reporting stage API"
-	@protoc -I ./reporting-stage-svc/api/v1 \
-		--go_out ./reporting-stage-svc/api/goclient/v1 --go_opt paths=source_relative \
-	  	--go-grpc_out ./reporting-stage-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
-		--grpc-gateway_out ./reporting-stage-svc/api/goclient/v1 \
-		--grpc-gateway_opt logtostderr=true \
-		--grpc-gateway_opt paths=source_relative \
-		--grpc-gateway_opt generate_unbound_methods=true \
-  		--openapiv2_out ./reporting-stage-svc/api/goclient/v1 \
-    	--openapiv2_opt logtostderr=true \
-		--validate_out="lang=go,paths=source_relative:./reporting-stage-svc/api/goclient/v1" \
-		--experimental_allow_proto3_optional \
-		 reporting_stage.proto
-	@echo "Done"
-
-proto-submission:
-	@echo "--> Generating gRPC clients for submission API"
-	@protoc -I ./submission-svc/api/v1 \
-		--go_out ./submission-svc/api/goclient/v1 --go_opt paths=source_relative \
-	  	--go-grpc_out ./submission-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
-		--grpc-gateway_out ./submission-svc/api/goclient/v1 \
-		--grpc-gateway_opt logtostderr=true \
-		--grpc-gateway_opt paths=source_relative \
-		--grpc-gateway_opt generate_unbound_methods=true \
-  		--openapiv2_out ./submission-svc/api/goclient/v1 \
-    	--openapiv2_opt logtostderr=true \
-		--validate_out="lang=go,paths=source_relative:./submission-svc/api/goclient/v1" \
-		--experimental_allow_proto3_optional \
-		 submission.proto
-	@echo "Done"
 
 proto-user:
 	@echo "--> Generating gRPC clients for user API"
@@ -126,23 +63,7 @@ proto-user:
     	--openapiv2_opt logtostderr=true \
 		--validate_out="lang=go,paths=source_relative:./user-svc/api/goclient/v1" \
 		--experimental_allow_proto3_optional \
-		 user.proto
-	@echo "Done"
-
-proto-waiting-list:
-	@echo "--> Generating gRPC clients for classroom-waiting-list API"
-	@protoc -I ./classroom-waiting-list-svc/api/v1 \
-		--go_out ./classroom-waiting-list-svc/api/goclient/v1 --go_opt paths=source_relative \
-	  	--go-grpc_out ./classroom-waiting-list-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
-		--grpc-gateway_out ./classroom-waiting-list-svc/api/goclient/v1 \
-		--grpc-gateway_opt logtostderr=true \
-		--grpc-gateway_opt paths=source_relative \
-		--grpc-gateway_opt generate_unbound_methods=true \
-  		--openapiv2_out ./classroom-waiting-list-svc/api/goclient/v1 \
-    	--openapiv2_opt logtostderr=true \
-		--validate_out="lang=go,paths=source_relative:./classroom-waiting-list-svc/api/goclient/v1" \
-		--experimental_allow_proto3_optional \
-		 waiting_list.proto
+		 user.proto comment.proto topic.proto
 	@echo "Done"
 
 proto-redis:
@@ -161,37 +82,22 @@ proto-redis:
 		 redis.proto
 	@echo "Done"
 
-proto-comment:
-	@echo "--> Generating gRPC clients for comment API"
-	@protoc -I ./comment-svc/api/v1 \
-		--go_out ./comment-svc/api/goclient/v1 --go_opt paths=source_relative \
-	  	--go-grpc_out ./comment-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
-		--grpc-gateway_out ./comment-svc/api/goclient/v1 \
-		--grpc-gateway_opt logtostderr=true \
-		--grpc-gateway_opt paths=source_relative \
-		--grpc-gateway_opt generate_unbound_methods=true \
-  		--openapiv2_out ./comment-svc/api/goclient/v1 \
-    	--openapiv2_opt logtostderr=true \
-		--validate_out="lang=go,paths=source_relative:./comment-svc/api/goclient/v1" \
-		--experimental_allow_proto3_optional \
-		 comment.proto
-	@echo "Done"
+# proto-comment:
+# 	@echo "--> Generating gRPC clients for comment API"
+# 	@protoc -I ./comment-svc/api/v1 \
+# 		--go_out ./comment-svc/api/goclient/v1 --go_opt paths=source_relative \
+# 	  	--go-grpc_out ./comment-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+# 		--grpc-gateway_out ./comment-svc/api/goclient/v1 \
+# 		--grpc-gateway_opt logtostderr=true \
+# 		--grpc-gateway_opt paths=source_relative \
+# 		--grpc-gateway_opt generate_unbound_methods=true \
+#   		--openapiv2_out ./comment-svc/api/goclient/v1 \
+#     	--openapiv2_opt logtostderr=true \
+# 		--validate_out="lang=go,paths=source_relative:./comment-svc/api/goclient/v1" \
+# 		--experimental_allow_proto3_optional \
+# 		 comment.proto
+# 	@echo "Done"
 
-proto-attachment:
-	@echo "--> Generating gRPC clients for attachment API"
-	@protoc -I ./attachment-svc/api/v1 \
-		--go_out ./attachment-svc/api/goclient/v1 --go_opt paths=source_relative \
-	  	--go-grpc_out ./attachment-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
-		--grpc-gateway_out ./attachment-svc/api/goclient/v1 \
-		--grpc-gateway_opt logtostderr=true \
-		--grpc-gateway_opt paths=source_relative \
-		--grpc-gateway_opt generate_unbound_methods=true \
-  		--openapiv2_out ./attachment-svc/api/goclient/v1 \
-    	--openapiv2_opt logtostderr=true \
-		--validate_out="lang=go,paths=source_relative:./attachment-svc/api/goclient/v1" \
-		--experimental_allow_proto3_optional \
-		 attachment.proto
-	@echo "Done"
 
 proto-authorization:
 	@echo "--> Generating gRPC clients for authorization API"
@@ -209,21 +115,21 @@ proto-authorization:
 		 authorization.proto
 	@echo "Done"
 
-proto-topic:
-	@echo "--> Generating gRPC clients for topic API"
-	@protoc -I ./topic-svc/api/v1 \
-		--go_out ./topic-svc/api/goclient/v1 --go_opt paths=source_relative \
-	  	--go-grpc_out ./topic-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
-		--grpc-gateway_out ./topic-svc/api/goclient/v1 \
-		--grpc-gateway_opt logtostderr=true \
-		--grpc-gateway_opt paths=source_relative \
-		--grpc-gateway_opt generate_unbound_methods=true \
-  		--openapiv2_out ./topic-svc/api/goclient/v1 \
-    	--openapiv2_opt logtostderr=true \
-		--validate_out="lang=go,paths=source_relative:./topic-svc/api/goclient/v1" \
-		--experimental_allow_proto3_optional \
-		 topic.proto
-	@echo "Done"
+# proto-topic:
+# 	@echo "--> Generating gRPC clients for topic API"
+# 	@protoc -I ./topic-svc/api/v1 \
+# 		--go_out ./topic-svc/api/goclient/v1 --go_opt paths=source_relative \
+# 	  	--go-grpc_out ./topic-svc/api/goclient/v1 --go-grpc_opt paths=source_relative \
+# 		--grpc-gateway_out ./topic-svc/api/goclient/v1 \
+# 		--grpc-gateway_opt logtostderr=true \
+# 		--grpc-gateway_opt paths=source_relative \
+# 		--grpc-gateway_opt generate_unbound_methods=true \
+#   		--openapiv2_out ./topic-svc/api/goclient/v1 \
+#     	--openapiv2_opt logtostderr=true \
+# 		--validate_out="lang=go,paths=source_relative:./topic-svc/api/goclient/v1" \
+# 		--experimental_allow_proto3_optional \
+# 		 topic.proto
+# 	@echo "Done"
 
 proto-commitee:
 	@echo "--> Generating gRPC clients for thesis-commitee API"
@@ -279,7 +185,7 @@ proto-sche:
 
 
 
-proto: proto-api proto-classroom proto-post proto-exercise proto-reporting-stage proto-submission proto-user proto-waiting-list proto-comment proto-attachment proto-topic proto-authorization proto-commitee proto-sche
+proto: proto-api proto-classroom proto-user proto-authorization proto-commitee proto-sche
 
 clean:
 	rm -rf ./out
@@ -289,15 +195,7 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/classroom ./classroom-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/apigw ./api-gw
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/apigw-client ./apigw-client
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/post ./post-svc
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/exercise ./exercise-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/user ./user-svc
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/reporting-stage ./reporting-stage-svc
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/submission ./submission-svc
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/classroom-waiting-list ./classroom-waiting-list-svc
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/comment ./comment-svc
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/attachment ./attachment-svc
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/topic ./topic-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/authorization ./authorization-svc
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/thesis-commitee ./thesis-commitee-svc
 	# CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./out/redis ./redis-svc
@@ -319,29 +217,14 @@ docker-tag:
 	docker tag qthuy2k1/thesis-management-backend:$(tag) qthuy2k1/thesis-management-backend:$(tag)
 	docker tag qthuy2k1/thesis-management-backend-apigw-client:$(tag) qthuy2k1/thesis-management-backend-apigw-client:$(tag)
 	docker tag qthuy2k1/thesis-management-backend-classroom:$(tag) qthuy2k1/thesis-management-backend-classroom:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-post:$(tag) qthuy2k1/thesis-management-backend-post:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-exercise:$(tag) qthuy2k1/thesis-management-backend-exercise:$(tag)
 	docker tag qthuy2k1/thesis-management-backend-user:$(tag) qthuy2k1/thesis-management-backend-user:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-reporting-stage:$(tag) qthuy2k1/thesis-management-backend-reporting-stage:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-submission:$(tag) qthuy2k1/thesis-management-backend-submisson:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-classroom-waiting-list:$(tag) qthuy2k1/thesis-management-backend-classroom-waiting-list:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-comment:$(tag) qthuy2k1/thesis-management-backend-comment:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-attachment:$(tag) qthuy2k1/thesis-management-backend-attachment:$(tag)
-	docker tag qthuy2k1/thesis-management-backend-topic:$(tag) qthuy2k1/thesis-management-backend-topic:$(tag)
 	docker tag qthuy2k1/thesis-management-backend-authorization:$(tag) qthuy2k1/thesis-management-backend-authorization:$(tag)
 	docker tag qthuy2k1/thesis-management-backend-thesis-commitee:$(tag) qthuy2k1/thesis-management-backend-thesis-commitee:$(tag)
 	
 	# DB
 	docker tag postgres qthuy2k1/thesis-management-backend-classroom-db:$(tag)
-	docker tag postgres qthuy2k1/thesis-management-backend-post-db:$(tag)
-	docker tag postgres qthuy2k1/thesis-management-backend-exercise-db:$(tag)
 	docker tag postgres qthuy2k1/thesis-management-backend-user-db:$(tag)
-	docker tag postgres qthuy2k1/thesis-management-backend-reporting-stage-db:$(tag)
-	docker tag postgres qthuy2k1/thesis-management-backend-submission-db:$(tag)
-	docker tag postgres qthuy2k1/thesis-management-backend-classroom-waiting-list-db:$(tag)
-	docker tag postgres qthuy2k1/thesis-management-backend-comment-db:$(tag)
-	docker tag postgres qthuy2k1/thesis-management-backend-attachment-db:$(tag)
-	docker tag postgres qthuy2k1/thesis-management-backend-topic-db:$(tag)
+	docker tag redis qthuy2k1/thesis-management-backend-user-redis-db:$(tag)
 	docker tag postgres qthuy2k1/thesis-management-backend-thesis-commitee-db:$(tag)
 
 
@@ -379,32 +262,16 @@ docker-push:
 	docker push qthuy2k1/thesis-management-backend:latest
 	docker push qthuy2k1/thesis-management-backend-apigw-client:latest
 	docker push qthuy2k1/thesis-management-backend-classroom:latest
-	docker push qthuy2k1/thesis-management-backend-post:latest
-	docker push qthuy2k1/thesis-management-backend-exercise:latest
 	docker push qthuy2k1/thesis-management-backend-user:latest
-	docker push qthuy2k1/thesis-management-backend-reporting-stage:latest
-	docker push qthuy2k1/thesis-management-backend-submission:latest
-	docker push qthuy2k1/thesis-management-backend-classroom-waiting-list:latest
-	docker push qthuy2k1/thesis-management-backend-comment:latest
-	docker push qthuy2k1/thesis-management-backend-attachment:latest
-	docker push qthuy2k1/thesis-management-backend-topic:latest
 	docker push qthuy2k1/thesis-management-backend-authorization:latest
 	docker push qthuy2k1/thesis-management-backend-upload:latest
 	docker push qthuy2k1/thesis-management-backend-thesis-commitee:latest
 
 	# DB
-	# docker push qthuy2k1/thesis-management-backend-classroom-db:latest
-	# docker push qthuy2k1/thesis-management-backend-post-db:latest
-	# docker push qthuy2k1/thesis-management-backend-exercise-db:latest
-	# docker push qthuy2k1/thesis-management-backend-user-db:latest
-	# docker push qthuy2k1/thesis-management-backend-reporting-stage-db:latest
-	# docker push qthuy2k1/thesis-management-backend-submission-db:latest
-	# docker push qthuy2k1/thesis-management-backend-classroom-waiting-list-db:latest
-	# docker push qthuy2k1/thesis-management-backend-comment-db:latest
-	# docker push qthuy2k1/thesis-management-backend-attachment-db:latest
-	# docker push qthuy2k1/thesis-management-backend-topic-db:latest
-	# docker push qthuy2k1/thesis-management-backend-thesis-commitee-db:latest
-	# docker push qthuy2k1/thesis-management-backend-redis-db:latest
+	docker push qthuy2k1/thesis-management-backend-classroom-db:latest
+	docker push qthuy2k1/thesis-management-backend-user-db:latest
+	docker push qthuy2k1/thesis-management-backend-thesis-commitee-db:latest
+	docker push qthuy2k1/thesis-management-backend-user-redis-db:latest
 
 
 docker-google-cloud-push:
@@ -485,15 +352,7 @@ build_and_run_image:
 docker-pull-db:
 	# DB
 	docker pull qthuy2k1/thesis-management-backend-classroom-db:$(tag)
-	docker pull qthuy2k1/thesis-management-backend-post-db:$(tag)
-	docker pull qthuy2k1/thesis-management-backend-exercise-db:$(tag)
 	docker pull qthuy2k1/thesis-management-backend-user-db:$(tag)
-	docker pull qthuy2k1/thesis-management-backend-reporting-stage-db:$(tag)
-	docker pull qthuy2k1/thesis-management-backend-submission-db:$(tag)
-	docker pull qthuy2k1/thesis-management-backend-classroom-waiting-list-db:$(tag)
-	docker pull qthuy2k1/thesis-management-backend-comment-db:$(tag)
-	docker pull qthuy2k1/thesis-management-backend-attachment-db:$(tag)
-	docker pull qthuy2k1/thesis-management-backend-topic-db:$(tag)
 
 kuber-exec:
 	kubectl exec -it thesis-management-backend$(name) -n thesis-management-backend -- bash
@@ -505,27 +364,11 @@ kuber-serve-gw-client:
 	minikube service thesis-management-backend-apigw-client-service --url -n thesis-management-backend
 
 kuber-apply:
-	kubectl apply -f kubernetes/attachment-db-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/classroom-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/classroom-waiting-list-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/comment-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/exercise-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/post-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/reporting-stage-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/submission-db-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/topic-db-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/user-db-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/user-redis-db-deployment.yaml --namespace thesis-management-backend
 
-	kubectl apply -f kubernetes/attachment-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/classroom-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/classroom-waiting-list-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/comment-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/exercise-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/post-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/reporting-stage-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/submission-deployment.yaml --namespace thesis-management-backend
-	kubectl apply -f kubernetes/topic-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/user-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/schedule-deployment.yaml --namespace thesis-management-backend
 	kubectl apply -f kubernetes/upload-deployment.yaml --namespace thesis-management-backend

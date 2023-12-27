@@ -4,21 +4,19 @@ import (
 	"context"
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
-	commentSvcV1 "github.com/qthuy2k1/thesis-management-backend/comment-svc/api/goclient/v1"
-	exerciseSvcV1 "github.com/qthuy2k1/thesis-management-backend/exercise-svc/api/goclient/v1"
-	postSvcV1 "github.com/qthuy2k1/thesis-management-backend/post-svc/api/goclient/v1"
+	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
 type commentServiceGW struct {
 	pb.UnimplementedCommentServiceServer
-	commentClient  commentSvcV1.CommentServiceClient
-	postClient     postSvcV1.PostServiceClient
-	exerciseClient exerciseSvcV1.ExerciseServiceClient
+	commentClient  userSvcV1.CommentServiceClient
+	postClient     classroomSvcV1.PostServiceClient
+	exerciseClient classroomSvcV1.ExerciseServiceClient
 	userClient     userSvcV1.UserServiceClient
 }
 
-func NewCommentsService(commentClient commentSvcV1.CommentServiceClient, postClient postSvcV1.PostServiceClient, exerciseClient exerciseSvcV1.ExerciseServiceClient, userClient userSvcV1.UserServiceClient) *commentServiceGW {
+func NewCommentsService(commentClient userSvcV1.CommentServiceClient, postClient classroomSvcV1.PostServiceClient, exerciseClient classroomSvcV1.ExerciseServiceClient, userClient userSvcV1.UserServiceClient) *commentServiceGW {
 	return &commentServiceGW{
 		commentClient:  commentClient,
 		postClient:     postClient,
@@ -42,7 +40,7 @@ func (u *commentServiceGW) CreateComment(ctx context.Context, req *pb.CreateComm
 	}
 
 	if req.GetComment().PostID != nil {
-		postRes, err := u.postClient.GetPost(ctx, &postSvcV1.GetPostRequest{
+		postRes, err := u.postClient.GetPost(ctx, &classroomSvcV1.GetPostRequest{
 			Id: *req.GetComment().PostID,
 		})
 		if err != nil {
@@ -58,7 +56,7 @@ func (u *commentServiceGW) CreateComment(ctx context.Context, req *pb.CreateComm
 			}, nil
 		}
 	} else {
-		exerciseRes, err := u.exerciseClient.GetExercise(ctx, &exerciseSvcV1.GetExerciseRequest{
+		exerciseRes, err := u.exerciseClient.GetExercise(ctx, &classroomSvcV1.GetExerciseRequest{
 			Id: *req.GetComment().ExerciseID,
 		})
 		if err != nil {
@@ -91,8 +89,8 @@ func (u *commentServiceGW) CreateComment(ctx context.Context, req *pb.CreateComm
 		}, nil
 	}
 
-	res, err := u.commentClient.CreateComment(ctx, &commentSvcV1.CreateCommentRequest{
-		Comment: &commentSvcV1.CommentInput{
+	res, err := u.commentClient.CreateComment(ctx, &userSvcV1.CreateCommentRequest{
+		Comment: &userSvcV1.CommentInput{
 			UserID:     req.GetComment().GetUserID(),
 			PostID:     req.GetComment().PostID,
 			ExerciseID: req.GetComment().ExerciseID,

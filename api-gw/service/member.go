@@ -5,7 +5,6 @@ import (
 
 	pb "github.com/qthuy2k1/thesis-management-backend/api-gw/api/goclient/v1"
 	classroomSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-svc/api/goclient/v1"
-	waitingListSvcV1 "github.com/qthuy2k1/thesis-management-backend/classroom-waiting-list-svc/api/goclient/v1"
 	userSvcV1 "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
 )
 
@@ -13,10 +12,10 @@ type memberServiceGW struct {
 	pb.UnimplementedMemberServiceServer
 	userClient        userSvcV1.UserServiceClient
 	classroomClient   classroomSvcV1.ClassroomServiceClient
-	waitingListClient waitingListSvcV1.WaitingListServiceClient
+	waitingListClient classroomSvcV1.WaitingListServiceClient
 }
 
-func NewMembersService(userClient userSvcV1.UserServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, waitingListClient waitingListSvcV1.WaitingListServiceClient) *memberServiceGW {
+func NewMembersService(userClient userSvcV1.UserServiceClient, classroomClient classroomSvcV1.ClassroomServiceClient, waitingListClient classroomSvcV1.WaitingListServiceClient) *memberServiceGW {
 	return &memberServiceGW{
 		userClient:        userClient,
 		classroomClient:   classroomClient,
@@ -65,14 +64,14 @@ func (u *memberServiceGW) CreateMember(ctx context.Context, req *pb.CreateMember
 		return nil, err
 	}
 
-	wlt, err := u.waitingListClient.GetWaitingListByUser(ctx, &waitingListSvcV1.GetWaitingListByUserRequest{
+	wlt, err := u.waitingListClient.GetWaitingListByUser(ctx, &classroomSvcV1.GetWaitingListByUserRequest{
 		UserID: req.Member.GetMemberID(),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	if _, err := u.waitingListClient.DeleteWaitingList(ctx, &waitingListSvcV1.DeleteWaitingListRequest{
+	if _, err := u.waitingListClient.DeleteWaitingList(ctx, &classroomSvcV1.DeleteWaitingListRequest{
 		Id: wlt.WaitingList.Id,
 	}); err != nil {
 		return nil, err

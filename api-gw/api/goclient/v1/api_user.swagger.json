@@ -782,9 +782,6 @@
         "email": {
           "type": "string"
         },
-        "hashedPassword": {
-          "type": "string"
-        },
         "topic": {
           "$ref": "#/definitions/v1TopicUserResponse"
         }

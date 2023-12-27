@@ -1,2 +1,0 @@
-DROP INDEX waiting_lists_classroom_id;
-DROP INDEX waiting_lists_user_id;

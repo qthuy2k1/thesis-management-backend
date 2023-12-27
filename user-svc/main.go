@@ -8,9 +8,18 @@ import (
 
 	"github.com/joho/godotenv"
 	userpb "github.com/qthuy2k1/thesis-management-backend/user-svc/api/goclient/v1"
-	"github.com/qthuy2k1/thesis-management-backend/user-svc/internal/handler"
-	"github.com/qthuy2k1/thesis-management-backend/user-svc/internal/repository"
-	"github.com/qthuy2k1/thesis-management-backend/user-svc/internal/service"
+
+	userHdl "github.com/qthuy2k1/thesis-management-backend/user-svc/internal/handler/user"
+	userRepo "github.com/qthuy2k1/thesis-management-backend/user-svc/internal/repository/user"
+	userSvc "github.com/qthuy2k1/thesis-management-backend/user-svc/internal/service/user"
+
+	topicHdl "github.com/qthuy2k1/thesis-management-backend/user-svc/internal/handler/topic"
+	topicRepo "github.com/qthuy2k1/thesis-management-backend/user-svc/internal/repository/topic"
+
+	commentHdl "github.com/qthuy2k1/thesis-management-backend/user-svc/internal/handler/comment"
+	commentRepo "github.com/qthuy2k1/thesis-management-backend/user-svc/internal/repository/comment"
+	commentSvc "github.com/qthuy2k1/thesis-management-backend/user-svc/internal/service/comment"
+
 	"github.com/qthuy2k1/thesis-management-backend/user-svc/pkg/db"
 	"google.golang.org/grpc"
 )
@@ -51,13 +60,22 @@ func main() {
 
 	redis := db.RedisInitialize(redisPort, redisPassword)
 
-	repository := repository.NewUserRepo(database, redis)
-	service := service.NewUserSvc(repository)
-	handler := handler.NewUserHdl(service)
+	uRepo := userRepo.NewUserRepo(database, redis)
+	uSvc := userSvc.NewUserSvc(uRepo)
+	uHdl := userHdl.NewUserHdl(uSvc)
+
+	cRepo := commentRepo.NewCommentRepo(database)
+	cSvc := commentSvc.NewCommentSvc(cRepo)
+	cHdl := commentHdl.NewCommentHdl(cSvc)
+
+	tRepo := topicRepo.NewTopicRepo(database)
+	tHdl := topicHdl.NewTopicHdl(tRepo)
 
 	s := grpc.NewServer(grpc.UnaryInterceptor(logger))
 
-	userpb.RegisterUserServiceServer(s, handler)
+	userpb.RegisterUserServiceServer(s, uHdl)
+	userpb.RegisterCommentServiceServer(s, cHdl)
+	userpb.RegisterTopicServiceServer(s, tHdl)
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
