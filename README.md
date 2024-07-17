@@ -1,4 +1,4 @@
-# Project Name
+# Thesis Management Backend
 
 ## Overview
 
@@ -50,6 +50,21 @@ An API provides the features to manage the thesis graduation for IT students and
     minikube dashboard
     ```
 5. After all the pods are running, you can use the API right now
+
+
+## Architecture
+1. Server architecture
+![server_architecture](https://github.com/user-attachments/assets/9b0d65b9-7297-4b35-9d68-f6e856fcc3b6)
+
+2. Database diagram
+1.1 Classroom service
+![classroom_service](https://github.com/user-attachments/assets/d148593f-ea87-4743-ad82-80d3b1907267)
+
+1.2 User service
+![user_service](https://github.com/user-attachments/assets/43da94cd-edd6-4d13-af22-e5f5779b86aa)
+
+1.3 Schedule service
+![schedule_service](https://github.com/user-attachments/assets/fb161388-02bd-4e6d-af1a-b3586f3fd70e)
 
 ## Usage
 
