@@ -54,9 +54,10 @@ An API provides the features to manage the thesis graduation for IT students and
 
 ## Architecture
 1. Server architecture
+
 ![server_architecture](https://github.com/user-attachments/assets/9b0d65b9-7297-4b35-9d68-f6e856fcc3b6)
 
-2. Database diagram
+3. Database diagram
 1.1 Classroom service
    
 ![classroom_service](https://github.com/user-attachments/assets/d148593f-ea87-4743-ad82-80d3b1907267)
